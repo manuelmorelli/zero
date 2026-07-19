@@ -1,0 +1,555 @@
+// ============================================================
+// ZERO — schema.prisma (bozza V1)
+// Basato su 11_Database_Architecture.md
+//
+// Decisioni prese per risolvere ambiguità del documento originale:
+// 1. Purchase: FK dedicate e nullable invece di (Tipo, OggettoID)
+//    polimorfico -> integrità referenziale reale a livello DB.
+// 2. DiscountCode: FK opzionali verso l'oggetto a cui si applica.
+//    Se tutte null => sconto valido su tutta l'offerta del creator.
+// 3. Community: campo isFree esplicito, prezzo nullable.
+// 4. Analytics: trattata come SNAPSHOT storico (capturedAt), non
+//    come specchio in tempo reale di Journey/Creator — evita la
+//    duplicazione "vietata" dal principio del documento originale.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------------
+// ENUM
+// ------------------------------------------------------------
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+enum CreatorStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum JourneyStatus {
+  DRAFT
+  DISCOVERY
+  PUBLISHED
+  ARCHIVED
+}
+
+enum UpdateType {
+  TEXT
+  IMAGE
+  VIDEO
+  POLL
+  QUESTION
+}
+
+enum ListingStatus {
+  DRAFT
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum PurchaseType {
+  COMMUNITY
+  WORKSHOP
+  EVENT
+  DIGITAL_PRODUCT
+  PERSONAL_SERVICE
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum ReportTargetType {
+  USER
+  CREATOR
+  JOURNEY
+  UPDATE
+  COMMENT
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+enum NotificationType {
+  NEW_FOLLOWER
+  NEW_MEMBER
+  PURCHASE
+  TIP
+  UPDATE
+  WORKSHOP
+  EVENT
+}
+
+// ------------------------------------------------------------
+// USER
+// ------------------------------------------------------------
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  username     String        @unique
+  email        String        @unique
+  passwordHash String
+  avatarUrl    String?
+  bio          String?
+  status       AccountStatus @default(ACTIVE)
+  lastLoginAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+
+  creator            Creator?
+  follows            Follow[]
+  purchases          Purchase[]
+  communityMembers   CommunityMember[]
+  tipsSent           Tip[]
+  notifications      Notification[]
+  reports            Report[]
+  journeyProgresses  JourneyProgress[]
+
+  @@map("users")
+}
+
+// ------------------------------------------------------------
+// CREATOR
+// ------------------------------------------------------------
+
+model Creator {
+  id           String        @id @default(uuid())
+  userId       String        @unique
+  user         User          @relation(fields: [userId], references: [id])
+  displayName  String
+  description  String?
+  trustLevel   Int           @default(0)
+  status       CreatorStatus @default(ACTIVE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+
+  journeys         Journey[]
+  updates          Update[]
+  community        Community?
+  workshops        Workshop[]
+  events           Event[]
+  digitalProducts  DigitalProduct[]
+  services         PersonalService[]
+  discountCodes    DiscountCode[]
+  tipsReceived     Tip[]
+  followers        Follow[]
+  analyticsSnapshots Analytics[]
+
+  // Vincolo applicativo (non esprimibile in Prisma): un solo Journey
+  // con status != ARCHIVED per creator. Da far rispettare nella business logic.
+
+  @@map("creators")
+}
+
+// ------------------------------------------------------------
+// JOURNEY / CHAPTER / EPISODE
+// ------------------------------------------------------------
+
+model Journey {
+  id             String        @id @default(uuid())
+  creatorId      String
+  creator        Creator       @relation(fields: [creatorId], references: [id])
+  title          String
+  description    String?
+  coverUrl       String?
+  category       String?
+  tags           String[]
+  status         JourneyStatus @default(DRAFT)
+  discoveryEndsAt DateTime?
+  journeyScore   Float         @default(0) // valore corrente, aggiornato dal job di scoring
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+
+  chapters    Chapter[]
+  progresses  JourneyProgress[]
+  analyticsSnapshots Analytics[]
+
+  @@map("journeys")
+}
+
+model Chapter {
+  id        String   @id @default(uuid())
+  journeyId String
+  journey   Journey  @relation(fields: [journeyId], references: [id])
+  title     String
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  episodes Episode[]
+
+  @@index([journeyId, order])
+  @@map("chapters")
+}
+
+model Episode {
+  id          String   @id @default(uuid())
+  chapterId   String
+  chapter     Chapter  @relation(fields: [chapterId], references: [id])
+  title       String
+  description String?
+  videoUrl    String?
+  text        String?
+  order       Int
+  durationSec Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@index([chapterId, order])
+  @@map("episodes")
+}
+
+// Tiene traccia di "Continua il tuo Journey" (ultimo episodio visto + posizione video)
+model JourneyProgress {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  journeyId      String
+  journey        Journey  @relation(fields: [journeyId], references: [id])
+  currentEpisodeId String?
+  positionSec    Int      @default(0)
+  completedAt    DateTime?
+  updatedAt      DateTime @updatedAt
+
+  @@unique([userId, journeyId])
+  @@map("journey_progresses")
+}
+
+// ------------------------------------------------------------
+// UPDATE
+// ------------------------------------------------------------
+
+model Update {
+  id          String     @id @default(uuid())
+  creatorId   String
+  creator     Creator    @relation(fields: [creatorId], references: [id])
+  type        UpdateType
+  content     String
+  publishedAt DateTime   @default(now())
+  archivedAt  DateTime? // impostato automaticamente 24h dopo la pubblicazione
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("updates")
+}
+
+// ------------------------------------------------------------
+// COMMUNITY
+// ------------------------------------------------------------
+
+model Community {
+  id          String        @id @default(uuid())
+  creatorId   String        @unique
+  creator     Creator       @relation(fields: [creatorId], references: [id])
+  title       String
+  description String?
+  isFree      Boolean       @default(true)
+  price       Decimal?      @db.Money // null se isFree = true
+  status      ListingStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  members   CommunityMember[]
+  purchases Purchase[]
+
+  @@map("communities")
+}
+
+model CommunityMember {
+  id          String    @id @default(uuid())
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id])
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  joinedAt    DateTime  @default(now())
+  status      ListingStatus @default(ACTIVE)
+
+  @@unique([communityId, userId])
+  @@map("community_members")
+}
+
+// ------------------------------------------------------------
+// WORKSHOP / EVENT / DIGITAL PRODUCT / PERSONAL SERVICE
+// ------------------------------------------------------------
+
+model Workshop {
+  id          String        @id @default(uuid())
+  creatorId   String
+  creator     Creator       @relation(fields: [creatorId], references: [id])
+  title       String
+  description String?
+  price       Decimal       @db.Money
+  status      ListingStatus @default(DRAFT)
+  presaleReleaseAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+
+  purchases     Purchase[]
+  discountCodes DiscountCode[]
+
+  @@map("workshops")
+}
+
+model Event {
+  id          String        @id @default(uuid())
+  creatorId   String
+  creator     Creator       @relation(fields: [creatorId], references: [id])
+  title       String
+  description String?
+  price       Decimal       @db.Money
+  status      ListingStatus @default(DRAFT)
+  presaleReleaseAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+
+  purchases     Purchase[]
+  discountCodes DiscountCode[]
+
+  @@map("events")
+}
+
+model DigitalProduct {
+  id          String        @id @default(uuid())
+  creatorId   String
+  creator     Creator       @relation(fields: [creatorId], references: [id])
+  title       String
+  description String?
+  price       Decimal       @db.Money
+  fileUrl     String
+  status      ListingStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+
+  purchases     Purchase[]
+  discountCodes DiscountCode[]
+
+  @@map("digital_products")
+}
+
+model PersonalService {
+  id          String        @id @default(uuid())
+  creatorId   String
+  creator     Creator       @relation(fields: [creatorId], references: [id])
+  title       String
+  description String?
+  price       Decimal       @db.Money
+  status      ListingStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+
+  purchases     Purchase[]
+  discountCodes DiscountCode[]
+
+  @@map("personal_services")
+}
+
+// ------------------------------------------------------------
+// PURCHASE — FK dedicate invece di riferimento polimorfico
+// ------------------------------------------------------------
+
+model Purchase {
+  id         String         @id @default(uuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id])
+  type       PurchaseType
+
+  communityId       String?
+  community         Community?       @relation(fields: [communityId], references: [id])
+  workshopId        String?
+  workshop          Workshop?        @relation(fields: [workshopId], references: [id])
+  eventId           String?
+  event             Event?           @relation(fields: [eventId], references: [id])
+  digitalProductId  String?
+  digitalProduct    DigitalProduct?  @relation(fields: [digitalProductId], references: [id])
+  personalServiceId String?
+  personalService   PersonalService? @relation(fields: [personalServiceId], references: [id])
+
+  discountCodeId String?
+  discountCode   DiscountCode? @relation(fields: [discountCodeId], references: [id])
+
+  price      Decimal        @db.Money
+  commission Decimal        @db.Money
+  status     PurchaseStatus @default(PENDING)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  payment Payment?
+
+  // Vincolo applicativo: esattamente una tra communityId/workshopId/eventId/
+  // digitalProductId/personalServiceId deve essere valorizzata, coerente con `type`.
+  // Da imporre con un CHECK constraint SQL o validazione a livello service.
+
+  @@map("purchases")
+}
+
+// ------------------------------------------------------------
+// TIP
+// ------------------------------------------------------------
+
+model Tip {
+  id        String   @id @default(uuid())
+  creatorId String
+  creator   Creator  @relation(fields: [creatorId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Decimal  @db.Money
+  anonymous Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("tips")
+}
+
+// ------------------------------------------------------------
+// DISCOUNT CODE — con targeting esplicito
+// ------------------------------------------------------------
+
+model DiscountCode {
+  id          String   @id @default(uuid())
+  creatorId   String
+  creator     Creator  @relation(fields: [creatorId], references: [id])
+  code        String   @unique
+  percentage  Int // 1-100
+  maxUses     Int?
+  currentUses Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Se tutti null => sconto valido su tutta l'offerta del creator
+  workshopId        String?
+  workshop          Workshop?        @relation(fields: [workshopId], references: [id])
+  eventId           String?
+  event             Event?           @relation(fields: [eventId], references: [id])
+  digitalProductId  String?
+  digitalProduct    DigitalProduct?  @relation(fields: [digitalProductId], references: [id])
+  personalServiceId String?
+  personalService   PersonalService? @relation(fields: [personalServiceId], references: [id])
+
+  purchases Purchase[]
+
+  @@map("discount_codes")
+}
+
+// ------------------------------------------------------------
+// FOLLOW
+// ------------------------------------------------------------
+
+model Follow {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  creatorId String
+  creator   Creator  @relation(fields: [creatorId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, creatorId])
+  @@map("follows")
+}
+
+// ------------------------------------------------------------
+// NOTIFICATION
+// ------------------------------------------------------------
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+  type      NotificationType
+  content   String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@map("notifications")
+}
+
+// ------------------------------------------------------------
+// ANALYTICS — snapshot storico, non specchio in tempo reale
+// ------------------------------------------------------------
+
+model Analytics {
+  id              String   @id @default(uuid())
+  creatorId       String
+  creator         Creator  @relation(fields: [creatorId], references: [id])
+  journeyId       String?
+  journey         Journey? @relation(fields: [journeyId], references: [id])
+  completionRate  Float
+  journeyScore    Float
+  inspirationRate Float
+  trustLevel      Int
+  capturedAt      DateTime @default(now())
+
+  @@index([creatorId, capturedAt])
+  @@map("analytics_snapshots")
+}
+
+// ------------------------------------------------------------
+// REPORT (moderazione — schema minimo, da estendere con Trust System)
+// ------------------------------------------------------------
+
+model Report {
+  id         String           @id @default(uuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id])
+  targetType ReportTargetType
+  targetId   String
+  reason     String
+  status     ReportStatus     @default(PENDING)
+  createdAt  DateTime         @default(now())
+  resolvedAt DateTime?
+
+  @@map("reports")
+}
+
+// ------------------------------------------------------------
+// PAYMENT
+// ------------------------------------------------------------
+
+model Payment {
+  id         String        @id @default(uuid())
+  purchaseId String        @unique
+  purchase   Purchase      @relation(fields: [purchaseId], references: [id])
+  stripeId   String        @unique
+  amount     Decimal       @db.Money
+  commission Decimal       @db.Money
+  status     PaymentStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@map("payments")
+}
