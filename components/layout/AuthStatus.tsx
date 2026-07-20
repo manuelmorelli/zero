@@ -18,13 +18,13 @@ export function AuthStatus() {
           href="/login"
           className="hidden text-sm font-medium text-ink-muted hover:text-ink transition-colors sm:block"
         >
-          Login
+          Sign In
         </Link>
         <Link
           href="/register"
           className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg hover:bg-ink-muted transition-colors"
         >
-          Start now
+          Get Started
         </Link>
       </>
     );

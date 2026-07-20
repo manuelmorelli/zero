@@ -1,6 +1,8 @@
 ﻿import Link from "next/link";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { AuthStatus } from "@/components/layout/AuthStatus";
+import { Logo } from "@/components/layout/Logo";
+import { Hero } from "@/components/landing/Hero";
 
 export default function Home() {
   return (
@@ -25,9 +27,9 @@ function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-        <span className="font-sans text-xl font-extrabold tracking-tight">
-          ZERO
-        </span>
+        <Link href="/">
+          <Logo className="h-6" />
+        </Link>
         <nav className="hidden items-center gap-8 text-sm font-medium text-ink-muted md:flex">
           <a href="#journey" className="hover:text-ink transition-colors">
             Discover
@@ -35,11 +37,14 @@ function SiteHeader() {
           <a href="#journey" className="hover:text-ink transition-colors">
             Journeys
           </a>
-          <a href="#how-it-works" className="hover:text-ink transition-colors">
-            How it works
+          <a href="#updates" className="hover:text-ink transition-colors">
+            Updates
           </a>
-          <a href="#faq" className="hover:text-ink transition-colors">
-            FAQ
+          <a href="#" className="hover:text-ink transition-colors">
+            About
+          </a>
+          <a href="#" className="hover:text-ink transition-colors">
+            Pricing
           </a>
         </nav>
         <div className="flex items-center gap-3">
@@ -47,77 +52,6 @@ function SiteHeader() {
         </div>
       </div>
     </header>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* HERO                                                                 */
-/* ------------------------------------------------------------------ */
-
-function Hero() {
-  return (
-    <section className="border-b border-border">
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-2 md:items-center md:py-24">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-ink-muted">
-            Every journey starts from
-          </p>
-          <h1 className="mt-4 font-sans text-6xl font-black leading-[0.95] tracking-tight md:text-8xl">
-            ZERO
-          </h1>
-          <p className="mt-6 max-w-md text-lg font-semibold text-ink">
-            The platform for real people building real transformations.
-          </p>
-          <p className="mt-3 max-w-md text-ink-muted">
-            Share your journey. Inspire others. Grow with those who follow you.
-            This isn&apos;t content: it&apos;s change.
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-4">
-            <a
-              href="#journey"
-              className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg hover:bg-ink-muted transition-colors"
-            >
-              ▶ Explore Journeys
-            </a>
-            <Link
-              href="/register"
-              className="rounded-full border border-border px-6 py-3 text-sm font-semibold text-ink hover:border-ink transition-colors"
-            >
-              Create your Journey
-            </Link>
-          </div>
-
-          <div className="mt-8 flex items-center gap-3">
-            <div className="flex -space-x-3">
-              {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-9 w-9 rounded-full border-2 border-bg bg-surface-2"
-                />
-              ))}
-            </div>
-            <p className="text-sm text-ink-muted">
-              Thousands of creators, millions of followers
-            </p>
-          </div>
-        </div>
-
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-gradient-to-b from-surface-2 to-bg">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="px-8 text-center text-xs text-ink-faint">
-              Hero image — replace with a real photo in public/images/hero.jpg
-            </p>
-          </div>
-          <div className="absolute bottom-6 left-6 right-6 rounded-xl border border-border bg-bg/70 p-4 backdrop-blur">
-            <p className="text-sm text-ink">
-              “Zero changed the way I tell and share my journey.”
-            </p>
-            <p className="mt-2 text-xs text-ink-muted">— Alex R.</p>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -321,7 +255,7 @@ function SiteFooter() {
   return (
     <footer>
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-10 text-sm text-ink-muted sm:flex-row">
-        <span className="font-sans font-extrabold text-ink">ZERO</span>
+        <Logo className="h-6" />
         <p>© {new Date().getFullYear()} Zero. Every journey starts from zero.</p>
       </div>
     </footer>

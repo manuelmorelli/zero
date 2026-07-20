@@ -11,6 +11,9 @@
   --color-ink-faint: #6b6b6b;
   --color-danger: #f87171;
 
+  /* Unico accento cromatico del sito: ambra da tramonto, usato con estrema parsimonia (hero scrubber) */
+  --color-ember: #e2914d;
+
   /* Un'unica famiglia di font, pesi diversi (da Design System) */
   --font-sans: var(--font-inter);
 }
@@ -18,6 +21,16 @@
 body {
   background-color: var(--color-bg);
   color: var(--color-ink);
+}
+
+/* Deriva ambientale lentissima dello sfondo della hero (placeholder scenico) */
+@keyframes hero-drift {
+  from {
+    transform: scale(1) translateY(0);
+  }
+  to {
+    transform: scale(1.045) translateY(-1%);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
