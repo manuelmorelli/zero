@@ -1,4 +1,6 @@
 ﻿import Link from "next/link";
+import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
+import { AuthStatus } from "@/components/layout/AuthStatus";
 
 export default function Home() {
   return (
@@ -41,18 +43,7 @@ function SiteHeader() {
           </a>
         </nav>
         <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="hidden text-sm font-medium text-ink-muted hover:text-ink transition-colors sm:block"
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg hover:bg-ink-muted transition-colors"
-          >
-            Start now
-          </Link>
+          <AuthStatus />
         </div>
       </div>
     </header>
@@ -79,7 +70,7 @@ function Hero() {
           </p>
           <p className="mt-3 max-w-md text-ink-muted">
             Share your journey. Inspire others. Grow with those who follow you.
-            This isn't content: it's change.
+            This isn&apos;t content: it&apos;s change.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
@@ -90,7 +81,7 @@ function Hero() {
               ▶ Explore Journeys
             </a>
             <Link
-              href="/signup"
+              href="/register"
               className="rounded-full border border-border px-6 py-3 text-sm font-semibold text-ink hover:border-ink transition-colors"
             >
               Create your Journey
@@ -135,12 +126,12 @@ function Hero() {
 /* ------------------------------------------------------------------ */
 
 function ExploreJourneys() {
-  const journeys = [
-    { title: "From burnout to balance", creator: "Marco R.", followers: "24K", category: "Wellness" },
-    { title: "Stronger every day", creator: "Sara J.", followers: "18K", category: "Fitness" },
-    { title: "Ride the unknown", creator: "David L.", followers: "31K", category: "Sport" },
-    { title: "See the world differently", creator: "Emma W.", followers: "16K", category: "Creativity" },
-    { title: "Build my startup", creator: "James T.", followers: "29K", category: "Career" },
+  const journeys: JourneyCardData[] = [
+    { id: "1", title: "From burnout to balance", coverUrl: null, category: "Wellness", creator: { displayName: "Marco R." }, followersCount: 24000 },
+    { id: "2", title: "Stronger every day", coverUrl: null, category: "Fitness", creator: { displayName: "Sara J." }, followersCount: 18000 },
+    { id: "3", title: "Ride the unknown", coverUrl: null, category: "Sport", creator: { displayName: "David L." }, followersCount: 31000 },
+    { id: "4", title: "See the world differently", coverUrl: null, category: "Creativity", creator: { displayName: "Emma W." }, followersCount: 16000 },
+    { id: "5", title: "Build my startup", coverUrl: null, category: "Career", creator: { displayName: "James T." }, followersCount: 29000 },
   ];
 
   return (
@@ -163,24 +154,7 @@ function ExploreJourneys() {
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
           {journeys.map((journey) => (
-            <div
-              key={journey.title}
-              className="group overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-ink-muted"
-            >
-              <div className="aspect-[3/4] w-full bg-surface-2" />
-              <div className="p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
-                  {journey.category}
-                </p>
-                <h3 className="mt-2 text-sm font-bold leading-snug">
-                  {journey.title}
-                </h3>
-                <div className="mt-3 flex items-center justify-between text-xs text-ink-muted">
-                  <span>by {journey.creator}</span>
-                  <span>{journey.followers}</span>
-                </div>
-              </div>
-            </div>
+            <JourneyCard key={journey.id} journey={journey} />
           ))}
         </div>
       </div>
@@ -328,7 +302,7 @@ function FinalCta() {
         </p>
         <div className="mt-8">
           <Link
-            href="/signup"
+            href="/register"
             className="rounded-full bg-ink px-8 py-3 text-sm font-semibold text-bg hover:bg-ink-muted transition-colors"
           >
             Create your account
