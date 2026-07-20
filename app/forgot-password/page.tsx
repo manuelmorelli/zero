@@ -1,0 +1,103 @@
+"use client";
+
+import Link from "next/link";
+import { useState, type SubmitEvent } from "react";
+import { authClient } from "@/lib/auth-client";
+
+export default function ForgotPasswordPage() {
+  return (
+    <main className="flex min-h-screen items-center justify-center px-6 py-16">
+      <div className="w-full max-w-sm">
+        <Link
+          href="/"
+          className="font-sans text-xl font-extrabold tracking-tight"
+        >
+          ZERO
+        </Link>
+        <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
+          Password dimenticata?
+        </h1>
+        <p className="mt-2 text-sm text-ink-muted">
+          Inserisci la tua email: se corrisponde a un account, ti mandiamo un
+          link per sceglierne una nuova.
+        </p>
+
+        <ForgotPasswordForm />
+
+        <p className="mt-6 text-center text-sm text-ink-muted">
+          <Link
+            href="/login"
+            className="font-semibold text-ink hover:underline"
+          >
+            Torna al login
+          </Link>
+        </p>
+      </div>
+    </main>
+  );
+}
+
+function ForgotPasswordForm() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const { error: requestError } = await authClient.requestPasswordReset({
+      email,
+      redirectTo: "/reset-password",
+    });
+    setLoading(false);
+
+    if (requestError) {
+      setError(requestError.message ?? "Richiesta non riuscita. Riprova.");
+      return;
+    }
+
+    setSent(true);
+  }
+
+  if (sent) {
+    return (
+      <p className="mt-8 text-sm text-ink">
+        Controlla la tua casella email: se l&apos;indirizzo è registrato,
+        riceverai a breve un link per reimpostare la password.
+      </p>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+      <div>
+        <label htmlFor="email" className="text-sm font-medium text-ink-muted">
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          autoComplete="email"
+          required
+          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+        />
+      </div>
+
+      {error && <p className="text-sm text-danger">{error}</p>}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
+      >
+        {loading ? "Invio in corso…" : "Invia link di recupero"}
+      </button>
+    </form>
+  );
+}

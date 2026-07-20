@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
 
-export default function RegisterPage() {
+export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
@@ -15,21 +16,21 @@ export default function RegisterPage() {
           ZERO
         </Link>
         <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-          Crea il tuo account
+          Bentornato
         </h1>
         <p className="mt-2 text-sm text-ink-muted">
-          Inizia a seguire o a raccontare la tua trasformazione.
+          Accedi per continuare il tuo Journey.
         </p>
 
-        <RegisterForm />
+        <LoginForm />
 
         <p className="mt-6 text-center text-sm text-ink-muted">
-          Hai già un account?{" "}
+          Non hai un account?{" "}
           <Link
-            href="/login"
+            href="/register"
             className="font-semibold text-ink hover:underline"
           >
-            Accedi
+            Registrati
           </Link>
         </p>
       </div>
@@ -41,61 +42,40 @@ export default function RegisterPage() {
 /* FORM                                                                 */
 /* ------------------------------------------------------------------ */
 
-function RegisterForm() {
-  const [name, setName] = useState("");
+function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [needsVerification, setNeedsVerification] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [registered, setRegistered] = useState(false);
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-
-    if (password !== confirmPassword) {
-      setError("Le password non coincidono.");
-      return;
-    }
-
+    setNeedsVerification(false);
     setLoading(true);
-    const { error: signUpError } = await authClient.signUp.email({
-      name,
+
+    const { error: signInError } = await authClient.signIn.email({
       email,
       password,
       callbackURL: "/",
     });
     setLoading(false);
 
-    if (signUpError) {
-      setError(signUpError.message ?? "Registrazione non riuscita. Riprova.");
+    if (signInError) {
+      setError(signInError.message ?? "Accesso non riuscito. Riprova.");
+      // con emailVerification.sendOnSignIn attivo, questo tentativo ha già
+      // fatto ripartire una nuova email di conferma
+      setNeedsVerification(signInError.message === "Email not verified");
       return;
     }
 
-    setRegistered(true);
-  }
-
-  if (registered) {
-    return (
-      <p className="mt-8 text-sm text-ink">
-        Account creato! Ti abbiamo mandato un&apos;email: apri il link al
-        suo interno per confermare il tuo indirizzo e attivare l&apos;account.
-      </p>
-    );
+    router.push("/");
   }
 
   return (
     <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-      <Field
-        label="Nome"
-        id="name"
-        type="text"
-        value={name}
-        onChange={setName}
-        autoComplete="name"
-        required
-      />
       <Field
         label="Email"
         id="email"
@@ -105,35 +85,43 @@ function RegisterForm() {
         autoComplete="email"
         required
       />
-      <Field
-        label="Password"
-        id="password"
-        type="password"
-        value={password}
-        onChange={setPassword}
-        autoComplete="new-password"
-        minLength={8}
-        required
-      />
-      <Field
-        label="Conferma password"
-        id="confirmPassword"
-        type="password"
-        value={confirmPassword}
-        onChange={setConfirmPassword}
-        autoComplete="new-password"
-        minLength={8}
-        required
-      />
+      <div>
+        <div className="flex items-center justify-between">
+          <label htmlFor="password" className="text-sm font-medium text-ink-muted">
+            Password
+          </label>
+          <Link
+            href="/forgot-password"
+            className="text-xs text-ink-muted hover:text-ink hover:underline"
+          >
+            Password dimenticata?
+          </Link>
+        </div>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          autoComplete="current-password"
+          required
+          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+        />
+      </div>
 
       {error && <p className="text-sm text-danger">{error}</p>}
+      {needsVerification && (
+        <p className="text-sm text-ink-muted">
+          Ti abbiamo appena inviato un nuovo link di conferma via email.
+        </p>
+      )}
 
       <button
         type="submit"
         disabled={loading}
         className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
-        {loading ? "Creazione account…" : "Crea account"}
+        {loading ? "Accesso in corso…" : "Accedi"}
       </button>
     </form>
   );
@@ -151,19 +139,9 @@ type FieldProps = {
   onChange: (value: string) => void;
   autoComplete?: string;
   required?: boolean;
-  minLength?: number;
 };
 
-function Field({
-  label,
-  id,
-  type,
-  value,
-  onChange,
-  autoComplete,
-  required,
-  minLength,
-}: FieldProps) {
+function Field({ label, id, type, value, onChange, autoComplete, required }: FieldProps) {
   return (
     <div>
       <label htmlFor={id} className="text-sm font-medium text-ink-muted">
@@ -177,7 +155,6 @@ function Field({
         onChange={(event) => onChange(event.target.value)}
         autoComplete={autoComplete}
         required={required}
-        minLength={minLength}
         className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
       />
     </div>

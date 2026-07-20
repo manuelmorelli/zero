@@ -14,12 +14,12 @@
 // ============================================================
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ------------------------------------------------------------
@@ -111,18 +111,21 @@ enum NotificationType {
 // ------------------------------------------------------------
 
 model User {
-  id           String        @id @default(uuid())
-  name         String
-  username     String        @unique
-  email        String        @unique
-  passwordHash String
-  avatarUrl    String?
-  bio          String?
-  status       AccountStatus @default(ACTIVE)
-  lastLoginAt  DateTime?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  deletedAt    DateTime?
+  id            String        @id @default(uuid())
+  name          String
+  username      String?       @unique
+  email         String        @unique
+  emailVerified Boolean       @default(false)
+  avatarUrl     String? // mappato da Better Auth come campo "image", vedi user.fields in lib/auth.ts
+  bio           String?
+  status        AccountStatus @default(ACTIVE)
+  lastLoginAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  sessions  Session[]
+  accounts  Account[]
 
   creator            Creator?
   follows            Follow[]
@@ -134,6 +137,55 @@ model User {
   journeyProgresses  JourneyProgress[]
 
   @@map("users")
+}
+
+// ------------------------------------------------------------
+// AUTH (Better Auth) — tabelle richieste dall'adapter Prisma
+// ------------------------------------------------------------
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String? // hash della password, solo per providerId = "credential"
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([providerId, accountId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verifications")
 }
 
 // ------------------------------------------------------------

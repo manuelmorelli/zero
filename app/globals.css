@@ -9,6 +9,7 @@
   --color-ink: #ffffff;
   --color-ink-muted: #a3a3a3;
   --color-ink-faint: #6b6b6b;
+  --color-danger: #f87171;
 
   /* Un'unica famiglia di font, pesi diversi (da Design System) */
   --font-sans: var(--font-inter);
