@@ -11,21 +11,21 @@ export function Hero() {
       <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-7xl flex-col px-6 py-16 lg:min-h-[92vh] lg:py-20">
         <div className="flex flex-1 flex-col justify-center gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
           <div className="max-w-xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-ink-muted">
+            <p className="animate-[fade-up_0.8s_ease-out_both] text-xs font-semibold uppercase tracking-[0.25em] text-ink-muted">
               Every journey starts from
             </p>
-            <h1 className="mt-4">
+            <h1 className="mt-4 animate-[fade-up_0.8s_ease-out_both] [animation-delay:100ms]">
               <Logo className="h-14 sm:h-16 lg:h-20" />
             </h1>
-            <p className="mt-6 max-w-md text-lg font-semibold text-ink">
+            <p className="mt-6 max-w-md animate-[fade-up_0.8s_ease-out_both] text-lg font-semibold text-ink [animation-delay:220ms]">
               The platform for real people building real transformations.
             </p>
-            <p className="mt-3 max-w-md text-ink-muted">
+            <p className="mt-3 max-w-md animate-[fade-up_0.8s_ease-out_both] text-ink-muted [animation-delay:320ms]">
               Share your journey. Inspire others. Grow together. This
               isn&apos;t content: it&apos;s change.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-wrap gap-4 animate-[fade-up_0.8s_ease-out_both] [animation-delay:420ms]">
               <Link
                 href="/register"
                 className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
@@ -40,7 +40,7 @@ export function Hero() {
               </a>
             </div>
 
-            <div className="mt-8 flex items-center gap-3">
+            <div className="mt-8 flex items-center gap-3 animate-[fade-up_0.8s_ease-out_both] [animation-delay:520ms]">
               <div className="flex -space-x-3">
                 {[0, 1, 2, 3].map((i) => (
                   <div
@@ -55,12 +55,14 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="w-full max-w-sm lg:shrink-0">
+          <div className="w-full max-w-sm animate-[fade-up_0.9s_ease-out_both] lg:shrink-0 [animation-delay:280ms]">
             <UpdatesPanel />
           </div>
         </div>
 
-        <JourneyScrubber />
+        <div className="animate-[fade-up_0.8s_ease-out_both] [animation-delay:620ms]">
+          <JourneyScrubber />
+        </div>
       </div>
     </section>
   );

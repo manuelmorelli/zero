@@ -3,6 +3,7 @@ import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyC
 import { AuthStatus } from "@/components/layout/AuthStatus";
 import { Logo } from "@/components/layout/Logo";
 import { Hero } from "@/components/landing/Hero";
+import { Reveal } from "@/components/common/Reveal";
 
 export default function Home() {
   return (
@@ -71,24 +72,28 @@ function ExploreJourneys() {
   return (
     <section id="journey" className="border-b border-border">
       <div className="mx-auto max-w-7xl px-6 py-20">
-        <div className="mb-10 flex items-end justify-between">
-          <div>
-            <h2 className="font-sans text-3xl font-extrabold tracking-tight">
-              Featured Journeys
-            </h2>
-            <p className="mt-2 text-ink-muted">Real stories. Real impact.</p>
+        <Reveal>
+          <div className="mb-10 flex items-end justify-between">
+            <div>
+              <h2 className="font-sans text-3xl font-extrabold tracking-tight">
+                Featured Journeys
+              </h2>
+              <p className="mt-2 text-ink-muted">Real stories. Real impact.</p>
+            </div>
+            <a
+              href="#journey"
+              className="hidden text-sm font-semibold text-ink-muted hover:text-ink transition-colors sm:block"
+            >
+              View all →
+            </a>
           </div>
-          <a
-            href="#journey"
-            className="hidden text-sm font-semibold text-ink-muted hover:text-ink transition-colors sm:block"
-          >
-            View all →
-          </a>
-        </div>
+        </Reveal>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {journeys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} />
+          {journeys.map((journey, index) => (
+            <Reveal key={journey.id} delayMs={index * 80}>
+              <JourneyCard journey={journey} />
+            </Reveal>
           ))}
         </div>
       </div>
@@ -111,13 +116,13 @@ function StatsBar() {
   return (
     <section className="border-b border-border bg-surface">
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-6 py-14 md:grid-cols-4">
-        {stats.map((stat) => (
-          <div key={stat.label} className="text-center md:text-left">
+        {stats.map((stat, index) => (
+          <Reveal key={stat.label} delayMs={index * 100} className="text-center md:text-left">
             <p className="font-sans text-3xl font-black md:text-4xl">
               {stat.value}
             </p>
             <p className="mt-1 text-sm text-ink-muted">{stat.label}</p>
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -153,18 +158,20 @@ function HowItWorks() {
   return (
     <section id="how-it-works" className="border-b border-border">
       <div className="mx-auto max-w-7xl px-6 py-20">
-        <h2 className="mb-14 font-sans text-3xl font-extrabold tracking-tight">
-          How it works
-        </h2>
+        <Reveal>
+          <h2 className="mb-14 font-sans text-3xl font-extrabold tracking-tight">
+            How it works
+          </h2>
+        </Reveal>
         <div className="grid gap-10 md:grid-cols-3">
-          {steps.map((step) => (
-            <div key={step.number}>
+          {steps.map((step, index) => (
+            <Reveal key={step.number} delayMs={index * 120}>
               <span className="text-sm font-bold text-ink-faint">
                 {step.number}
               </span>
               <h3 className="mt-3 text-lg font-bold">{step.title}</h3>
               <p className="mt-2 text-ink-muted">{step.text}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -199,20 +206,24 @@ function Faq() {
   return (
     <section id="faq" className="border-b border-border bg-surface">
       <div className="mx-auto max-w-3xl px-6 py-20">
-        <h2 className="mb-10 font-sans text-3xl font-extrabold tracking-tight">
-          Frequently asked questions
-        </h2>
+        <Reveal>
+          <h2 className="mb-10 font-sans text-3xl font-extrabold tracking-tight">
+            Frequently asked questions
+          </h2>
+        </Reveal>
         <div className="divide-y divide-border">
-          {questions.map((item) => (
-            <details key={item.q} className="group py-5">
-              <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-ink">
-                {item.q}
-                <span className="ml-4 text-ink-muted transition-transform group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <p className="mt-3 text-ink-muted">{item.a}</p>
-            </details>
+          {questions.map((item, index) => (
+            <Reveal key={item.q} delayMs={index * 60}>
+              <details className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-ink">
+                  {item.q}
+                  <span className="ml-4 text-ink-muted transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-ink-muted">{item.a}</p>
+              </details>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -228,20 +239,22 @@ function FinalCta() {
   return (
     <section className="border-b border-border">
       <div className="mx-auto max-w-3xl px-6 py-20 text-center">
-        <h2 className="font-sans text-3xl font-extrabold tracking-tight md:text-4xl">
-          Your Journey starts from ZERO.
-        </h2>
-        <p className="mt-4 text-ink-muted">
-          Sign up and discover the transformations that are already inspiring the community.
-        </p>
-        <div className="mt-8">
-          <Link
-            href="/register"
-            className="rounded-full bg-ink px-8 py-3 text-sm font-semibold text-bg hover:bg-ink-muted transition-colors"
-          >
-            Create your account
-          </Link>
-        </div>
+        <Reveal>
+          <h2 className="font-sans text-3xl font-extrabold tracking-tight md:text-4xl">
+            Your Journey starts from ZERO.
+          </h2>
+          <p className="mt-4 text-ink-muted">
+            Sign up and discover the transformations that are already inspiring the community.
+          </p>
+          <div className="mt-8">
+            <Link
+              href="/register"
+              className="rounded-full bg-ink px-8 py-3 text-sm font-semibold text-bg hover:bg-ink-muted transition-colors"
+            >
+              Create your account
+            </Link>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

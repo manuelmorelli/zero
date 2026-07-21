@@ -9,8 +9,8 @@ export function Logo({ className }: LogoProps) {
     <Image
       src="/images/logo.png"
       alt="ZERO — Every journey starts from zero"
-      width={1078}
-      height={426}
+      width={3924}
+      height={1040}
       unoptimized
       className={`w-auto ${className ?? ""}`}
     />
