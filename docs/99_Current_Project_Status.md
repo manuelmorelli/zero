@@ -38,10 +38,31 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 - **Testing**: niente Python disponibile sulla macchina di sviluppo → i test end-to-end usano Playwright via Node (installato con `--no-save`, disinstallato a fine test). I dati di test vengono creati/verificati/cancellati con script SQL diretto su Neon (`@neondatabase/serverless`) e non vengono mai lasciati nel database.
 - **Form client con id univoci**: quando più istanze dello stesso form possono comparire insieme nella stessa pagina (es. form di modifica capitolo + form "aggiungi episodio"), gli `id` dei campi vanno generati con `useId()` di React invece di stringhe fisse, per evitare collisioni di `id` nel DOM (bug reale trovato e corretto in `ChapterForm.tsx`/`EpisodeForm.tsx`).
 - **Lingua dell'interfaccia**: inglese in tutto il prodotto (pagine, form, messaggi di errore, email transazionali). I commenti nel codice restano in italiano, non essendo testo rivolto all'utente. Decisione di prodotto permanente, registrata in `00-project-context.md` (sezione "Lingua del Prodotto").
+- **Redirect dopo pubblicazione episodio**: dopo aver creato un episodio il creator viene reindirizzato alla pagina del Journey (non del capitolo), per avere un feedback visivo immediato (contatore episodi aggiornato). Comportamento temporaneo, in attesa della riprogettazione del flusso Creator Profile.
+- **Campi Episodio**: titolo, caption (opzionale), video URL (etichettato esplicitamente come "temporary" in attesa dell'upload diretto dei video), data reale dell'evento. Nessun campo "descrizione" separato: rimosso perché ridondante con la caption.
 
 ## Placeholder ancora da sostituire
 
 Nessuno al momento.
+
+## Stato attuale dell'MVP
+
+Confronto con le funzionalità definite in `12_MVP_Features.md`.
+
+| Area MVP | Stato |
+|---|---|
+| Account (registrazione, accesso, recupero password) | ✅ Fatto |
+| Account (gestione profilo) | 🟡 Parziale — `/account` mostra i dati, nessuna modifica |
+| Journey (creazione, Capitoli, Episodi) | ✅ Fatto |
+| Journey (modifica del Journey stesso) | ❌ Da fare — nessuna UI di modifica per titolo/presentazione/categoria/tag |
+| Journey (struttura: riordino libero) | 🟡 Parziale — ordine automatico, drag & drop non ancora implementato |
+| Esplorazione (homepage) | 🟡 Parziale — landing con dati statici/finti, non reali |
+| Esplorazione (pagina Journey pubblica, pagina creator, ricerca, scoperta) | ❌ Da fare — **prossimo task** |
+| Community (seguire creator, Community Premium) | ❌ Da fare |
+| Updates | ❌ Da fare |
+| Dashboard Creator (Updates, analisi base, Community Premium) | ❌ Da fare |
+
+In sintesi: il percorso di creazione lato Creator (Journey → Capitoli → Episodi) è completo e verificato end-to-end. Manca ancora tutto il lato pubblico/lettore (nessuna pagina Journey è visibile a chi non è il creator proprietario) — è il pezzo mancante più urgente per rendere l'MVP dimostrabile.
 
 ## Note prima del rilascio pubblico
 
@@ -59,7 +80,7 @@ Tutti i lavori futuri, in ordine di priorità.
 
 ## Current Task
 
-**Obiettivo corrente**: nessuna implementazione in corso al momento — l'ultimo lavoro di codice completato e verificato è il CRUD di Capitoli ed Episodi dentro un Journey (vedi "Funzionalità completate"). Il prossimo obiettivo, quando si riprende, è il punto 1 della Roadmap: la pagina pubblica del Journey.
+**Obiettivo corrente**: nessuna implementazione in corso al momento — l'ultima sessione di lavoro ha completato il CRUD di Capitoli ed Episodi, alcune correzioni UX sul form Episodio e la traduzione completa dell'interfaccia in inglese (vedi "Funzionalità completate"). Il prossimo obiettivo consigliato, quando si riprende, è il punto 1 della Roadmap: la pagina pubblica del Journey — è la funzionalità mancante più urgente, perché oggi nessun Journey è visibile a un lettore reale (vedi "Stato attuale dell'MVP").
 
 **File da leggere prima di iniziare**:
 - `app/creator/journeys/[id]/page.tsx` e `app/creator/journeys/[id]/chapters/[chapterId]/page.tsx` — pattern di riferimento per leggere Capitoli/Episodi da Prisma
