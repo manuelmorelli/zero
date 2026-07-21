@@ -41,6 +41,12 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 
 Nessuno al momento.
 
+## Note prima del rilascio pubblico
+
+Cose note che vanno risolte prima che utenti reali usino il prodotto, ma non bloccano lo sviluppo in corso.
+
+- **Mittente email non verificato**: le email (verifica account, reset password) partono da `onboarding@resend.dev`, l'indirizzo di test di Resend, non da un dominio verificato. Finché resta così, provider come Yahoo possono spostare le email nella cartella Spam invece di consegnarle in posta normale. Prima del rilascio pubblico serve collegare un dominio verificato su Resend e aggiornare l'indirizzo mittente in `lib/email.ts`.
+
 ## Roadmap
 
 Tutti i lavori futuri, in ordine di priorità.
