@@ -250,14 +250,15 @@ model Journey {
 }
 
 model Chapter {
-  id        String   @id @default(uuid())
-  journeyId String
-  journey   Journey  @relation(fields: [journeyId], references: [id])
-  title     String
-  order     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
+  id          String   @id @default(uuid())
+  journeyId   String
+  journey     Journey  @relation(fields: [journeyId], references: [id])
+  title       String
+  description String?
+  order       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
 
   episodes Episode[]
 
@@ -273,8 +274,10 @@ model Episode {
   description String?
   videoUrl    String?
   text        String?
+  // Data reale in cui l'evento è accaduto, separata dall'ordine narrativo
+  // (vedi 05_Journey.md: ordine narrativo e cronologia reale sono informazioni distinte).
+  occurredAt  DateTime @default(now())
   order       Int
-  durationSec Int?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?

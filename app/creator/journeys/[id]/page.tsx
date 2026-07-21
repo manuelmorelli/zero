@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
+import { ChapterForm } from "@/components/creator/ChapterForm";
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: "Bozza",
@@ -20,6 +21,12 @@ export default async function JourneyManagePage({
 
   const journey = await prisma.journey.findUnique({ where: { id } });
   if (!journey || journey.creatorId !== creator.id) notFound();
+
+  const chapters = await prisma.chapter.findMany({
+    where: { journeyId: journey.id, deletedAt: null },
+    orderBy: { order: "asc" },
+    include: { episodes: { where: { deletedAt: null } } },
+  });
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
@@ -54,11 +61,40 @@ export default async function JourneyManagePage({
         </div>
       )}
 
-      <div className="mt-10 rounded-xl border border-border bg-surface p-6">
+      <div className="mt-10">
         <h2 className="text-sm font-semibold text-ink">Capitoli</h2>
-        <p className="mt-2 text-sm text-ink-muted">
-          La gestione di Capitoli ed Episodi arriva nel prossimo passo.
-        </p>
+
+        <div className="mt-4 space-y-3">
+          {chapters.length === 0 && (
+            <p className="rounded-xl border border-border bg-surface p-5 text-sm text-ink-muted">
+              Non hai ancora aggiunto nessun capitolo.
+            </p>
+          )}
+          {chapters.map((chapter) => (
+            <Link
+              key={chapter.id}
+              href={`/creator/journeys/${journey.id}/chapters/${chapter.id}`}
+              className="flex items-center justify-between rounded-xl border border-border bg-surface p-5 transition-colors hover:border-ink-muted"
+            >
+              <div>
+                <span className="text-sm font-semibold text-ink">{chapter.title}</span>
+                {chapter.description && (
+                  <p className="mt-1 text-sm text-ink-muted">{chapter.description}</p>
+                )}
+              </div>
+              <span className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-muted">
+                {chapter.episodes.length} {chapter.episodes.length === 1 ? "episodio" : "episodi"}
+              </span>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-6 rounded-xl border border-border bg-surface p-6">
+          <h3 className="text-sm font-semibold text-ink">Aggiungi un capitolo</h3>
+          <div className="mt-4">
+            <ChapterForm journeyId={journey.id} />
+          </div>
+        </div>
       </div>
     </main>
   );
