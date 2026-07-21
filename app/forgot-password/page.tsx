@@ -15,11 +15,11 @@ export default function ForgotPasswordPage() {
           ZERO
         </Link>
         <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-          Password dimenticata?
+          Forgot your password?
         </h1>
         <p className="mt-2 text-sm text-ink-muted">
-          Inserisci la tua email: se corrisponde a un account, ti mandiamo un
-          link per sceglierne una nuova.
+          Enter your email: if it matches an account, we&apos;ll send you a
+          link to choose a new one.
         </p>
 
         <ForgotPasswordForm />
@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
             href="/login"
             className="font-semibold text-ink hover:underline"
           >
-            Torna al login
+            Back to sign in
           </Link>
         </p>
       </div>
@@ -55,7 +55,7 @@ function ForgotPasswordForm() {
     setLoading(false);
 
     if (requestError) {
-      setError(requestError.message ?? "Richiesta non riuscita. Riprova.");
+      setError(requestError.message ?? "Request failed. Please try again.");
       return;
     }
 
@@ -65,8 +65,8 @@ function ForgotPasswordForm() {
   if (sent) {
     return (
       <p className="mt-8 text-sm text-ink">
-        Controlla la tua casella email: se l&apos;indirizzo è registrato,
-        riceverai a breve un link per reimpostare la password.
+        Check your email: if the address is registered, you&apos;ll receive
+        a password reset link shortly.
       </p>
     );
   }
@@ -96,7 +96,7 @@ function ForgotPasswordForm() {
         disabled={loading}
         className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
-        {loading ? "Invio in corso…" : "Invia link di recupero"}
+        {loading ? "Sending…" : "Send reset link"}
       </button>
     </form>
   );

@@ -11,7 +11,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Zero — Every journey starts from zero",
   description:
-    "Zero è la piattaforma dove le trasformazioni reali delle persone diventano Journey da seguire, capitolo dopo capitolo.",
+    "Zero is the platform where people's real transformations become Journeys to follow, chapter by chapter.",
 };
 
 export default function RootLayout({

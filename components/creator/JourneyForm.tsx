@@ -12,7 +12,7 @@ export function JourneyForm() {
     <form action={formAction} className="mt-8 space-y-4">
       <div>
         <label htmlFor="title" className="text-sm font-medium text-ink-muted">
-          Titolo
+          Title
         </label>
         <input
           id="title"
@@ -27,14 +27,14 @@ export function JourneyForm() {
 
       <div>
         <label htmlFor="description" className="text-sm font-medium text-ink-muted">
-          Presentazione <span className="text-ink-faint">(opzionale)</span>
+          Presentation <span className="text-ink-faint">(optional)</span>
         </label>
         <textarea
           id="description"
           name="description"
           rows={4}
           maxLength={2000}
-          placeholder="Obiettivo, contesto, motivazioni, cosa può aspettarsi chi ti segue."
+          placeholder="Goal, context, motivations, what followers can expect."
           className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
       </div>
@@ -42,7 +42,7 @@ export function JourneyForm() {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label htmlFor="category" className="text-sm font-medium text-ink-muted">
-            Categoria <span className="text-ink-faint">(opzionale)</span>
+            Category <span className="text-ink-faint">(optional)</span>
           </label>
           <input
             id="category"
@@ -54,7 +54,7 @@ export function JourneyForm() {
         </div>
         <div>
           <label htmlFor="tags" className="text-sm font-medium text-ink-muted">
-            Tag <span className="text-ink-faint">(separati da virgola)</span>
+            Tags <span className="text-ink-faint">(comma-separated)</span>
           </label>
           <input
             id="tags"
@@ -74,7 +74,7 @@ export function JourneyForm() {
         disabled={pending}
         className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
-        {pending ? "Creazione Journey…" : "Crea Journey"}
+        {pending ? "Creating Journey…" : "Create Journey"}
       </button>
     </form>
   );

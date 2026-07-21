@@ -8,8 +8,7 @@ type EpisodeFormProps = {
   episode?: {
     id: string;
     title: string;
-    description: string | null;
-    text: string | null;
+    caption: string | null;
     videoUrl: string | null;
     occurredAt: Date;
   };
@@ -32,7 +31,7 @@ export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
 
       <div>
         <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
-          Titolo dell&apos;episodio
+          Episode title
         </label>
         <input
           id={`${uid}-title`}
@@ -47,37 +46,23 @@ export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
       </div>
 
       <div>
-        <label htmlFor={`${uid}-description`} className="text-sm font-medium text-ink-muted">
-          Descrizione <span className="text-ink-faint">(opzionale)</span>
+        <label htmlFor={`${uid}-caption`} className="text-sm font-medium text-ink-muted">
+          Caption <span className="text-ink-faint">(optional)</span>
         </label>
         <textarea
-          id={`${uid}-description`}
-          name="description"
-          rows={2}
-          maxLength={1000}
-          defaultValue={episode?.description ?? undefined}
-          className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-        />
-      </div>
-
-      <div>
-        <label htmlFor={`${uid}-text`} className="text-sm font-medium text-ink-muted">
-          Testo <span className="text-ink-faint">(opzionale)</span>
-        </label>
-        <textarea
-          id={`${uid}-text`}
-          name="text"
+          id={`${uid}-caption`}
+          name="caption"
           rows={5}
           maxLength={10000}
-          placeholder="Racconta cosa è successo in questo episodio."
-          defaultValue={episode?.text ?? undefined}
+          placeholder="Tell what happened in this episode."
+          defaultValue={episode?.caption ?? undefined}
           className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
       </div>
 
       <div>
         <label htmlFor={`${uid}-videoUrl`} className="text-sm font-medium text-ink-muted">
-          Link video <span className="text-ink-faint">(opzionale)</span>
+          Video URL (temporary) <span className="text-ink-faint">(optional)</span>
         </label>
         <input
           id={`${uid}-videoUrl`}
@@ -92,7 +77,7 @@ export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
 
       <div>
         <label htmlFor={`${uid}-occurredAt`} className="text-sm font-medium text-ink-muted">
-          Quando è successo davvero
+          When it actually happened
         </label>
         <input
           id={`${uid}-occurredAt`}
@@ -111,7 +96,7 @@ export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
         disabled={pending}
         className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
-        {pending ? "Salvataggio…" : episode ? "Salva modifiche" : "Aggiungi episodio"}
+        {pending ? "Saving…" : episode ? "Save changes" : "Add episode"}
       </button>
     </form>
   );

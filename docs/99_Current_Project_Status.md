@@ -26,8 +26,9 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 - **Creazione Journey** — titolo, presentazione, categoria, tag. Regola applicata lato server: un solo Journey attivo (non archiviato) per creator alla volta.
 - **Dashboard Creator** (`/creator`) — elenca i Journey del creator con badge di stato (Bozza / In scoperta / Pubblicato / Archiviato).
 - **Pagina di dettaglio/gestione Journey** (`/creator/journeys/[id]`) — con controllo di proprietà (solo il creator che lo possiede può vederla/gestirla). Elenca i Capitoli e permette di aggiungerne di nuovi.
-- **CRUD Capitoli ed Episodi** — pagina dedicata per capitolo (`/creator/journeys/[id]/chapters/[chapterId]`) con creazione, modifica ed eliminazione (soft delete) di Capitoli ed Episodi, ordine numerico assegnato automaticamente. Ogni Episodio ha una data reale (`occurredAt`) separata dall'ordine narrativo, coerente con la regola di `05_Journey.md` che tiene distinte le due informazioni.
+- **CRUD Capitoli ed Episodi** — pagina dedicata per capitolo (`/creator/journeys/[id]/chapters/[chapterId]`) con creazione, modifica ed eliminazione (soft delete) di Capitoli ed Episodi, ordine numerico assegnato automaticamente. Ogni Episodio ha una data reale (`occurredAt`) separata dall'ordine narrativo, coerente con la regola di `05_Journey.md` che tiene distinte le due informazioni. Campi dell'Episodio: titolo, caption (opzionale, testo che accompagna il video), link video (soluzione provvisoria in attesa dell'upload diretto), data reale — nessun campo "descrizione" separato.
 - **Protezione rotte** — tutte le pagine sotto `/creator/*` richiedono login (gestito in `proxy.ts`).
+- **Interfaccia interamente in inglese** — landing page, autenticazione, dashboard creator, form e email transazionali sono tutti in inglese, coerenti fra loro (prima le pagine interne erano in italiano).
 
 ## Decisioni tecniche chiave
 
@@ -36,6 +37,7 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 - **Stile**: input bordati (`border-border bg-surface`), bottoni pill (`rounded-full bg-ink text-bg`), badge di stato bordati, tag come chip `bg-surface-2`. Nessun colore arbitrario, solo i token semantici definiti in `app/globals.css`.
 - **Testing**: niente Python disponibile sulla macchina di sviluppo → i test end-to-end usano Playwright via Node (installato con `--no-save`, disinstallato a fine test). I dati di test vengono creati/verificati/cancellati con script SQL diretto su Neon (`@neondatabase/serverless`) e non vengono mai lasciati nel database.
 - **Form client con id univoci**: quando più istanze dello stesso form possono comparire insieme nella stessa pagina (es. form di modifica capitolo + form "aggiungi episodio"), gli `id` dei campi vanno generati con `useId()` di React invece di stringhe fisse, per evitare collisioni di `id` nel DOM (bug reale trovato e corretto in `ChapterForm.tsx`/`EpisodeForm.tsx`).
+- **Lingua dell'interfaccia**: inglese in tutto il prodotto (pagine, form, messaggi di errore, email transazionali). I commenti nel codice restano in italiano, non essendo testo rivolto all'utente. Decisione presa 2026-07-22, non ancora registrata in un documento di prodotto ufficiale — da valutare se formalizzarla in `15_Design_System.md` o `00-project-context.md`.
 
 ## Placeholder ancora da sostituire
 

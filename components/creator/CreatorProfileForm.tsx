@@ -12,7 +12,7 @@ export function CreatorProfileForm() {
     <form action={formAction} className="mt-8 space-y-4">
       <div>
         <label htmlFor="displayName" className="text-sm font-medium text-ink-muted">
-          Nome visualizzato
+          Display name
         </label>
         <input
           id="displayName"
@@ -27,7 +27,7 @@ export function CreatorProfileForm() {
 
       <div>
         <label htmlFor="description" className="text-sm font-medium text-ink-muted">
-          Descrizione <span className="text-ink-faint">(opzionale)</span>
+          Description <span className="text-ink-faint">(optional)</span>
         </label>
         <textarea
           id="description"
@@ -45,7 +45,7 @@ export function CreatorProfileForm() {
         disabled={pending}
         className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
-        {pending ? "Creazione profilo…" : "Crea profilo creator"}
+        {pending ? "Creating profile…" : "Create creator profile"}
       </button>
     </form>
   );

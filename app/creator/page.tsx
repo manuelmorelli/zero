@@ -3,10 +3,10 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 
 const STATUS_LABEL: Record<string, string> = {
-  DRAFT: "Bozza",
-  DISCOVERY: "In scoperta",
-  PUBLISHED: "Pubblicato",
-  ARCHIVED: "Archiviato",
+  DRAFT: "Draft",
+  DISCOVERY: "In Discovery",
+  PUBLISHED: "Published",
+  ARCHIVED: "Archived",
 };
 
 export default async function CreatorDashboardPage() {
@@ -25,26 +25,26 @@ export default async function CreatorDashboardPage() {
 
       <div className="mt-8 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold tracking-tight">
-          Ciao, {creator.displayName}
+          Hi, {creator.displayName}
         </h1>
         {!hasActiveJourney && (
           <Link
             href="/creator/journeys/new"
             className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
           >
-            Nuovo Journey
+            New Journey
           </Link>
         )}
       </div>
 
       <p className="mt-2 text-sm text-ink-muted">
-        Da qui gestisci i tuoi Journey.
+        Manage your Journeys from here.
       </p>
 
       <div className="mt-8 space-y-3">
         {journeys.length === 0 && (
           <p className="rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
-            Non hai ancora creato nessun Journey.
+            You haven&apos;t created any Journeys yet.
           </p>
         )}
         {journeys.map((journey) => (

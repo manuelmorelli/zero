@@ -36,7 +36,7 @@ export function AuthStatus() {
         href="/account"
         className="hidden text-sm font-medium text-ink-muted hover:text-ink transition-colors sm:block"
       >
-        Ciao, {data.user.name}
+        Hi, {data.user.name}
       </Link>
       <SignOutButton className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-ink hover:border-ink-muted transition-colors" />
     </>

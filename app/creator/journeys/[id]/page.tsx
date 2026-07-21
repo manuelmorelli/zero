@@ -5,10 +5,10 @@ import { requireCreator } from "@/lib/creator";
 import { ChapterForm } from "@/components/creator/ChapterForm";
 
 const STATUS_LABEL: Record<string, string> = {
-  DRAFT: "Bozza",
-  DISCOVERY: "In scoperta",
-  PUBLISHED: "Pubblicato",
-  ARCHIVED: "Archiviato",
+  DRAFT: "Draft",
+  DISCOVERY: "In Discovery",
+  PUBLISHED: "Published",
+  ARCHIVED: "Archived",
 };
 
 export default async function JourneyManagePage({
@@ -62,12 +62,12 @@ export default async function JourneyManagePage({
       )}
 
       <div className="mt-10">
-        <h2 className="text-sm font-semibold text-ink">Capitoli</h2>
+        <h2 className="text-sm font-semibold text-ink">Chapters</h2>
 
         <div className="mt-4 space-y-3">
           {chapters.length === 0 && (
             <p className="rounded-xl border border-border bg-surface p-5 text-sm text-ink-muted">
-              Non hai ancora aggiunto nessun capitolo.
+              You haven&apos;t added any chapters yet.
             </p>
           )}
           {chapters.map((chapter) => (
@@ -83,14 +83,14 @@ export default async function JourneyManagePage({
                 )}
               </div>
               <span className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-muted">
-                {chapter.episodes.length} {chapter.episodes.length === 1 ? "episodio" : "episodi"}
+                {chapter.episodes.length} {chapter.episodes.length === 1 ? "episode" : "episodes"}
               </span>
             </Link>
           ))}
         </div>
 
         <div className="mt-6 rounded-xl border border-border bg-surface p-6">
-          <h3 className="text-sm font-semibold text-ink">Aggiungi un capitolo</h3>
+          <h3 className="text-sm font-semibold text-ink">Add a chapter</h3>
           <div className="mt-4">
             <ChapterForm journeyId={journey.id} />
           </div>

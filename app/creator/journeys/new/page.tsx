@@ -12,10 +12,10 @@ export default async function NewJourneyPage() {
           ZERO
         </Link>
         <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-          Crea il tuo Journey
+          Create your Journey
         </h1>
         <p className="mt-2 text-sm text-ink-muted">
-          Racconta il percorso che stai per documentare. Potrai aggiungere Capitoli ed Episodi subito dopo.
+          Tell us about the path you&apos;re about to document. You&apos;ll be able to add Chapters and Episodes right after.
         </p>
 
         <JourneyForm />

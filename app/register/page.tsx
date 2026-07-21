@@ -15,21 +15,21 @@ export default function RegisterPage() {
           ZERO
         </Link>
         <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-          Crea il tuo account
+          Create your account
         </h1>
         <p className="mt-2 text-sm text-ink-muted">
-          Inizia a seguire o a raccontare la tua trasformazione.
+          Start following or sharing your transformation.
         </p>
 
         <RegisterForm />
 
         <p className="mt-6 text-center text-sm text-ink-muted">
-          Hai già un account?{" "}
+          Already have an account?{" "}
           <Link
             href="/login"
             className="font-semibold text-ink hover:underline"
           >
-            Accedi
+            Sign in
           </Link>
         </p>
       </div>
@@ -55,7 +55,7 @@ function RegisterForm() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError("Le password non coincidono.");
+      setError("Passwords don't match.");
       return;
     }
 
@@ -69,7 +69,7 @@ function RegisterForm() {
     setLoading(false);
 
     if (signUpError) {
-      setError(signUpError.message ?? "Registrazione non riuscita. Riprova.");
+      setError(signUpError.message ?? "Sign up failed. Please try again.");
       return;
     }
 
@@ -79,8 +79,8 @@ function RegisterForm() {
   if (registered) {
     return (
       <p className="mt-8 text-sm text-ink">
-        Account creato! Ti abbiamo mandato un&apos;email: apri il link al
-        suo interno per confermare il tuo indirizzo e attivare l&apos;account.
+        Account created! We&apos;ve sent you an email — open the link inside
+        to confirm your address and activate your account.
       </p>
     );
   }
@@ -88,7 +88,7 @@ function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="mt-8 space-y-4">
       <Field
-        label="Nome"
+        label="Name"
         id="name"
         type="text"
         value={name}
@@ -116,7 +116,7 @@ function RegisterForm() {
         required
       />
       <Field
-        label="Conferma password"
+        label="Confirm password"
         id="confirmPassword"
         type="password"
         value={confirmPassword}
@@ -133,7 +133,7 @@ function RegisterForm() {
         disabled={loading}
         className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
-        {loading ? "Creazione account…" : "Crea account"}
+        {loading ? "Creating account…" : "Create account"}
       </button>
     </form>
   );

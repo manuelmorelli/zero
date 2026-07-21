@@ -16,7 +16,7 @@ export default function ResetPasswordPage() {
           ZERO
         </Link>
         <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-          Scegli una nuova password
+          Choose a new password
         </h1>
 
         <Suspense fallback={null}>
@@ -40,11 +40,11 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <p className="mt-8 text-sm text-danger">
-        Link non valido o scaduto. Richiedine uno nuovo dalla pagina{" "}
+        Invalid or expired link. Request a new one from the{" "}
         <Link href="/forgot-password" className="underline">
-          password dimenticata
-        </Link>
-        .
+          forgot password
+        </Link>{" "}
+        page.
       </p>
     );
   }
@@ -54,7 +54,7 @@ function ResetPasswordForm() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError("Le password non coincidono.");
+      setError("Passwords don't match.");
       return;
     }
 
@@ -66,7 +66,7 @@ function ResetPasswordForm() {
     setLoading(false);
 
     if (resetError) {
-      setError(resetError.message ?? "Reset non riuscito. Riprova.");
+      setError(resetError.message ?? "Reset failed. Please try again.");
       return;
     }
 
@@ -77,7 +77,7 @@ function ResetPasswordForm() {
     <form onSubmit={handleSubmit} className="mt-8 space-y-4">
       <div>
         <label htmlFor="password" className="text-sm font-medium text-ink-muted">
-          Nuova password
+          New password
         </label>
         <input
           id="password"
@@ -93,7 +93,7 @@ function ResetPasswordForm() {
       </div>
       <div>
         <label htmlFor="confirmPassword" className="text-sm font-medium text-ink-muted">
-          Conferma nuova password
+          Confirm new password
         </label>
         <input
           id="confirmPassword"
@@ -115,7 +115,7 @@ function ResetPasswordForm() {
         disabled={loading}
         className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
-        {loading ? "Salvataggio…" : "Salva nuova password"}
+        {loading ? "Saving…" : "Save new password"}
       </button>
     </form>
   );

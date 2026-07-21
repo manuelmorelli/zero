@@ -36,7 +36,7 @@ const SLIDES: Slide[] = [
     id: "hero-photo-1",
     type: "photo",
     src: "/images/hero-1.jpg",
-    alt: "Creator in cima a una montagna al tramonto",
+    alt: "Creator at a mountain summit at sunset",
   },
   {
     id: "city-skyline",
@@ -51,7 +51,7 @@ const SLIDES: Slide[] = [
     id: "hero-photo-2",
     type: "photo",
     src: "/images/hero-2.jpg",
-    alt: "Creator che osserva l'alba dalla cima di una montagna",
+    alt: "Creator watching the sunrise from a mountain summit",
   },
 ];
 

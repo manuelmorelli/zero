@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 
 const ChapterSchema = z.object({
-  title: z.string().trim().min(2, "Il titolo deve avere almeno 2 caratteri.").max(100),
+  title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
   description: z.string().trim().max(1000).optional(),
 });
 
@@ -35,7 +35,7 @@ export async function createChapter(
 ): Promise<{ error: string | null }> {
   const journeyId = formData.get("journeyId");
   if (typeof journeyId !== "string" || !journeyId) {
-    return { error: "Journey non valido." };
+    return { error: "Invalid journey." };
   }
   const journey = await requireOwnedJourney(journeyId);
 
@@ -44,7 +44,7 @@ export async function createChapter(
     description: formData.get("description") || undefined,
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Dati non validi." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   const lastChapter = await prisma.chapter.findFirst({
@@ -71,7 +71,7 @@ export async function updateChapter(
 ): Promise<{ error: string | null }> {
   const chapterId = formData.get("chapterId");
   if (typeof chapterId !== "string" || !chapterId) {
-    return { error: "Capitolo non valido." };
+    return { error: "Invalid chapter." };
   }
   const chapter = await requireOwnedChapter(chapterId);
 
@@ -80,7 +80,7 @@ export async function updateChapter(
     description: formData.get("description") || undefined,
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Dati non validi." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   await prisma.chapter.update({

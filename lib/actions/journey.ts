@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 
 const JourneySchema = z.object({
-  title: z.string().trim().min(2, "Il titolo deve avere almeno 2 caratteri.").max(100),
+  title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
   description: z.string().trim().max(2000).optional(),
   category: z.string().trim().max(40).optional(),
   tags: z.string().trim().max(200).optional(),
@@ -33,7 +33,7 @@ export async function createJourney(
   if (activeJourney) {
     return {
       error:
-        "Hai già un Journey attivo. Archivialo prima di crearne uno nuovo.",
+        "You already have an active Journey. Archive it before creating a new one.",
     };
   }
 
@@ -45,7 +45,7 @@ export async function createJourney(
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Dati non validi." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   const journey = await prisma.journey.create({

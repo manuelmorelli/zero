@@ -16,11 +16,11 @@ export default async function AccountPage() {
         ZERO
       </Link>
       <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-        Il tuo account
+        Your account
       </h1>
 
       <div className="mt-8 space-y-4 rounded-xl border border-border bg-surface p-6">
-        <InfoRow label="Nome" value={user.name} />
+        <InfoRow label="Name" value={user.name} />
         <InfoRow label="Email" value={user.email} />
       </div>
 
@@ -28,11 +28,11 @@ export default async function AccountPage() {
         href={creator ? "/creator" : "/creator/new"}
         className="mt-6 block rounded-full bg-ink px-6 py-3 text-center text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
       >
-        {creator ? "Vai alla dashboard creator" : "Diventa creator"}
+        {creator ? "Go to creator dashboard" : "Become a creator"}
       </Link>
 
       <SignOutButton className="mt-3 w-full rounded-full border border-border px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink-muted">
-        Esci
+        Sign out
       </SignOutButton>
     </main>
   );

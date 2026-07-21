@@ -21,7 +21,7 @@ export function ChapterForm({ journeyId, chapter }: ChapterFormProps) {
 
       <div>
         <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
-          Titolo del capitolo
+          Chapter title
         </label>
         <input
           id={`${uid}-title`}
@@ -37,14 +37,14 @@ export function ChapterForm({ journeyId, chapter }: ChapterFormProps) {
 
       <div>
         <label htmlFor={`${uid}-description`} className="text-sm font-medium text-ink-muted">
-          Descrizione <span className="text-ink-faint">(opzionale)</span>
+          Description <span className="text-ink-faint">(optional)</span>
         </label>
         <textarea
           id={`${uid}-description`}
           name="description"
           rows={3}
           maxLength={1000}
-          placeholder="Cosa rappresenta questa fase del percorso."
+          placeholder="What this phase of the journey is about."
           defaultValue={chapter?.description ?? undefined}
           className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
@@ -57,7 +57,7 @@ export function ChapterForm({ journeyId, chapter }: ChapterFormProps) {
         disabled={pending}
         className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
-        {pending ? "Salvataggio…" : chapter ? "Salva modifiche" : "Aggiungi capitolo"}
+        {pending ? "Saving…" : chapter ? "Save changes" : "Add chapter"}
       </button>
     </form>
   );

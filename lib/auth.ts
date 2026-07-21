@@ -16,8 +16,8 @@ export const auth = betterAuth({
     sendResetPassword: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
-        subject: "Reimposta la tua password — Zero",
-        html: `<p>Ciao ${user.name},</p><p>Hai chiesto di reimpostare la password del tuo account Zero. Clicca sul link qui sotto per sceglierne una nuova:</p><p><a href="${url}">${url}</a></p><p>Se non sei stato tu, ignora questa email: la tua password resterà invariata.</p>`,
+        subject: "Reset your password — Zero",
+        html: `<p>Hi ${user.name},</p><p>You asked to reset the password for your Zero account. Click the link below to choose a new one:</p><p><a href="${url}">${url}</a></p><p>If this wasn't you, just ignore this email: your password will stay the same.</p>`,
       });
     },
   },
@@ -25,8 +25,8 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
-        subject: "Conferma la tua email — Zero",
-        html: `<p>Ciao ${user.name},</p><p>Conferma il tuo indirizzo email per attivare il tuo account Zero:</p><p><a href="${url}">${url}</a></p>`,
+        subject: "Confirm your email — Zero",
+        html: `<p>Hi ${user.name},</p><p>Confirm your email address to activate your Zero account:</p><p><a href="${url}">${url}</a></p>`,
       });
     },
     sendOnSignUp: true,

@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 
 const CreatorProfileSchema = z.object({
-  displayName: z.string().trim().min(2, "Il nome deve avere almeno 2 caratteri.").max(60),
+  displayName: z.string().trim().min(2, "Name must be at least 2 characters long.").max(60),
   description: z.string().trim().max(500).optional(),
 });
 
@@ -25,7 +25,7 @@ export async function createCreatorProfile(
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Dati non validi." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   await prisma.creator.create({

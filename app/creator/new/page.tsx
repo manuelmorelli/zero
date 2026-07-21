@@ -17,10 +17,10 @@ export default async function NewCreatorPage() {
           ZERO
         </Link>
         <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-          Diventa creator
+          Become a creator
         </h1>
         <p className="mt-2 text-sm text-ink-muted">
-          Crea il tuo profilo creator per iniziare a raccontare il tuo Journey.
+          Create your creator profile to start sharing your Journey.
         </p>
 
         <CreatorProfileForm />

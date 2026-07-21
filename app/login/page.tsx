@@ -16,21 +16,21 @@ export default function LoginPage() {
           ZERO
         </Link>
         <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-          Bentornato
+          Welcome back
         </h1>
         <p className="mt-2 text-sm text-ink-muted">
-          Accedi per continuare il tuo Journey.
+          Sign in to continue your Journey.
         </p>
 
         <LoginForm />
 
         <p className="mt-6 text-center text-sm text-ink-muted">
-          Non hai un account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
             className="font-semibold text-ink hover:underline"
           >
-            Registrati
+            Sign up
           </Link>
         </p>
       </div>
@@ -64,7 +64,7 @@ function LoginForm() {
     setLoading(false);
 
     if (signInError) {
-      setError(signInError.message ?? "Accesso non riuscito. Riprova.");
+      setError(signInError.message ?? "Sign in failed. Please try again.");
       // con emailVerification.sendOnSignIn attivo, questo tentativo ha già
       // fatto ripartire una nuova email di conferma
       setNeedsVerification(signInError.message === "Email not verified");
@@ -94,7 +94,7 @@ function LoginForm() {
             href="/forgot-password"
             className="text-xs text-ink-muted hover:text-ink hover:underline"
           >
-            Password dimenticata?
+            Forgot password?
           </Link>
         </div>
         <input
@@ -112,7 +112,7 @@ function LoginForm() {
       {error && <p className="text-sm text-danger">{error}</p>}
       {needsVerification && (
         <p className="text-sm text-ink-muted">
-          Ti abbiamo appena inviato un nuovo link di conferma via email.
+          We just sent you a new confirmation link by email.
         </p>
       )}
 
@@ -121,7 +121,7 @@ function LoginForm() {
         disabled={loading}
         className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
-        {loading ? "Accesso in corso…" : "Accedi"}
+        {loading ? "Signing in…" : "Sign in"}
       </button>
     </form>
   );

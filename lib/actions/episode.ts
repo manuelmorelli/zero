@@ -9,19 +9,18 @@ import { requireCreator } from "@/lib/creator";
 
 const EpisodeSchema = z
   .object({
-    title: z.string().trim().min(2, "Il titolo deve avere almeno 2 caratteri.").max(100),
-    description: z.string().trim().max(1000).optional(),
-    text: z.string().trim().max(10000).optional(),
-    videoUrl: z.string().trim().url("Il link del video non è valido.").max(500).optional().or(z.literal("")),
+    title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
+    caption: z.string().trim().max(10000).optional(),
+    videoUrl: z.string().trim().url("That doesn't look like a valid video URL.").max(500).optional().or(z.literal("")),
     occurredAt: z
       .string()
       .trim()
-      .min(1, "Indica quando è successo questo episodio.")
-      .pipe(z.coerce.date({ message: "Data non valida." })),
+      .min(1, "Let us know when this episode happened.")
+      .pipe(z.coerce.date({ message: "Invalid date." })),
   })
-  .refine((data) => data.text || data.videoUrl, {
-    message: "Aggiungi almeno un testo o un link video.",
-    path: ["text"],
+  .refine((data) => data.caption || data.videoUrl, {
+    message: "Add a caption or a video URL.",
+    path: ["caption"],
   });
 
 async function requireOwnedChapter(chapterId: string) {
@@ -50,19 +49,18 @@ export async function createEpisode(
 ): Promise<{ error: string | null }> {
   const chapterId = formData.get("chapterId");
   if (typeof chapterId !== "string" || !chapterId) {
-    return { error: "Capitolo non valido." };
+    return { error: "Invalid chapter." };
   }
   const chapter = await requireOwnedChapter(chapterId);
 
   const parsed = EpisodeSchema.safeParse({
     title: formData.get("title"),
-    description: formData.get("description") || undefined,
-    text: formData.get("text") || undefined,
+    caption: formData.get("caption") || undefined,
     videoUrl: formData.get("videoUrl") || undefined,
     occurredAt: formData.get("occurredAt"),
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Dati non validi." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   const lastEpisode = await prisma.episode.findFirst({
@@ -74,16 +72,17 @@ export async function createEpisode(
     data: {
       chapterId: chapter.id,
       title: parsed.data.title,
-      description: parsed.data.description,
-      text: parsed.data.text,
+      caption: parsed.data.caption,
       videoUrl: parsed.data.videoUrl || undefined,
       occurredAt: parsed.data.occurredAt,
       order: (lastEpisode?.order ?? 0) + 1,
     },
   });
 
-  revalidatePath(`/creator/journeys/${chapter.journeyId}/chapters/${chapter.id}`);
-  redirect(`/creator/journeys/${chapter.journeyId}/chapters/${chapter.id}`);
+  // Il creator viene riportato alla pagina del Journey (non del capitolo) dopo la pubblicazione,
+  // così ha un feedback visivo immediato che l'episodio è stato salvato.
+  revalidatePath(`/creator/journeys/${chapter.journeyId}`);
+  redirect(`/creator/journeys/${chapter.journeyId}`);
 }
 
 export async function updateEpisode(
@@ -92,27 +91,25 @@ export async function updateEpisode(
 ): Promise<{ error: string | null }> {
   const episodeId = formData.get("episodeId");
   if (typeof episodeId !== "string" || !episodeId) {
-    return { error: "Episodio non valido." };
+    return { error: "Invalid episode." };
   }
   const episode = await requireOwnedEpisode(episodeId);
 
   const parsed = EpisodeSchema.safeParse({
     title: formData.get("title"),
-    description: formData.get("description") || undefined,
-    text: formData.get("text") || undefined,
+    caption: formData.get("caption") || undefined,
     videoUrl: formData.get("videoUrl") || undefined,
     occurredAt: formData.get("occurredAt"),
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Dati non validi." };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
   await prisma.episode.update({
     where: { id: episode.id },
     data: {
       title: parsed.data.title,
-      description: parsed.data.description,
-      text: parsed.data.text,
+      caption: parsed.data.caption,
       videoUrl: parsed.data.videoUrl || null,
       occurredAt: parsed.data.occurredAt,
     },

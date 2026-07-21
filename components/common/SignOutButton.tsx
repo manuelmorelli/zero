@@ -20,7 +20,7 @@ export function SignOutButton({ className, children }: SignOutButtonProps) {
 
   return (
     <button type="button" onClick={handleSignOut} className={className}>
-      {children ?? "Esci"}
+      {children ?? "Sign out"}
     </button>
   );
 }
