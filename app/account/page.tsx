@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { requireSession } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 import { SignOutButton } from "@/components/common/SignOutButton";
 
 export default async function AccountPage() {
   const { user } = await requireSession();
+  const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
 
   return (
     <main className="mx-auto max-w-lg px-6 py-16">
@@ -22,7 +24,14 @@ export default async function AccountPage() {
         <InfoRow label="Email" value={user.email} />
       </div>
 
-      <SignOutButton className="mt-6 rounded-full border border-border px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink-muted">
+      <Link
+        href={creator ? "/creator" : "/creator/new"}
+        className="mt-6 block rounded-full bg-ink px-6 py-3 text-center text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
+      >
+        {creator ? "Vai alla dashboard creator" : "Diventa creator"}
+      </Link>
+
+      <SignOutButton className="mt-3 w-full rounded-full border border-border px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink-muted">
         Esci
       </SignOutButton>
     </main>
