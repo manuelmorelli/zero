@@ -122,6 +122,16 @@ Il creator può modificare l'ordine narrativo del Journey in qualsiasi momento s
 
 La sequenza narrativa e la cronologia temporale sono considerate informazioni separate.
 
+### Lingua del Prodotto
+
+La lingua ufficiale dell'interfaccia utente di Zero è l'inglese.
+
+Ogni testo rivolto all'utente — pagine, form, messaggi di errore, email transazionali — deve essere scritto in inglese, in modo coerente su tutta la piattaforma.
+
+Commenti nel codice e documentazione tecnica possono restare in italiano, non essendo testo rivolto all'utente finale.
+
+Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
+
 ### Architettura
 
 Zero adotta un'architettura modulare.

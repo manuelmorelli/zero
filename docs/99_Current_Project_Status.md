@@ -37,7 +37,7 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 - **Stile**: input bordati (`border-border bg-surface`), bottoni pill (`rounded-full bg-ink text-bg`), badge di stato bordati, tag come chip `bg-surface-2`. Nessun colore arbitrario, solo i token semantici definiti in `app/globals.css`.
 - **Testing**: niente Python disponibile sulla macchina di sviluppo → i test end-to-end usano Playwright via Node (installato con `--no-save`, disinstallato a fine test). I dati di test vengono creati/verificati/cancellati con script SQL diretto su Neon (`@neondatabase/serverless`) e non vengono mai lasciati nel database.
 - **Form client con id univoci**: quando più istanze dello stesso form possono comparire insieme nella stessa pagina (es. form di modifica capitolo + form "aggiungi episodio"), gli `id` dei campi vanno generati con `useId()` di React invece di stringhe fisse, per evitare collisioni di `id` nel DOM (bug reale trovato e corretto in `ChapterForm.tsx`/`EpisodeForm.tsx`).
-- **Lingua dell'interfaccia**: inglese in tutto il prodotto (pagine, form, messaggi di errore, email transazionali). I commenti nel codice restano in italiano, non essendo testo rivolto all'utente. Decisione presa 2026-07-22, non ancora registrata in un documento di prodotto ufficiale — da valutare se formalizzarla in `15_Design_System.md` o `00-project-context.md`.
+- **Lingua dell'interfaccia**: inglese in tutto il prodotto (pagine, form, messaggi di errore, email transazionali). I commenti nel codice restano in italiano, non essendo testo rivolto all'utente. Decisione di prodotto permanente, registrata in `00-project-context.md` (sezione "Lingua del Prodotto").
 
 ## Placeholder ancora da sostituire
 
