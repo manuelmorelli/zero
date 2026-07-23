@@ -54,8 +54,14 @@ export default async function ChapterManagePage({
               You haven&apos;t added any episodes yet.
             </p>
           )}
-          {chapter.episodes.map((episode) => (
-            <EpisodeItem key={episode.id} chapterId={chapter.id} episode={episode} />
+          {chapter.episodes.map((episode, index) => (
+            <EpisodeItem
+              key={episode.id}
+              chapterId={chapter.id}
+              episode={episode}
+              isFirst={index === 0}
+              isLast={index === chapter.episodes.length - 1}
+            />
           ))}
         </div>
 

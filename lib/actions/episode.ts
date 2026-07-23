@@ -132,3 +132,44 @@ export async function deleteEpisode(formData: FormData): Promise<void> {
   revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
   redirect(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
 }
+
+// Reorders by swapping `order` with the adjacent sibling. Simple by design: no
+// batch reindexing, no drag & drop payload — just "move this one episode by one position".
+async function moveEpisode(episodeId: string, direction: "up" | "down") {
+  const episode = await requireOwnedEpisode(episodeId);
+
+  const siblings = await prisma.episode.findMany({
+    where: { chapterId: episode.chapterId, deletedAt: null },
+    orderBy: { order: "asc" },
+  });
+  const index = siblings.findIndex((sibling) => sibling.id === episode.id);
+  const targetIndex = direction === "up" ? index - 1 : index + 1;
+  const target = siblings[targetIndex];
+
+  if (target) {
+    await prisma.$transaction([
+      prisma.episode.update({ where: { id: episode.id }, data: { order: target.order } }),
+      prisma.episode.update({ where: { id: target.id }, data: { order: episode.order } }),
+    ]);
+  }
+
+  return episode;
+}
+
+export async function moveEpisodeUp(formData: FormData): Promise<void> {
+  const episodeId = formData.get("episodeId");
+  if (typeof episodeId !== "string" || !episodeId) notFound();
+  const episode = await moveEpisode(episodeId, "up");
+
+  revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+  redirect(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+}
+
+export async function moveEpisodeDown(formData: FormData): Promise<void> {
+  const episodeId = formData.get("episodeId");
+  if (typeof episodeId !== "string" || !episodeId) notFound();
+  const episode = await moveEpisode(episodeId, "down");
+
+  revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+  redirect(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+}

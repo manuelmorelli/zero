@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { deleteEpisode } from "@/lib/actions/episode";
+import { deleteEpisode, moveEpisodeDown, moveEpisodeUp } from "@/lib/actions/episode";
 import { EpisodeForm } from "@/components/creator/EpisodeForm";
 
 type EpisodeItemProps = {
@@ -13,9 +13,11 @@ type EpisodeItemProps = {
     videoUrl: string | null;
     occurredAt: Date;
   };
+  isFirst: boolean;
+  isLast: boolean;
 };
 
-export function EpisodeItem({ chapterId, episode }: EpisodeItemProps) {
+export function EpisodeItem({ chapterId, episode, isFirst, isLast }: EpisodeItemProps) {
   const [editing, setEditing] = useState(false);
 
   if (editing) {
@@ -50,6 +52,26 @@ export function EpisodeItem({ chapterId, episode }: EpisodeItemProps) {
           >
             Edit
           </button>
+          <form action={moveEpisodeUp}>
+            <input type="hidden" name="episodeId" value={episode.id} />
+            <button
+              type="submit"
+              disabled={isFirst}
+              className="text-xs font-medium text-ink-muted hover:text-ink disabled:opacity-30"
+            >
+              ↑
+            </button>
+          </form>
+          <form action={moveEpisodeDown}>
+            <input type="hidden" name="episodeId" value={episode.id} />
+            <button
+              type="submit"
+              disabled={isLast}
+              className="text-xs font-medium text-ink-muted hover:text-ink disabled:opacity-30"
+            >
+              ↓
+            </button>
+          </form>
           <form action={deleteEpisode}>
             <input type="hidden" name="episodeId" value={episode.id} />
             <button type="submit" className="text-xs font-medium text-danger hover:opacity-80">

@@ -108,3 +108,44 @@ export async function deleteChapter(formData: FormData): Promise<void> {
   revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
   redirect(`/dashboard/journeys/${chapter.journeyId}`);
 }
+
+// Reorders by swapping `order` with the adjacent sibling. Simple by design: no
+// batch reindexing, no drag & drop payload — just "move this one chapter by one position".
+async function moveChapter(chapterId: string, direction: "up" | "down") {
+  const chapter = await requireOwnedChapter(chapterId);
+
+  const siblings = await prisma.chapter.findMany({
+    where: { journeyId: chapter.journeyId, deletedAt: null },
+    orderBy: { order: "asc" },
+  });
+  const index = siblings.findIndex((sibling) => sibling.id === chapter.id);
+  const targetIndex = direction === "up" ? index - 1 : index + 1;
+  const target = siblings[targetIndex];
+
+  if (target) {
+    await prisma.$transaction([
+      prisma.chapter.update({ where: { id: chapter.id }, data: { order: target.order } }),
+      prisma.chapter.update({ where: { id: target.id }, data: { order: chapter.order } }),
+    ]);
+  }
+
+  return chapter;
+}
+
+export async function moveChapterUp(formData: FormData): Promise<void> {
+  const chapterId = formData.get("chapterId");
+  if (typeof chapterId !== "string" || !chapterId) notFound();
+  const chapter = await moveChapter(chapterId, "up");
+
+  revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
+  redirect(`/dashboard/journeys/${chapter.journeyId}`);
+}
+
+export async function moveChapterDown(formData: FormData): Promise<void> {
+  const chapterId = formData.get("chapterId");
+  if (typeof chapterId !== "string" || !chapterId) notFound();
+  const chapter = await moveChapter(chapterId, "down");
+
+  revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
+  redirect(`/dashboard/journeys/${chapter.journeyId}`);
+}
