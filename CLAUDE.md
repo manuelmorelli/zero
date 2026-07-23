@@ -2,7 +2,7 @@
 
 # Zero — Guida rapida per l'AI
 
-Questo file riassume le regole del progetto (da `docs/00_AI_DEVELOPMENT_RULES.md` e `AGENTS.md`) così non vanno ripetute a ogni sessione.
+Questo file riassume le regole del progetto (da `docs/90_AI_DEVELOPMENT_RULES.md` e `AGENTS.md`) così non vanno ripetute a ogni sessione.
 
 ---
 
