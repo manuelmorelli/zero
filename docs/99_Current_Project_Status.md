@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.6"
+version: "1.7"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -35,6 +35,7 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 - **Publish / Unpublish del Journey** — azione lato server per passare un Journey da Bozza a Pubblicato e viceversa, direttamente dalla Dashboard (nessun intervento sul database necessario). La pubblicazione è respinta con un errore chiaro se mancano i requisiti: una Presentazione (descrizione non vuota) e almeno un Episodio, coerentemente con la struttura ufficiale del Journey (`05_Journey.md`) e con l'ordine dei passaggi descritto in `13_User_Flows.md` ("Creazione di un Journey"). Il ritorno a Bozza è sempre permesso senza requisiti aggiuntivi.
 - **Modifica di un Journey esistente** — titolo, presentazione, categoria e tag sono ora modificabili dopo la creazione, in qualunque stato (Bozza, Pubblicato, ecc.), dalla stessa pagina di gestione in Dashboard. Riutilizza `JourneyForm.tsx` sia per creare sia per modificare (stesso pattern di `ChapterForm.tsx`/`EpisodeForm.tsx`) e lo schema di validazione già esistente (`JourneySchema`, `parseTags`). Svuotare la Presentazione di un Journey già Pubblicato non lo riporta automaticamente in Bozza: se in seguito viene rimesso in Bozza e si tenta di ripubblicarlo, l'azione di pubblicazione richiederà di nuovo una Presentazione, come verificato end-to-end in questa sessione.
 - **Riordino di Capitoli ed Episodi (solo business logic, niente drag & drop)** — `moveChapterUp`/`moveChapterDown` in `lib/actions/chapter.ts` e `moveEpisodeUp`/`moveEpisodeDown` in `lib/actions/episode.ts`: scambiano il campo `order` con il vicino immediato (sopra o sotto), riutilizzando `requireOwnedChapter`/`requireOwnedEpisode` già esistenti. Attivabili in Dashboard con due semplici pulsanti ↑/↓ per riga (Capitoli sulla pagina del Journey, Episodi sulla pagina del Capitolo), disabilitati ai due estremi della lista. Nessuna UI di drag & drop: resta un task separato in Roadmap.
+- **Profilo pubblico (versione minima)** — `app/profile/[username]/page.tsx`, visibile a chiunque senza login. Mostra nome, bio (se presente) ed elenco dei Journey con `status === "PUBLISHED"` della persona, ognuno che porta alla Pagina Journey pubblica. Se la persona non ha pubblicato nulla, mostra un messaggio invece di una lista vuota. "Non trovato" (404) se l'utente non esiste, stesso pattern della Pagina Journey pubblica. Link "View public profile" aggiunto in Dashboard (`app/dashboard/page.tsx`) per renderlo raggiungibile.
 
 ## Decisioni tecniche chiave
 
@@ -51,6 +52,7 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 - **Requisiti di pubblicazione (decisione presa in una sessione precedente)**: un Journey può passare a "Pubblicato" solo se ha una Presentazione (campo `description` non vuoto) e almeno un Episodio non eliminato in uno dei suoi Capitoli non eliminati. Non è richiesto che ogni singolo Capitolo abbia un Episodio, né un numero minimo di Capitoli: basta che la struttura non sia vuota. Regola derivata direttamente da `05_Journey.md` (Presentazione, Capitoli, Episodi come struttura ufficiale) e dall'ordine dei passaggi in `13_User_Flows.md`, non inventata. Il campo `DISCOVERY` di `JourneyStatus` resta non gestito da questa azione (nessuna regola di business è mai stata definita per quello stato in nessun documento): l'azione lavora solo sulla transizione DRAFT ↔ PUBLISHED.
 - **`undefined` vs `null` negli update Prisma (bug potenziale evitato in una sessione precedente)**: in una `create` Prisma, un campo opzionale assente (`undefined`) diventa `NULL` per default. In una `update`, invece, `undefined` significa "non toccare questo campo" — se un form permette di svuotare un campo opzionale (es. la Presentazione di un Journey), l'azione di update deve convertire esplicitamente il valore assente in `null` (`parsed.data.description ?? null`), altrimenti il vecchio valore resterebbe silenziosamente invariato. Rilevante per qualunque futura azione di "update" su un campo opzionale.
 - **Riordino per scambio, non per lista completa**: la scelta implementativa per il riordino è stata "sposta questo elemento di una posizione" (scambia `order` con il vicino), non "invia il nuovo ordine di tutta la lista". Più semplice, sufficiente per due pulsanti ↑/↓, e riutilizzabile in futuro anche da un'eventuale UI drag & drop (che dovrebbe comunque poter chiamare gli stessi due elementi scambiati, non necessariamente riscrivere la logica).
+- **Indirizzo del Profilo pubblico e fallback sull'id (decisione presa in questa sessione)**: la rotta è `/profile/[username]`, ma poiché `User.username` è opzionale e non ancora impostabile da nessuna interfaccia, la pagina cerca prima un utente con quello username e, se non lo trova, prova a interpretare lo stesso valore come id (`findUserByUsernameOrId` in `app/profile/[username]/page.tsx`). Oggi tutti i link generati dal prodotto (es. il link "View public profile" in Dashboard) usano l'id. Nessuna nuova regola di business né modifica allo schema: quando in futuro gli username saranno impostabili da UI, i link potranno passare a usarli senza toccare la pagina.
 - **Playwright + transizioni client-side di Next.js (nota per i test futuri)**: dopo un click su un `<Link>` o su un form con Server Action che fa `redirect()`, `page.waitForLoadState("networkidle")` può risolversi prima che la navigazione lato client sia effettivamente completata (visto in questa sessione: un click su un capitolo restava sulla stessa pagina per ~1 secondo prima di navigare). Per verifiche affidabili: usare `page.waitForURL(...)` dopo un click che deve cambiare pagina, e interrogare il database con un piccolo retry/poll invece di fidarsi del solo stato del DOM subito dopo un'azione.
 
 ## Placeholder ancora da sostituire
@@ -70,12 +72,12 @@ Confronto con le funzionalità definite in `12_MVP_Features.md`.
 | Journey (struttura: riordino libero) | 🟡 Parziale — business logic pronta (pulsanti ↑/↓ in Dashboard), drag & drop non ancora implementato |
 | Esplorazione (homepage) | 🟡 Parziale — landing con dati statici/finti, non reali (rimandato di proposito, vedi "Decisioni tecniche chiave") |
 | Esplorazione (pagina Journey pubblica) | ✅ Fatto |
-| Esplorazione (profilo pubblico, ricerca, scoperta) | ❌ Da fare — **prossimo task consigliato** |
+| Esplorazione (profilo pubblico, ricerca, scoperta) | 🟡 Parziale — profilo pubblico minimo fatto (nome, bio, Journey pubblicati); ricerca e scoperta ancora da fare |
 | Community (seguire creator, Community Premium) | ❌ Da fare |
 | Updates | ❌ Da fare |
 | Dashboard (Updates, analisi base, Community Premium) | ❌ Da fare |
 
-In sintesi: il percorso di creazione e gestione lato Creator (Journey → Capitoli → Episodi, con modifica, Publish/Unpublish e riordino) è completo e verificato end-to-end, senza alcun intervento necessario sul database. Manca ancora il Profilo pubblico (la vetrina di ogni persona, con i Journey pubblicati se presenti) e l'interazione drag & drop vera e propria (oggi il riordino funziona con due pulsanti ↑/↓).
+In sintesi: il percorso di creazione e gestione lato Creator (Journey → Capitoli → Episodi, con modifica, Publish/Unpublish e riordino) è completo e verificato end-to-end, senza alcun intervento necessario sul database. Il Profilo pubblico esiste ora in versione minima (nome, bio, Journey pubblicati). Manca ancora l'interazione drag & drop vera e propria (oggi il riordino funziona con due pulsanti ↑/↓), la ricerca/scoperta e tutto ciò che dipende da Follow/Community.
 
 ## Note prima del rilascio pubblico
 
@@ -87,29 +89,25 @@ Cose note che vanno risolte prima che utenti reali usino il prodotto, ma non blo
 
 Tutti i lavori futuri, in ordine di priorità.
 
-1. Profilo pubblico (indirizzo da definire, es. `/[username]`) — stesso profilo per ogni persona, non una pagina separata per i creator: nome, descrizione, ed elenco dei Journey pubblicati della persona se presenti, ognuno che porta alla Pagina Journey pubblica. Community/prodotti/workshop restano fuori finché quelle funzionalità non esistono.
-2. Interazione drag & drop per Capitoli ed Episodi — la business logic di riordino esiste già (`moveChapterUp`/`moveChapterDown`/`moveEpisodeUp`/`moveEpisodeDown`); resta da costruire l'interazione di trascinamento vera e propria al posto dei due pulsanti ↑/↓ attuali.
-3. Home reale (Continue Your Journey, Recommended, Follow, algoritmo di scoperta) — da progettare insieme quando si affronteranno Discovery/Follow, non prima.
-4. Verifica end-to-end finale su tutto il flusso Journey.
+1. Interazione drag & drop per Capitoli ed Episodi — la business logic di riordino esiste già (`moveChapterUp`/`moveChapterDown`/`moveEpisodeUp`/`moveEpisodeDown`); resta da costruire l'interazione di trascinamento vera e propria al posto dei due pulsanti ↑/↓ attuali.
+2. Home reale (Continue Your Journey, Recommended, Follow, algoritmo di scoperta) — da progettare insieme quando si affronteranno Discovery/Follow, non prima.
+3. Verifica end-to-end finale su tutto il flusso Journey.
 
 ## Current Task
 
-**Obiettivo corrente**: nessuna implementazione in corso al momento. Questa sessione ha implementato la business logic di riordino per Capitoli ed Episodi (`moveChapterUp`/`moveChapterDown` in `lib/actions/chapter.ts`, `moveEpisodeUp`/`moveEpisodeDown` in `lib/actions/episode.ts`, pulsanti ↑/↓ in `app/dashboard/journeys/[id]/page.tsx` e in `components/creator/EpisodeItem.tsx`), senza drag & drop né altre rifiniture UX, come richiesto. Sessioni precedenti avevano implementato: modifica completa del Journey, Publish/Unpublish, rinominato l'area privata da `/creator` a `/dashboard`, costruito la Pagina Journey pubblica (`/journeys/[id]`), e chiarito la decisione permanente "Creator non è una categoria di utenti separata" (vedi `00-project-context.md`, sezione "Modello utente unico"). La Home reale, il Profilo pubblico e l'interazione drag & drop restano rimandati (vedi Roadmap).
+**Obiettivo corrente**: nessuna implementazione in corso al momento. Questa sessione ha implementato il Profilo pubblico in versione minima: `app/profile/[username]/page.tsx` (pagina pubblica, nessun `requireCreator()`, 404 se l'utente non esiste), mostra nome, bio ed elenco dei Journey `PUBLISHED` della persona, e un link "View public profile" in `app/dashboard/page.tsx`. Poiché `User.username` non è ancora impostabile da UI, la pagina accetta anche l'id come fallback (vedi "Decisioni tecniche chiave"). Verificato end-to-end con Playwright su dati reali (Neon): persona con Journey pubblicato, persona senza Journey pubblicati, id inesistente (404); dati di test creati e rimossi, nessuna traccia lasciata nel database. Sessioni precedenti avevano implementato: riordino di Capitoli/Episodi (business logic + pulsanti ↑/↓), modifica completa del Journey, Publish/Unpublish, rinominato l'area privata da `/creator` a `/dashboard`, costruito la Pagina Journey pubblica (`/journeys/[id]`), e chiarito la decisione permanente "Creator non è una categoria di utenti separata" (vedi `00-project-context.md`, sezione "Modello utente unico"). La Home reale, la ricerca/scoperta e l'interazione drag & drop restano rimandate (vedi Roadmap).
 
-Il prossimo obiettivo consigliato è il punto 1 della Roadmap: il Profilo pubblico, in versione minima (nome, descrizione, elenco Journey pubblicati → link alla Pagina Journey) — stesso profilo per ogni persona, indipendentemente dal fatto che abbia pubblicato un Journey.
+Il prossimo obiettivo consigliato è il punto 1 della Roadmap: l'interazione drag & drop vera e propria per Capitoli ed Episodi, al posto degli attuali pulsanti ↑/↓ (la business logic di riordino esiste già).
 
 **File da leggere prima di iniziare**:
-- `app/journeys/[id]/page.tsx` — pattern di riferimento per una pagina pubblica (nessun `requireCreator()`, 404 se non pubblicato)
-- `app/dashboard/page.tsx` e `app/dashboard/journeys/[id]/page.tsx` — dati Creator/Journey già disponibili lato Dashboard
-- `lib/actions/journey.ts` — `createJourney`/`updateJourney`/`publishJourney`/`unpublishJourney`, per capire quando un Journey è realmente idoneo a comparire nel Profilo
-- `lib/creator.ts` — helper `requireCreator()`, da NON usare per pagine pubbliche
-- `prisma/schema.prisma` — modelli `Creator` e `Journey` (campo `status`)
+- `lib/actions/chapter.ts` e `lib/actions/episode.ts` — `moveChapterUp`/`moveChapterDown`/`moveEpisodeUp`/`moveEpisodeDown`, la business logic di riordino già pronta e da riutilizzare
+- `app/dashboard/journeys/[id]/page.tsx` e `components/creator/EpisodeItem.tsx` — dove oggi vivono i pulsanti ↑/↓ da sostituire con il trascinamento
 
 **Piano di implementazione da proporre prima di scrivere codice**:
-- Non scrivere codice subito: presentare prima un piano (indirizzo della pagina, dato che `username` su `User` è opzionale e non ancora impostabile da UI — probabile uso dell'id nel frattempo) e attendere conferma.
+- Non scrivere codice subito: presentare prima un piano (libreria di drag & drop da usare, se introdurne una nuova) e attendere conferma.
 
 **Vincoli da rispettare**:
-- Il Profilo pubblico deve mostrare solo i Journey con `status === "PUBLISHED"` della persona.
+- Riutilizzare `moveChapterUp`/`moveChapterDown`/`moveEpisodeUp`/`moveEpisodeDown` esistenti invece di riscrivere la logica di riordino.
 - Non introdurre breaking change né modificare file non collegati al task.
 
 **Cosa deve essere aggiornato quando il task è completato**:

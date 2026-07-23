@@ -10,7 +10,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export default async function CreatorDashboardPage() {
-  const { creator } = await requireCreator();
+  const { user, creator } = await requireCreator();
   const journeys = await prisma.journey.findMany({
     where: { creatorId: creator.id },
     orderBy: { createdAt: "desc" },
@@ -40,6 +40,13 @@ export default async function CreatorDashboardPage() {
       <p className="mt-2 text-sm text-ink-muted">
         Manage your Journeys from here.
       </p>
+
+      <Link
+        href={`/profile/${user.id}`}
+        className="mt-3 inline-block text-sm font-medium text-ink underline underline-offset-2"
+      >
+        View public profile
+      </Link>
 
       <div className="mt-8 space-y-3">
         {journeys.length === 0 && (
