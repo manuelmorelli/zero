@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { ChapterForm } from "@/components/creator/ChapterForm";
+import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: "Draft",
@@ -46,14 +47,17 @@ export default async function JourneyManagePage({
         </span>
       </div>
 
-      {journey.status === "PUBLISHED" && (
-        <Link
-          href={`/journeys/${journey.id}`}
-          className="mt-4 inline-block text-sm font-medium text-ink underline underline-offset-2"
-        >
-          View public page →
-        </Link>
-      )}
+      <div className="mt-4 flex flex-wrap items-center gap-4">
+        <JourneyPublishControl journeyId={journey.id} status={journey.status} />
+        {journey.status === "PUBLISHED" && (
+          <Link
+            href={`/journeys/${journey.id}`}
+            className="text-sm font-medium text-ink underline underline-offset-2"
+          >
+            View public page →
+          </Link>
+        )}
+      </div>
 
       {(journey.category || journey.tags.length > 0) && (
         <div className="mt-4 flex flex-wrap gap-2">

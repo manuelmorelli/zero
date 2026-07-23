@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.3"
+version: "1.4"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -32,6 +32,7 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 - **Pagina pubblica del Journey** (`/journeys/[id]`) — visibile a chiunque, senza login. Mostra Presentazione, Capitoli ed Episodi. Restituisce "non trovato" (404) se il Journey non esiste o non è nello stato "Pubblicato", senza eccezioni per il creator proprietario.
 - **Area privata rinominata da `/creator` a `/dashboard`** — decisione architetturale presa per liberare l'indirizzo `/creator/[id]` per il futuro Profilo pubblico. Non cambia la logica, solo indirizzi e link interni (vedi "Decisioni tecniche chiave").
 - **Link "View public page"** nella pagina di gestione del Journey in Dashboard, visibile solo quando lo stato è "Pubblicato": porta alla Pagina Journey pubblica corrispondente.
+- **Publish / Unpublish del Journey** — azione lato server per passare un Journey da Bozza a Pubblicato e viceversa, direttamente dalla Dashboard (nessun intervento sul database necessario). La pubblicazione è respinta con un errore chiaro se mancano i requisiti: una Presentazione (descrizione non vuota) e almeno un Episodio, coerentemente con la struttura ufficiale del Journey (`05_Journey.md`) e con l'ordine dei passaggi descritto in `13_User_Flows.md` ("Creazione di un Journey"). Il ritorno a Bozza è sempre permesso senza requisiti aggiuntivi.
 
 ## Decisioni tecniche chiave
 
@@ -45,7 +46,7 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 - **Campi Episodio**: titolo, caption (opzionale), video URL (etichettato esplicitamente come "temporary" in attesa dell'upload diretto dei video), data reale dell'evento. Nessun campo "descrizione" separato: rimosso perché ridondante con la caption.
 - **Architettura del flusso Creator (decisione presa in una sessione precedente, vedi `13_User_Flows.md` e `14_UI_Pages.md`)**: Zero non tratta "creator" e "utente" come ruoli con destinazioni diverse — ogni persona atterra sulla stessa Home dopo il login, creator compreso. La Dashboard (`/dashboard`, ex `/creator`) non è più una destinazione di default: vi si accede tramite un link, solo se si è pubblicato (o si sta per pubblicare) un Journey. Sono quattro pagine con ruoli distinti e non sovrapposti: Home (per tutti), Profilo pubblico (vetrina, non ancora costruito), Dashboard (privata, operativa), Pagina Journey pubblica (il contenuto). La Home reale (dati veri al posto di quelli finti) e il Profilo pubblico sono stati deliberatamente rimandati a task successivi, per non anticipare decisioni che dipendono da Follow/Discovery/algoritmo (Home) o da Community/prodotti (Profilo).
 - **"Creator" non è una categoria di utenti separata (decisione permanente, vedi `00-project-context.md`, sezione "Modello utente unico")**: è lo stato di un utente che ha pubblicato un Journey, non un ruolo con un proprio account o proprie pagine dedicate. Di conseguenza non esisterà una "Creator Profile" distinta da un "profilo utente": esiste un solo Profilo per persona, che mostra i Journey pubblicati se presenti. Riferimenti già corretti in questa sessione: `07_Creator_Experience.md`, `12_MVP_Features.md`, `13_User_Flows.md`, `14_UI_Pages.md` (sezione "Pagina Creator" rinominata in "Profilo").
-- **Nessuna azione "Pubblica" nell'interfaccia**: lo stato di un Journey può oggi diventare "Pubblicato" solo scrivendo direttamente sul database. Non blocca lo sviluppo in corso, ma va risolto prima che una persona reale possa rendere visibile il proprio Journey (vedi "Note prima del rilascio pubblico").
+- **Requisiti di pubblicazione (decisione presa in questa sessione)**: un Journey può passare a "Pubblicato" solo se ha una Presentazione (campo `description` non vuoto) e almeno un Episodio non eliminato in uno dei suoi Capitoli non eliminati. Non è richiesto che ogni singolo Capitolo abbia un Episodio, né un numero minimo di Capitoli: basta che la struttura non sia vuota. Regola derivata direttamente da `05_Journey.md` (Presentazione, Capitoli, Episodi come struttura ufficiale) e dall'ordine dei passaggi in `13_User_Flows.md`, non inventata. Il campo `DISCOVERY` di `JourneyStatus` resta non gestito da questa azione (nessuna regola di business è mai stata definita per quello stato in nessun documento): l'azione lavora solo sulla transizione DRAFT ↔ PUBLISHED.
 
 ## Placeholder ancora da sostituire
 
@@ -69,34 +70,33 @@ Confronto con le funzionalità definite in `12_MVP_Features.md`.
 | Updates | ❌ Da fare |
 | Dashboard (Updates, analisi base, Community Premium) | ❌ Da fare |
 
-In sintesi: il percorso di creazione lato Creator (Journey → Capitoli → Episodi) è completo e verificato end-to-end. La Pagina Journey pubblica esiste ed è verificata. Manca ancora il Profilo pubblico (la vetrina di ogni persona, con i Journey pubblicati se presenti) e un'azione reale per pubblicare un Journey dall'interfaccia (oggi possibile solo scrivendo sul database).
+In sintesi: il percorso di creazione lato Creator (Journey → Capitoli → Episodi) è completo e verificato end-to-end, e ora una persona reale può pubblicare (e ripubblicare in bozza) il proprio Journey direttamente dall'interfaccia, senza intervento sul database. Manca ancora il Profilo pubblico (la vetrina di ogni persona, con i Journey pubblicati se presenti).
 
 ## Note prima del rilascio pubblico
 
 Cose note che vanno risolte prima che utenti reali usino il prodotto, ma non bloccano lo sviluppo in corso.
 
 - **Mittente email non verificato**: le email (verifica account, reset password) partono da `onboarding@resend.dev`, l'indirizzo di test di Resend, non da un dominio verificato. Finché resta così, provider come Yahoo possono spostare le email nella cartella Spam invece di consegnarle in posta normale. Prima del rilascio pubblico serve collegare un dominio verificato su Resend e aggiornare l'indirizzo mittente in `lib/email.ts`.
-- **Nessuna azione "Pubblica" nell'interfaccia**: un Journey può passare a stato "Pubblicato" solo scrivendo direttamente sul database. Prima del rilascio pubblico serve un modo, per il creator, di pubblicare il proprio Journey dall'interfaccia (e presumibilmente di tornare in bozza).
 
 ## Roadmap
 
 Tutti i lavori futuri, in ordine di priorità.
 
 1. Profilo pubblico (indirizzo da definire, es. `/[username]`) — stesso profilo per ogni persona, non una pagina separata per i creator: nome, descrizione, ed elenco dei Journey pubblicati della persona se presenti, ognuno che porta alla Pagina Journey pubblica. Community/prodotti/workshop restano fuori finché quelle funzionalità non esistono.
-2. Azione "Pubblica" nell'interfaccia — oggi lo stato PUBLISHED è raggiungibile solo via database.
-3. Drag & drop per riordinare liberamente Capitoli ed Episodi (oggi l'ordine è assegnato automaticamente in coda).
-4. Home reale (Continue Your Journey, Recommended, Follow, algoritmo di scoperta) — da progettare insieme quando si affronteranno Discovery/Follow, non prima.
-5. Verifica end-to-end finale su tutto il flusso Journey.
+2. Drag & drop per riordinare liberamente Capitoli ed Episodi (oggi l'ordine è assegnato automaticamente in coda).
+3. Home reale (Continue Your Journey, Recommended, Follow, algoritmo di scoperta) — da progettare insieme quando si affronteranno Discovery/Follow, non prima.
+4. Verifica end-to-end finale su tutto il flusso Journey.
 
 ## Current Task
 
-**Obiettivo corrente**: nessuna implementazione in corso al momento. Una sessione precedente ha ridiscusso l'architettura del flusso Creator e ha: rinominato l'area privata da `/creator` a `/dashboard`, costruito la Pagina Journey pubblica (`/journeys/[id]`), e aggiunto il link "View public page" nella Dashboard. Questa sessione ha chiarito una decisione di prodotto permanente — "Creator" non è una categoria di utenti separata, è lo stato di un utente che ha pubblicato un Journey (vedi `00-project-context.md`, sezione "Modello utente unico") — e ha aggiornato di conseguenza `07_Creator_Experience.md`, `12_MVP_Features.md`, `13_User_Flows.md` e `14_UI_Pages.md` (dove "Pagina Creator" è stata rinominata in "Profilo"). Nessun codice è stato scritto in questa sessione. La Home reale e il Profilo pubblico restano rimandati (vedi Roadmap).
+**Obiettivo corrente**: nessuna implementazione in corso al momento. Questa sessione ha implementato Publish/Unpublish del Journey (`publishJourney`/`unpublishJourney` in `lib/actions/journey.ts`, componente `JourneyPublishControl.tsx`, integrato in `app/dashboard/journeys/[id]/page.tsx`). Una sessione precedente aveva rinominato l'area privata da `/creator` a `/dashboard`, costruito la Pagina Journey pubblica (`/journeys/[id]`), e chiarito la decisione permanente "Creator non è una categoria di utenti separata" (vedi `00-project-context.md`, sezione "Modello utente unico"). La Home reale e il Profilo pubblico restano rimandati (vedi Roadmap).
 
-Il prossimo obiettivo consigliato è il punto 1 della Roadmap: il Profilo pubblico, in versione minima (nome, descrizione, elenco Journey pubblicati → link alla Pagina Journey) — stesso profilo per ogni persona, indipendentemente dal fatto che abbia pubblicato un Journey. Prima o contestualmente sarebbe utile anche il punto 2 (azione "Pubblica" nell'interfaccia), perché oggi non c'è modo per una persona reale di pubblicare un Journey senza intervento diretto sul database.
+Il prossimo obiettivo consigliato è il punto 1 della Roadmap: il Profilo pubblico, in versione minima (nome, descrizione, elenco Journey pubblicati → link alla Pagina Journey) — stesso profilo per ogni persona, indipendentemente dal fatto che abbia pubblicato un Journey.
 
 **File da leggere prima di iniziare**:
 - `app/journeys/[id]/page.tsx` — pattern di riferimento per una pagina pubblica (nessun `requireCreator()`, 404 se non pubblicato)
 - `app/dashboard/page.tsx` e `app/dashboard/journeys/[id]/page.tsx` — dati Creator/Journey già disponibili lato Dashboard
+- `lib/actions/journey.ts` — `publishJourney`/`unpublishJourney`, per capire quando un Journey è realmente idoneo a comparire nel Profilo
 - `lib/creator.ts` — helper `requireCreator()`, da NON usare per pagine pubbliche
 - `prisma/schema.prisma` — modelli `Creator` e `Journey` (campo `status`)
 

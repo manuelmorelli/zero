@@ -1,9 +1,18 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
+
+async function requireOwnedJourney(journeyId: string) {
+  const { creator } = await requireCreator();
+  const journey = await prisma.journey.findUnique({ where: { id: journeyId } });
+  if (!journey || journey.creatorId !== creator.id) notFound();
+  return journey;
+}
 
 const JourneySchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
@@ -59,4 +68,66 @@ export async function createJourney(
   });
 
   redirect(`/dashboard/journeys/${journey.id}`);
+}
+
+export async function publishJourney(
+  _prevState: { error: string | null },
+  formData: FormData
+): Promise<{ error: string | null }> {
+  const journeyId = formData.get("journeyId");
+  if (typeof journeyId !== "string" || !journeyId) {
+    return { error: "Invalid journey." };
+  }
+  const journey = await requireOwnedJourney(journeyId);
+
+  if (journey.status !== "DRAFT") {
+    return { error: "Only a Draft Journey can be published." };
+  }
+
+  const issues: string[] = [];
+  if (!journey.description || journey.description.trim().length === 0) {
+    issues.push("a Presentation");
+  }
+  const episodeCount = await prisma.episode.count({
+    where: { deletedAt: null, chapter: { deletedAt: null, journeyId: journey.id } },
+  });
+  if (episodeCount === 0) {
+    issues.push("at least one Episode");
+  }
+  if (issues.length > 0) {
+    return { error: `Before publishing, add: ${issues.join(", ")}.` };
+  }
+
+  await prisma.journey.update({
+    where: { id: journey.id },
+    data: { status: "PUBLISHED" },
+  });
+
+  revalidatePath(`/dashboard/journeys/${journey.id}`);
+  revalidatePath(`/journeys/${journey.id}`);
+  return { error: null };
+}
+
+export async function unpublishJourney(
+  _prevState: { error: string | null },
+  formData: FormData
+): Promise<{ error: string | null }> {
+  const journeyId = formData.get("journeyId");
+  if (typeof journeyId !== "string" || !journeyId) {
+    return { error: "Invalid journey." };
+  }
+  const journey = await requireOwnedJourney(journeyId);
+
+  if (journey.status !== "PUBLISHED") {
+    return { error: "Only a published Journey can be moved back to Draft." };
+  }
+
+  await prisma.journey.update({
+    where: { id: journey.id },
+    data: { status: "DRAFT" },
+  });
+
+  revalidatePath(`/dashboard/journeys/${journey.id}`);
+  revalidatePath(`/journeys/${journey.id}`);
+  return { error: null };
 }
