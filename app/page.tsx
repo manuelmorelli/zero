@@ -1,14 +1,20 @@
-﻿import Link from "next/link";
+﻿import Image from "next/image";
+import Link from "next/link";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { AuthStatus } from "@/components/layout/AuthStatus";
 import { Logo } from "@/components/layout/Logo";
 import { Hero } from "@/components/landing/Hero";
 import { Reveal } from "@/components/common/Reveal";
+import { getCurrentSession } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const continueJourneys = await getContinueJourneys();
+
   return (
     <main>
       <SiteHeader />
+      {continueJourneys.length > 0 && <ContinueJourney items={continueJourneys} />}
       <Hero />
       <ExploreJourneys />
       <StatsBar />
@@ -17,6 +23,96 @@ export default function Home() {
       <FinalCta />
       <SiteFooter />
     </main>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* CONTINUE YOUR JOURNEY                                                */
+/* ------------------------------------------------------------------ */
+
+type ContinueJourneyItem = {
+  journeyId: string;
+  title: string;
+  coverUrl: string | null;
+  creatorName: string;
+  episodeId: string | null;
+  episodeTitle: string | null;
+};
+
+async function getContinueJourneys(): Promise<ContinueJourneyItem[]> {
+  const session = await getCurrentSession();
+  if (!session) return [];
+
+  const progresses = await prisma.journeyProgress.findMany({
+    where: {
+      userId: session.user.id,
+      journey: { status: "PUBLISHED", deletedAt: null },
+    },
+    orderBy: { updatedAt: "desc" },
+    include: { journey: { include: { creator: true } } },
+  });
+
+  const episodeIds = progresses
+    .map((progress) => progress.currentEpisodeId)
+    .filter((id): id is string => id !== null);
+
+  const episodes = await prisma.episode.findMany({
+    where: { id: { in: episodeIds }, deletedAt: null },
+  });
+  const episodeById = new Map(episodes.map((episode) => [episode.id, episode]));
+
+  return progresses.map((progress) => {
+    const episode = progress.currentEpisodeId ? episodeById.get(progress.currentEpisodeId) : undefined;
+    return {
+      journeyId: progress.journeyId,
+      title: progress.journey.title,
+      coverUrl: progress.journey.coverUrl,
+      creatorName: progress.journey.creator.displayName,
+      episodeId: episode?.id ?? null,
+      episodeTitle: episode?.title ?? null,
+    };
+  });
+}
+
+function ContinueJourney({ items }: { items: ContinueJourneyItem[] }) {
+  return (
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-7xl px-6 py-14">
+        <Reveal>
+          <h2 className="font-sans text-2xl font-extrabold tracking-tight">
+            Continue Your Journey
+          </h2>
+        </Reveal>
+
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((item, index) => (
+            <Reveal key={item.journeyId} delayMs={index * 80}>
+              <Link
+                href={item.episodeId ? `/journeys/${item.journeyId}#${item.episodeId}` : `/journeys/${item.journeyId}`}
+                className="group flex overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-ink-muted"
+              >
+                <div className="relative aspect-square w-24 flex-shrink-0 overflow-hidden bg-surface-2">
+                  {item.coverUrl ? (
+                    <Image src={item.coverUrl} alt={item.title} fill sizes="96px" className="object-cover" />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+                  )}
+                </div>
+                <div className="flex flex-1 flex-col justify-center px-4 py-3">
+                  <h3 className="text-sm font-bold leading-snug text-ink">{item.title}</h3>
+                  <p className="mt-1 text-xs text-ink-muted">by {item.creatorName}</p>
+                  {item.episodeTitle && (
+                    <p className="mt-2 text-xs font-semibold text-ink-muted">
+                      Continue: {item.episodeTitle}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
