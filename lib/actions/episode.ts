@@ -156,20 +156,26 @@ async function moveEpisode(episodeId: string, direction: "up" | "down") {
   return episode;
 }
 
-export async function moveEpisodeUp(formData: FormData): Promise<void> {
-  const episodeId = formData.get("episodeId");
-  if (typeof episodeId !== "string" || !episodeId) notFound();
-  const episode = await moveEpisode(episodeId, "up");
+// Per il drag & drop: l'elemento può essere rilasciato più di una posizione più in
+// là. Non introduce una nuova regola di riordino: ripete lo scambio con il vicino
+// (la stessa funzione `moveEpisode` sopra) una volta per ogni posizione da percorrere.
+export async function moveEpisodeToIndex(episodeId: string, targetIndex: number): Promise<void> {
+  const episode = await requireOwnedEpisode(episodeId);
+
+  const siblings = await prisma.episode.findMany({
+    where: { chapterId: episode.chapterId, deletedAt: null },
+    orderBy: { order: "asc" },
+  });
+  const currentIndex = siblings.findIndex((sibling) => sibling.id === episodeId);
+  if (currentIndex === -1) notFound();
+
+  const clampedTarget = Math.max(0, Math.min(targetIndex, siblings.length - 1));
+  const direction = clampedTarget > currentIndex ? "down" : "up";
+  const steps = Math.abs(clampedTarget - currentIndex);
+
+  for (let step = 0; step < steps; step++) {
+    await moveEpisode(episodeId, direction);
+  }
 
   revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
-  redirect(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
-}
-
-export async function moveEpisodeDown(formData: FormData): Promise<void> {
-  const episodeId = formData.get("episodeId");
-  if (typeof episodeId !== "string" || !episodeId) notFound();
-  const episode = await moveEpisode(episodeId, "down");
-
-  revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
-  redirect(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
 }

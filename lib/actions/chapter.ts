@@ -132,20 +132,26 @@ async function moveChapter(chapterId: string, direction: "up" | "down") {
   return chapter;
 }
 
-export async function moveChapterUp(formData: FormData): Promise<void> {
-  const chapterId = formData.get("chapterId");
-  if (typeof chapterId !== "string" || !chapterId) notFound();
-  const chapter = await moveChapter(chapterId, "up");
+// Per il drag & drop: l'elemento può essere rilasciato più di una posizione più in
+// là. Non introduce una nuova regola di riordino: ripete lo scambio con il vicino
+// (la stessa funzione `moveChapter` sopra) una volta per ogni posizione da percorrere.
+export async function moveChapterToIndex(chapterId: string, targetIndex: number): Promise<void> {
+  const chapter = await requireOwnedChapter(chapterId);
+
+  const siblings = await prisma.chapter.findMany({
+    where: { journeyId: chapter.journeyId, deletedAt: null },
+    orderBy: { order: "asc" },
+  });
+  const currentIndex = siblings.findIndex((sibling) => sibling.id === chapterId);
+  if (currentIndex === -1) notFound();
+
+  const clampedTarget = Math.max(0, Math.min(targetIndex, siblings.length - 1));
+  const direction = clampedTarget > currentIndex ? "down" : "up";
+  const steps = Math.abs(clampedTarget - currentIndex);
+
+  for (let step = 0; step < steps; step++) {
+    await moveChapter(chapterId, direction);
+  }
 
   revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
-  redirect(`/dashboard/journeys/${chapter.journeyId}`);
-}
-
-export async function moveChapterDown(formData: FormData): Promise<void> {
-  const chapterId = formData.get("chapterId");
-  if (typeof chapterId !== "string" || !chapterId) notFound();
-  const chapter = await moveChapter(chapterId, "down");
-
-  revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
-  redirect(`/dashboard/journeys/${chapter.journeyId}`);
 }

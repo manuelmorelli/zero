@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { ChapterForm } from "@/components/creator/ChapterForm";
+import { ChapterList } from "@/components/creator/ChapterList";
 import { JourneyForm } from "@/components/creator/JourneyForm";
 import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
-import { moveChapterDown, moveChapterUp } from "@/lib/actions/chapter";
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: "Draft",
@@ -94,54 +94,15 @@ export default async function JourneyManagePage({
       <div className="mt-10">
         <h2 className="text-sm font-semibold text-ink">Chapters</h2>
 
-        <div className="mt-4 space-y-3">
-          {chapters.length === 0 && (
-            <p className="rounded-xl border border-border bg-surface p-5 text-sm text-ink-muted">
-              You haven&apos;t added any chapters yet.
-            </p>
-          )}
-          {chapters.map((chapter, index) => (
-            <div
-              key={chapter.id}
-              className="flex items-center justify-between gap-4 rounded-xl border border-border bg-surface p-5 transition-colors hover:border-ink-muted"
-            >
-              <Link
-                href={`/dashboard/journeys/${journey.id}/chapters/${chapter.id}`}
-                className="min-w-0 flex-1"
-              >
-                <span className="text-sm font-semibold text-ink">{chapter.title}</span>
-                {chapter.description && (
-                  <p className="mt-1 text-sm text-ink-muted">{chapter.description}</p>
-                )}
-              </Link>
-              <div className="flex shrink-0 items-center gap-3">
-                <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-muted">
-                  {chapter.episodes.length} {chapter.episodes.length === 1 ? "episode" : "episodes"}
-                </span>
-                <form action={moveChapterUp}>
-                  <input type="hidden" name="chapterId" value={chapter.id} />
-                  <button
-                    type="submit"
-                    disabled={index === 0}
-                    className="text-xs font-medium text-ink-muted hover:text-ink disabled:opacity-30"
-                  >
-                    ↑
-                  </button>
-                </form>
-                <form action={moveChapterDown}>
-                  <input type="hidden" name="chapterId" value={chapter.id} />
-                  <button
-                    type="submit"
-                    disabled={index === chapters.length - 1}
-                    className="text-xs font-medium text-ink-muted hover:text-ink disabled:opacity-30"
-                  >
-                    ↓
-                  </button>
-                </form>
-              </div>
-            </div>
-          ))}
-        </div>
+        <ChapterList
+          journeyId={journey.id}
+          chapters={chapters.map((chapter) => ({
+            id: chapter.id,
+            title: chapter.title,
+            description: chapter.description,
+            episodeCount: chapter.episodes.length,
+          }))}
+        />
 
         <div className="mt-6 rounded-xl border border-border bg-surface p-6">
           <h3 className="text-sm font-semibold text-ink">Add a chapter</h3>

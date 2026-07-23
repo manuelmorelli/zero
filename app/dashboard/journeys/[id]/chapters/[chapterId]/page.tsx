@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { ChapterForm } from "@/components/creator/ChapterForm";
 import { EpisodeForm } from "@/components/creator/EpisodeForm";
-import { EpisodeItem } from "@/components/creator/EpisodeItem";
+import { EpisodeList } from "@/components/creator/EpisodeList";
 import { deleteChapter } from "@/lib/actions/chapter";
 
 export default async function ChapterManagePage({
@@ -48,21 +48,8 @@ export default async function ChapterManagePage({
       <div className="mt-10">
         <h2 className="text-sm font-semibold text-ink">Episodes</h2>
 
-        <div className="mt-4 space-y-3">
-          {chapter.episodes.length === 0 && (
-            <p className="rounded-xl border border-border bg-surface p-5 text-sm text-ink-muted">
-              You haven&apos;t added any episodes yet.
-            </p>
-          )}
-          {chapter.episodes.map((episode, index) => (
-            <EpisodeItem
-              key={episode.id}
-              chapterId={chapter.id}
-              episode={episode}
-              isFirst={index === 0}
-              isLast={index === chapter.episodes.length - 1}
-            />
-          ))}
+        <div className="mt-4">
+          <EpisodeList chapterId={chapter.id} episodes={chapter.episodes} />
         </div>
 
         <div className="mt-6 rounded-xl border border-border bg-surface p-6">

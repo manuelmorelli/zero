@@ -63,6 +63,10 @@ Ogni tecnologia viene adottata solo se contribuisce concretamente alla qualità 
 
 - Zod
 
+### Drag & Drop
+
+- dnd-kit
+
 ## Backend
 
 ### Runtime
