@@ -18,7 +18,9 @@ export default async function NewJourneyPage() {
           Tell us about the path you&apos;re about to document. You&apos;ll be able to add Chapters and Episodes right after.
         </p>
 
-        <JourneyForm />
+        <div className="mt-8">
+          <JourneyForm />
+        </div>
       </div>
     </main>
   );

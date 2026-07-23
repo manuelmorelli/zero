@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.4"
+version: "1.5"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -33,6 +33,7 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 - **Area privata rinominata da `/creator` a `/dashboard`** — decisione architetturale presa per liberare l'indirizzo `/creator/[id]` per il futuro Profilo pubblico. Non cambia la logica, solo indirizzi e link interni (vedi "Decisioni tecniche chiave").
 - **Link "View public page"** nella pagina di gestione del Journey in Dashboard, visibile solo quando lo stato è "Pubblicato": porta alla Pagina Journey pubblica corrispondente.
 - **Publish / Unpublish del Journey** — azione lato server per passare un Journey da Bozza a Pubblicato e viceversa, direttamente dalla Dashboard (nessun intervento sul database necessario). La pubblicazione è respinta con un errore chiaro se mancano i requisiti: una Presentazione (descrizione non vuota) e almeno un Episodio, coerentemente con la struttura ufficiale del Journey (`05_Journey.md`) e con l'ordine dei passaggi descritto in `13_User_Flows.md` ("Creazione di un Journey"). Il ritorno a Bozza è sempre permesso senza requisiti aggiuntivi.
+- **Modifica di un Journey esistente** — titolo, presentazione, categoria e tag sono ora modificabili dopo la creazione, in qualunque stato (Bozza, Pubblicato, ecc.), dalla stessa pagina di gestione in Dashboard. Riutilizza `JourneyForm.tsx` sia per creare sia per modificare (stesso pattern di `ChapterForm.tsx`/`EpisodeForm.tsx`) e lo schema di validazione già esistente (`JourneySchema`, `parseTags`). Svuotare la Presentazione di un Journey già Pubblicato non lo riporta automaticamente in Bozza: se in seguito viene rimesso in Bozza e si tenta di ripubblicarlo, l'azione di pubblicazione richiederà di nuovo una Presentazione, come verificato end-to-end in questa sessione.
 
 ## Decisioni tecniche chiave
 
@@ -46,7 +47,8 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 - **Campi Episodio**: titolo, caption (opzionale), video URL (etichettato esplicitamente come "temporary" in attesa dell'upload diretto dei video), data reale dell'evento. Nessun campo "descrizione" separato: rimosso perché ridondante con la caption.
 - **Architettura del flusso Creator (decisione presa in una sessione precedente, vedi `13_User_Flows.md` e `14_UI_Pages.md`)**: Zero non tratta "creator" e "utente" come ruoli con destinazioni diverse — ogni persona atterra sulla stessa Home dopo il login, creator compreso. La Dashboard (`/dashboard`, ex `/creator`) non è più una destinazione di default: vi si accede tramite un link, solo se si è pubblicato (o si sta per pubblicare) un Journey. Sono quattro pagine con ruoli distinti e non sovrapposti: Home (per tutti), Profilo pubblico (vetrina, non ancora costruito), Dashboard (privata, operativa), Pagina Journey pubblica (il contenuto). La Home reale (dati veri al posto di quelli finti) e il Profilo pubblico sono stati deliberatamente rimandati a task successivi, per non anticipare decisioni che dipendono da Follow/Discovery/algoritmo (Home) o da Community/prodotti (Profilo).
 - **"Creator" non è una categoria di utenti separata (decisione permanente, vedi `00-project-context.md`, sezione "Modello utente unico")**: è lo stato di un utente che ha pubblicato un Journey, non un ruolo con un proprio account o proprie pagine dedicate. Di conseguenza non esisterà una "Creator Profile" distinta da un "profilo utente": esiste un solo Profilo per persona, che mostra i Journey pubblicati se presenti. Riferimenti già corretti in questa sessione: `07_Creator_Experience.md`, `12_MVP_Features.md`, `13_User_Flows.md`, `14_UI_Pages.md` (sezione "Pagina Creator" rinominata in "Profilo").
-- **Requisiti di pubblicazione (decisione presa in questa sessione)**: un Journey può passare a "Pubblicato" solo se ha una Presentazione (campo `description` non vuoto) e almeno un Episodio non eliminato in uno dei suoi Capitoli non eliminati. Non è richiesto che ogni singolo Capitolo abbia un Episodio, né un numero minimo di Capitoli: basta che la struttura non sia vuota. Regola derivata direttamente da `05_Journey.md` (Presentazione, Capitoli, Episodi come struttura ufficiale) e dall'ordine dei passaggi in `13_User_Flows.md`, non inventata. Il campo `DISCOVERY` di `JourneyStatus` resta non gestito da questa azione (nessuna regola di business è mai stata definita per quello stato in nessun documento): l'azione lavora solo sulla transizione DRAFT ↔ PUBLISHED.
+- **Requisiti di pubblicazione (decisione presa in una sessione precedente)**: un Journey può passare a "Pubblicato" solo se ha una Presentazione (campo `description` non vuoto) e almeno un Episodio non eliminato in uno dei suoi Capitoli non eliminati. Non è richiesto che ogni singolo Capitolo abbia un Episodio, né un numero minimo di Capitoli: basta che la struttura non sia vuota. Regola derivata direttamente da `05_Journey.md` (Presentazione, Capitoli, Episodi come struttura ufficiale) e dall'ordine dei passaggi in `13_User_Flows.md`, non inventata. Il campo `DISCOVERY` di `JourneyStatus` resta non gestito da questa azione (nessuna regola di business è mai stata definita per quello stato in nessun documento): l'azione lavora solo sulla transizione DRAFT ↔ PUBLISHED.
+- **`undefined` vs `null` negli update Prisma (bug potenziale evitato in questa sessione)**: in una `create` Prisma, un campo opzionale assente (`undefined`) diventa `NULL` per default. In una `update`, invece, `undefined` significa "non toccare questo campo" — se un form permette di svuotare un campo opzionale (es. la Presentazione di un Journey), l'azione di update deve convertire esplicitamente il valore assente in `null` (`parsed.data.description ?? null`), altrimenti il vecchio valore resterebbe silenziosamente invariato. Rilevante per qualunque futura azione di "update" su un campo opzionale.
 
 ## Placeholder ancora da sostituire
 
@@ -61,7 +63,7 @@ Confronto con le funzionalità definite in `12_MVP_Features.md`.
 | Account (registrazione, accesso, recupero password) | ✅ Fatto |
 | Account (gestione profilo) | 🟡 Parziale — `/account` mostra i dati, nessuna modifica |
 | Journey (creazione, Capitoli, Episodi) | ✅ Fatto |
-| Journey (modifica del Journey stesso) | ❌ Da fare — nessuna UI di modifica per titolo/presentazione/categoria/tag |
+| Journey (modifica del Journey stesso) | ✅ Fatto |
 | Journey (struttura: riordino libero) | 🟡 Parziale — ordine automatico, drag & drop non ancora implementato |
 | Esplorazione (homepage) | 🟡 Parziale — landing con dati statici/finti, non reali (rimandato di proposito, vedi "Decisioni tecniche chiave") |
 | Esplorazione (pagina Journey pubblica) | ✅ Fatto |
@@ -70,7 +72,7 @@ Confronto con le funzionalità definite in `12_MVP_Features.md`.
 | Updates | ❌ Da fare |
 | Dashboard (Updates, analisi base, Community Premium) | ❌ Da fare |
 
-In sintesi: il percorso di creazione lato Creator (Journey → Capitoli → Episodi) è completo e verificato end-to-end, e ora una persona reale può pubblicare (e ripubblicare in bozza) il proprio Journey direttamente dall'interfaccia, senza intervento sul database. Manca ancora il Profilo pubblico (la vetrina di ogni persona, con i Journey pubblicati se presenti).
+In sintesi: il percorso di creazione e gestione lato Creator (Journey → Capitoli → Episodi, con modifica e Publish/Unpublish del Journey) è completo e verificato end-to-end, senza alcun intervento necessario sul database. Manca ancora il Profilo pubblico (la vetrina di ogni persona, con i Journey pubblicati se presenti).
 
 ## Note prima del rilascio pubblico
 
@@ -89,14 +91,14 @@ Tutti i lavori futuri, in ordine di priorità.
 
 ## Current Task
 
-**Obiettivo corrente**: nessuna implementazione in corso al momento. Questa sessione ha implementato Publish/Unpublish del Journey (`publishJourney`/`unpublishJourney` in `lib/actions/journey.ts`, componente `JourneyPublishControl.tsx`, integrato in `app/dashboard/journeys/[id]/page.tsx`). Una sessione precedente aveva rinominato l'area privata da `/creator` a `/dashboard`, costruito la Pagina Journey pubblica (`/journeys/[id]`), e chiarito la decisione permanente "Creator non è una categoria di utenti separata" (vedi `00-project-context.md`, sezione "Modello utente unico"). La Home reale e il Profilo pubblico restano rimandati (vedi Roadmap).
+**Obiettivo corrente**: nessuna implementazione in corso al momento. Questa sessione ha implementato la modifica completa di un Journey esistente (`updateJourney` in `lib/actions/journey.ts`, `JourneyForm.tsx` esteso per supportare sia creazione sia modifica, box "Edit Journey" in `app/dashboard/journeys/[id]/page.tsx`). Una sessione precedente aveva implementato Publish/Unpublish (`publishJourney`/`unpublishJourney`, non modificato in questa sessione), rinominato l'area privata da `/creator` a `/dashboard`, costruito la Pagina Journey pubblica (`/journeys/[id]`), e chiarito la decisione permanente "Creator non è una categoria di utenti separata" (vedi `00-project-context.md`, sezione "Modello utente unico"). La Home reale e il Profilo pubblico restano rimandati (vedi Roadmap).
 
 Il prossimo obiettivo consigliato è il punto 1 della Roadmap: il Profilo pubblico, in versione minima (nome, descrizione, elenco Journey pubblicati → link alla Pagina Journey) — stesso profilo per ogni persona, indipendentemente dal fatto che abbia pubblicato un Journey.
 
 **File da leggere prima di iniziare**:
 - `app/journeys/[id]/page.tsx` — pattern di riferimento per una pagina pubblica (nessun `requireCreator()`, 404 se non pubblicato)
 - `app/dashboard/page.tsx` e `app/dashboard/journeys/[id]/page.tsx` — dati Creator/Journey già disponibili lato Dashboard
-- `lib/actions/journey.ts` — `publishJourney`/`unpublishJourney`, per capire quando un Journey è realmente idoneo a comparire nel Profilo
+- `lib/actions/journey.ts` — `createJourney`/`updateJourney`/`publishJourney`/`unpublishJourney`, per capire quando un Journey è realmente idoneo a comparire nel Profilo
 - `lib/creator.ts` — helper `requireCreator()`, da NON usare per pagine pubbliche
 - `prisma/schema.prisma` — modelli `Creator` e `Journey` (campo `status`)
 

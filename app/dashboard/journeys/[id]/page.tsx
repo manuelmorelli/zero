@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { ChapterForm } from "@/components/creator/ChapterForm";
+import { JourneyForm } from "@/components/creator/JourneyForm";
 import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -73,6 +74,21 @@ export default async function JourneyManagePage({
           ))}
         </div>
       )}
+
+      <div className="mt-8 rounded-xl border border-border bg-surface p-6">
+        <h2 className="text-sm font-semibold text-ink">Edit Journey</h2>
+        <div className="mt-4">
+          <JourneyForm
+            journey={{
+              id: journey.id,
+              title: journey.title,
+              description: journey.description,
+              category: journey.category,
+              tags: journey.tags,
+            }}
+          />
+        </div>
+      </div>
 
       <div className="mt-10">
         <h2 className="text-sm font-semibold text-ink">Chapters</h2>

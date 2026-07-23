@@ -70,6 +70,43 @@ export async function createJourney(
   redirect(`/dashboard/journeys/${journey.id}`);
 }
 
+export async function updateJourney(
+  _prevState: { error: string | null },
+  formData: FormData
+): Promise<{ error: string | null }> {
+  const journeyId = formData.get("journeyId");
+  if (typeof journeyId !== "string" || !journeyId) {
+    return { error: "Invalid journey." };
+  }
+  const journey = await requireOwnedJourney(journeyId);
+
+  const parsed = JourneySchema.safeParse({
+    title: formData.get("title"),
+    description: formData.get("description") || undefined,
+    category: formData.get("category") || undefined,
+    tags: formData.get("tags") || undefined,
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
+  }
+
+  await prisma.journey.update({
+    where: { id: journey.id },
+    data: {
+      title: parsed.data.title,
+      // Explicitly null (not undefined) so clearing a field in the form clears it in the database too —
+      // Prisma treats `undefined` as "leave unchanged" on update, unlike on create.
+      description: parsed.data.description ?? null,
+      category: parsed.data.category ?? null,
+      tags: parseTags(parsed.data.tags),
+    },
+  });
+
+  revalidatePath(`/dashboard/journeys/${journey.id}`);
+  redirect(`/dashboard/journeys/${journey.id}`);
+}
+
 export async function publishJourney(
   _prevState: { error: string | null },
   formData: FormData
