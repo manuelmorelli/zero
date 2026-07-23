@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "3.0"
+version: "3.1"
 status: approved
 related_docs:
   - 01_Vision
@@ -113,6 +113,22 @@ Ogni Journey è composto da:
 - Episodi.
 
 Questa struttura rappresenta il modello narrativo ufficiale del progetto.
+
+### Modello utente unico
+
+Zero non è una piattaforma pensata solo per i creator: è una piattaforma per tutti.
+
+Ogni persona che si registra ha lo stesso account e le stesse capacità di base: può leggere i Journey degli altri e, quando lo desidera, iniziare il proprio Journey e condividerlo.
+
+"Creator" non è una categoria di utenti separata, con un proprio account o una propria pagina di iscrizione: è semplicemente lo stato di un utente che ha deciso di pubblicare un Journey. Ogni utente può trovarsi in questo stato in qualsiasi momento, senza smettere di essere anche lettore dei Journey altrui.
+
+Da questo derivano tre conseguenze permanenti sull'architettura del prodotto:
+
+- la Home è la stessa per ogni persona, indipendentemente dal fatto che abbia pubblicato un Journey;
+- la Dashboard è uno strumento privato per gestire i propri contenuti, non una destinazione riservata a una categoria di utenti;
+- il profilo pubblico rappresenta una persona, non un ruolo: se quella persona ha pubblicato uno o più Journey, questi compaiono nel suo profilo. Non esiste una pagina "profilo creator" distinta da una pagina "profilo utente".
+
+Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 
 ### Drag & Drop
 

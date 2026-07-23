@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.2"
+version: "1.3"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -22,29 +22,30 @@ Fotografia aggiornata di cosa è stato costruito, quali decisioni tecniche sono 
 Verificate end-to-end su database reale (Neon) e coerenti visivamente con il design system del sito.
 
 - **Autenticazione** — Better Auth, email+password, verifica email via Resend.
-- **Diventa Creator** — un utente può creare un profilo Creator collegato 1:1 al proprio account.
+- **Diventa Creator** — un utente può creare un profilo Creator collegato 1:1 al proprio account, cioè può iniziare a pubblicare un proprio Journey.
 - **Creazione Journey** — titolo, presentazione, categoria, tag. Regola applicata lato server: un solo Journey attivo (non archiviato) per creator alla volta.
-- **Dashboard Creator** (`/creator`) — elenca i Journey del creator con badge di stato (Bozza / In scoperta / Pubblicato / Archiviato).
-- **Pagina di dettaglio/gestione Journey** (`/creator/journeys/[id]`) — con controllo di proprietà (solo il creator che lo possiede può vederla/gestirla). Elenca i Capitoli e permette di aggiungerne di nuovi.
-- **CRUD Capitoli ed Episodi** — pagina dedicata per capitolo (`/creator/journeys/[id]/chapters/[chapterId]`) con creazione, modifica ed eliminazione (soft delete) di Capitoli ed Episodi, ordine numerico assegnato automaticamente. Ogni Episodio ha una data reale (`occurredAt`) separata dall'ordine narrativo, coerente con la regola di `05_Journey.md` che tiene distinte le due informazioni. Campi dell'Episodio: titolo, caption (opzionale, testo che accompagna il video), link video (soluzione provvisoria in attesa dell'upload diretto), data reale — nessun campo "descrizione" separato.
-- **Protezione rotte** — tutte le pagine sotto `/creator/*` richiedono login (gestito in `proxy.ts`).
+- **Dashboard** (`/dashboard`) — elenca i Journey del creator con badge di stato (Bozza / In scoperta / Pubblicato / Archiviato).
+- **Pagina di dettaglio/gestione Journey** (`/dashboard/journeys/[id]`) — con controllo di proprietà (solo il creator che lo possiede può vederla/gestirla). Elenca i Capitoli e permette di aggiungerne di nuovi.
+- **CRUD Capitoli ed Episodi** — pagina dedicata per capitolo (`/dashboard/journeys/[id]/chapters/[chapterId]`) con creazione, modifica ed eliminazione (soft delete) di Capitoli ed Episodi, ordine numerico assegnato automaticamente. Ogni Episodio ha una data reale (`occurredAt`) separata dall'ordine narrativo, coerente con la regola di `05_Journey.md` che tiene distinte le due informazioni. Campi dell'Episodio: titolo, caption (opzionale, testo che accompagna il video), link video (soluzione provvisoria in attesa dell'upload diretto), data reale — nessun campo "descrizione" separato.
+- **Protezione rotte** — tutte le pagine sotto `/dashboard/*` richiedono login (gestito in `proxy.ts`).
 - **Interfaccia interamente in inglese** — landing page, autenticazione, dashboard creator, form e email transazionali sono tutti in inglese, coerenti fra loro (prima le pagine interne erano in italiano).
 - **Pagina pubblica del Journey** (`/journeys/[id]`) — visibile a chiunque, senza login. Mostra Presentazione, Capitoli ed Episodi. Restituisce "non trovato" (404) se il Journey non esiste o non è nello stato "Pubblicato", senza eccezioni per il creator proprietario.
-- **Area privata del creator rinominata da `/creator` a `/dashboard`** — decisione architetturale presa per liberare l'indirizzo `/creator/[id]` per la futura Creator Profile pubblica. Non cambia la logica, solo indirizzi e link interni (vedi "Decisioni tecniche chiave").
+- **Area privata rinominata da `/creator` a `/dashboard`** — decisione architetturale presa per liberare l'indirizzo `/creator/[id]` per il futuro Profilo pubblico. Non cambia la logica, solo indirizzi e link interni (vedi "Decisioni tecniche chiave").
 - **Link "View public page"** nella pagina di gestione del Journey in Dashboard, visibile solo quando lo stato è "Pubblicato": porta alla Pagina Journey pubblica corrispondente.
 
 ## Decisioni tecniche chiave
 
 - **Pattern feature**: ogni nuova funzionalità segue lo stesso schema — server action in `lib/actions/*.ts` con validazione Zod → redirect → form client con `useActionState`.
-- **Accesso Creator**: `requireCreator()` (in `lib/creator.ts`) è il controllo unico e autoritativo per ogni pagina riservata ai creator; se il profilo non esiste reindirizza a `/creator/new`.
+- **Accesso Creator**: `requireCreator()` (in `lib/creator.ts`) è il controllo unico e autoritativo per ogni pagina riservata ai creator; se il profilo non esiste reindirizza a `/dashboard/new`.
 - **Stile**: input bordati (`border-border bg-surface`), bottoni pill (`rounded-full bg-ink text-bg`), badge di stato bordati, tag come chip `bg-surface-2`. Nessun colore arbitrario, solo i token semantici definiti in `app/globals.css`.
 - **Testing**: niente Python disponibile sulla macchina di sviluppo → i test end-to-end usano Playwright via Node (installato con `--no-save`, disinstallato a fine test). I dati di test vengono creati/verificati/cancellati con script SQL diretto su Neon (`@neondatabase/serverless`) e non vengono mai lasciati nel database.
 - **Form client con id univoci**: quando più istanze dello stesso form possono comparire insieme nella stessa pagina (es. form di modifica capitolo + form "aggiungi episodio"), gli `id` dei campi vanno generati con `useId()` di React invece di stringhe fisse, per evitare collisioni di `id` nel DOM (bug reale trovato e corretto in `ChapterForm.tsx`/`EpisodeForm.tsx`).
 - **Lingua dell'interfaccia**: inglese in tutto il prodotto (pagine, form, messaggi di errore, email transazionali). I commenti nel codice restano in italiano, non essendo testo rivolto all'utente. Decisione di prodotto permanente, registrata in `00-project-context.md` (sezione "Lingua del Prodotto").
-- **Redirect dopo pubblicazione episodio**: dopo aver creato un episodio il creator viene reindirizzato alla pagina del Journey (non del capitolo), per avere un feedback visivo immediato (contatore episodi aggiornato). Comportamento temporaneo, in attesa della riprogettazione del flusso Creator Profile.
+- **Redirect dopo pubblicazione episodio**: dopo aver creato un episodio il creator viene reindirizzato alla pagina del Journey (non del capitolo), per avere un feedback visivo immediato (contatore episodi aggiornato). Comportamento temporaneo, in attesa della riprogettazione del flusso di gestione Journey.
 - **Campi Episodio**: titolo, caption (opzionale), video URL (etichettato esplicitamente come "temporary" in attesa dell'upload diretto dei video), data reale dell'evento. Nessun campo "descrizione" separato: rimosso perché ridondante con la caption.
-- **Architettura del flusso Creator (decisione presa in questa sessione, vedi `13_User_Flows.md` e `14_UI_Pages.md`)**: Zero non tratta "creator" e "utente" come ruoli con destinazioni diverse — ogni persona atterra sulla stessa Home dopo il login, creator compreso. La Dashboard (`/dashboard`, ex `/creator`) non è più una destinazione di default: vi si accede tramite un link, solo se si ha un profilo Creator. Sono quattro pagine con ruoli distinti e non sovrapposti: Home (per tutti), Creator Profile pubblica (vetrina, non ancora costruita), Dashboard (privata, operativa), Pagina Journey pubblica (il contenuto). La Home reale (dati veri al posto di quelli finti) e la Creator Profile pubblica sono state deliberatamente rimandate a task successivi, per non anticipare decisioni che dipendono da Follow/Discovery/algoritmo (Home) o da Community/prodotti (Creator Profile).
-- **Nessuna azione "Pubblica" nell'interfaccia**: lo stato di un Journey può oggi diventare "Pubblicato" solo scrivendo direttamente sul database. Non blocca lo sviluppo in corso, ma va risolto prima che un creator reale possa rendere visibile il proprio Journey (vedi "Note prima del rilascio pubblico").
+- **Architettura del flusso Creator (decisione presa in una sessione precedente, vedi `13_User_Flows.md` e `14_UI_Pages.md`)**: Zero non tratta "creator" e "utente" come ruoli con destinazioni diverse — ogni persona atterra sulla stessa Home dopo il login, creator compreso. La Dashboard (`/dashboard`, ex `/creator`) non è più una destinazione di default: vi si accede tramite un link, solo se si è pubblicato (o si sta per pubblicare) un Journey. Sono quattro pagine con ruoli distinti e non sovrapposti: Home (per tutti), Profilo pubblico (vetrina, non ancora costruito), Dashboard (privata, operativa), Pagina Journey pubblica (il contenuto). La Home reale (dati veri al posto di quelli finti) e il Profilo pubblico sono stati deliberatamente rimandati a task successivi, per non anticipare decisioni che dipendono da Follow/Discovery/algoritmo (Home) o da Community/prodotti (Profilo).
+- **"Creator" non è una categoria di utenti separata (decisione permanente, vedi `00-project-context.md`, sezione "Modello utente unico")**: è lo stato di un utente che ha pubblicato un Journey, non un ruolo con un proprio account o proprie pagine dedicate. Di conseguenza non esisterà una "Creator Profile" distinta da un "profilo utente": esiste un solo Profilo per persona, che mostra i Journey pubblicati se presenti. Riferimenti già corretti in questa sessione: `07_Creator_Experience.md`, `12_MVP_Features.md`, `13_User_Flows.md`, `14_UI_Pages.md` (sezione "Pagina Creator" rinominata in "Profilo").
+- **Nessuna azione "Pubblica" nell'interfaccia**: lo stato di un Journey può oggi diventare "Pubblicato" solo scrivendo direttamente sul database. Non blocca lo sviluppo in corso, ma va risolto prima che una persona reale possa rendere visibile il proprio Journey (vedi "Note prima del rilascio pubblico").
 
 ## Placeholder ancora da sostituire
 
@@ -63,12 +64,12 @@ Confronto con le funzionalità definite in `12_MVP_Features.md`.
 | Journey (struttura: riordino libero) | 🟡 Parziale — ordine automatico, drag & drop non ancora implementato |
 | Esplorazione (homepage) | 🟡 Parziale — landing con dati statici/finti, non reali (rimandato di proposito, vedi "Decisioni tecniche chiave") |
 | Esplorazione (pagina Journey pubblica) | ✅ Fatto |
-| Esplorazione (pagina creator, ricerca, scoperta) | ❌ Da fare — **prossimo task consigliato** |
+| Esplorazione (profilo pubblico, ricerca, scoperta) | ❌ Da fare — **prossimo task consigliato** |
 | Community (seguire creator, Community Premium) | ❌ Da fare |
 | Updates | ❌ Da fare |
-| Dashboard Creator (Updates, analisi base, Community Premium) | ❌ Da fare |
+| Dashboard (Updates, analisi base, Community Premium) | ❌ Da fare |
 
-In sintesi: il percorso di creazione lato Creator (Journey → Capitoli → Episodi) è completo e verificato end-to-end. La Pagina Journey pubblica esiste ed è verificata. Manca ancora la Creator Profile pubblica (la vetrina del creator) e un'azione reale per pubblicare un Journey dall'interfaccia (oggi possibile solo scrivendo sul database).
+In sintesi: il percorso di creazione lato Creator (Journey → Capitoli → Episodi) è completo e verificato end-to-end. La Pagina Journey pubblica esiste ed è verificata. Manca ancora il Profilo pubblico (la vetrina di ogni persona, con i Journey pubblicati se presenti) e un'azione reale per pubblicare un Journey dall'interfaccia (oggi possibile solo scrivendo sul database).
 
 ## Note prima del rilascio pubblico
 
@@ -81,7 +82,7 @@ Cose note che vanno risolte prima che utenti reali usino il prodotto, ma non blo
 
 Tutti i lavori futuri, in ordine di priorità.
 
-1. Creator Profile pubblica (`/creator/[id]` o simile) — versione minima: nome, descrizione, elenco dei Journey pubblicati del creator, ognuno che porta alla Pagina Journey pubblica. Community/prodotti/workshop restano fuori finché quelle funzionalità non esistono.
+1. Profilo pubblico (indirizzo da definire, es. `/[username]`) — stesso profilo per ogni persona, non una pagina separata per i creator: nome, descrizione, ed elenco dei Journey pubblicati della persona se presenti, ognuno che porta alla Pagina Journey pubblica. Community/prodotti/workshop restano fuori finché quelle funzionalità non esistono.
 2. Azione "Pubblica" nell'interfaccia — oggi lo stato PUBLISHED è raggiungibile solo via database.
 3. Drag & drop per riordinare liberamente Capitoli ed Episodi (oggi l'ordine è assegnato automaticamente in coda).
 4. Home reale (Continue Your Journey, Recommended, Follow, algoritmo di scoperta) — da progettare insieme quando si affronteranno Discovery/Follow, non prima.
@@ -89,9 +90,9 @@ Tutti i lavori futuri, in ordine di priorità.
 
 ## Current Task
 
-**Obiettivo corrente**: nessuna implementazione in corso al momento. L'ultima sessione ha innanzitutto ridiscusso l'architettura del flusso Creator (vedi "Decisioni tecniche chiave"), poi ha: rinominato l'area privata da `/creator` a `/dashboard`, costruito la Pagina Journey pubblica (`/journeys/[id]`), e aggiunto il link "View public page" nella Dashboard. La Home reale e la Creator Profile pubblica sono state deliberatamente rimandate (vedi Roadmap).
+**Obiettivo corrente**: nessuna implementazione in corso al momento. Una sessione precedente ha ridiscusso l'architettura del flusso Creator e ha: rinominato l'area privata da `/creator` a `/dashboard`, costruito la Pagina Journey pubblica (`/journeys/[id]`), e aggiunto il link "View public page" nella Dashboard. Questa sessione ha chiarito una decisione di prodotto permanente — "Creator" non è una categoria di utenti separata, è lo stato di un utente che ha pubblicato un Journey (vedi `00-project-context.md`, sezione "Modello utente unico") — e ha aggiornato di conseguenza `07_Creator_Experience.md`, `12_MVP_Features.md`, `13_User_Flows.md` e `14_UI_Pages.md` (dove "Pagina Creator" è stata rinominata in "Profilo"). Nessun codice è stato scritto in questa sessione. La Home reale e il Profilo pubblico restano rimandati (vedi Roadmap).
 
-Il prossimo obiettivo consigliato è il punto 1 della Roadmap: la Creator Profile pubblica, in versione minima (nome, descrizione, elenco Journey pubblicati → link alla Pagina Journey). Prima o contestualmente sarebbe utile anche il punto 2 (azione "Pubblica" nell'interfaccia), perché oggi non c'è modo per un creator reale di pubblicare un Journey senza intervento diretto sul database.
+Il prossimo obiettivo consigliato è il punto 1 della Roadmap: il Profilo pubblico, in versione minima (nome, descrizione, elenco Journey pubblicati → link alla Pagina Journey) — stesso profilo per ogni persona, indipendentemente dal fatto che abbia pubblicato un Journey. Prima o contestualmente sarebbe utile anche il punto 2 (azione "Pubblica" nell'interfaccia), perché oggi non c'è modo per una persona reale di pubblicare un Journey senza intervento diretto sul database.
 
 **File da leggere prima di iniziare**:
 - `app/journeys/[id]/page.tsx` — pattern di riferimento per una pagina pubblica (nessun `requireCreator()`, 404 se non pubblicato)
@@ -103,7 +104,7 @@ Il prossimo obiettivo consigliato è il punto 1 della Roadmap: la Creator Profil
 - Non scrivere codice subito: presentare prima un piano (indirizzo della pagina, dato che `username` su `User` è opzionale e non ancora impostabile da UI — probabile uso dell'id nel frattempo) e attendere conferma.
 
 **Vincoli da rispettare**:
-- La Creator Profile pubblica deve mostrare solo i Journey con `status === "PUBLISHED"` del creator.
+- Il Profilo pubblico deve mostrare solo i Journey con `status === "PUBLISHED"` della persona.
 - Non introdurre breaking change né modificare file non collegati al task.
 
 **Cosa deve essere aggiornato quando il task è completato**:

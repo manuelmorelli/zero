@@ -1,7 +1,7 @@
 ---
 title: User Flows
 doc_id: 13-user-flows
-version: "3.0"
+version: "3.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -69,9 +69,9 @@ Ogni flusso deve ridurre la complessità e mantenere il Journey al centro dell'e
 
 ### Accesso alla Dashboard
 
-1. Il creator accede alla Home, come ogni altra persona.
-2. Dalla Home apre la Dashboard tramite un link dedicato, visibile solo a chi ha un profilo Creator.
-3. Dalla Dashboard può gestire i propri Journey oppure aprire la Creator Profile o la Pagina Journey pubblica per vedere il proprio lavoro come lo vede un lettore reale.
+1. Chiunque accede alla Home dopo il login, indipendentemente dal fatto che abbia pubblicato un Journey.
+2. Chi ha scelto di pubblicare un proprio Journey apre la Dashboard tramite un link dedicato dalla Home.
+3. Dalla Dashboard può gestire i propri Journey oppure aprire il proprio Profilo o la Pagina Journey pubblica per vedere il proprio lavoro come lo vede un lettore reale.
 
 ---
 
@@ -110,7 +110,7 @@ Questa funzionalità permette al Journey di evolvere nel tempo senza perdere coe
 
 ### Community Premium
 
-1. L'utente visita il profilo del creator.
+1. L'utente visita il profilo della persona che offre la Community Premium.
 2. Visualizza i vantaggi della Community Premium.
 3. Attiva l'abbonamento.
 4. Accede ai contenuti riservati.

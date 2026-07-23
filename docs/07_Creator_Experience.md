@@ -1,7 +1,7 @@
 ---
 title: Creator Experience
 doc_id: 07-creator-experience
-version: "3.0"
+version: "3.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -14,6 +14,8 @@ related_docs:
 # Creator Experience
 
 ## Dichiarazione
+
+"Creator", in questo documento, non indica una categoria di utenti separata: indica lo stato di un utente che ha deciso di pubblicare un proprio Journey (vedi "Modello utente unico" in `00-project-context.md`). Ogni utente di Zero può trovarsi in questo stato, senza smettere di essere anche lettore dei Journey altrui. Questo documento descrive l'esperienza di chi si trova in quello stato.
 
 Su Zero il creator non produce contenuti per alimentare un algoritmo.
 

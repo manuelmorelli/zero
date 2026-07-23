@@ -1,7 +1,7 @@
 ---
 title: UI Pages
 doc_id: 14-ui-pages
-version: "3.0"
+version: "3.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -61,17 +61,19 @@ Consente di cercare:
 
 ---
 
-### Pagina Creator
+### Profilo
 
-Vetrina pubblica del creator, visibile a chiunque anche senza login — distinta dalla Dashboard, che è privata e riservata al creator proprietario.
+Rappresenta una persona, non un ruolo: è la stessa pagina per chiunque abbia un account Zero, con o senza Journey pubblicati. Visibile a chiunque, anche senza login — distinta dalla Dashboard, che è privata e riservata alla persona proprietaria.
+
+Se la persona ha pubblicato uno o più Journey, questi compaiono nel suo profilo.
 
 Contiene:
 
-- informazioni del creator;
-- Journey pubblicati;
-- Community Premium;
-- prodotti e servizi;
-- workshop ed eventi.
+- informazioni della persona;
+- Journey pubblicati (se presenti);
+- Community Premium (se attiva);
+- prodotti e servizi (se offerti);
+- workshop ed eventi (se organizzati).
 
 ---
 
@@ -99,9 +101,9 @@ L'utente può passare facilmente all'episodio precedente o successivo.
 
 ### Dashboard
 
-Centro operativo del creator.
+Centro operativo di chi sta pubblicando un Journey.
 
-Non è una pagina di destinazione: vi si accede tramite un link dalla Home, disponibile solo a chi ha già un profilo Creator. Il creator può sempre tornare a vedere il proprio Journey come lo vede un lettore reale, aprendo la Creator Profile o la Pagina Journey pubblica da qui.
+Non è una pagina di destinazione: vi si accede tramite un link dalla Home, disponibile solo a chi ha pubblicato (o sta per pubblicare) un Journey. Chi la usa può sempre tornare a vedere il proprio Journey come lo vede un lettore reale, aprendo il proprio Profilo o la Pagina Journey pubblica da qui.
 
 Permette di:
 

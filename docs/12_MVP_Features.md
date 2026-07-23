@@ -1,7 +1,7 @@
 ---
 title: MVP Features
 doc_id: 12-mvp-features
-version: "3.0"
+version: "3.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -51,7 +51,7 @@ Ha l'obiettivo di dimostrare che il concetto di Journey rappresenta un'alternati
 - Homepage.
 - Ricerca.
 - Scoperta di Journey.
-- Pagina creator.
+- Profilo utente.
 - Pagina Journey.
 
 ---
