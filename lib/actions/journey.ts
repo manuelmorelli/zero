@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
+import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 
 async function requireOwnedJourney(journeyId: string) {
   const { creator } = await requireCreator();
@@ -17,7 +18,7 @@ async function requireOwnedJourney(journeyId: string) {
 const JourneySchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
   description: z.string().trim().max(2000).optional(),
-  category: z.string().trim().max(40).optional(),
+  category: z.enum(JOURNEY_CATEGORIES).optional(),
   tags: z.string().trim().max(200).optional(),
 });
 

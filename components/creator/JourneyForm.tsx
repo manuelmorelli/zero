@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createJourney, updateJourney } from "@/lib/actions/journey";
+import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 
 type JourneyFormProps = {
   journey?: {
@@ -59,14 +60,19 @@ export function JourneyForm({ journey }: JourneyFormProps) {
           <label htmlFor="category" className="text-sm font-medium text-ink-muted">
             Category <span className="text-ink-faint">(optional)</span>
           </label>
-          <input
+          <select
             id="category"
             name="category"
-            type="text"
-            maxLength={40}
-            defaultValue={journey?.category ?? undefined}
+            defaultValue={journey?.category ?? ""}
             className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-          />
+          >
+            <option value="">Select a category</option>
+            {JOURNEY_CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label htmlFor="tags" className="text-sm font-medium text-ink-muted">

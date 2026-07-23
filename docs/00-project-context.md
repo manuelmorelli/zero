@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "3.1"
+version: "3.2"
 status: approved
 related_docs:
   - 01_Vision
@@ -137,6 +137,18 @@ La riorganizzazione tramite drag & drop di Capitoli ed Episodi è una funzionali
 Il creator può modificare l'ordine narrativo del Journey in qualsiasi momento senza alterare la cronologia reale degli eventi.
 
 La sequenza narrativa e la cronologia temporale sono considerate informazioni separate.
+
+### Categorie del Journey
+
+Le categorie ammesse per un Journey sono una lista fissa e ufficiale, non testo libero scelto dal creator.
+
+L'unica fonte di verità è `lib/constants/categories.ts`: sia il form di creazione/modifica del Journey sia qualunque pagina di Discovery basata su categoria (filtri, pagina Categories, ricerca) devono leggere da lì, senza duplicare l'elenco altrove.
+
+Questa scelta garantisce coerenza nella navigazione per categoria: senza una lista fissa, lo stesso concetto rischierebbe di comparire con grafie diverse (es. "Fitness" e "fitness" trattate come due categorie distinte).
+
+Aggiungere, rinominare o rimuovere una categoria significa modificare solo quel file: non è richiesta una migrazione del database, perché il campo resta un testo validato lato applicazione, non un enum a livello di database.
+
+Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 
 ### Lingua del Prodotto
 

@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getCurrentSession } from "@/lib/session";
+import { WatchEpisodeButton } from "@/components/journey/WatchEpisodeButton";
+import { FollowButton } from "@/components/creator/FollowButton";
 
 export default async function PublicJourneyPage({
   params,
@@ -25,6 +28,18 @@ export default async function PublicJourneyPage({
 
   if (!journey || journey.status !== "PUBLISHED") notFound();
 
+  const session = await getCurrentSession();
+  const isOwnJourney = session?.user.id === journey.creator.userId;
+  const followersCount = await prisma.follow.count({ where: { creatorId: journey.creatorId } });
+  const isFollowing =
+    session && !isOwnJourney
+      ? Boolean(
+          await prisma.follow.findUnique({
+            where: { userId_creatorId: { userId: session.user.id, creatorId: journey.creatorId } },
+          })
+        )
+      : false;
+
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
       <Link href="/" className="font-sans text-xl font-extrabold tracking-tight">
@@ -33,6 +48,17 @@ export default async function PublicJourneyPage({
 
       <h1 className="mt-8 text-2xl font-extrabold tracking-tight">{journey.title}</h1>
       <p className="mt-2 text-sm text-ink-muted">by {journey.creator.displayName}</p>
+
+      {!isOwnJourney && (
+        <div className="mt-4">
+          <FollowButton
+            creatorId={journey.creatorId}
+            initialFollowersCount={followersCount}
+            initialIsFollowing={isFollowing}
+            isLoggedIn={Boolean(session)}
+          />
+        </div>
+      )}
 
       {journey.description && (
         <p className="mt-4 text-sm text-ink-muted">{journey.description}</p>
@@ -74,7 +100,11 @@ export default async function PublicJourneyPage({
                 </p>
               )}
               {chapter.episodes.map((episode) => (
-                <div key={episode.id} className="rounded-xl border border-border bg-surface p-5">
+                <div
+                  key={episode.id}
+                  id={episode.id}
+                  className="rounded-xl border border-border bg-surface p-5 scroll-mt-16"
+                >
                   <p className="text-xs text-ink-faint">
                     {episode.occurredAt.toLocaleDateString("en-US", {
                       day: "numeric",
@@ -87,14 +117,7 @@ export default async function PublicJourneyPage({
                     <p className="mt-3 whitespace-pre-wrap text-sm text-ink">{episode.caption}</p>
                   )}
                   {episode.videoUrl && (
-                    <a
-                      href={episode.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-3 inline-block text-sm font-medium text-ink underline underline-offset-2"
-                    >
-                      Watch video
-                    </a>
+                    <WatchEpisodeButton episodeId={episode.id} videoUrl={episode.videoUrl} />
                   )}
                 </div>
               ))}
