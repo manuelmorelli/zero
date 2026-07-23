@@ -58,5 +58,5 @@ export async function createJourney(
     },
   });
 
-  redirect(`/creator/journeys/${journey.id}`);
+  redirect(`/dashboard/journeys/${journey.id}`);
 }

@@ -25,10 +25,10 @@ export default async function AccountPage() {
       </div>
 
       <Link
-        href={creator ? "/creator" : "/creator/new"}
+        href={creator ? "/dashboard" : "/dashboard/new"}
         className="mt-6 block rounded-full bg-ink px-6 py-3 text-center text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
       >
-        {creator ? "Go to creator dashboard" : "Become a creator"}
+        {creator ? "Go to Dashboard" : "Become a creator"}
       </Link>
 
       <SignOutButton className="mt-3 w-full rounded-full border border-border px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink-muted">

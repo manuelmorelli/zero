@@ -72,7 +72,7 @@ Ha l'obiettivo di dimostrare che il concetto di Journey rappresenta un'alternati
 
 ---
 
-### Dashboard Creator
+### Dashboard
 
 - Gestione dei Journey.
 - Gestione degli Updates.

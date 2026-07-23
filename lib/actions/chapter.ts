@@ -61,8 +61,8 @@ export async function createChapter(
     },
   });
 
-  revalidatePath(`/creator/journeys/${journey.id}`);
-  redirect(`/creator/journeys/${journey.id}`);
+  revalidatePath(`/dashboard/journeys/${journey.id}`);
+  redirect(`/dashboard/journeys/${journey.id}`);
 }
 
 export async function updateChapter(
@@ -91,8 +91,8 @@ export async function updateChapter(
     },
   });
 
-  revalidatePath(`/creator/journeys/${chapter.journeyId}`);
-  redirect(`/creator/journeys/${chapter.journeyId}/chapters/${chapter.id}`);
+  revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
+  redirect(`/dashboard/journeys/${chapter.journeyId}/chapters/${chapter.id}`);
 }
 
 export async function deleteChapter(formData: FormData): Promise<void> {
@@ -105,6 +105,6 @@ export async function deleteChapter(formData: FormData): Promise<void> {
     data: { deletedAt: new Date() },
   });
 
-  revalidatePath(`/creator/journeys/${chapter.journeyId}`);
-  redirect(`/creator/journeys/${chapter.journeyId}`);
+  revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
+  redirect(`/dashboard/journeys/${chapter.journeyId}`);
 }

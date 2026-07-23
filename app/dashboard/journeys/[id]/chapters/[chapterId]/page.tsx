@@ -26,7 +26,7 @@ export default async function ChapterManagePage({
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
-      <Link href={`/creator/journeys/${id}`} className="text-sm font-medium text-ink-muted hover:text-ink">
+      <Link href={`/dashboard/journeys/${id}`} className="text-sm font-medium text-ink-muted hover:text-ink">
         ← {chapter.journey.title}
       </Link>
 

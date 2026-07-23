@@ -29,7 +29,7 @@ export default async function CreatorDashboardPage() {
         </h1>
         {!hasActiveJourney && (
           <Link
-            href="/creator/journeys/new"
+            href="/dashboard/journeys/new"
             className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
           >
             New Journey
@@ -50,7 +50,7 @@ export default async function CreatorDashboardPage() {
         {journeys.map((journey) => (
           <Link
             key={journey.id}
-            href={`/creator/journeys/${journey.id}`}
+            href={`/dashboard/journeys/${journey.id}`}
             className="flex items-center justify-between rounded-xl border border-border bg-surface p-5 transition-colors hover:border-ink-muted"
           >
             <span className="text-sm font-semibold text-ink">{journey.title}</span>

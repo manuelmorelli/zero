@@ -30,7 +30,7 @@ export default async function JourneyManagePage({
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
-      <Link href="/creator" className="font-sans text-xl font-extrabold tracking-tight">
+      <Link href="/dashboard" className="font-sans text-xl font-extrabold tracking-tight">
         ZERO
       </Link>
 
@@ -45,6 +45,15 @@ export default async function JourneyManagePage({
           {STATUS_LABEL[journey.status] ?? journey.status}
         </span>
       </div>
+
+      {journey.status === "PUBLISHED" && (
+        <Link
+          href={`/journeys/${journey.id}`}
+          className="mt-4 inline-block text-sm font-medium text-ink underline underline-offset-2"
+        >
+          View public page →
+        </Link>
+      )}
 
       {(journey.category || journey.tags.length > 0) && (
         <div className="mt-4 flex flex-wrap gap-2">
@@ -73,7 +82,7 @@ export default async function JourneyManagePage({
           {chapters.map((chapter) => (
             <Link
               key={chapter.id}
-              href={`/creator/journeys/${journey.id}/chapters/${chapter.id}`}
+              href={`/dashboard/journeys/${journey.id}/chapters/${chapter.id}`}
               className="flex items-center justify-between rounded-xl border border-border bg-surface p-5 transition-colors hover:border-ink-muted"
             >
               <div>

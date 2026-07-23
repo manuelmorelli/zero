@@ -8,7 +8,7 @@ export default async function NewJourneyPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <div className="w-full max-w-lg">
-        <Link href="/creator" className="font-sans text-xl font-extrabold tracking-tight">
+        <Link href="/dashboard" className="font-sans text-xl font-extrabold tracking-tight">
           ZERO
         </Link>
         <h1 className="mt-8 text-2xl font-extrabold tracking-tight">

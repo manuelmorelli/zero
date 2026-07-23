@@ -7,7 +7,7 @@ export async function requireCreator() {
   const { user } = await requireSession();
 
   const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
-  if (!creator) redirect("/creator/new");
+  if (!creator) redirect("/dashboard/new");
 
   return { user, creator };
 }

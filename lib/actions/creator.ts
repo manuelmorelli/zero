@@ -17,7 +17,7 @@ export async function createCreatorProfile(
   const { user } = await requireSession();
 
   const existing = await prisma.creator.findUnique({ where: { userId: user.id } });
-  if (existing) redirect("/creator");
+  if (existing) redirect("/dashboard");
 
   const parsed = CreatorProfileSchema.safeParse({
     displayName: formData.get("displayName"),
@@ -36,5 +36,5 @@ export async function createCreatorProfile(
     },
   });
 
-  redirect("/creator");
+  redirect("/dashboard");
 }

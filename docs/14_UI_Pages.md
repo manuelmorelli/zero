@@ -29,7 +29,9 @@ Ogni pagina deve avere uno scopo preciso e guidare l'utente verso l'azione princ
 
 ### Home
 
-Punto di accesso principale alla piattaforma.
+Punto di accesso principale alla piattaforma, identico per ogni persona che ha fatto login — creator o no.
+
+Zero non separa "utenti" e "creator" come ruoli con destinazioni diverse: ogni persona può seguire Journey altrui e, allo stesso tempo, avere un proprio Journey da gestire. Per questo l'accesso dopo il login porta sempre alla Home, mai direttamente alla Dashboard.
 
 Contiene:
 
@@ -60,6 +62,8 @@ Consente di cercare:
 ---
 
 ### Pagina Creator
+
+Vetrina pubblica del creator, visibile a chiunque anche senza login — distinta dalla Dashboard, che è privata e riservata al creator proprietario.
 
 Contiene:
 
@@ -93,9 +97,11 @@ L'utente può passare facilmente all'episodio precedente o successivo.
 
 ## Area autenticata
 
-### Dashboard Creator
+### Dashboard
 
 Centro operativo del creator.
+
+Non è una pagina di destinazione: vi si accede tramite un link dalla Home, disponibile solo a chi ha già un profilo Creator. Il creator può sempre tornare a vedere il proprio Journey come lo vede un lettore reale, aprendo la Creator Profile o la Pagina Journey pubblica da qui.
 
 Permette di:
 

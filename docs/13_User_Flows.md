@@ -67,6 +67,14 @@ Ogni flusso deve ridurre la complessità e mantenere il Journey al centro dell'e
 
 ---
 
+### Accesso alla Dashboard
+
+1. Il creator accede alla Home, come ogni altra persona.
+2. Dalla Home apre la Dashboard tramite un link dedicato, visibile solo a chi ha un profilo Creator.
+3. Dalla Dashboard può gestire i propri Journey oppure aprire la Creator Profile o la Pagina Journey pubblica per vedere il proprio lavoro come lo vede un lettore reale.
+
+---
+
 ### Gestione del Journey
 
 Il creator può:

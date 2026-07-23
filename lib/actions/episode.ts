@@ -81,8 +81,8 @@ export async function createEpisode(
 
   // Il creator viene riportato alla pagina del Journey (non del capitolo) dopo la pubblicazione,
   // così ha un feedback visivo immediato che l'episodio è stato salvato.
-  revalidatePath(`/creator/journeys/${chapter.journeyId}`);
-  redirect(`/creator/journeys/${chapter.journeyId}`);
+  revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
+  redirect(`/dashboard/journeys/${chapter.journeyId}`);
 }
 
 export async function updateEpisode(
@@ -115,8 +115,8 @@ export async function updateEpisode(
     },
   });
 
-  revalidatePath(`/creator/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
-  redirect(`/creator/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+  revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+  redirect(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
 }
 
 export async function deleteEpisode(formData: FormData): Promise<void> {
@@ -129,6 +129,6 @@ export async function deleteEpisode(formData: FormData): Promise<void> {
     data: { deletedAt: new Date() },
   });
 
-  revalidatePath(`/creator/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
-  redirect(`/creator/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+  revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+  redirect(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
 }

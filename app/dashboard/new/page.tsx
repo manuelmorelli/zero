@@ -8,7 +8,7 @@ export default async function NewCreatorPage() {
   const { user } = await requireSession();
 
   const existing = await prisma.creator.findUnique({ where: { userId: user.id } });
-  if (existing) redirect("/creator");
+  if (existing) redirect("/dashboard");
 
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
