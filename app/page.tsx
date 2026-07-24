@@ -129,9 +129,9 @@ function SiteHeader() {
           <Logo className="h-6" />
         </Link>
         <nav className="hidden items-center gap-8 text-sm font-medium text-ink-muted md:flex">
-          <a href="#journey" className="hover:text-ink transition-colors">
+          <Link href="/categories" className="hover:text-ink transition-colors">
             Discover
-          </a>
+          </Link>
           <a href="#journey" className="hover:text-ink transition-colors">
             Journeys
           </a>

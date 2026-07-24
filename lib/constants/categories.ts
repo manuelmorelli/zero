@@ -30,3 +30,17 @@ export const JOURNEY_CATEGORIES = [
 ] as const;
 
 export type JourneyCategory = (typeof JOURNEY_CATEGORIES)[number];
+
+/** Slug leggibile per l'URL (es. "Mental Health" -> "mental-health"), derivato sempre da JOURNEY_CATEGORIES: mai definire uno slug a mano altrove. */
+export function categoryToSlug(category: JourneyCategory): string {
+  return category
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** Trova la categoria a partire dal suo slug, undefined se lo slug non corrisponde a nessuna categoria ammessa. */
+export function categoryFromSlug(slug: string): JourneyCategory | undefined {
+  return JOURNEY_CATEGORIES.find((category) => categoryToSlug(category) === slug);
+}
