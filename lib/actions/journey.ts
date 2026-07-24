@@ -138,7 +138,7 @@ export async function publishJourney(
 
   await prisma.journey.update({
     where: { id: journey.id },
-    data: { status: "PUBLISHED" },
+    data: { status: "PUBLISHED", publishedAt: journey.publishedAt ?? new Date() },
   });
 
   revalidatePath(`/dashboard/journeys/${journey.id}`);

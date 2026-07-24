@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "3.2"
+version: "3.3"
 status: approved
 related_docs:
   - 01_Vision
@@ -137,6 +137,16 @@ La riorganizzazione tramite drag & drop di Capitoli ed Episodi è una funzionali
 Il creator può modificare l'ordine narrativo del Journey in qualsiasi momento senza alterare la cronologia reale degli eventi.
 
 La sequenza narrativa e la cronologia temporale sono considerate informazioni separate.
+
+### Data di pubblicazione del Journey
+
+Il modello `Journey` include un campo `publishedAt`, distinto da `createdAt` (fissato alla creazione) e da `updatedAt` (cambia ad ogni modifica, anche non legata alla pubblicazione).
+
+`publishedAt` viene valorizzato una sola volta: la prima volta che un Journey passa da Bozza a Pubblicato. Se il Journey torna in Bozza e viene ripubblicato in seguito, `publishedAt` non cambia: resta la data della prima pubblicazione.
+
+Qualunque sezione o funzionalità che debba mostrare o ordinare i Journey in base a "quando sono stati pubblicati" (es. "New Journeys", il Feed dei creator seguiti) deve usare esclusivamente `publishedAt`. Non è mai corretto usare `updatedAt` per questo scopo, perché cambierebbe ad ogni modifica successiva del Journey, non solo alla pubblicazione.
+
+Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 
 ### Categorie del Journey
 

@@ -10,13 +10,14 @@ import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
   const continueJourneys = await getContinueJourneys();
+  const newJourneys = await getNewJourneys();
 
   return (
     <main>
       <SiteHeader />
       {continueJourneys.length > 0 && <ContinueJourney items={continueJourneys} />}
       <Hero />
-      <ExploreJourneys />
+      <NewJourneys journeys={newJourneys} />
       <StatsBar />
       <HowItWorks />
       <Faq />
@@ -153,17 +154,29 @@ function SiteHeader() {
 }
 
 /* ------------------------------------------------------------------ */
-/* EXPLORE JOURNEYS                                                     */
+/* NEW JOURNEYS                                                        */
 /* ------------------------------------------------------------------ */
 
-function ExploreJourneys() {
-  const journeys: JourneyCardData[] = [
-    { id: "1", title: "From burnout to balance", coverUrl: null, category: "Wellness", creator: { displayName: "Marco R." }, followersCount: 24000 },
-    { id: "2", title: "Stronger every day", coverUrl: null, category: "Fitness", creator: { displayName: "Sara J." }, followersCount: 18000 },
-    { id: "3", title: "Ride the unknown", coverUrl: null, category: "Sport", creator: { displayName: "David L." }, followersCount: 31000 },
-    { id: "4", title: "See the world differently", coverUrl: null, category: "Creativity", creator: { displayName: "Emma W." }, followersCount: 16000 },
-    { id: "5", title: "Build my startup", coverUrl: null, category: "Career", creator: { displayName: "James T." }, followersCount: 29000 },
-  ];
+async function getNewJourneys(): Promise<JourneyCardData[]> {
+  const journeys = await prisma.journey.findMany({
+    where: { status: "PUBLISHED", deletedAt: null },
+    orderBy: { publishedAt: "desc" },
+    take: 5,
+    include: { creator: { include: { _count: { select: { followers: true } } } } },
+  });
+
+  return journeys.map((journey) => ({
+    id: journey.id,
+    title: journey.title,
+    coverUrl: journey.coverUrl,
+    category: journey.category,
+    creator: { displayName: journey.creator.displayName },
+    followersCount: journey.creator._count.followers,
+  }));
+}
+
+function NewJourneys({ journeys }: { journeys: JourneyCardData[] }) {
+  if (journeys.length === 0) return null;
 
   return (
     <section id="journey" className="border-b border-border">
@@ -172,7 +185,7 @@ function ExploreJourneys() {
           <div className="mb-10 flex items-end justify-between">
             <div>
               <h2 className="font-sans text-3xl font-extrabold tracking-tight">
-                Featured Journeys
+                New Journeys
               </h2>
               <p className="mt-2 text-ink-muted">Real stories. Real impact.</p>
             </div>

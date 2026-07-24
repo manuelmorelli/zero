@@ -240,6 +240,7 @@ model Journey {
   journeyScore   Float         @default(0) // valore corrente, aggiornato dal job di scoring
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  publishedAt    DateTime? // valorizzato solo la prima volta che il Journey passa da Draft a Published; non cambia più in seguito
   deletedAt      DateTime?
 
   chapters    Chapter[]
