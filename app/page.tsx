@@ -8,9 +8,15 @@ import { Reveal } from "@/components/common/Reveal";
 import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
+import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 
 export default async function Home() {
-  const continueJourneys = await getContinueJourneys();
+  const session = await getCurrentSession();
+  const continueJourneys = await getContinueJourneys(session);
+  const recommendedJourneys = await getRecommendedJourneys({
+    userId: session?.user.id ?? null,
+    excludeJourneyIds: continueJourneys.map((item) => item.journeyId),
+  });
   const newJourneys = await getNewJourneys();
 
   return (
@@ -18,6 +24,7 @@ export default async function Home() {
       <SiteHeader />
       {continueJourneys.length > 0 && <ContinueJourney items={continueJourneys} />}
       <Hero />
+      {recommendedJourneys.length > 0 && <RecommendedJourneys journeys={recommendedJourneys} />}
       <NewJourneys journeys={newJourneys} />
       <StatsBar />
       <HowItWorks />
@@ -41,8 +48,9 @@ type ContinueJourneyItem = {
   episodeTitle: string | null;
 };
 
-async function getContinueJourneys(): Promise<ContinueJourneyItem[]> {
-  const session = await getCurrentSession();
+async function getContinueJourneys(
+  session: Awaited<ReturnType<typeof getCurrentSession>>
+): Promise<ContinueJourneyItem[]> {
   if (!session) return [];
 
   const progresses = await prisma.journeyProgress.findMany({
@@ -151,6 +159,35 @@ function SiteHeader() {
         </div>
       </div>
     </header>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* RECOMMENDED JOURNEYS                                                */
+/* ------------------------------------------------------------------ */
+
+function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
+  return (
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-7xl px-6 py-20">
+        <Reveal>
+          <div className="mb-10">
+            <h2 className="font-sans text-3xl font-extrabold tracking-tight">
+              Recommended for you
+            </h2>
+            <p className="mt-2 text-ink-muted">Picked based on who you follow.</p>
+          </div>
+        </Reveal>
+
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+          {journeys.map((journey, index) => (
+            <Reveal key={journey.id} delayMs={index * 80}>
+              <JourneyCard journey={journey} />
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
