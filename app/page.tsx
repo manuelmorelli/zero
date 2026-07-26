@@ -7,6 +7,7 @@ import { Hero } from "@/components/landing/Hero";
 import { Reveal } from "@/components/common/Reveal";
 import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 
 export default async function Home() {
   const continueJourneys = await getContinueJourneys();
@@ -165,6 +166,8 @@ async function getNewJourneys(): Promise<JourneyCardData[]> {
     include: { creator: { include: { _count: { select: { followers: true } } } } },
   });
 
+  if (journeys.length === 0) return DEMO_JOURNEYS;
+
   return journeys.map((journey) => ({
     id: journey.id,
     title: journey.title,
@@ -176,8 +179,6 @@ async function getNewJourneys(): Promise<JourneyCardData[]> {
 }
 
 function NewJourneys({ journeys }: { journeys: JourneyCardData[] }) {
-  if (journeys.length === 0) return null;
-
   return (
     <section id="journey" className="border-b border-border">
       <div className="mx-auto max-w-7xl px-6 py-20">
