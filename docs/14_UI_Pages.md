@@ -1,12 +1,13 @@
 ---
 title: UI Pages
 doc_id: 14-ui-pages
-version: "3.1"
+version: "3.3"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
   - 06_User_Experience
   - 07_Creator_Experience
+  - 09_Updates
   - 13_User_Flows
   - 15_Design_System
 ---
@@ -33,15 +34,20 @@ Punto di accesso principale alla piattaforma, identico per ogni persona che ha f
 
 Zero non separa "utenti" e "creator" come ruoli con destinazioni diverse: ogni persona può seguire Journey altrui e, allo stesso tempo, avere un proprio Journey da gestire. Per questo l'accesso dopo il login porta sempre alla Home, mai direttamente alla Dashboard.
 
-Contiene:
+Contiene, in quest'ordine:
 
 - Continue Your Journey;
+- Feed dei creator seguiti;
+- Updates dei creator seguiti;
 - Recommended Journeys;
+- Creator consigliati;
 - New Journeys;
 - Most Completed Journeys;
-- Categories;
-- Updates dei creator seguiti;
-- Creator consigliati.
+- Categories.
+
+L'ordine riflette la vicinanza all'utente: prima tutto ciò che riguarda le persone che segue già (continuità, Feed, Updates — massima rilevanza personale secondo `08_Algorithm.md`), poi ciò che aiuta a scoprire persone nuove (Recommended Journeys, Creator consigliati), infine i contenuti globali uguali per tutti (New Journeys, Most Completed Journeys), con Categories in fondo come strumento di navigazione libera per chi non ha trovato nulla di rilevante nelle sezioni precedenti.
+
+Il Feed dei creator seguiti e gli Updates dei creator seguiti sono due sezioni distinte, non intercambiabili: il Feed mostra eventi permanenti del Journey (nuovi Journey pubblicati, nuovi Episodi), gli Updates mostrano i contenuti brevi e temporanei descritti in `09_Updates.md`. Un creator seguito può comparire in una sezione, nell'altra, in entrambe o in nessuna delle due, a seconda di cosa ha effettivamente pubblicato.
 
 ---
 

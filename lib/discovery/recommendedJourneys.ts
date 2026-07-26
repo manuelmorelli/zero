@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
+import { getFollowedCreatorIds } from "@/lib/discovery/follows";
 
 type JourneyWithCreator = Awaited<ReturnType<typeof findPublishedJourneys>>[number];
 
@@ -66,14 +67,6 @@ export async function getRecommendedJourneys({
   }
 
   return selected.map(toJourneyCardData);
-}
-
-async function getFollowedCreatorIds(userId: string): Promise<string[]> {
-  const follows = await prisma.follow.findMany({
-    where: { userId },
-    select: { creatorId: true },
-  });
-  return follows.map((follow) => follow.creatorId);
 }
 
 async function getOwnCreatorId(userId: string): Promise<string | null> {

@@ -1,6 +1,7 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
+import { FeedItem } from "@/components/journey/FeedItem";
 import { AuthStatus } from "@/components/layout/AuthStatus";
 import { Logo } from "@/components/layout/Logo";
 import { Hero } from "@/components/landing/Hero";
@@ -9,20 +10,30 @@ import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
+import { getFollowedCreatorsFeed, type FeedItem as FeedItemData } from "@/lib/discovery/feed";
 
 export default async function Home() {
   const session = await getCurrentSession();
+  const userId = session?.user.id ?? null;
+
   const continueJourneys = await getContinueJourneys(session);
-  const recommendedJourneys = await getRecommendedJourneys({
-    userId: session?.user.id ?? null,
-    excludeJourneyIds: continueJourneys.map((item) => item.journeyId),
-  });
-  const newJourneys = await getNewJourneys();
+  const excludeFromDiscovery = continueJourneys.map((item) => item.journeyId);
+
+  const [followedFeed, recommendedJourneys] = await Promise.all([
+    getFollowedCreatorsFeed({ userId, excludeJourneyIds: excludeFromDiscovery }),
+    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery }),
+  ]);
+
+  const feedJourneyIds = followedFeed
+    .filter((item) => item.type === "journey")
+    .map((item) => item.journeyId);
+  const newJourneys = await getNewJourneys([...excludeFromDiscovery, ...feedJourneyIds]);
 
   return (
     <main>
       <SiteHeader />
       {continueJourneys.length > 0 && <ContinueJourney items={continueJourneys} />}
+      {followedFeed.length > 0 && <FollowedCreatorsFeed items={followedFeed} />}
       <Hero />
       {recommendedJourneys.length > 0 && <RecommendedJourneys journeys={recommendedJourneys} />}
       <NewJourneys journeys={newJourneys} />
@@ -127,6 +138,35 @@ function ContinueJourney({ items }: { items: ContinueJourneyItem[] }) {
 }
 
 /* ------------------------------------------------------------------ */
+/* FEED DEI CREATOR SEGUITI                                             */
+/* ------------------------------------------------------------------ */
+
+function FollowedCreatorsFeed({ items }: { items: FeedItemData[] }) {
+  return (
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-7xl px-6 py-14">
+        <Reveal>
+          <h2 className="font-sans text-2xl font-extrabold tracking-tight">
+            From creators you follow
+          </h2>
+        </Reveal>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          {items.map((item, index) => (
+            <Reveal
+              key={item.type === "journey" ? item.journeyId : item.episodeId}
+              delayMs={index * 60}
+            >
+              <FeedItem item={item} />
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* HEADER                                                              */
 /* ------------------------------------------------------------------ */
 
@@ -195,15 +235,23 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
 /* NEW JOURNEYS                                                        */
 /* ------------------------------------------------------------------ */
 
-async function getNewJourneys(): Promise<JourneyCardData[]> {
+async function getNewJourneys(excludeJourneyIds: string[] = []): Promise<JourneyCardData[]> {
   const journeys = await prisma.journey.findMany({
-    where: { status: "PUBLISHED", deletedAt: null },
+    where: { status: "PUBLISHED", deletedAt: null, id: { notIn: excludeJourneyIds } },
     orderBy: { publishedAt: "desc" },
     take: 5,
     include: { creator: { include: { _count: { select: { followers: true } } } } },
   });
 
-  if (journeys.length === 0) return DEMO_JOURNEYS;
+  if (journeys.length === 0) {
+    // Nessun risultato può voler dire "nessun Journey pubblicato" (mostra la demo) oppure
+    // "tutti i Journey pubblicati sono già esclusi" (es. tutti nel Feed): solo nel primo caso
+    // ha senso il fallback demo, altrimenti la sezione resta vuota di proposito.
+    const anyPublished = await prisma.journey.count({
+      where: { status: "PUBLISHED", deletedAt: null },
+    });
+    return anyPublished === 0 ? DEMO_JOURNEYS : [];
+  }
 
   return journeys.map((journey) => ({
     id: journey.id,
