@@ -25,9 +25,15 @@ export default async function PublicProfilePage({
   if (!user) notFound();
 
   const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
+  // Published Journeys are shown alongside archived ones: archiving retires a Journey
+  // from active management, but it stays visible on the public profile (never deleted).
   const journeys = creator
     ? await prisma.journey.findMany({
-        where: { creatorId: creator.id, status: "PUBLISHED" },
+        where: {
+          creatorId: creator.id,
+          status: { in: ["PUBLISHED", "ARCHIVED"] },
+          deletedAt: null,
+        },
         orderBy: { createdAt: "desc" },
       })
     : [];
@@ -75,7 +81,12 @@ export default async function PublicProfilePage({
         {creator && journeys.length > 0 && (
           <div className="grid gap-5 sm:grid-cols-2">
             {journeys.map((journey) => (
-              <Link key={journey.id} href={`/journeys/${journey.id}`}>
+              <Link key={journey.id} href={`/journeys/${journey.id}`} className="relative block">
+                {journey.status === "ARCHIVED" && (
+                  <span className="absolute right-3 top-3 z-10 rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-semibold text-white">
+                    Archived
+                  </span>
+                )}
                 <JourneyCard
                   journey={{
                     id: journey.id,

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { deleteExpiredUpdates } from "@/lib/updates";
+import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
+import { JourneyArchiveButton } from "@/components/creator/JourneyArchiveButton";
 import { UpdateForm } from "@/components/creator/UpdateForm";
 import { UpdateItem } from "@/components/creator/UpdateItem";
 
@@ -18,7 +20,19 @@ export default async function CreatorDashboardPage() {
     where: { creatorId: creator.id },
     orderBy: { createdAt: "desc" },
   });
-  const hasActiveJourney = journeys.some((journey) => journey.status !== "ARCHIVED");
+  const activeJourney = journeys.find((journey) => journey.status !== "ARCHIVED") ?? null;
+  const archivedJourneys = journeys.filter((journey) => journey.status === "ARCHIVED");
+
+  let chapterCount = 0;
+  let episodeCount = 0;
+  if (activeJourney) {
+    chapterCount = await prisma.chapter.count({
+      where: { journeyId: activeJourney.id, deletedAt: null },
+    });
+    episodeCount = await prisma.episode.count({
+      where: { deletedAt: null, chapter: { deletedAt: null, journeyId: activeJourney.id } },
+    });
+  }
 
   await deleteExpiredUpdates();
   const updates = await prisma.update.findMany({
@@ -36,7 +50,7 @@ export default async function CreatorDashboardPage() {
         <h1 className="text-2xl font-extrabold tracking-tight">
           Hi, {creator.displayName}
         </h1>
-        {!hasActiveJourney && (
+        {!activeJourney && (
           <Link
             href="/dashboard/journeys/new"
             className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
@@ -47,7 +61,7 @@ export default async function CreatorDashboardPage() {
       </div>
 
       <p className="mt-2 text-sm text-ink-muted">
-        Manage your Journeys from here.
+        Manage your Journey from here.
       </p>
 
       <Link
@@ -57,25 +71,79 @@ export default async function CreatorDashboardPage() {
         View public profile
       </Link>
 
-      <div className="mt-8 space-y-3">
-        {journeys.length === 0 && (
-          <p className="rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
-            You haven&apos;t created any Journeys yet.
+      <div className="mt-10">
+        <h2 className="text-lg font-bold text-ink">Your Journey</h2>
+
+        {!activeJourney && (
+          <p className="mt-4 rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+            You don&apos;t have an active Journey yet. Start one to begin sharing your story.
           </p>
         )}
-        {journeys.map((journey) => (
-          <Link
-            key={journey.id}
-            href={`/dashboard/journeys/${journey.id}`}
-            className="flex items-center justify-between rounded-xl border border-border bg-surface p-5 transition-colors hover:border-ink-muted"
-          >
-            <span className="text-sm font-semibold text-ink">{journey.title}</span>
-            <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-muted">
-              {STATUS_LABEL[journey.status] ?? journey.status}
-            </span>
-          </Link>
-        ))}
+
+        {activeJourney && (
+          <div className="mt-4 rounded-xl border border-border bg-surface p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-ink">{activeJourney.title}</h3>
+                <p className="mt-2 text-xs font-medium text-ink-muted">
+                  {chapterCount} {chapterCount === 1 ? "chapter" : "chapters"} · {episodeCount}{" "}
+                  {episodeCount === 1 ? "episode" : "episodes"}
+                </p>
+              </div>
+              <span className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-muted">
+                {STATUS_LABEL[activeJourney.status] ?? activeJourney.status}
+              </span>
+            </div>
+
+            <div className="mt-5 flex flex-wrap items-center gap-4">
+              <Link
+                href={`/dashboard/journeys/${activeJourney.id}`}
+                className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
+              >
+                Manage
+              </Link>
+              <JourneyPublishControl journeyId={activeJourney.id} status={activeJourney.status} />
+              {activeJourney.status === "PUBLISHED" && (
+                <Link
+                  href={`/journeys/${activeJourney.id}`}
+                  className="text-sm font-medium text-ink underline underline-offset-2"
+                >
+                  View public page →
+                </Link>
+              )}
+            </div>
+
+            <div className="mt-4 border-t border-border pt-4">
+              <JourneyArchiveButton journeyId={activeJourney.id} />
+            </div>
+          </div>
+        )}
       </div>
+
+      {archivedJourneys.length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-lg font-bold text-ink">Archived Journeys</h2>
+          <p className="mt-1 text-sm text-ink-muted">
+            Archived Journeys stay visible on your public profile. They can&apos;t be deleted or
+            reactivated.
+          </p>
+
+          <div className="mt-4 space-y-3">
+            {archivedJourneys.map((journey) => (
+              <Link
+                key={journey.id}
+                href={`/dashboard/journeys/${journey.id}`}
+                className="flex items-center justify-between rounded-xl border border-border bg-surface p-5 transition-colors hover:border-ink-muted"
+              >
+                <span className="text-sm font-semibold text-ink">{journey.title}</span>
+                <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-muted">
+                  Archived
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-12">
         <h2 className="text-lg font-bold text-ink">Updates</h2>

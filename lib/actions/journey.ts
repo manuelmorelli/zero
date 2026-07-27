@@ -169,3 +169,32 @@ export async function unpublishJourney(
   revalidatePath(`/journeys/${journey.id}`);
   return { error: null };
 }
+
+// Archiving is one-way in the MVP: no action ever moves a Journey out of
+// ARCHIVED again. A creator with an archived Journey is free to start a new
+// one (see createJourney), and the archived Journey stays visible on the
+// creator's public profile (never deleted).
+export async function archiveJourney(
+  _prevState: { error: string | null },
+  formData: FormData
+): Promise<{ error: string | null }> {
+  const journeyId = formData.get("journeyId");
+  if (typeof journeyId !== "string" || !journeyId) {
+    return { error: "Invalid journey." };
+  }
+  const journey = await requireOwnedJourney(journeyId);
+
+  if (journey.status === "ARCHIVED") {
+    return { error: "This Journey is already archived." };
+  }
+
+  await prisma.journey.update({
+    where: { id: journey.id },
+    data: { status: "ARCHIVED" },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/journeys/${journey.id}`);
+  revalidatePath(`/journeys/${journey.id}`);
+  return { error: null };
+}

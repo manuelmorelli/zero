@@ -6,6 +6,7 @@ import { ChapterForm } from "@/components/creator/ChapterForm";
 import { ChapterList } from "@/components/creator/ChapterList";
 import { JourneyForm } from "@/components/creator/JourneyForm";
 import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
+import { JourneyArchiveButton } from "@/components/creator/JourneyArchiveButton";
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: "Draft",
@@ -49,9 +50,17 @@ export default async function JourneyManagePage({
         </span>
       </div>
 
+      {journey.status === "ARCHIVED" && (
+        <p className="mt-4 rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-ink-muted">
+          This Journey is archived. It stays visible on your public profile, but it&apos;s no
+          longer your active Journey.
+        </p>
+      )}
+
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <JourneyPublishControl journeyId={journey.id} status={journey.status} />
-        {journey.status === "PUBLISHED" && (
+        {journey.status !== "ARCHIVED" && <JourneyArchiveButton journeyId={journey.id} />}
+        {(journey.status === "PUBLISHED" || journey.status === "ARCHIVED") && (
           <Link
             href={`/journeys/${journey.id}`}
             className="text-sm font-medium text-ink underline underline-offset-2"

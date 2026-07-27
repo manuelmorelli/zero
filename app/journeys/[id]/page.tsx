@@ -26,7 +26,8 @@ export default async function PublicJourneyPage({
     },
   });
 
-  if (!journey || journey.status !== "PUBLISHED") notFound();
+  if (!journey || journey.deletedAt || (journey.status !== "PUBLISHED" && journey.status !== "ARCHIVED"))
+    notFound();
 
   const session = await getCurrentSession();
   const isOwnJourney = session?.user.id === journey.creator.userId;
@@ -46,7 +47,14 @@ export default async function PublicJourneyPage({
         ZERO
       </Link>
 
-      <h1 className="mt-8 text-2xl font-extrabold tracking-tight">{journey.title}</h1>
+      <div className="mt-8 flex items-start justify-between gap-4">
+        <h1 className="text-2xl font-extrabold tracking-tight">{journey.title}</h1>
+        {journey.status === "ARCHIVED" && (
+          <span className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-muted">
+            Archived
+          </span>
+        )}
+      </div>
       <p className="mt-2 text-sm text-ink-muted">by {journey.creator.displayName}</p>
 
       {!isOwnJourney && (

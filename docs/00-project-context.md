@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "3.4"
+version: "3.6"
 status: approved
 related_docs:
   - 01_Vision
@@ -106,13 +106,11 @@ Ogni funzionalità deve contribuire alla creazione, fruizione, evoluzione o mone
 
 ### Struttura del Journey
 
-Ogni Journey è composto da:
+Ogni Journey è composto da una Presentazione e da una sequenza di Episodi.
 
-- Presentazione;
-- Capitoli;
-- Episodi.
+I Capitoli sono un livello organizzativo opzionale: il creator può usarli per suddividere il percorso in fasi quando lo ritiene utile, ma un Journey esiste e si legge normalmente anche senza Capitoli, come sequenza lineare di Episodi.
 
-Questa struttura rappresenta il modello narrativo ufficiale del progetto.
+Questa struttura rappresenta il modello narrativo ufficiale del progetto (dettaglio completo in `05_Journey.md`).
 
 ### Modello utente unico
 
@@ -145,6 +143,16 @@ Il modello `Journey` include un campo `publishedAt`, distinto da `createdAt` (fi
 `publishedAt` viene valorizzato una sola volta: la prima volta che un Journey passa da Bozza a Pubblicato. Se il Journey torna in Bozza e viene ripubblicato in seguito, `publishedAt` non cambia: resta la data della prima pubblicazione.
 
 Qualunque sezione o funzionalità che debba mostrare o ordinare i Journey in base a "quando sono stati pubblicati" (es. "New Journeys", il Feed dei creator seguiti) deve usare esclusivamente `publishedAt`. Non è mai corretto usare `updatedAt` per questo scopo, perché cambierebbe ad ogni modifica successiva del Journey, non solo alla pubblicazione.
+
+Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
+
+### Archiviazione del Journey
+
+Un creator può avere un solo Journey attivo alla volta, cioè con `status` diverso da `ARCHIVED`. La regola è applicata lato server al momento della creazione di un nuovo Journey.
+
+Un Journey può essere archiviato ma non eliminato: l'archiviazione imposta `status: ARCHIVED` sulla riga esistente, senza mai cancellarla né usare `deletedAt`. L'archiviazione è un'azione a senso unico nell'MVP: nessuna funzionalità riporta un Journey archiviato a Bozza o Pubblicato. Dopo aver archiviato il proprio Journey attivo, il creator può crearne uno nuovo, perché il vincolo "un solo Journey attivo" non conta più i Journey archiviati.
+
+Il Journey archiviato resta visibile nel profilo pubblico del creator, insieme ai Journey pubblicati, e la sua Pagina Journey pubblica resta raggiungibile (sola lettura, nessuna modifica alle regole di Follow). Un Journey archiviato non compare invece in nessuna sezione di Discovery (Home, Categories, Ricerca, Feed, Recommended): quelle sezioni restano riservate ai Journey con `status: PUBLISHED`, coerentemente con il loro scopo di mostrare contenuti attivi.
 
 Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 
