@@ -1,7 +1,7 @@
 ---
 title: Journey
 doc_id: 05-journey
-version: "3.0"
+version: "3.2"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -31,7 +31,7 @@ Il Journey è l'unità fondamentale del prodotto.
 
 ## Struttura
 
-Ogni Journey è composto da tre livelli.
+Un Journey è composto da una Presentazione e da una sequenza di Episodi. I Capitoli sono un livello organizzativo opzionale.
 
 ### Presentazione
 
@@ -48,25 +48,23 @@ Permette agli utenti di comprendere rapidamente il percorso prima di iniziare a 
 
 ---
 
-### Capitoli
-
-Ogni Journey è suddiviso in Capitoli.
-
-Ogni Capitolo rappresenta una fase significativa del percorso.
-
-La suddivisione è definita dal creator in base all'evoluzione del Journey.
-
----
-
 ### Episodi
 
-Gli Episodi documentano gli eventi che compongono il percorso.
+Gli Episodi sono l'elemento principale del Journey. Un Journey viene costruito attraverso una sequenza di Episodi che documentano l'evoluzione del percorso.
 
 Ogni Episodio rappresenta un aggiornamento permanente del Journey.
 
 Possono includere testo, immagini, video e altri contenuti supportati dalla piattaforma.
 
 Gli Episodi rimangono parte integrante del Journey e non scompaiono nel tempo.
+
+---
+
+### Capitoli (opzionali)
+
+I Capitoli sono un livello organizzativo facoltativo: un Journey può esistere ed essere pubblicato anche senza Capitoli, con gli Episodi che si susseguono direttamente in un'unica sequenza lineare.
+
+Quando il creator ritiene che raggruppare gli Episodi in fasi distinte migliori la comprensione del percorso, può organizzarli in Capitoli. Ogni Capitolo rappresenta allora una fase significativa del percorso — la suddivisione resta sempre una scelta del creator, mai un passaggio richiesto dalla piattaforma.
 
 ## Caratteristiche
 
@@ -80,13 +78,18 @@ Un Journey:
 
 ## Gestione
 
+Un creator può avere un solo Journey attivo alla volta, cioè non archiviato.
+
+Un Journey può essere archiviato ma non eliminato: l'archiviazione è un'azione a senso unico e non riporta il Journey in Bozza o Pubblicato. Dopo aver archiviato il proprio Journey attivo, il creator può crearne uno nuovo.
+
+Il Journey archiviato resta visibile nel profilo pubblico del creator e la sua Pagina Journey pubblica resta raggiungibile in sola lettura, ma non compare in nessuna sezione di Discovery (Home, Categories, Ricerca, Feed, Recommended), riservate ai Journey pubblicati.
+
 Ogni creator può:
 
-- creare più Journey;
 - modificare la struttura del Journey;
-- creare, modificare ed eliminare Capitoli;
 - creare, modificare ed eliminare Episodi;
-- riordinare liberamente Capitoli ed Episodi tramite drag & drop.
+- organizzare facoltativamente gli Episodi in Capitoli, creandoli, modificandoli o eliminandoli quando lo ritiene utile;
+- riordinare liberamente gli Episodi — e, se presenti, i Capitoli — tramite drag & drop.
 
 Il drag & drop rappresenta uno degli strumenti principali di Zero.
 
@@ -97,6 +100,8 @@ L'ordine narrativo e la sequenza temporale vengono gestiti come informazioni dis
 ## Esperienza utente
 
 Seguire un Journey significa seguire una trasformazione, non una sequenza di contenuti indipendenti.
+
+La lettura di un Journey è naturale e lineare: dal primo all'ultimo Episodio, nell'ordine scelto dal creator. Quando il Journey è organizzato in Capitoli, questi aiutano a orientarsi tra le fasi del racconto, ma non cambiano la natura sequenziale della lettura.
 
 L'utente può comprendere facilmente:
 

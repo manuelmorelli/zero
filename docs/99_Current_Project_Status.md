@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.17"
+version: "1.18"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -105,7 +105,7 @@ Nessuna funzionalità in corso di implementazione al momento.
 
 ### Ultimo task completato
 
-**Creator Dashboard come hub centrale + Archive Journey** — prima iniziativa della Fase 2 (Product Polish). `app/dashboard/page.tsx` riorganizzata attorno al Journey attivo del creator (statistiche, Manage, Publish/Unpublish, Archive) e allo storico dei Journey archiviati; nuova server action `archiveJourney` (mai una vera eliminazione, sempre `status: ARCHIVED`); Journey archiviato ora visibile con badge sia sul Profilo pubblico sia sulla Pagina Journey pubblica, mai nelle sezioni di Discovery. Dettaglio completo nella voce corrispondente in "Funzionalità implementate" più sopra.
+**Allineamento documentazione: Archive Journey nell'MVP** — task di sola documentazione, nessuna modifica al codice. La funzionalità di archiviazione era già stata implementata (vedi "Creator Dashboard come hub centrale + Archive Journey" più sopra) ma `05_Journey.md` e `12_MVP_Features.md` descrivevano ancora l'archiviazione come "prevista per una fase successiva". Corretto: `05_Journey.md` (sezione "Gestione", v3.1 → v3.2) e `12_MVP_Features.md` (sezione "Journey", v3.2 → v3.3) ora riportano le regole reali già in vigore — un solo Journey attivo, archiviazione senza eliminazione, nuovo Journey creabile dopo l'archiviazione, Journey archiviato visibile nel profilo pubblico ma escluso dalla Discovery — coerentemente con quanto già registrato in `00-project-context.md` (sezione "Archiviazione del Journey", nessuna modifica necessaria lì: descriveva già correttamente lo stato attuale). Verificato con `next build` e `tsc --noEmit` puliti, nessuna regressione (nessun file di codice toccato in questo task).
 
 ### Note prima del rilascio pubblico
 

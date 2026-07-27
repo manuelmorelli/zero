@@ -1,7 +1,7 @@
 ---
 title: MVP Features
 doc_id: 12-mvp-features
-version: "3.1"
+version: "3.3"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -40,9 +40,12 @@ Ha l'obiettivo di dimostrare che il concetto di Journey rappresenta un'alternati
 
 - Creazione di Journey.
 - Modifica di Journey.
-- Creazione di Capitoli.
-- Creazione di Episodi.
+- Creazione di Episodi (elemento principale del Journey).
+- Creazione di Capitoli (opzionale, per organizzare gli Episodi quando il creator lo ritiene utile).
 - Gestione della struttura del Journey.
+- Archiviazione del Journey (Archive Journey).
+
+Nell'MVP un creator può avere un solo Journey attivo alla volta (non archiviato). Un Journey può essere archiviato ma non eliminato; dopo l'archiviazione il creator può crearne uno nuovo. Un Journey archiviato resta visibile nel profilo pubblico ma non partecipa alla Discovery.
 
 ---
 
