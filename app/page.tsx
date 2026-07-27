@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { getFollowedCreatorsFeed, type FeedItem as FeedItemData } from "@/lib/discovery/feed";
+import { SearchForm, SearchIcon } from "@/components/search/SearchForm";
 
 export default async function Home() {
   const session = await getCurrentSession();
@@ -195,6 +196,16 @@ function SiteHeader() {
           </a>
         </nav>
         <div className="flex items-center gap-3">
+          <div className="hidden w-56 md:block">
+            <SearchForm />
+          </div>
+          <Link
+            href="/search"
+            aria-label="Search"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-ink-muted transition-colors hover:text-ink md:hidden"
+          >
+            <SearchIcon className="h-4 w-4" />
+          </Link>
           <AuthStatus />
         </div>
       </div>
