@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { FeedItem } from "@/components/journey/FeedItem";
+import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
 import { AuthStatus } from "@/components/layout/AuthStatus";
 import { Logo } from "@/components/layout/Logo";
 import { Hero } from "@/components/landing/Hero";
@@ -10,8 +11,12 @@ import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
+import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
 import { getFollowedCreatorsFeed, type FeedItem as FeedItemData } from "@/lib/discovery/feed";
+import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
+import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { SearchForm, SearchIcon } from "@/components/search/SearchForm";
+import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 
 export default async function Home() {
   const session = await getCurrentSession();
@@ -20,9 +25,11 @@ export default async function Home() {
   const continueJourneys = await getContinueJourneys(session);
   const excludeFromDiscovery = continueJourneys.map((item) => item.journeyId);
 
-  const [followedFeed, recommendedJourneys] = await Promise.all([
+  const [followedFeed, recommendedJourneys, recommendedCreators, categoryCounts] = await Promise.all([
     getFollowedCreatorsFeed({ userId, excludeJourneyIds: excludeFromDiscovery }),
     getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery }),
+    getRecommendedCreators({ userId }),
+    getJourneyCountsByCategory(),
   ]);
 
   const feedJourneyIds = followedFeed
@@ -37,7 +44,9 @@ export default async function Home() {
       {followedFeed.length > 0 && <FollowedCreatorsFeed items={followedFeed} />}
       <Hero />
       {recommendedJourneys.length > 0 && <RecommendedJourneys journeys={recommendedJourneys} />}
+      {recommendedCreators.length > 0 && <RecommendedCreators creators={recommendedCreators} />}
       <NewJourneys journeys={newJourneys} />
+      <Categories countByCategory={categoryCounts} />
       <StatsBar />
       <HowItWorks />
       <Faq />
@@ -243,6 +252,35 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
 }
 
 /* ------------------------------------------------------------------ */
+/* CREATOR CONSIGLIATI                                                 */
+/* ------------------------------------------------------------------ */
+
+function RecommendedCreators({ creators }: { creators: CreatorSearchResult[] }) {
+  return (
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-7xl px-6 py-20">
+        <Reveal>
+          <div className="mb-10">
+            <h2 className="font-sans text-3xl font-extrabold tracking-tight">
+              Creators to follow
+            </h2>
+            <p className="mt-2 text-ink-muted">People documenting journeys like the ones you follow.</p>
+          </div>
+        </Reveal>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {creators.map((creator, index) => (
+            <Reveal key={creator.id} delayMs={index * 80}>
+              <CreatorResultCard creator={creator} />
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* NEW JOURNEYS                                                        */
 /* ------------------------------------------------------------------ */
 
@@ -302,6 +340,53 @@ function NewJourneys({ journeys }: { journeys: JourneyCardData[] }) {
             </Reveal>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* CATEGORIES                                                           */
+/* ------------------------------------------------------------------ */
+
+function Categories({ countByCategory }: { countByCategory: Map<string, number> }) {
+  return (
+    <section className="border-b border-border bg-surface">
+      <div className="mx-auto max-w-7xl px-6 py-20">
+        <Reveal>
+          <div className="mb-10 flex items-end justify-between">
+            <div>
+              <h2 className="font-sans text-3xl font-extrabold tracking-tight">
+                Categories
+              </h2>
+              <p className="mt-2 text-ink-muted">Not sure where to start? Browse by category.</p>
+            </div>
+            <Link
+              href="/categories"
+              className="hidden text-sm font-semibold text-ink-muted hover:text-ink transition-colors sm:block"
+            >
+              View all →
+            </Link>
+          </div>
+        </Reveal>
+
+        <Reveal>
+          <div className="flex flex-wrap gap-3">
+            {JOURNEY_CATEGORIES.map((category) => {
+              const count = countByCategory.get(category) ?? 0;
+              return (
+                <Link
+                  key={category}
+                  href={`/categories/${categoryToSlug(category)}`}
+                  className="rounded-full border border-border bg-surface-2 px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-ink-muted"
+                >
+                  {category}
+                  <span className="ml-2 text-ink-faint">{count}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </Reveal>
       </div>
     </section>
   );

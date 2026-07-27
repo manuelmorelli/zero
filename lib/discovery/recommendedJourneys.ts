@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
-import { getFollowedCreatorIds } from "@/lib/discovery/follows";
+import { getFollowedCreatorIds, getOwnCreatorId, getFollowedCategories } from "@/lib/discovery/follows";
 
 type JourneyWithCreator = Awaited<ReturnType<typeof findPublishedJourneys>>[number];
 
@@ -39,7 +39,7 @@ export async function getRecommendedJourneys({
   const selectedIds = new Set<string>();
 
   const followedCategories = followedCreatorIds.length > 0
-    ? await getPublishedCategories(followedCreatorIds)
+    ? await getFollowedCategories(followedCreatorIds)
     : [];
 
   if (followedCategories.length > 0) {
@@ -67,25 +67,6 @@ export async function getRecommendedJourneys({
   }
 
   return selected.map(toJourneyCardData);
-}
-
-async function getOwnCreatorId(userId: string): Promise<string | null> {
-  const creator = await prisma.creator.findUnique({ where: { userId }, select: { id: true } });
-  return creator?.id ?? null;
-}
-
-async function getPublishedCategories(creatorIds: string[]): Promise<string[]> {
-  const journeys = await prisma.journey.findMany({
-    where: {
-      creatorId: { in: creatorIds },
-      status: "PUBLISHED",
-      deletedAt: null,
-      category: { not: null },
-    },
-    select: { category: true },
-    distinct: ["category"],
-  });
-  return journeys.map((journey) => journey.category).filter((category): category is string => category !== null);
 }
 
 async function findPublishedJourneys(filters: {

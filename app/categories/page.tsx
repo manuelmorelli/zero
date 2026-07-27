@@ -1,20 +1,6 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
-
-async function getJourneyCountsByCategory(): Promise<Map<string, number>> {
-  const counts = await prisma.journey.groupBy({
-    by: ["category"],
-    where: { status: "PUBLISHED", deletedAt: null },
-    _count: true,
-  });
-
-  return new Map(
-    counts
-      .filter((row): row is typeof row & { category: string } => row.category !== null)
-      .map((row) => [row.category, row._count])
-  );
-}
+import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 
 export default async function CategoriesPage() {
   const countByCategory = await getJourneyCountsByCategory();
