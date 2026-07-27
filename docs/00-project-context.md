@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "3.3"
+version: "3.4"
 status: approved
 related_docs:
   - 01_Vision
@@ -167,6 +167,14 @@ La lingua ufficiale dell'interfaccia utente di Zero è l'inglese.
 Ogni testo rivolto all'utente — pagine, form, messaggi di errore, email transazionali — deve essere scritto in inglese, in modo coerente su tutta la piattaforma.
 
 Commenti nel codice e documentazione tecnica possono restare in italiano, non essendo testo rivolto all'utente finale.
+
+Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
+
+### Updates: solo testo, scadenza senza job in background
+
+Il modello `Update` prevede in schema più tipi (`TEXT`, `IMAGE`, `VIDEO`, `POLL`, `QUESTION`), ma l'MVP implementa solo Updates di testo: gli altri tipi restano previsti nello schema per il futuro, senza bisogno di una nuova migrazione quando arriverà il loro turno.
+
+La scadenza a 24 ore (`09_Updates.md`) non è gestita da un cron job o da un servizio in background: `archivedAt` viene calcolato e salvato al momento della pubblicazione (`publishedAt + 24h`), e ogni lettura di Update (Dashboard del creator, sezione Home dei creator seguiti) esegue prima una pulizia lazy (`deleteExpiredUpdates` in `lib/updates.ts`) che elimina dal database gli Update già scaduti. Nessun Update scaduto resta quindi salvato più del necessario, senza introdurre infrastruttura aggiuntiva.
 
 Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 

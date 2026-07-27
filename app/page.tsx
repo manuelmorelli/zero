@@ -13,6 +13,8 @@ import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
 import { getFollowedCreatorsFeed, type FeedItem as FeedItemData } from "@/lib/discovery/feed";
+import { getFollowedCreatorsUpdates, type FollowedUpdate } from "@/lib/discovery/updates";
+import { UpdateCard } from "@/components/journey/UpdateCard";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { SearchForm, SearchIcon } from "@/components/search/SearchForm";
@@ -25,12 +27,14 @@ export default async function Home() {
   const continueJourneys = await getContinueJourneys(session);
   const excludeFromDiscovery = continueJourneys.map((item) => item.journeyId);
 
-  const [followedFeed, recommendedJourneys, recommendedCreators, categoryCounts] = await Promise.all([
-    getFollowedCreatorsFeed({ userId, excludeJourneyIds: excludeFromDiscovery }),
-    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery }),
-    getRecommendedCreators({ userId }),
-    getJourneyCountsByCategory(),
-  ]);
+  const [followedFeed, followedUpdates, recommendedJourneys, recommendedCreators, categoryCounts] =
+    await Promise.all([
+      getFollowedCreatorsFeed({ userId, excludeJourneyIds: excludeFromDiscovery }),
+      getFollowedCreatorsUpdates({ userId }),
+      getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery }),
+      getRecommendedCreators({ userId }),
+      getJourneyCountsByCategory(),
+    ]);
 
   const feedJourneyIds = followedFeed
     .filter((item) => item.type === "journey")
@@ -42,6 +46,7 @@ export default async function Home() {
       <SiteHeader />
       {continueJourneys.length > 0 && <ContinueJourney items={continueJourneys} />}
       {followedFeed.length > 0 && <FollowedCreatorsFeed items={followedFeed} />}
+      {followedUpdates.length > 0 && <FollowedCreatorsUpdates items={followedUpdates} />}
       <Hero />
       {recommendedJourneys.length > 0 && <RecommendedJourneys journeys={recommendedJourneys} />}
       {recommendedCreators.length > 0 && <RecommendedCreators creators={recommendedCreators} />}
@@ -168,6 +173,32 @@ function FollowedCreatorsFeed({ items }: { items: FeedItemData[] }) {
               delayMs={index * 60}
             >
               <FeedItem item={item} />
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* UPDATES DEI CREATOR SEGUITI                                          */
+/* ------------------------------------------------------------------ */
+
+function FollowedCreatorsUpdates({ items }: { items: FollowedUpdate[] }) {
+  return (
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-7xl px-6 py-14">
+        <Reveal>
+          <h2 className="font-sans text-2xl font-extrabold tracking-tight">
+            Updates from creators you follow
+          </h2>
+        </Reveal>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((item, index) => (
+            <Reveal key={item.id} delayMs={index * 60}>
+              <UpdateCard update={item} />
             </Reveal>
           ))}
         </div>

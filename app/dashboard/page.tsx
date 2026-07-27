@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
+import { deleteExpiredUpdates } from "@/lib/updates";
+import { UpdateForm } from "@/components/creator/UpdateForm";
+import { UpdateItem } from "@/components/creator/UpdateItem";
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: "Draft",
@@ -16,6 +19,12 @@ export default async function CreatorDashboardPage() {
     orderBy: { createdAt: "desc" },
   });
   const hasActiveJourney = journeys.some((journey) => journey.status !== "ARCHIVED");
+
+  await deleteExpiredUpdates();
+  const updates = await prisma.update.findMany({
+    where: { creatorId: creator.id, archivedAt: { gt: new Date() } },
+    orderBy: { publishedAt: "desc" },
+  });
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
@@ -66,6 +75,27 @@ export default async function CreatorDashboardPage() {
             </span>
           </Link>
         ))}
+      </div>
+
+      <div className="mt-12">
+        <h2 className="text-lg font-bold text-ink">Updates</h2>
+        <p className="mt-1 text-sm text-ink-muted">
+          Short, temporary posts for your followers. Each one disappears after 24 hours.
+        </p>
+
+        <div className="mt-4">
+          <UpdateForm />
+        </div>
+
+        <div className="mt-6 space-y-3">
+          {updates.length === 0 ? (
+            <p className="rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+              You don&apos;t have any active Updates right now.
+            </p>
+          ) : (
+            updates.map((update) => <UpdateItem key={update.id} update={update} />)
+          )}
+        </div>
       </div>
     </main>
   );
