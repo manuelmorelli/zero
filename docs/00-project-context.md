@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "3.6"
+version: "3.7"
 status: approved
 related_docs:
   - 01_Vision
@@ -165,6 +165,16 @@ L'unica fonte di verità è `lib/constants/categories.ts`: sia il form di creazi
 Questa scelta garantisce coerenza nella navigazione per categoria: senza una lista fissa, lo stesso concetto rischierebbe di comparire con grafie diverse (es. "Fitness" e "fitness" trattate come due categorie distinte).
 
 Aggiungere, rinominare o rimuovere una categoria significa modificare solo quel file: non è richiesta una migrazione del database, perché il campo resta un testo validato lato applicazione, non un enum a livello di database.
+
+Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
+
+### Onboarding
+
+Dopo la verifica dell'email, prima di poter vedere la Home, ogni nuovo utente passa da una schermata di Onboarding in cui seleziona i propri interessi tra le stesse categorie ufficiali dei Journey (`lib/constants/categories.ts`, unica fonte di verità, nessuna lista duplicata).
+
+La selezione di almeno un interesse è obbligatoria per procedere: è la regola minima che rende l'Onboarding un passaggio reale e non uno step sempre "vuoto" da saltare. Gli interessi sono salvati sull'utente (`User.interests`, lista di categorie) e non condizionano oggi nessun'altra funzionalità: sono una base pronta per una futura Discovery personalizzata sugli interessi dichiarati, non ancora usata da Recommended Journeys/Creator o dal Feed.
+
+Finché un utente non ha completato l'Onboarding, la Home lo rimanda automaticamente a `/onboarding` (controllo autoritativo, non un semplice redirect post-login): questo copre qualunque modo con cui l'utente arrivi alla Home (verifica email, login successivo, navigazione diretta), non solo il primo accesso.
 
 Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 

@@ -1,5 +1,6 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { FeedItem } from "@/components/journey/FeedItem";
 import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
@@ -23,6 +24,15 @@ import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 export default async function Home() {
   const session = await getCurrentSession();
   const userId = session?.user.id ?? null;
+
+  // Onboarding (selezione interessi) è obbligatorio prima di poter vedere la Home.
+  if (userId) {
+    const currentUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { interests: true },
+    });
+    if (currentUser && currentUser.interests.length === 0) redirect("/onboarding");
+  }
 
   const continueJourneys = await getContinueJourneys(session);
   const excludeFromDiscovery = continueJourneys.map((item) => item.journeyId);

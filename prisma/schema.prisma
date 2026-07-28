@@ -118,6 +118,9 @@ model User {
   emailVerified Boolean       @default(false)
   avatarUrl     String? // mappato da Better Auth come campo "image", vedi user.fields in lib/auth.ts
   bio           String?
+  // Categorie scelte durante l'Onboarding (stessa lista fissa di JOURNEY_CATEGORIES,
+  // vedi lib/constants/categories.ts). Vuoto = Onboarding non ancora completato.
+  interests     String[]      @default([])
   status        AccountStatus @default(ACTIVE)
   lastLoginAt   DateTime?
   createdAt     DateTime      @default(now())

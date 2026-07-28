@@ -64,7 +64,7 @@ function RegisterForm() {
       name,
       email,
       password,
-      callbackURL: "/",
+      callbackURL: "/onboarding",
     });
     setLoading(false);
 
