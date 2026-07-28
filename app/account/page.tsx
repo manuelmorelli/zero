@@ -2,10 +2,17 @@ import Link from "next/link";
 import { requireSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { SignOutButton } from "@/components/common/SignOutButton";
+import { AccountForm } from "@/components/account/AccountForm";
 
 export default async function AccountPage() {
   const { user } = await requireSession();
-  const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
+  const [creator, profile] = await Promise.all([
+    prisma.creator.findUnique({ where: { userId: user.id } }),
+    prisma.user.findUniqueOrThrow({
+      where: { id: user.id },
+      select: { name: true, username: true, bio: true, interests: true },
+    }),
+  ]);
 
   return (
     <main className="mx-auto max-w-lg px-6 py-16">
@@ -20,8 +27,11 @@ export default async function AccountPage() {
       </h1>
 
       <div className="mt-8 space-y-4 rounded-xl border border-border bg-surface p-6">
-        <InfoRow label="Name" value={user.name} />
         <InfoRow label="Email" value={user.email} />
+      </div>
+
+      <div className="mt-8">
+        <AccountForm user={profile} />
       </div>
 
       <Link
