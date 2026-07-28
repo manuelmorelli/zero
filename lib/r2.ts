@@ -1,0 +1,51 @@
+import { randomUUID } from "crypto";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { VIDEO_EXTENSIONS } from "@/lib/constants/video";
+
+const bucket = process.env.R2_BUCKET_NAME!;
+
+const s3 = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+});
+
+export function newVideoKey(contentType: string): string {
+  return `episodes/${randomUUID()}.${VIDEO_EXTENSIONS[contentType]}`;
+}
+
+/** URL temporaneo (5 minuti) per caricare il file direttamente dal browser a R2. */
+export async function getVideoUploadUrl(key: string, contentType: string): Promise<string> {
+  const command = new PutObjectCommand({ Bucket: bucket, Key: key, ContentType: contentType });
+  return getSignedUrl(s3, command, { expiresIn: 300 });
+}
+
+/** URL temporaneo (1 ora) per la riproduzione, rigenerato a ogni caricamento della pagina. */
+export async function getVideoPlaybackUrl(key: string): Promise<string> {
+  const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+  return getSignedUrl(s3, command, { expiresIn: 3600 });
+}
+
+/** Dimensione reale del file caricato: la verifica del limite avviene qui, non sull'URL di upload. */
+export async function getVideoSize(key: string): Promise<number | null> {
+  try {
+    const result = await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
+    return result.ContentLength ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteVideo(key: string): Promise<void> {
+  await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key })).catch(() => {});
+}

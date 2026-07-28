@@ -275,7 +275,7 @@ model Episode {
   chapterId   String
   chapter     Chapter  @relation(fields: [chapterId], references: [id])
   title       String
-  videoUrl    String?
+  videoKey    String?
   caption     String?
   // Data reale in cui l'evento è accaduto, separata dall'ordine narrativo
   // (vedi 05_Journey.md: ordine narrativo e cronologia reale sono informazioni distinte).

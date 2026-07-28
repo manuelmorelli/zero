@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
-import { WatchEpisodeButton } from "@/components/journey/WatchEpisodeButton";
+import { getVideoPlaybackUrl } from "@/lib/r2";
+import { EpisodeVideoPlayer } from "@/components/journey/EpisodeVideoPlayer";
 import { FollowButton } from "@/components/creator/FollowButton";
 
 export default async function PublicJourneyPage({
@@ -28,6 +29,17 @@ export default async function PublicJourneyPage({
 
   if (!journey || journey.deletedAt || (journey.status !== "PUBLISHED" && journey.status !== "ARCHIVED"))
     notFound();
+
+  const episodesWithVideo = journey.chapters
+    .flatMap((chapter) => chapter.episodes)
+    .filter((episode) => episode.videoKey);
+  const playbackUrls = new Map(
+    await Promise.all(
+      episodesWithVideo.map(
+        async (episode) => [episode.id, await getVideoPlaybackUrl(episode.videoKey!)] as const
+      )
+    )
+  );
 
   const session = await getCurrentSession();
   const isOwnJourney = session?.user.id === journey.creator.userId;
@@ -124,8 +136,8 @@ export default async function PublicJourneyPage({
                   {episode.caption && (
                     <p className="mt-3 whitespace-pre-wrap text-sm text-ink">{episode.caption}</p>
                   )}
-                  {episode.videoUrl && (
-                    <WatchEpisodeButton episodeId={episode.id} videoUrl={episode.videoUrl} />
+                  {episode.videoKey && (
+                    <EpisodeVideoPlayer episodeId={episode.id} src={playbackUrls.get(episode.id)!} />
                   )}
                 </div>
               ))}

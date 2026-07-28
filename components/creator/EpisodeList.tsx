@@ -22,7 +22,7 @@ type EpisodeListItem = {
   id: string;
   title: string;
   caption: string | null;
-  videoUrl: string | null;
+  videoKey: string | null;
   occurredAt: Date;
 };
 

@@ -12,7 +12,7 @@ type EpisodeItemProps = {
     id: string;
     title: string;
     caption: string | null;
-    videoUrl: string | null;
+    videoKey: string | null;
     occurredAt: Date;
   };
 };
@@ -78,16 +78,7 @@ export function EpisodeItem({ chapterId, episode }: EpisodeItemProps) {
       </div>
 
       {episode.caption && <p className="mt-3 whitespace-pre-wrap text-sm text-ink">{episode.caption}</p>}
-      {episode.videoUrl && (
-        <a
-          href={episode.videoUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 inline-block text-sm font-medium text-ink underline underline-offset-2"
-        >
-          Watch video
-        </a>
-      )}
+      {episode.videoKey && <p className="mt-3 text-sm text-ink-muted">🎬 Video attached</p>}
     </div>
   );
 }

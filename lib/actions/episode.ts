@@ -6,20 +6,22 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
+import { deleteVideo, getVideoSize, getVideoUploadUrl, newVideoKey } from "@/lib/r2";
+import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 
 const EpisodeSchema = z
   .object({
     title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
     caption: z.string().trim().max(10000).optional(),
-    videoUrl: z.string().trim().url("That doesn't look like a valid video URL.").max(500).optional().or(z.literal("")),
+    videoKey: z.string().trim().max(500).optional().or(z.literal("")),
     occurredAt: z
       .string()
       .trim()
       .min(1, "Let us know when this episode happened.")
       .pipe(z.coerce.date({ message: "Invalid date." })),
   })
-  .refine((data) => data.caption || data.videoUrl, {
-    message: "Add a caption or a video URL.",
+  .refine((data) => data.caption || data.videoKey, {
+    message: "Add a caption or upload a video.",
     path: ["caption"],
   });
 
@@ -43,6 +45,41 @@ async function requireOwnedEpisode(episodeId: string) {
   return episode;
 }
 
+// Genera l'URL temporaneo con cui il browser carica il file direttamente su R2,
+// senza farlo transitare dal nostro server (evita il limite di 1MB delle Server Action).
+export async function createEpisodeVideoUploadUrl(
+  ownerId: string,
+  ownerType: "chapter" | "episode",
+  contentType: string
+): Promise<{ uploadUrl: string; key: string } | { error: string }> {
+  if (ownerType === "chapter") {
+    await requireOwnedChapter(ownerId);
+  } else {
+    await requireOwnedEpisode(ownerId);
+  }
+
+  if (!ALLOWED_VIDEO_TYPES.has(contentType)) {
+    return { error: "Unsupported video format." };
+  }
+
+  const key = newVideoKey(contentType);
+  const uploadUrl = await getVideoUploadUrl(key, contentType);
+  return { uploadUrl, key };
+}
+
+// La dimensione dichiarata dal browser non è affidabile: il limite va verificato sul
+// file effettivamente arrivato su R2, non sull'URL di upload (che non lo impone).
+async function assertVideoWithinLimit(videoKey: string | undefined): Promise<string | null> {
+  if (!videoKey) return null;
+  const size = await getVideoSize(videoKey);
+  if (size === null) return "Video upload not found. Please try uploading again.";
+  if (size > MAX_VIDEO_SIZE_BYTES) {
+    await deleteVideo(videoKey);
+    return "Video is too large (max 1GB).";
+  }
+  return null;
+}
+
 export async function createEpisode(
   _prevState: { error: string | null },
   formData: FormData
@@ -56,12 +93,15 @@ export async function createEpisode(
   const parsed = EpisodeSchema.safeParse({
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
-    videoUrl: formData.get("videoUrl") || undefined,
+    videoKey: formData.get("videoKey") || undefined,
     occurredAt: formData.get("occurredAt"),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
+
+  const sizeError = await assertVideoWithinLimit(parsed.data.videoKey || undefined);
+  if (sizeError) return { error: sizeError };
 
   const lastEpisode = await prisma.episode.findFirst({
     where: { chapterId: chapter.id, deletedAt: null },
@@ -73,7 +113,7 @@ export async function createEpisode(
       chapterId: chapter.id,
       title: parsed.data.title,
       caption: parsed.data.caption,
-      videoUrl: parsed.data.videoUrl || undefined,
+      videoKey: parsed.data.videoKey || undefined,
       occurredAt: parsed.data.occurredAt,
       order: (lastEpisode?.order ?? 0) + 1,
     },
@@ -98,11 +138,18 @@ export async function updateEpisode(
   const parsed = EpisodeSchema.safeParse({
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
-    videoUrl: formData.get("videoUrl") || undefined,
+    videoKey: formData.get("videoKey") || undefined,
     occurredAt: formData.get("occurredAt"),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
+  }
+
+  const newVideoKeyValue = parsed.data.videoKey || null;
+  const replacesVideo = newVideoKeyValue !== episode.videoKey;
+  if (replacesVideo) {
+    const sizeError = await assertVideoWithinLimit(newVideoKeyValue ?? undefined);
+    if (sizeError) return { error: sizeError };
   }
 
   await prisma.episode.update({
@@ -110,10 +157,15 @@ export async function updateEpisode(
     data: {
       title: parsed.data.title,
       caption: parsed.data.caption,
-      videoUrl: parsed.data.videoUrl || null,
+      videoKey: newVideoKeyValue,
       occurredAt: parsed.data.occurredAt,
     },
   });
+
+  // Il vecchio file resta orfano su R2 se non viene ripulito qui: nessun'altra riga lo referenzia più.
+  if (replacesVideo && episode.videoKey) {
+    await deleteVideo(episode.videoKey);
+  }
 
   revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
   redirect(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);

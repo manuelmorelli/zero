@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useId } from "react";
-import { createEpisode, updateEpisode } from "@/lib/actions/episode";
+import { useActionState, useId, useState } from "react";
+import { createEpisode, createEpisodeVideoUploadUrl, updateEpisode } from "@/lib/actions/episode";
+import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 
 type EpisodeFormProps = {
   chapterId: string;
@@ -9,13 +10,34 @@ type EpisodeFormProps = {
     id: string;
     title: string;
     caption: string | null;
-    videoUrl: string | null;
+    videoKey: string | null;
     occurredAt: Date;
   };
 };
 
 function toDateInputValue(date: Date): string {
   return date.toISOString().slice(0, 10);
+}
+
+function formatMB(bytes: number): string {
+  return `${Math.round(bytes / (1024 * 1024))}MB`;
+}
+
+function uploadWithProgress(url: string, file: File, onProgress: (percent: number) => void): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url);
+    xhr.setRequestHeader("Content-Type", file.type);
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress(Math.round((event.loaded / event.total) * 100));
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) resolve();
+      else reject(new Error("Upload failed."));
+    };
+    xhr.onerror = () => reject(new Error("Upload failed."));
+    xhr.send(file);
+  });
 }
 
 export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
@@ -25,9 +47,51 @@ export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
     { error: null }
   );
 
+  const [videoKey, setVideoKey] = useState<string | null>(episode?.videoKey ?? null);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setUploadError(null);
+
+    if (!ALLOWED_VIDEO_TYPES.has(file.type)) {
+      setUploadError("Unsupported video format.");
+      return;
+    }
+    if (file.size > MAX_VIDEO_SIZE_BYTES) {
+      setUploadError(`Video is too large (max ${formatMB(MAX_VIDEO_SIZE_BYTES)}).`);
+      return;
+    }
+
+    setUploadProgress(0);
+    try {
+      const result = await createEpisodeVideoUploadUrl(
+        episode ? episode.id : chapterId,
+        episode ? "episode" : "chapter",
+        file.type
+      );
+      if ("error" in result) {
+        setUploadError(result.error);
+        setUploadProgress(null);
+        return;
+      }
+      await uploadWithProgress(result.uploadUrl, file, setUploadProgress);
+      setVideoKey(result.key);
+    } catch {
+      setUploadError("Upload failed. Please try again.");
+    } finally {
+      setUploadProgress(null);
+    }
+  }
+
   return (
     <form action={formAction} className="space-y-4">
       <input type="hidden" name={episode ? "episodeId" : "chapterId"} value={episode ? episode.id : chapterId} />
+      <input type="hidden" name="videoKey" value={videoKey ?? ""} />
 
       <div>
         <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
@@ -61,18 +125,23 @@ export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
       </div>
 
       <div>
-        <label htmlFor={`${uid}-videoUrl`} className="text-sm font-medium text-ink-muted">
-          Video URL (temporary) <span className="text-ink-faint">(optional)</span>
+        <label htmlFor={`${uid}-video`} className="text-sm font-medium text-ink-muted">
+          Video <span className="text-ink-faint">(optional, max {formatMB(MAX_VIDEO_SIZE_BYTES)})</span>
         </label>
         <input
-          id={`${uid}-videoUrl`}
-          name="videoUrl"
-          type="url"
-          maxLength={500}
-          placeholder="https://…"
-          defaultValue={episode?.videoUrl ?? undefined}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          id={`${uid}-video`}
+          type="file"
+          accept="video/*"
+          onChange={handleFileChange}
+          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-1.5 file:text-sm file:font-semibold file:text-bg"
         />
+        {uploadProgress !== null && (
+          <p className="mt-1.5 text-sm text-ink-muted">Uploading… {uploadProgress}%</p>
+        )}
+        {uploadError && <p className="mt-1.5 text-sm text-danger">{uploadError}</p>}
+        {uploadProgress === null && !uploadError && videoKey && (
+          <p className="mt-1.5 text-sm text-ink-muted">Video ready.</p>
+        )}
       </div>
 
       <div>
@@ -93,7 +162,7 @@ export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
 
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || uploadProgress !== null}
         className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
         {pending ? "Saving…" : episode ? "Save changes" : "Add episode"}
