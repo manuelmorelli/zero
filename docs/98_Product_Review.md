@@ -36,7 +36,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ## Upload
 
-☐ [High] Replace the temporary Video URL workflow with real video uploads.
+☑ [High] Replace the temporary Video URL workflow with real video uploads.
 ☐ [High] Support uploads from desktop and mobile devices.
 ☐ [Medium] Design the future upload experience (progress, processing state, error handling).
 ☐ [Medium] Add Episode thumbnail support.
