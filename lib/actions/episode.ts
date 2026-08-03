@@ -25,35 +25,48 @@ const EpisodeSchema = z
     path: ["caption"],
   });
 
-async function requireOwnedChapter(chapterId: string) {
+async function requireOwnedJourney(journeyId: string) {
   const { creator } = await requireCreator();
-  const chapter = await prisma.chapter.findUnique({
-    where: { id: chapterId },
-    include: { journey: true },
-  });
-  if (!chapter || chapter.journey.creatorId !== creator.id) notFound();
-  return chapter;
+  const journey = await prisma.journey.findUnique({ where: { id: journeyId } });
+  if (!journey || journey.creatorId !== creator.id) notFound();
+  return journey;
 }
 
 async function requireOwnedEpisode(episodeId: string) {
   const { creator } = await requireCreator();
   const episode = await prisma.episode.findUnique({
     where: { id: episodeId },
-    include: { chapter: { include: { journey: true } } },
+    include: { journey: true },
   });
-  if (!episode || episode.chapter.journey.creatorId !== creator.id) notFound();
+  if (!episode || episode.journey.creatorId !== creator.id) notFound();
   return episode;
+}
+
+// Il Capitolo è un livello organizzativo opzionale (05_Journey.md): un chapterId
+// vuoto/assente è valido e significa "nessun capitolo". Quando è presente, deve
+// comunque appartenere allo stesso Journey posseduto dal creator.
+async function resolveChapterId(rawChapterId: FormDataEntryValue | null, journeyId: string): Promise<string | null> {
+  if (typeof rawChapterId !== "string" || rawChapterId === "") return null;
+  const { creator } = await requireCreator();
+  const chapter = await prisma.chapter.findUnique({
+    where: { id: rawChapterId },
+    include: { journey: true },
+  });
+  if (!chapter || chapter.journey.creatorId !== creator.id || chapter.journeyId !== journeyId) {
+    notFound();
+  }
+  return rawChapterId;
 }
 
 // Genera l'URL temporaneo con cui il browser carica il file direttamente su R2,
 // senza farlo transitare dal nostro server (evita il limite di 1MB delle Server Action).
 export async function createEpisodeVideoUploadUrl(
   ownerId: string,
-  ownerType: "chapter" | "episode",
+  ownerType: "journey" | "episode",
   contentType: string
 ): Promise<{ uploadUrl: string; key: string } | { error: string }> {
-  if (ownerType === "chapter") {
-    await requireOwnedChapter(ownerId);
+  if (ownerType === "journey") {
+    await requireOwnedJourney(ownerId);
   } else {
     await requireOwnedEpisode(ownerId);
   }
@@ -84,11 +97,12 @@ export async function createEpisode(
   _prevState: { error: string | null },
   formData: FormData
 ): Promise<{ error: string | null }> {
-  const chapterId = formData.get("chapterId");
-  if (typeof chapterId !== "string" || !chapterId) {
-    return { error: "Invalid chapter." };
+  const journeyId = formData.get("journeyId");
+  if (typeof journeyId !== "string" || !journeyId) {
+    return { error: "Invalid journey." };
   }
-  const chapter = await requireOwnedChapter(chapterId);
+  const journey = await requireOwnedJourney(journeyId);
+  const chapterId = await resolveChapterId(formData.get("chapterId"), journey.id);
 
   const parsed = EpisodeSchema.safeParse({
     title: formData.get("title"),
@@ -104,13 +118,14 @@ export async function createEpisode(
   if (sizeError) return { error: sizeError };
 
   const lastEpisode = await prisma.episode.findFirst({
-    where: { chapterId: chapter.id, deletedAt: null },
+    where: { journeyId: journey.id, chapterId, deletedAt: null },
     orderBy: { order: "desc" },
   });
 
   await prisma.episode.create({
     data: {
-      chapterId: chapter.id,
+      journeyId: journey.id,
+      chapterId,
       title: parsed.data.title,
       caption: parsed.data.caption,
       videoKey: parsed.data.videoKey || undefined,
@@ -119,10 +134,11 @@ export async function createEpisode(
     },
   });
 
-  // Il creator viene riportato alla pagina del Journey (non del capitolo) dopo la pubblicazione,
-  // così ha un feedback visivo immediato che l'episodio è stato salvato.
-  revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
-  redirect(`/dashboard/journeys/${chapter.journeyId}`);
+  // Il creator viene riportato alla pagina del Journey (hub di gestione di Capitoli ed
+  // Episodi), così ha un feedback visivo immediato che l'episodio è stato salvato.
+  revalidatePath(`/dashboard/journeys/${journey.id}`);
+  if (chapterId) revalidatePath(`/dashboard/journeys/${journey.id}/chapters/${chapterId}`);
+  redirect(`/dashboard/journeys/${journey.id}`);
 }
 
 export async function updateEpisode(
@@ -134,6 +150,7 @@ export async function updateEpisode(
     return { error: "Invalid episode." };
   }
   const episode = await requireOwnedEpisode(episodeId);
+  const chapterId = await resolveChapterId(formData.get("chapterId"), episode.journeyId);
 
   const parsed = EpisodeSchema.safeParse({
     title: formData.get("title"),
@@ -155,6 +172,7 @@ export async function updateEpisode(
   await prisma.episode.update({
     where: { id: episode.id },
     data: {
+      chapterId,
       title: parsed.data.title,
       caption: parsed.data.caption,
       videoKey: newVideoKeyValue,
@@ -167,8 +185,10 @@ export async function updateEpisode(
     await deleteVideo(episode.videoKey);
   }
 
-  revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
-  redirect(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+  revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
+  if (episode.chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${episode.chapterId}`);
+  if (chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${chapterId}`);
+  redirect(`/dashboard/journeys/${episode.journeyId}`);
 }
 
 export async function deleteEpisode(formData: FormData): Promise<void> {
@@ -181,17 +201,20 @@ export async function deleteEpisode(formData: FormData): Promise<void> {
     data: { deletedAt: new Date() },
   });
 
-  revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
-  redirect(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+  revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
+  if (episode.chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${episode.chapterId}`);
+  redirect(`/dashboard/journeys/${episode.journeyId}`);
 }
 
 // Reorders by swapping `order` with the adjacent sibling. Simple by design: no
 // batch reindexing, no drag & drop payload — just "move this one episode by one position".
+// Siblings are scoped to the same group (same Journey, and same Chapter or same
+// "no chapter" bucket): reordering never mixes episodes across different groups.
 async function moveEpisode(episodeId: string, direction: "up" | "down") {
   const episode = await requireOwnedEpisode(episodeId);
 
   const siblings = await prisma.episode.findMany({
-    where: { chapterId: episode.chapterId, deletedAt: null },
+    where: { journeyId: episode.journeyId, chapterId: episode.chapterId, deletedAt: null },
     orderBy: { order: "asc" },
   });
   const index = siblings.findIndex((sibling) => sibling.id === episode.id);
@@ -215,7 +238,7 @@ export async function moveEpisodeToIndex(episodeId: string, targetIndex: number)
   const episode = await requireOwnedEpisode(episodeId);
 
   const siblings = await prisma.episode.findMany({
-    where: { chapterId: episode.chapterId, deletedAt: null },
+    where: { journeyId: episode.journeyId, chapterId: episode.chapterId, deletedAt: null },
     orderBy: { order: "asc" },
   });
   const currentIndex = siblings.findIndex((sibling) => sibling.id === episodeId);
@@ -229,5 +252,6 @@ export async function moveEpisodeToIndex(episodeId: string, targetIndex: number)
     await moveEpisode(episodeId, direction);
   }
 
-  revalidatePath(`/dashboard/journeys/${episode.chapter.journeyId}/chapters/${episode.chapterId}`);
+  revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
+  if (episode.chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${episode.chapterId}`);
 }

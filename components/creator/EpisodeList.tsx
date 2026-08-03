@@ -24,13 +24,16 @@ type EpisodeListItem = {
   caption: string | null;
   videoKey: string | null;
   occurredAt: Date;
+  chapterId: string | null;
 };
 
 export function EpisodeList({
-  chapterId,
+  journeyId,
+  chapters,
   episodes,
 }: {
-  chapterId: string;
+  journeyId: string;
+  chapters: { id: string; title: string }[];
   episodes: EpisodeListItem[];
 }) {
   const [items, setItems] = useState(episodes);
@@ -74,7 +77,7 @@ export function EpisodeList({
       <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
         <div className="space-y-3">
           {items.map((episode) => (
-            <EpisodeItem key={episode.id} chapterId={chapterId} episode={episode} />
+            <EpisodeItem key={episode.id} journeyId={journeyId} chapters={chapters} episode={episode} />
           ))}
         </div>
       </SortableContext>

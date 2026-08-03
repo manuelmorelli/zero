@@ -18,28 +18,22 @@ export async function getLatestVideos({ limit = 10 }: { limit?: number } = {}): 
     where: {
       videoKey: { not: null },
       deletedAt: null,
-      chapter: {
-        deletedAt: null,
-        journey: { status: "PUBLISHED", deletedAt: null },
-      },
+      OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
+      journey: { status: "PUBLISHED", deletedAt: null },
     },
     orderBy: { createdAt: "desc" },
     take: limit,
     include: {
-      chapter: {
-        include: {
-          journey: { include: { creator: true } },
-        },
-      },
+      journey: { include: { creator: true } },
     },
   });
 
   return episodes.map((episode) => ({
     episodeId: episode.id,
-    journeyId: episode.chapter.journey.id,
+    journeyId: episode.journey.id,
     title: episode.title,
-    coverUrl: episode.chapter.journey.coverUrl,
-    creatorName: episode.chapter.journey.creator.displayName,
+    coverUrl: episode.journey.coverUrl,
+    creatorName: episode.journey.creator.displayName,
     createdAt: episode.createdAt,
   }));
 }

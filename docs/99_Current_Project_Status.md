@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.26"
+version: "1.27"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -91,6 +91,8 @@ Verificate end-to-end su database reale (Neon) e coerenti visivamente con il des
 
 - **Revisione della lista categorie** — su richiesta di Manuel, dopo una revisione dell'elenco per sovrapposizioni e macro-aree mancanti. Unica modifica a `lib/constants/categories.ts` (`JOURNEY_CATEGORIES`, tuttora l'unica fonte di verità, nessuna migrazione: il campo resta una stringa validata solo lato applicazione). Accorpate due coppie di categorie quasi identiche: "Sustainability" + "Environment" → **"Sustainability & Environment"**; "Minimalism" + "Slow Living" → **"Minimalism & Slow Living"**. Aggiunte tre categorie mancanti rispetto al tipo di storie che Zero vuole raccontare: **"Recovery & Sobriety"** (percorsi di uscita da dipendenze), **"Health & Illness Recovery"** (recupero da malattia/infortunio/intervento, distinto da Fitness e da Mental Health) e **"Spirituality"** (percorsi spirituali, esplicitamente senza legarla a una religione specifica). Lista passata da 24 a 25 categorie. Verificato che tutti i punti che leggono `JOURNEY_CATEGORIES` (Onboarding, Account, form di creazione/modifica Journey, pagina Categories e le sue pagine di categoria, sezione Categories in Home) la importano dallo stesso file, nessun elenco duplicato altrove nel codice da aggiornare a mano; la Ricerca (`/search`) non ha un filtro a elenco fisso per categoria (cerca per testo libero sul campo `category`, corrispondenza parziale), quindi non necessitava modifiche. Verificato con `tsc --noEmit` e `next build` puliti.
 
+- **Capitoli opzionali nello schema** — chiude il debito tecnico segnato in `11_Database_Architecture.md` e in Roadmap (Fase 2): `05_Journey.md` e `00-project-context.md` dichiarano da tempo i Capitoli come livello organizzativo opzionale, ma lo schema Prisma richiedeva ancora un Capitolo per ogni Episodio. `Episode.chapterId` è ora opzionale (`String?`); ogni Episodio ha inoltre un nuovo campo `journeyId` diretto (obbligatorio), così resta collegato al proprio Journey anche senza passare da un Capitolo — necessario perché prima l'unico modo di risalire dall'Episodio al Journey era passare dal Capitolo. Migrazione `20260803154620_episode_optional_chapter`: aggiunge `journeyId`, lo valorizza per i 3 episodi già esistenti copiandolo dal loro Capitolo (backfill), poi lo rende obbligatorio; `chapterId` diventa nullable con `ON DELETE SET NULL` invece di `RESTRICT`. Tutte le query che risalivano da Episodio a Journey passando per `episode.chapter.journey` sono state aggiornate per usare `episode.journey` direttamente (`lib/actions/progress.ts`, `lib/discovery/feed.ts`, `lib/discovery/latestVideos.ts`); i conteggi episodi che filtravano solo su Capitoli non eliminati (`lib/actions/journey.ts` per i requisiti di pubblicazione, `app/dashboard/page.tsx`) ora includono anche gli episodi senza Capitolo con `OR: [{ chapterId: null }, { chapter: { deletedAt: null } }]`, per continuare a nascondere gli episodi rimasti agganciati a un Capitolo eliminato (soft delete) senza escludere quelli senza Capitolo. `EpisodeForm.tsx` ha un nuovo campo "Chapter" (`<select>`), condiviso tra creazione e modifica, con "No chapter" come opzione di default e un testo esplicativo ("Use chapters only if you want to group related episodes — not required."); la pagina di gestione del Journey (`/dashboard/journeys/[id]`) ha guadagnato una nuova sezione "Episodes" (lista cronologica semplice degli episodi senza Capitolo, stesso pattern drag & drop già in uso) accanto a quella "Chapters" già esistente, così un episodio può essere creato/gestito senza passare per forza dalla pagina di un Capitolo. La Pagina Journey pubblica (`app/journeys/[id]/page.tsx`) mostra ora prima gli episodi senza Capitolo (lista semplice) e poi i Capitoli con i loro episodi raggruppati sotto, riusando un nuovo componente condiviso `components/journey/EpisodeCard.tsx` (prima la card era duplicata inline solo per gli episodi di Capitolo). Verificato con `tsc --noEmit` e `next build` puliti, ed end-to-end con Playwright via Node (stessa convenzione già in uso: installato con `--no-save`, disinstallato a fine verifica) su dati reali di Neon: creator di prova, Journey di prova con un episodio senza Capitolo (dropdown verificato sul valore di default "No chapter" e sul testo esplicativo) e un secondo episodio assegnato a un Capitolo creato al volo, pubblicazione del Journey, verifica visiva e testuale della Pagina Journey pubblica (episodio senza Capitolo mostrato come voce cronologica semplice, episodio con Capitolo raggruppato sotto il suo titolo) — nessun errore in console, dati di test creati e rimossi senza lasciare traccia su Neon.
+
 ### Decisioni tecniche chiave
 
 - **Pattern feature**: ogni nuova funzionalità segue lo stesso schema — server action in `lib/actions/*.ts` con validazione Zod → redirect → form client con `useActionState`.
@@ -120,7 +122,7 @@ Nessuna funzionalità in corso di implementazione al momento.
 
 ### Ultimo task completato
 
-**Revisione della lista categorie** — vedi la voce corrispondente più sopra in "Funzionalità implementate" per il dettaglio completo (accorpamenti "Sustainability & Environment" e "Minimalism & Slow Living", nuove categorie "Recovery & Sobriety", "Health & Illness Recovery", "Spirituality").
+**Capitoli opzionali nello schema** — vedi la voce corrispondente più sopra in "Funzionalità implementate" per il dettaglio completo (`Episode.chapterId` ora nullable, nuovo `Episode.journeyId` diretto, dropdown "Chapter" nel form Episodio, nuova sezione "Episodes" nella pagina di gestione del Journey, Pagina Journey pubblica che mostra sia episodi senza Capitolo sia Capitoli con episodi raggruppati).
 
 ### Note prima del rilascio pubblico
 
@@ -172,7 +174,7 @@ Non ancora iniziata come iniziativa dedicata. Alcune pagine esistono già a live
 - ⬜ **Loading States** — non iniziato.
 - 🟡 **Empty States** — già presenti in diversi punti (Dashboard, pagine pubbliche), nessuna revisione sistematica.
 - 🟡 **Error States** — messaggi di errore dei form già presenti; nessuna pagina di errore dedicata.
-- ⬜ **Capitoli opzionali nello schema** — `05_Journey.md` e `00-project-context.md` dichiarano i Capitoli come livello organizzativo opzionale, ma lo schema Prisma attuale richiede ancora un Capitolo per ogni Episodio: un Journey senza Capitoli non è oggi realmente possibile da creare. Serve una migrazione (Episodio collegato direttamente al Journey, Capitolo facoltativo) prima che la regola di prodotto sia vera anche nel database, non solo nella documentazione (vedi `11_Database_Architecture.md`).
+- ✅ **Capitoli opzionali nello schema** — vedi la voce corrispondente in "Funzionalità implementate" più sopra.
 
 ### Phase 3 — Video Platform
 

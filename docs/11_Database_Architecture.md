@@ -1,7 +1,7 @@
 ---
 title: Database Architecture
 doc_id: 11-database-architecture
-version: "3.1"
+version: "3.2"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -88,7 +88,7 @@ Le relazioni tra le entità devono:
 - preservare l'integrità referenziale;
 - facilitare interrogazioni efficienti.
 
-Nello schema attuale ogni Episodio richiede un Capitolo di appartenenza: è una limitazione tecnica dell'MVP, non una regola di prodotto definitiva. Il modello narrativo ufficiale (`05_Journey.md`) prevede Capitoli opzionali; l'adeguamento dello schema per riflettere questa opzionalità è previsto per una fase successiva, non contestuale a questo aggiornamento della documentazione.
+`Episode.chapterId` è opzionale (`String?`), coerente con il modello narrativo ufficiale (`05_Journey.md`): un Episodio può esistere senza Capitolo. Ogni Episodio ha inoltre un `journeyId` diretto, così resta collegato al proprio Journey anche senza passare da un Capitolo (migrazione `20260803154620_episode_optional_chapter`, con backfill di `journeyId` dai Capitoli esistenti).
 
 ## Regole
 

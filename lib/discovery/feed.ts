@@ -66,7 +66,7 @@ export async function getFollowedCreatorsFeed({
   const items: FeedItem[] = [
     ...newJourneys.map(toJourneyFeedItem),
     ...newEpisodes
-      .filter((episode) => episode.createdAt > episode.chapter.journey.publishedAt!)
+      .filter((episode) => episode.createdAt > episode.journey.publishedAt!)
       .map(toEpisodeFeedItem),
   ];
 
@@ -95,18 +95,16 @@ function findNewEpisodes(creatorIds: string[], excludeJourneyIds: string[], limi
   return prisma.episode.findMany({
     where: {
       deletedAt: null,
-      chapter: {
+      OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
+      journey: {
+        creatorId: { in: creatorIds },
+        status: "PUBLISHED",
         deletedAt: null,
-        journey: {
-          creatorId: { in: creatorIds },
-          status: "PUBLISHED",
-          deletedAt: null,
-          publishedAt: { not: null },
-          id: { notIn: excludeJourneyIds },
-        },
+        publishedAt: { not: null },
+        id: { notIn: excludeJourneyIds },
       },
     },
-    include: { chapter: { include: { journey: { include: { creator: true } } } } },
+    include: { journey: { include: { creator: true } } },
     orderBy: { createdAt: "desc" },
     take: Math.max(limit * 4, 20),
   });
@@ -127,7 +125,7 @@ function toJourneyFeedItem(journey: NewJourney): FeedItem {
 }
 
 function toEpisodeFeedItem(episode: NewEpisode): FeedItem {
-  const journey = episode.chapter.journey;
+  const journey = episode.journey;
   return {
     type: "episode",
     date: episode.createdAt,

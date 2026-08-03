@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { getVideoPlaybackUrl } from "@/lib/r2";
-import { EpisodeVideoPlayer } from "@/components/journey/EpisodeVideoPlayer";
+import { EpisodeCard } from "@/components/journey/EpisodeCard";
 import { FollowButton } from "@/components/creator/FollowButton";
 import { BackButton } from "@/components/common/BackButton";
 
@@ -25,15 +25,22 @@ export default async function PublicJourneyPage({
           episodes: { where: { deletedAt: null }, orderBy: { order: "asc" } },
         },
       },
+      // Episodi senza capitolo: i Capitoli sono un livello organizzativo opzionale
+      // (05_Journey.md), quindi il Journey deve leggersi anche solo come questa lista.
+      episodes: {
+        where: { chapterId: null, deletedAt: null },
+        orderBy: { order: "asc" },
+      },
     },
   });
 
   if (!journey || journey.deletedAt || (journey.status !== "PUBLISHED" && journey.status !== "ARCHIVED"))
     notFound();
 
-  const episodesWithVideo = journey.chapters
-    .flatMap((chapter) => chapter.episodes)
-    .filter((episode) => episode.videoKey);
+  const episodesWithVideo = [
+    ...journey.episodes,
+    ...journey.chapters.flatMap((chapter) => chapter.episodes),
+  ].filter((episode) => episode.videoKey);
   const playbackUrls = new Map(
     await Promise.all(
       episodesWithVideo.map(
@@ -104,10 +111,18 @@ export default async function PublicJourneyPage({
       )}
 
       <div className="mt-10 space-y-8">
-        {journey.chapters.length === 0 && (
+        {journey.episodes.length === 0 && journey.chapters.length === 0 && (
           <p className="rounded-xl border border-border bg-surface p-5 text-sm text-ink-muted">
-            This Journey doesn&apos;t have any chapters yet.
+            This Journey doesn&apos;t have any episodes yet.
           </p>
+        )}
+
+        {journey.episodes.length > 0 && (
+          <div className="space-y-3">
+            {journey.episodes.map((episode) => (
+              <EpisodeCard key={episode.id} episode={episode} videoSrc={playbackUrls.get(episode.id)} />
+            ))}
+          </div>
         )}
 
         {journey.chapters.map((chapter) => (
@@ -124,26 +139,7 @@ export default async function PublicJourneyPage({
                 </p>
               )}
               {chapter.episodes.map((episode) => (
-                <div
-                  key={episode.id}
-                  id={episode.id}
-                  className="rounded-xl border border-border bg-surface p-5 scroll-mt-16"
-                >
-                  <p className="text-xs text-ink-faint">
-                    {episode.occurredAt.toLocaleDateString("en-US", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </p>
-                  <h3 className="mt-1 text-sm font-semibold text-ink">{episode.title}</h3>
-                  {episode.caption && (
-                    <p className="mt-3 whitespace-pre-wrap text-sm text-ink">{episode.caption}</p>
-                  )}
-                  {episode.videoKey && (
-                    <EpisodeVideoPlayer episodeId={episode.id} src={playbackUrls.get(episode.id)!} />
-                  )}
-                </div>
+                <EpisodeCard key={episode.id} episode={episode} videoSrc={playbackUrls.get(episode.id)} />
               ))}
             </div>
           </div>

@@ -11,17 +11,16 @@ export async function recordEpisodeProgress(episodeId: string): Promise<void> {
 
   const episode = await prisma.episode.findUnique({
     where: { id: episodeId },
-    include: { chapter: true },
   });
   if (!episode) return;
 
   await prisma.journeyProgress.upsert({
     where: {
-      userId_journeyId: { userId: session.user.id, journeyId: episode.chapter.journeyId },
+      userId_journeyId: { userId: session.user.id, journeyId: episode.journeyId },
     },
     create: {
       userId: session.user.id,
-      journeyId: episode.chapter.journeyId,
+      journeyId: episode.journeyId,
       currentEpisodeId: episode.id,
     },
     update: {

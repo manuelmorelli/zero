@@ -247,6 +247,7 @@ model Journey {
   deletedAt      DateTime?
 
   chapters    Chapter[]
+  episodes    Episode[]
   progresses  JourneyProgress[]
   analyticsSnapshots Analytics[]
 
@@ -272,8 +273,13 @@ model Chapter {
 
 model Episode {
   id          String   @id @default(uuid())
-  chapterId   String
-  chapter     Chapter  @relation(fields: [chapterId], references: [id])
+  // Ogni Episodio appartiene sempre a un Journey; il Capitolo è un livello
+  // organizzativo opzionale (05_Journey.md), quindi chapterId può essere null:
+  // un Episodio senza Capitolo si legge nella sequenza cronologica del Journey.
+  journeyId   String
+  journey     Journey  @relation(fields: [journeyId], references: [id])
+  chapterId   String?
+  chapter     Chapter? @relation(fields: [chapterId], references: [id])
   title       String
   videoKey    String?
   caption     String?
@@ -285,7 +291,7 @@ model Episode {
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
 
-  @@index([chapterId, order])
+  @@index([journeyId, chapterId, order])
   @@map("episodes")
 }
 

@@ -127,7 +127,11 @@ export async function publishJourney(
     issues.push("a Presentation");
   }
   const episodeCount = await prisma.episode.count({
-    where: { deletedAt: null, chapter: { deletedAt: null, journeyId: journey.id } },
+    where: {
+      deletedAt: null,
+      journeyId: journey.id,
+      OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
+    },
   });
   if (episodeCount === 0) {
     issues.push("at least one Episode");

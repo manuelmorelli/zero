@@ -5,13 +5,17 @@ import { createEpisode, createEpisodeVideoUploadUrl, updateEpisode } from "@/lib
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 
 type EpisodeFormProps = {
-  chapterId: string;
+  journeyId: string;
+  chapters: { id: string; title: string }[];
+  /** Preseleziona un capitolo quando il form è mostrato dentro la pagina di quel capitolo. */
+  defaultChapterId?: string | null;
   episode?: {
     id: string;
     title: string;
     caption: string | null;
     videoKey: string | null;
     occurredAt: Date;
+    chapterId: string | null;
   };
 };
 
@@ -40,7 +44,7 @@ function uploadWithProgress(url: string, file: File, onProgress: (percent: numbe
   });
 }
 
-export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
+export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: EpisodeFormProps) {
   const uid = useId();
   const [state, formAction, pending] = useActionState(
     episode ? updateEpisode : createEpisode,
@@ -70,8 +74,8 @@ export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
     setUploadProgress(0);
     try {
       const result = await createEpisodeVideoUploadUrl(
-        episode ? episode.id : chapterId,
-        episode ? "episode" : "chapter",
+        episode ? episode.id : journeyId,
+        episode ? "episode" : "journey",
         file.type
       );
       if ("error" in result) {
@@ -90,7 +94,7 @@ export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
 
   return (
     <form action={formAction} className="space-y-4">
-      <input type="hidden" name={episode ? "episodeId" : "chapterId"} value={episode ? episode.id : chapterId} />
+      <input type="hidden" name={episode ? "episodeId" : "journeyId"} value={episode ? episode.id : journeyId} />
       <input type="hidden" name="videoKey" value={videoKey ?? ""} />
 
       <div>
@@ -122,6 +126,28 @@ export function EpisodeForm({ chapterId, episode }: EpisodeFormProps) {
           defaultValue={episode?.caption ?? undefined}
           className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
+      </div>
+
+      <div>
+        <label htmlFor={`${uid}-chapter`} className="text-sm font-medium text-ink-muted">
+          Chapter
+        </label>
+        <select
+          id={`${uid}-chapter`}
+          name="chapterId"
+          defaultValue={episode?.chapterId ?? defaultChapterId ?? ""}
+          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+        >
+          <option value="">No chapter</option>
+          {chapters.map((chapter) => (
+            <option key={chapter.id} value={chapter.id}>
+              {chapter.title}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1.5 text-xs text-ink-faint">
+          Use chapters only if you want to group related episodes — not required.
+        </p>
       </div>
 
       <div>

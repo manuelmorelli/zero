@@ -24,6 +24,12 @@ export default async function ChapterManagePage({
   });
   if (!chapter || chapter.journeyId !== id || chapter.journey.creatorId !== creator.id) notFound();
 
+  const chapters = await prisma.chapter.findMany({
+    where: { journeyId: id, deletedAt: null },
+    orderBy: { order: "asc" },
+    select: { id: true, title: true },
+  });
+
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
       <Link href={`/dashboard/journeys/${id}`} className="text-sm font-medium text-ink-muted hover:text-ink">
@@ -49,13 +55,13 @@ export default async function ChapterManagePage({
         <h2 className="text-sm font-semibold text-ink">Episodes</h2>
 
         <div className="mt-4">
-          <EpisodeList chapterId={chapter.id} episodes={chapter.episodes} />
+          <EpisodeList journeyId={id} chapters={chapters} episodes={chapter.episodes} />
         </div>
 
         <div className="mt-6 rounded-xl border border-border bg-surface p-6">
           <h3 className="text-sm font-semibold text-ink">Add an episode</h3>
           <div className="mt-4">
-            <EpisodeForm chapterId={chapter.id} />
+            <EpisodeForm journeyId={id} chapters={chapters} defaultChapterId={chapter.id} />
           </div>
         </div>
       </div>

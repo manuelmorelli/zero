@@ -7,17 +7,19 @@ import { deleteEpisode } from "@/lib/actions/episode";
 import { EpisodeForm } from "@/components/creator/EpisodeForm";
 
 type EpisodeItemProps = {
-  chapterId: string;
+  journeyId: string;
+  chapters: { id: string; title: string }[];
   episode: {
     id: string;
     title: string;
     caption: string | null;
     videoKey: string | null;
     occurredAt: Date;
+    chapterId: string | null;
   };
 };
 
-export function EpisodeItem({ chapterId, episode }: EpisodeItemProps) {
+export function EpisodeItem({ journeyId, chapters, episode }: EpisodeItemProps) {
   const [editing, setEditing] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: episode.id,
@@ -28,7 +30,7 @@ export function EpisodeItem({ chapterId, episode }: EpisodeItemProps) {
   if (editing) {
     return (
       <div ref={setNodeRef} style={rootStyle} className={rootClassName}>
-        <EpisodeForm chapterId={chapterId} episode={episode} />
+        <EpisodeForm journeyId={journeyId} chapters={chapters} episode={episode} />
         <button
           type="button"
           onClick={() => setEditing(false)}

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { ChapterForm } from "@/components/creator/ChapterForm";
 import { ChapterList } from "@/components/creator/ChapterList";
+import { EpisodeForm } from "@/components/creator/EpisodeForm";
+import { EpisodeList } from "@/components/creator/EpisodeList";
 import { JourneyForm } from "@/components/creator/JourneyForm";
 import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
 import { JourneyArchiveButton } from "@/components/creator/JourneyArchiveButton";
@@ -30,6 +32,11 @@ export default async function JourneyManagePage({
     where: { journeyId: journey.id, deletedAt: null },
     orderBy: { order: "asc" },
     include: { episodes: { where: { deletedAt: null } } },
+  });
+
+  const looseEpisodes = await prisma.episode.findMany({
+    where: { journeyId: journey.id, chapterId: null, deletedAt: null },
+    orderBy: { order: "asc" },
   });
 
   return (
@@ -117,6 +124,31 @@ export default async function JourneyManagePage({
           <h3 className="text-sm font-semibold text-ink">Add a chapter</h3>
           <div className="mt-4">
             <ChapterForm journeyId={journey.id} />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <h2 className="text-sm font-semibold text-ink">Episodes</h2>
+        <p className="mt-1 text-sm text-ink-muted">
+          Episodes without a chapter, shown here in a simple chronological list.
+        </p>
+
+        <div className="mt-4">
+          <EpisodeList
+            journeyId={journey.id}
+            chapters={chapters.map((chapter) => ({ id: chapter.id, title: chapter.title }))}
+            episodes={looseEpisodes}
+          />
+        </div>
+
+        <div className="mt-6 rounded-xl border border-border bg-surface p-6">
+          <h3 className="text-sm font-semibold text-ink">Add an episode</h3>
+          <div className="mt-4">
+            <EpisodeForm
+              journeyId={journey.id}
+              chapters={chapters.map((chapter) => ({ id: chapter.id, title: chapter.title }))}
+            />
           </div>
         </div>
       </div>

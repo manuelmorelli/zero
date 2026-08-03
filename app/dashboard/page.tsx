@@ -30,7 +30,11 @@ export default async function CreatorDashboardPage() {
       where: { journeyId: activeJourney.id, deletedAt: null },
     });
     episodeCount = await prisma.episode.count({
-      where: { deletedAt: null, chapter: { deletedAt: null, journeyId: activeJourney.id } },
+      where: {
+        deletedAt: null,
+        journeyId: activeJourney.id,
+        OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
+      },
     });
   }
 
