@@ -1,7 +1,7 @@
 ---
 title: User Experience
 doc_id: 06-user-experience
-version: "3.0"
+version: "3.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -74,7 +74,7 @@ L'utente deve poter:
 - scoprire nuovi Journey;
 - seguire creator;
 - riprendere Journey già iniziati;
-- esplorare Capitoli ed Episodi;
+- esplorare gli Episodi di un Journey, organizzati in Capitoli quando il creator li ha usati;
 - salvare contenuti di valore.
 
 Ogni percorso di navigazione deve richiedere il minor numero possibile di passaggi.

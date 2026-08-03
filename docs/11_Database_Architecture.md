@@ -1,7 +1,7 @@
 ---
 title: Database Architecture
 doc_id: 11-database-architecture
-version: "3.0"
+version: "3.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -87,6 +87,8 @@ Le relazioni tra le entità devono:
 - evitare duplicazioni di dati;
 - preservare l'integrità referenziale;
 - facilitare interrogazioni efficienti.
+
+Nello schema attuale ogni Episodio richiede un Capitolo di appartenenza: è una limitazione tecnica dell'MVP, non una regola di prodotto definitiva. Il modello narrativo ufficiale (`05_Journey.md`) prevede Capitoli opzionali; l'adeguamento dello schema per riflettere questa opzionalità è previsto per una fase successiva, non contestuale a questo aggiornamento della documentazione.
 
 ## Regole
 

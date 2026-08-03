@@ -1,7 +1,7 @@
 ---
 title: Monetization
 doc_id: 10-monetization
-version: "3.0"
+version: "3.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -56,24 +56,45 @@ Ogni creator decide quali strumenti utilizzare.
 
 Nessuna funzionalità di monetizzazione è obbligatoria.
 
-## Strumenti di monetizzazione
+## Fonti di monetizzazione
 
-Zero supporta nativamente:
+Zero monetizza attraverso:
 
 - Community Premium;
+- Pubblicità contestuale;
 - Workshop;
 - Eventi;
 - Prodotti digitali;
 - Servizi professionali;
 - Tips e donazioni.
 
-Nuovi strumenti potranno essere introdotti mantenendo gli stessi principi.
+Nuove fonti di ricavo potranno essere introdotte mantenendo gli stessi principi descritti in questo documento.
 
 ## Commissioni
 
 Zero applica una commissione esclusivamente sulle transazioni effettuate attraverso la piattaforma.
 
 Le percentuali e le modalità operative sono definite a livello di business e possono evolvere nel tempo senza modificare i principi descritti in questo documento.
+
+## Pubblicità contestuale
+
+La pubblicità rappresenta una delle fonti di ricavo della piattaforma, soprattutto nelle prime fasi di crescita di Zero.
+
+Gli annunci devono essere pertinenti al contesto di navigazione, alla categoria del Journey e agli interessi dell'utente, con l'obiettivo di risultare utili e non invasivi.
+
+## Principi della pubblicità
+
+La pubblicità deve rispettare i principi fondamentali di Zero.
+
+In particolare:
+
+- non influenza il ranking dei Journey;
+- non può essere acquistata per ottenere maggiore visibilità organica;
+- privilegia la pertinenza rispetto al volume delle impression;
+- si basa principalmente sulla categoria del Journey, sul contesto della pagina e sugli interessi dell'utente;
+- deve integrarsi nell'esperienza della piattaforma senza interrompere inutilmente la navigazione.
+
+L'obiettivo è creare un sistema pubblicitario sostenibile per la piattaforma e utile per gli utenti, mantenendo sempre al centro la qualità dell'esperienza.
 
 ## Regole
 

@@ -1,7 +1,7 @@
 ---
 title: User Flows
 doc_id: 13-user-flows
-version: "3.1"
+version: "3.2"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -51,9 +51,8 @@ Ogni flusso deve ridurre la complessità e mantenere il Journey al centro dell'e
 
 1. Apertura del Journey.
 2. Visualizzazione della Presentazione.
-3. Esplorazione dei Capitoli.
-4. Lettura o visione degli Episodi.
-5. Ripresa automatica dal punto raggiunto.
+3. Lettura o visione degli Episodi, in sequenza lineare dal primo all'ultimo (organizzati in Capitoli quando il creator li ha usati).
+4. Ripresa automatica dal punto raggiunto.
 
 ---
 
@@ -61,8 +60,8 @@ Ogni flusso deve ridurre la complessità e mantenere il Journey al centro dell'e
 
 1. Creazione del Journey.
 2. Definizione della Presentazione.
-3. Creazione dei Capitoli.
-4. Pubblicazione dei primi Episodi.
+3. Pubblicazione dei primi Episodi.
+4. Organizzazione facoltativa degli Episodi in Capitoli, se il creator lo ritiene utile.
 5. Pubblicazione del Journey.
 
 ---
@@ -80,8 +79,8 @@ Ogni flusso deve ridurre la complessità e mantenere il Journey al centro dell'e
 Il creator può:
 
 - modificare la Presentazione;
-- creare, modificare o eliminare Capitoli;
 - creare, modificare o eliminare Episodi;
+- organizzare facoltativamente gli Episodi in Capitoli, creandoli, modificandoli o eliminandoli;
 - pubblicare nuovi contenuti;
 - aggiornare il Journey nel tempo.
 

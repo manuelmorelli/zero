@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.23"
+version: "1.24"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -170,6 +170,7 @@ Non ancora iniziata come iniziativa dedicata. Alcune pagine esistono già a live
 - ⬜ **Loading States** — non iniziato.
 - 🟡 **Empty States** — già presenti in diversi punti (Dashboard, pagine pubbliche), nessuna revisione sistematica.
 - 🟡 **Error States** — messaggi di errore dei form già presenti; nessuna pagina di errore dedicata.
+- ⬜ **Capitoli opzionali nello schema** — `05_Journey.md` e `00-project-context.md` dichiarano i Capitoli come livello organizzativo opzionale, ma lo schema Prisma attuale richiede ancora un Capitolo per ogni Episodio: un Journey senza Capitoli non è oggi realmente possibile da creare. Serve una migrazione (Episodio collegato direttamente al Journey, Capitolo facoltativo) prima che la regola di prodotto sia vera anche nel database, non solo nella documentazione (vedi `11_Database_Architecture.md`).
 
 ### Phase 3 — Video Platform
 
