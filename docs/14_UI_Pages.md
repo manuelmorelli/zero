@@ -1,7 +1,7 @@
 ---
 title: UI Pages
 doc_id: 14-ui-pages
-version: "3.5"
+version: "3.6"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -34,13 +34,13 @@ Punto di accesso principale alla piattaforma, identico per ogni persona che ha f
 
 Zero non separa "utenti" e "creator" come ruoli con destinazioni diverse: ogni persona può seguire Journey altrui e, allo stesso tempo, avere un proprio Journey da gestire. Per questo l'accesso dopo il login porta sempre alla Home, mai direttamente alla Dashboard.
 
-Si apre con una Hero a schermo intero: wordmark "ZERO", tagline, le due azioni principali ("Explore Journeys" ed "Create Your Journey") e le statistiche generali della piattaforma (creator, follower, Journey iniziati, impatto). Non è una sezione di Discovery: è il biglietto da visita della piattaforma, identico per chiunque arrivi in Home, loggato o no.
+Si apre con una Hero a schermo intero: logo "ZERO", tagline e le due azioni principali ("Explore Journeys" ed "Create Your Journey"). Non è una sezione di Discovery: è il biglietto da visita della piattaforma, identico per chiunque arrivi in Home, loggato o no.
 
-Subito sotto la Hero, tre righe scorrevoli orizzontalmente mostrano contenuti globali della piattaforma, non personalizzati su chi l'utente segue:
+Subito sotto la Hero, tre righe scorrevoli orizzontalmente (stile Netflix) mostrano contenuti globali della piattaforma, non personalizzati su chi l'utente segue:
 
-- Journeys of the Moment;
-- Latest Videos;
-- Top Journeys.
+- **Journeys of the Moment** — i Journey pubblicati più seguiti e rilevanti del momento;
+- **Latest Videos** — gli ultimi Episodi con un video caricato, pubblicati su tutta la piattaforma;
+- **Top Journeys** — i Journey pubblicati più seguiti in assoluto, con il conteggio dei loro Episodi.
 
 Il resto della pagina segue, in quest'ordine:
 
