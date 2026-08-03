@@ -1,20 +1,26 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
+import { MomentJourneyCard } from "@/components/journey/MomentJourneyCard";
+import { VideoCard } from "@/components/journey/VideoCard";
 import { FeedItem } from "@/components/journey/FeedItem";
 import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
 import { AuthStatus } from "@/components/layout/AuthStatus";
 import { Logo } from "@/components/layout/Logo";
+import { OnboardingBanner } from "@/components/layout/OnboardingBanner";
 import { Hero } from "@/components/landing/Hero";
+import { NetflixRow } from "@/components/landing/NetflixRow";
 import { Reveal } from "@/components/common/Reveal";
 import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
+import { DEMO_UPDATES, DEMO_FEED, DEMO_CREATORS, DEMO_LATEST_VIDEOS, DEMO_TOP_JOURNEYS } from "@/lib/demo/demoContent";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
 import { getFollowedCreatorsFeed, type FeedItem as FeedItemData } from "@/lib/discovery/feed";
 import { getFollowedCreatorsUpdates, type FollowedUpdate } from "@/lib/discovery/updates";
+import { getLatestVideos } from "@/lib/discovery/latestVideos";
+import { getTopJourneys } from "@/lib/discovery/topJourneys";
 import { UpdateCard } from "@/components/journey/UpdateCard";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
@@ -25,49 +31,191 @@ export default async function Home() {
   const session = await getCurrentSession();
   const userId = session?.user.id ?? null;
 
-  // Onboarding (selezione interessi) è obbligatorio prima di poter vedere la Home.
+  // L'Onboarding (selezione interessi) non blocca più l'accesso alla Home (vedi
+  // 00-project-context.md, sezione "Onboarding"): resta un invito non invasivo,
+  // mostrato come banner dismissibile invece di un redirect forzato.
+  let needsOnboarding = false;
   if (userId) {
     const currentUser = await prisma.user.findUnique({
       where: { id: userId },
       select: { interests: true },
     });
-    if (currentUser && currentUser.interests.length === 0) redirect("/onboarding");
+    needsOnboarding = currentUser ? currentUser.interests.length === 0 : false;
   }
 
   const continueJourneys = await getContinueJourneys(session);
   const excludeFromDiscovery = continueJourneys.map((item) => item.journeyId);
 
-  const [followedFeed, followedUpdates, recommendedJourneys, recommendedCreators, categoryCounts] =
-    await Promise.all([
-      getFollowedCreatorsFeed({ userId, excludeJourneyIds: excludeFromDiscovery }),
-      getFollowedCreatorsUpdates({ userId }),
-      getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery }),
-      getRecommendedCreators({ userId }),
-      getJourneyCountsByCategory(),
-    ]);
+  const [
+    followedFeed,
+    followedUpdates,
+    recommendedJourneys,
+    recommendedCreators,
+    categoryCounts,
+    momentJourneys,
+    latestVideos,
+    topJourneys,
+  ] = await Promise.all([
+    getFollowedCreatorsFeed({ userId, excludeJourneyIds: excludeFromDiscovery }),
+    getFollowedCreatorsUpdates({ userId }),
+    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery }),
+    getRecommendedCreators({ userId }),
+    getJourneyCountsByCategory(),
+    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: 10 }),
+    getLatestVideos({ limit: 10 }),
+    getTopJourneys({ limit: 10 }),
+  ]);
 
   const feedJourneyIds = followedFeed
     .filter((item) => item.type === "journey")
     .map((item) => item.journeyId);
   const newJourneys = await getNewJourneys([...excludeFromDiscovery, ...feedJourneyIds]);
 
+  // DEMO DATA - replace when real data available: placeholder realistici per le sezioni
+  // ancora vuote (nessun dato reale sufficiente), per una demo visiva completa. Ogni sezione
+  // torna automaticamente ai dati reali non appena ce ne sono abbastanza, nessuna struttura da toccare.
+  const displayedMomentJourneys = momentJourneys.length > 0 ? momentJourneys : DEMO_JOURNEYS;
+  const displayedLatestVideos = latestVideos.length > 0 ? latestVideos : DEMO_LATEST_VIDEOS;
+  const displayedTopJourneys = topJourneys.length > 0 ? topJourneys : DEMO_TOP_JOURNEYS;
+  const displayedFeed = followedFeed.length > 0 ? followedFeed : DEMO_FEED;
+  const displayedUpdates = followedUpdates.length > 0 ? followedUpdates : DEMO_UPDATES;
+  const displayedRecommendedJourneys = recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS.slice(0, 5);
+  const displayedRecommendedCreators = recommendedCreators.length > 0 ? recommendedCreators : DEMO_CREATORS;
+
   return (
     <main>
       <SiteHeader />
-      {continueJourneys.length > 0 && <ContinueJourney items={continueJourneys} />}
-      {followedFeed.length > 0 && <FollowedCreatorsFeed items={followedFeed} />}
-      {followedUpdates.length > 0 && <FollowedCreatorsUpdates items={followedUpdates} />}
+      {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
       <Hero />
-      {recommendedJourneys.length > 0 && <RecommendedJourneys journeys={recommendedJourneys} />}
-      {recommendedCreators.length > 0 && <RecommendedCreators creators={recommendedCreators} />}
+
+      <div id="discover">
+        <JourneysOfTheMoment journeys={displayedMomentJourneys} />
+        <LatestVideos videos={displayedLatestVideos} />
+        <TopJourneys journeys={displayedTopJourneys} />
+      </div>
+
+      {continueJourneys.length > 0 && <ContinueJourney items={continueJourneys} />}
+      <FollowedCreatorsFeed items={displayedFeed} />
+      <FollowedCreatorsUpdates items={displayedUpdates} />
+      <RecommendedJourneys journeys={displayedRecommendedJourneys} />
+      <RecommendedCreators creators={displayedRecommendedCreators} />
       <NewJourneys journeys={newJourneys} />
       <Categories countByCategory={categoryCounts} />
-      <StatsBar />
       <HowItWorks />
       <Faq />
       <FinalCta />
       <SiteFooter />
     </main>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* JOURNEYS OF THE MOMENT (riga Netflix)                               */
+/* ------------------------------------------------------------------ */
+
+function JourneysOfTheMoment({ journeys }: { journeys: JourneyCardData[] }) {
+  return (
+    <NetflixRow
+      icon={<FireIcon className="h-5 w-5" />}
+      title="Journeys of the Moment"
+      subtitle="The most followed and impactful journeys right now."
+      viewAllHref="/categories"
+    >
+      {journeys.map((journey, index) => (
+        <MomentJourneyCard key={journey.id} journey={journey} rank={index + 1} />
+      ))}
+    </NetflixRow>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* LATEST VIDEOS (riga Netflix)                                        */
+/* ------------------------------------------------------------------ */
+
+function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestVideos>> }) {
+  return (
+    <NetflixRow
+      icon={<VideoIcon className="h-5 w-5" />}
+      title="Latest Videos"
+      subtitle="New episodes just published across Zero."
+      viewAllHref="/search"
+    >
+      {videos.map((video) => (
+        <VideoCard key={video.episodeId} video={video} />
+      ))}
+    </NetflixRow>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* TOP JOURNEYS (riga Netflix)                                         */
+/* ------------------------------------------------------------------ */
+
+function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJourneys>> }) {
+  return (
+    <NetflixRow
+      icon={<StarIcon className="h-5 w-5" />}
+      title="Top Journeys"
+      subtitle="Timeless stories that continue to inspire."
+      viewAllHref="/categories"
+    >
+      {journeys.map((journey) => (
+        <Link
+          key={journey.id}
+          href={`/journeys/${journey.id}`}
+          style={{ scrollSnapAlign: "start" }}
+          className="w-64 shrink-0"
+        >
+          <JourneyCard
+            journey={{
+              id: journey.id,
+              title: journey.title,
+              coverUrl: journey.coverUrl,
+              category: journey.category,
+              creator: { displayName: journey.creatorName },
+              followersCount: journey.followersCount,
+            }}
+          />
+          <p className="mt-1 text-xs text-ink-muted">
+            {journey.episodesCount} {journey.episodesCount === 1 ? "episode" : "episodes"}
+          </p>
+        </Link>
+      ))}
+    </NetflixRow>
+  );
+}
+
+function FireIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className} aria-hidden="true">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 3s4 3.5 4 8a4 4 0 0 1-8 0c0-1.2.5-2 1-2.8.3.9 1 1.3 1.5 1.3-.3-2 .2-4.2 1.5-6.5Z"
+      />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.5 14.5A4.5 4.5 0 0 0 12 21a4.5 4.5 0 0 0 4-6.5" />
+    </svg>
+  );
+}
+
+function VideoIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className} aria-hidden="true">
+      <rect x="2.5" y="5.5" width="14" height="13" rx="2.5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="m21.5 8.5-5 3.5 5 3.5v-7Z" />
+    </svg>
+  );
+}
+
+function StarIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className} aria-hidden="true">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 3.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.6-4.1 6.1-.6L12 3.5Z"
+      />
+    </svg>
   );
 }
 
@@ -123,7 +271,7 @@ async function getContinueJourneys(
 function ContinueJourney({ items }: { items: ContinueJourneyItem[] }) {
   return (
     <section className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-14">
+      <div className="mx-auto max-w-7xl px-6 py-10">
         <Reveal>
           <h2 className="font-sans text-2xl font-extrabold tracking-tight">
             Continue Your Journey
@@ -169,7 +317,7 @@ function ContinueJourney({ items }: { items: ContinueJourneyItem[] }) {
 function FollowedCreatorsFeed({ items }: { items: FeedItemData[] }) {
   return (
     <section className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-14">
+      <div className="mx-auto max-w-7xl px-6 py-10">
         <Reveal>
           <h2 className="font-sans text-2xl font-extrabold tracking-tight">
             From creators you follow
@@ -198,7 +346,7 @@ function FollowedCreatorsFeed({ items }: { items: FeedItemData[] }) {
 function FollowedCreatorsUpdates({ items }: { items: FollowedUpdate[] }) {
   return (
     <section className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-14">
+      <div className="mx-auto max-w-7xl px-6 py-10">
         <Reveal>
           <h2 className="font-sans text-2xl font-extrabold tracking-tight">
             Updates from creators you follow
@@ -238,12 +386,9 @@ function SiteHeader() {
           <a href="#updates" className="hover:text-ink transition-colors">
             Updates
           </a>
-          <a href="#" className="hover:text-ink transition-colors">
-            About
-          </a>
-          <a href="#" className="hover:text-ink transition-colors">
+          <Link href="/pricing" className="hover:text-ink transition-colors">
             Pricing
-          </a>
+          </Link>
         </nav>
         <div className="flex items-center gap-3">
           <div className="hidden w-56 md:block">
@@ -270,7 +415,7 @@ function SiteHeader() {
 function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
   return (
     <section className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-6 py-14">
         <Reveal>
           <div className="mb-10">
             <h2 className="font-sans text-3xl font-extrabold tracking-tight">
@@ -299,7 +444,7 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
 function RecommendedCreators({ creators }: { creators: CreatorSearchResult[] }) {
   return (
     <section className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-6 py-14">
         <Reveal>
           <div className="mb-10">
             <h2 className="font-sans text-3xl font-extrabold tracking-tight">
@@ -356,7 +501,7 @@ async function getNewJourneys(excludeJourneyIds: string[] = []): Promise<Journey
 function NewJourneys({ journeys }: { journeys: JourneyCardData[] }) {
   return (
     <section id="journey" className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-6 py-14">
         <Reveal>
           <div className="mb-10 flex items-end justify-between">
             <div>
@@ -393,7 +538,7 @@ function NewJourneys({ journeys }: { journeys: JourneyCardData[] }) {
 function Categories({ countByCategory }: { countByCategory: Map<string, number> }) {
   return (
     <section className="border-b border-border bg-surface">
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-6 py-14">
         <Reveal>
           <div className="mb-10 flex items-end justify-between">
             <div>
@@ -434,34 +579,6 @@ function Categories({ countByCategory }: { countByCategory: Map<string, number> 
 }
 
 /* ------------------------------------------------------------------ */
-/* STATS BAR                                                            */
-/* ------------------------------------------------------------------ */
-
-function StatsBar() {
-  const stats = [
-    { value: "10K+", label: "Creators" },
-    { value: "2M+", label: "Followers" },
-    { value: "1.5M+", label: "Journeys started" },
-    { value: "98%", label: "Positive impact" },
-  ];
-
-  return (
-    <section className="border-b border-border bg-surface">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-6 py-14 md:grid-cols-4">
-        {stats.map((stat, index) => (
-          <Reveal key={stat.label} delayMs={index * 100} className="text-center md:text-left">
-            <p className="font-sans text-3xl font-black md:text-4xl">
-              {stat.value}
-            </p>
-            <p className="mt-1 text-sm text-ink-muted">{stat.label}</p>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /* HOW IT WORKS                                                        */
 /* ------------------------------------------------------------------ */
 
@@ -489,7 +606,7 @@ function HowItWorks() {
 
   return (
     <section id="how-it-works" className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-6 py-14">
         <Reveal>
           <h2 className="mb-14 font-sans text-3xl font-extrabold tracking-tight">
             How it works
@@ -537,7 +654,7 @@ function Faq() {
 
   return (
     <section id="faq" className="border-b border-border bg-surface">
-      <div className="mx-auto max-w-3xl px-6 py-20">
+      <div className="mx-auto max-w-3xl px-6 py-14">
         <Reveal>
           <h2 className="mb-10 font-sans text-3xl font-extrabold tracking-tight">
             Frequently asked questions
@@ -570,7 +687,7 @@ function Faq() {
 function FinalCta() {
   return (
     <section className="border-b border-border">
-      <div className="mx-auto max-w-3xl px-6 py-20 text-center">
+      <div className="mx-auto max-w-3xl px-6 py-14 text-center">
         <Reveal>
           <h2 className="font-sans text-3xl font-extrabold tracking-tight md:text-4xl">
             Your Journey starts from ZERO.

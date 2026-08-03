@@ -1,64 +1,45 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { getGsapScrollTrigger, prefersLightMotion } from "@/lib/gsapClient";
 
-type SceneSlide = {
+type Slide = {
   id: string;
-  type: "scene";
-  glowPosition: string;
-  ridgeBack: string;
-  ridgeFront: string;
-};
-
-type PhotoSlide = {
-  id: string;
-  type: "photo";
   src: string;
   alt: string;
 };
 
-type Slide = SceneSlide | PhotoSlide;
-
-// "scene" = segnaposto CSS (silhouette + luce), "photo" = foto temporanee fornite da Manuel,
-// in attesa delle foto vere dei Journey che sostituiranno tutte le slide.
+// Foto placeholder gratuite da Unsplash (natura / crescita personale / viaggio),
+// in attesa delle foto reali dei Journey pubblicati che le sostituiranno.
 const SLIDES: Slide[] = [
   {
-    id: "sunrise-ridge",
-    type: "scene",
-    glowPosition: "bottom-[8%] left-[38%] h-[55%] w-[55%] -translate-x-1/2",
-    ridgeBack:
-      "polygon(0 42%, 14% 30%, 30% 46%, 48% 18%, 66% 40%, 83% 14%, 100% 34%, 100% 100%, 0 100%)",
-    ridgeFront:
-      "polygon(0 58%, 19% 34%, 37% 60%, 57% 22%, 75% 52%, 100% 18%, 100% 100%, 0 100%)",
+    id: "mountain-sunrise",
+    src: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=1920&q=80",
+    alt: "Hiker reaching a mountain summit at sunrise",
   },
   {
-    id: "hero-photo-1",
-    type: "photo",
-    src: "/images/hero-1.jpg",
-    alt: "Creator at a mountain summit at sunset",
+    id: "forest-path",
+    src: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1920&q=80",
+    alt: "Sunlight through a forest path",
   },
   {
-    id: "city-skyline",
-    type: "scene",
-    glowPosition: "bottom-[15%] left-[18%] h-[40%] w-[40%] -translate-x-1/2",
-    ridgeBack:
-      "polygon(0 30%, 10% 55%, 22% 20%, 34% 50%, 46% 15%, 58% 48%, 70% 22%, 82% 52%, 94% 18%, 100% 40%, 100% 100%, 0 100%)",
-    ridgeFront:
-      "polygon(0 50%, 20% 65%, 40% 40%, 60% 62%, 80% 38%, 100% 58%, 100% 100%, 0 100%)",
+    id: "mountain-lake",
+    src: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1920&q=80",
+    alt: "Person standing on a cliff above a mountain lake",
   },
   {
-    id: "hero-photo-2",
-    type: "photo",
-    src: "/images/hero-2.jpg",
-    alt: "Creator watching the sunrise from a mountain summit",
+    id: "open-road",
+    src: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1920&q=80",
+    alt: "Open road toward misty mountains, a journey ahead",
   },
 ];
 
-const SLIDE_DURATION_MS = 7000;
+const SLIDE_DURATION_MS = 5500;
 
 export function HeroBackgroundSlideshow() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const parallaxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -67,46 +48,68 @@ export function HeroBackgroundSlideshow() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const node = parallaxRef.current;
+    if (!node || prefersLightMotion()) return;
+
+    const { gsap, ScrollTrigger } = getGsapScrollTrigger();
+    const section = node.closest("section");
+    if (!section) return;
+
+    const tween = gsap.to(node, {
+      yPercent: 12,
+      ease: "none",
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
+
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+      ScrollTrigger.refresh();
+    };
+  }, []);
+
   return (
     <div className="absolute inset-0 overflow-hidden bg-gradient-to-b from-surface via-black to-black">
-      {SLIDES.map((slide, index) => (
-        <div
-          key={slide.id}
-          aria-hidden={index !== activeIndex}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === activeIndex ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <div className="absolute inset-0 origin-center animate-[hero-drift_48s_ease-in-out_infinite_alternate]">
-            {slide.type === "photo" ? (
-              <Image
-                src={slide.src}
-                alt={slide.alt}
-                fill
-                sizes="100vw"
-                className="object-cover"
-              />
-            ) : (
-              <>
-                <div
-                  className={`absolute rounded-full bg-ember/40 blur-[110px] ${slide.glowPosition}`}
-                />
-                <div
-                  className="absolute inset-x-0 bottom-0 h-[50%] bg-surface-2"
-                  style={{ clipPath: slide.ridgeBack }}
-                />
-                <div
-                  className="absolute inset-x-0 bottom-0 h-[30%] bg-[#0a0a0a]"
-                  style={{ clipPath: slide.ridgeFront }}
-                />
-              </>
-            )}
+      <div ref={parallaxRef} className="absolute inset-0 -top-[10%] h-[120%]">
+        {SLIDES.map((slide, index) => (
+          <div
+            key={slide.id}
+            aria-hidden={index !== activeIndex}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === activeIndex ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <Image
+              src={slide.src}
+              alt={slide.alt}
+              fill
+              sizes="100vw"
+              preload={index === 0}
+              className="object-cover"
+            />
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/50" />
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-black/10" />
+
+      <div className="absolute bottom-6 right-6 flex gap-2 sm:bottom-10 sm:right-10">
+        {SLIDES.map((slide, index) => (
+          <span
+            key={slide.id}
+            className={`h-1.5 rounded-full transition-all duration-500 ${
+              index === activeIndex ? "w-6 bg-white" : "w-1.5 bg-white/35"
+            }`}
+          />
+        ))}
+      </div>
     </div>
   );
 }

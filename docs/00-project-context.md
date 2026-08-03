@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "3.7"
+version: "3.8"
 status: approved
 related_docs:
   - 01_Vision
@@ -170,11 +170,11 @@ Questa è una decisione di prodotto permanente, non limitata alla fase attuale d
 
 ### Onboarding
 
-Dopo la verifica dell'email, prima di poter vedere la Home, ogni nuovo utente passa da una schermata di Onboarding in cui seleziona i propri interessi tra le stesse categorie ufficiali dei Journey (`lib/constants/categories.ts`, unica fonte di verità, nessuna lista duplicata).
+Dopo la verifica dell'email, il nuovo utente viene mandato a una schermata di Onboarding in cui seleziona i propri interessi tra le stesse categorie ufficiali dei Journey (`lib/constants/categories.ts`, unica fonte di verità, nessuna lista duplicata).
 
 La selezione di almeno un interesse è obbligatoria per procedere: è la regola minima che rende l'Onboarding un passaggio reale e non uno step sempre "vuoto" da saltare. Gli interessi sono salvati sull'utente (`User.interests`, lista di categorie) e non condizionano oggi nessun'altra funzionalità: sono una base pronta per una futura Discovery personalizzata sugli interessi dichiarati, non ancora usata da Recommended Journeys/Creator o dal Feed.
 
-Finché un utente non ha completato l'Onboarding, la Home lo rimanda automaticamente a `/onboarding` (controllo autoritativo, non un semplice redirect post-login): questo copre qualunque modo con cui l'utente arrivi alla Home (verifica email, login successivo, navigazione diretta), non solo il primo accesso.
+**Revisione (2026-08-03)**: l'Onboarding non è più un passaggio obbligato. In precedenza la Home reindirizzava sempre a `/onboarding` finché gli interessi erano vuoti, qualunque fosse il modo con cui l'utente arrivava alla Home (non solo subito dopo la registrazione). Su decisione di Manuel questo blocco è stato rimosso: l'unico punto in cui l'Onboarding si attiva automaticamente resta il redirect subito dopo la verifica email (`callbackURL` di `signUp.email`). Per chi ha già un account con interessi vuoti (account più vecchi, o Onboarding abbandonato a metà), la Home mostra un banner non invasivo e dismissibile con un link a `/onboarding`, senza più bloccare l'accesso. Conseguenza accettata: chi chiude il banner senza completare l'Onboarding può restare con interessi vuoti indefinitamente, finché non li imposta da `/account`.
 
 Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 

@@ -9,6 +9,7 @@ import { formatCompactNumber } from "@/lib/utils";
 export type JourneyCardData = {
   id: string;
   title: string;
+  description?: string | null;
   coverUrl: string | null;
   category: string | null;
   creator: {

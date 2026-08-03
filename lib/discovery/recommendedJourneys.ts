@@ -94,6 +94,7 @@ function toJourneyCardData(journey: JourneyWithCreator): JourneyCardData {
   return {
     id: journey.id,
     title: journey.title,
+    description: journey.description,
     coverUrl: journey.coverUrl,
     category: journey.category,
     creator: { displayName: journey.creator.displayName },
