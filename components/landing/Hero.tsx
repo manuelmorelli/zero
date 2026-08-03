@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { HeroBackgroundSlideshow } from "@/components/landing/HeroBackgroundSlideshow";
+import { HeroUpdatesPanel } from "@/components/landing/HeroUpdatesPanel";
 import { Logo } from "@/components/layout/Logo";
 import { SplitReveal } from "@/components/common/SplitReveal";
+import type { FollowedUpdate } from "@/lib/discovery/updates";
 
-export function Hero() {
+type HeroProps = {
+  updates: FollowedUpdate[];
+};
+
+export function Hero({ updates }: HeroProps) {
   return (
     <section className="relative isolate overflow-hidden border-b border-border">
       <HeroBackgroundSlideshow />
+      <HeroUpdatesPanel updates={updates} />
 
       <div className="relative z-10 mx-auto flex min-h-[62vh] max-w-7xl flex-col justify-center px-6 py-16 lg:min-h-[70vh] lg:py-20">
         <div className="max-w-xl">

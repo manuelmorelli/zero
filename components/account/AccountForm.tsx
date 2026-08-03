@@ -13,11 +13,14 @@ type AccountFormProps = {
   };
 };
 
+const BIO_MIN_LENGTH = 250;
+
 export function AccountForm({ user }: AccountFormProps) {
   const [state, formAction, pending] = useActionState(updateAccount, { error: null });
   const [selected, setSelected] = useState<JourneyCategory[]>(
     user.interests as JourneyCategory[]
   );
+  const [bioLength, setBioLength] = useState(user.bio?.length ?? 0);
 
   function toggle(category: JourneyCategory) {
     setSelected((current) =>
@@ -61,16 +64,23 @@ export function AccountForm({ user }: AccountFormProps) {
       </div>
 
       <div>
-        <label htmlFor="bio" className="text-sm font-medium text-ink-muted">
-          Bio <span className="text-ink-faint">(optional)</span>
-        </label>
+        <div className="flex items-baseline justify-between">
+          <label htmlFor="bio" className="text-sm font-medium text-ink-muted">
+            Bio
+          </label>
+          <span className={`text-xs ${bioLength < BIO_MIN_LENGTH ? "text-ink-faint" : "text-ink-muted"}`}>
+            {bioLength}/{BIO_MIN_LENGTH} min
+          </span>
+        </div>
         <textarea
           id="bio"
           name="bio"
-          rows={3}
-          maxLength={280}
-          placeholder="A few words about you, shown on your public profile."
+          rows={6}
+          required
+          minLength={BIO_MIN_LENGTH}
+          placeholder="Tell your story: who you are, what you're working on, why it matters. Shown on your public profile."
           defaultValue={user.bio ?? ""}
+          onChange={(e) => setBioLength(e.target.value.trim().length)}
           className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
       </div>
@@ -109,7 +119,7 @@ export function AccountForm({ user }: AccountFormProps) {
 
       <button
         type="submit"
-        disabled={pending || selected.length === 0}
+        disabled={pending || selected.length === 0 || bioLength < BIO_MIN_LENGTH}
         className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
         {pending ? "Saving…" : "Save changes"}

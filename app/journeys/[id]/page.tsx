@@ -5,6 +5,7 @@ import { getCurrentSession } from "@/lib/session";
 import { getVideoPlaybackUrl } from "@/lib/r2";
 import { EpisodeVideoPlayer } from "@/components/journey/EpisodeVideoPlayer";
 import { FollowButton } from "@/components/creator/FollowButton";
+import { BackButton } from "@/components/common/BackButton";
 
 export default async function PublicJourneyPage({
   params,
@@ -55,9 +56,12 @@ export default async function PublicJourneyPage({
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
-      <Link href="/" className="font-sans text-xl font-extrabold tracking-tight">
-        ZERO
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link href="/" className="font-sans text-xl font-extrabold tracking-tight">
+          ZERO
+        </Link>
+        <BackButton fallbackHref="/" />
+      </div>
 
       <div className="mt-8 flex items-start justify-between gap-4">
         <h1 className="text-2xl font-extrabold tracking-tight">{journey.title}</h1>

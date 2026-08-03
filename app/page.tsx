@@ -86,7 +86,7 @@ export default async function Home() {
     <main>
       <SiteHeader />
       {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
-      <Hero />
+      <Hero updates={displayedUpdates} />
 
       <div id="discover">
         <JourneysOfTheMoment journeys={displayedMomentJourneys} />
@@ -345,7 +345,7 @@ function FollowedCreatorsFeed({ items }: { items: FeedItemData[] }) {
 
 function FollowedCreatorsUpdates({ items }: { items: FollowedUpdate[] }) {
   return (
-    <section className="border-b border-border">
+    <section id="updates" className="border-b border-border">
       <div className="mx-auto max-w-7xl px-6 py-10">
         <Reveal>
           <h2 className="font-sans text-2xl font-extrabold tracking-tight">

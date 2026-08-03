@@ -18,11 +18,17 @@ export function getGsapScrollTrigger() {
   return { gsap, ScrollTrigger };
 }
 
-/** True su viewport mobile o quando l'utente ha chiesto meno animazioni: usato per alleggerire gli effetti GSAP più pesanti. */
+/**
+ * True su dispositivi touch (telefoni/tablet, `pointer: coarse`) o quando l'utente ha chiesto
+ * meno animazioni: usato per alleggerire gli effetti GSAP più pesanti. Volutamente non basato
+ * su una larghezza di viewport (`max-width`): uno zoom del browser o una finestra desktop non
+ * massimizzata possono scendere sotto qualunque soglia in pixel senza che il dispositivo sia
+ * realmente mobile, disattivando gli effetti "wow" anche su desktop (bug reale riscontrato).
+ */
 export function prefersLightMotion(): boolean {
   if (typeof window === "undefined") return true;
   return (
-    window.matchMedia("(max-width: 767px)").matches ||
+    window.matchMedia("(pointer: coarse)").matches ||
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 }

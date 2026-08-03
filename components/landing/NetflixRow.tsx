@@ -23,7 +23,7 @@ export function NetflixRow({ icon, title, subtitle, viewAllHref, children }: Net
     if (!section || prefersLightMotion()) return;
 
     const { gsap, ScrollTrigger } = getGsapScrollTrigger();
-    gsap.set(section, { opacity: 0, scale: 0.96 });
+    gsap.set(section, { opacity: 0, scale: 0.9 });
 
     const tween = gsap.to(section, {
       opacity: 1,
@@ -31,8 +31,8 @@ export function NetflixRow({ icon, title, subtitle, viewAllHref, children }: Net
       ease: "power1.out",
       scrollTrigger: {
         trigger: section,
-        start: "top 92%",
-        end: "top 55%",
+        start: "top 98%",
+        end: "top 45%",
         scrub: true,
       },
     });
@@ -42,18 +42,18 @@ export function NetflixRow({ icon, title, subtitle, viewAllHref, children }: Net
     const cards = track ? (Array.from(track.children) as HTMLElement[]) : [];
     let batchTriggers: ReturnType<typeof ScrollTrigger.batch> = [];
     if (cards.length > 0) {
-      gsap.set(cards, { opacity: 0, scale: 0.9, filter: "blur(10px)" });
+      gsap.set(cards, { opacity: 0, scale: 0.85, filter: "blur(14px)" });
       batchTriggers = ScrollTrigger.batch(cards, {
-        start: "top 92%",
+        start: "top 95%",
         once: true,
         onEnter: (batch) =>
           gsap.to(batch, {
             opacity: 1,
             scale: 1,
             filter: "blur(0px)",
-            duration: 0.9,
+            duration: 1.1,
             ease: "power2.out",
-            stagger: 0.08,
+            stagger: 0.1,
             // Rilascia gli stili inline a fine animazione: le card usano già hover/scale via
             // classi Tailwind (es. hover:-translate-y-1), che uno stile inline residuo bloccherebbe.
             clearProps: "transform,filter,opacity",

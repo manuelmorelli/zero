@@ -3,6 +3,7 @@ import { requireSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { SignOutButton } from "@/components/common/SignOutButton";
 import { AccountForm } from "@/components/account/AccountForm";
+import { BackButton } from "@/components/common/BackButton";
 
 export default async function AccountPage() {
   const { user } = await requireSession();
@@ -16,12 +17,15 @@ export default async function AccountPage() {
 
   return (
     <main className="mx-auto max-w-lg px-6 py-16">
-      <Link
-        href="/"
-        className="font-sans text-xl font-extrabold tracking-tight"
-      >
-        ZERO
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link
+          href="/"
+          className="font-sans text-xl font-extrabold tracking-tight"
+        >
+          ZERO
+        </Link>
+        <BackButton fallbackHref="/" />
+      </div>
       <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
         Your account
       </h1>

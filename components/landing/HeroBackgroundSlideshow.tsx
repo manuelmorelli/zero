@@ -57,7 +57,7 @@ export function HeroBackgroundSlideshow() {
     if (!section) return;
 
     const tween = gsap.to(node, {
-      yPercent: 12,
+      yPercent: 20,
       ease: "none",
       scrollTrigger: {
         trigger: section,

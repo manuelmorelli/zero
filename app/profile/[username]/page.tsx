@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { FollowButton } from "@/components/creator/FollowButton";
 import { JourneyCard } from "@/components/journey/JourneyCard";
+import { BackButton } from "@/components/common/BackButton";
 
 // L'username non è ancora impostabile da UI: come fallback temporaneo si accetta
 // anche l'id dell'utente nello stesso segmento di rotta, finché non esiste una
@@ -54,9 +55,12 @@ export default async function PublicProfilePage({
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
-      <Link href="/" className="font-sans text-xl font-extrabold tracking-tight">
-        ZERO
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link href="/" className="font-sans text-xl font-extrabold tracking-tight">
+          ZERO
+        </Link>
+        <BackButton fallbackHref="/" />
+      </div>
 
       <h1 className="mt-8 text-2xl font-extrabold tracking-tight">{user.name}</h1>
       {user.bio && <p className="mt-2 text-sm text-ink-muted">{user.bio}</p>}

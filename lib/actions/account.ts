@@ -15,7 +15,7 @@ const AccountSchema = z.object({
     .toLowerCase()
     .regex(/^[a-z0-9_-]{3,30}$/, "Username must be 3-30 characters: lowercase letters, numbers, - or _.")
     .optional(),
-  bio: z.string().trim().max(280, "Bio must be at most 280 characters long.").optional(),
+  bio: z.string().trim().min(250, "Bio must be at least 250 characters long."),
   interests: z.array(z.enum(JOURNEY_CATEGORIES)).min(1, "Pick at least one interest."),
 });
 
@@ -28,7 +28,7 @@ export async function updateAccount(
   const parsed = AccountSchema.safeParse({
     name: formData.get("name"),
     username: formData.get("username") || undefined,
-    bio: formData.get("bio") || undefined,
+    bio: formData.get("bio"),
     interests: formData.getAll("interests"),
   });
 
@@ -42,7 +42,7 @@ export async function updateAccount(
       data: {
         name: parsed.data.name,
         username: parsed.data.username ?? null,
-        bio: parsed.data.bio ?? null,
+        bio: parsed.data.bio,
         interests: parsed.data.interests,
       },
     });
