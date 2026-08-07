@@ -7,6 +7,8 @@ type CreatorWithUser = Awaited<ReturnType<typeof findPublishedCreators>>[number]
 type GetRecommendedCreatorsParams = {
   /** null se l'utente non è loggato: si ricade sempre sul criterio di popolarità. */
   userId: string | null;
+  /** Interessi dichiarati dall'utente (Onboarding/Profilo), si sommano alle categorie dei creator seguiti. */
+  interests?: string[];
   limit?: number;
 };
 
@@ -21,6 +23,7 @@ type GetRecommendedCreatorsParams = {
  */
 export async function getRecommendedCreators({
   userId,
+  interests = [],
   limit = 5,
 }: GetRecommendedCreatorsParams): Promise<CreatorSearchResult[]> {
   const followedCreatorIds = userId ? await getFollowedCreatorIds(userId) : [];
@@ -36,11 +39,12 @@ export async function getRecommendedCreators({
   const followedCategories = followedCreatorIds.length > 0
     ? await getFollowedCategories(followedCreatorIds)
     : [];
+  const candidateCategories = Array.from(new Set([...followedCategories, ...interests]));
 
-  if (followedCategories.length > 0) {
+  if (candidateCategories.length > 0) {
     const categoryMatches = await findPublishedCreators({
       excludedCreatorIds,
-      categories: followedCategories,
+      categories: candidateCategories,
     });
     for (const creator of sortByFollowersDesc(categoryMatches)) {
       if (selected.length >= limit) break;

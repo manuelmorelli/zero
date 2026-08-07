@@ -9,6 +9,8 @@ type GetRecommendedJourneysParams = {
   userId: string | null;
   /** Journey da non riproporre perché già mostrati altrove nella Home (es. Continue Your Journey). */
   excludeJourneyIds?: string[];
+  /** Interessi dichiarati dall'utente (Onboarding/Profilo), si sommano alle categorie dei creator seguiti. */
+  interests?: string[];
   limit?: number;
 };
 
@@ -26,6 +28,7 @@ type GetRecommendedJourneysParams = {
 export async function getRecommendedJourneys({
   userId,
   excludeJourneyIds = [],
+  interests = [],
   limit = 5,
 }: GetRecommendedJourneysParams): Promise<JourneyCardData[]> {
   const followedCreatorIds = userId ? await getFollowedCreatorIds(userId) : [];
@@ -41,12 +44,13 @@ export async function getRecommendedJourneys({
   const followedCategories = followedCreatorIds.length > 0
     ? await getFollowedCategories(followedCreatorIds)
     : [];
+  const candidateCategories = Array.from(new Set([...followedCategories, ...interests]));
 
-  if (followedCategories.length > 0) {
+  if (candidateCategories.length > 0) {
     const categoryMatches = await findPublishedJourneys({
       excludedCreatorIds,
       excludedJourneyIds: excludeJourneyIds,
-      categories: followedCategories,
+      categories: candidateCategories,
     });
     for (const journey of sortByFollowersDesc(categoryMatches)) {
       if (selected.length >= limit) break;

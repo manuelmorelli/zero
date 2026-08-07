@@ -35,12 +35,14 @@ export default async function Home() {
   // 00-project-context.md, sezione "Onboarding"): resta un invito non invasivo,
   // mostrato come banner dismissibile invece di un redirect forzato.
   let needsOnboarding = false;
+  let userInterests: string[] = [];
   if (userId) {
     const currentUser = await prisma.user.findUnique({
       where: { id: userId },
       select: { interests: true },
     });
-    needsOnboarding = currentUser ? currentUser.interests.length === 0 : false;
+    userInterests = currentUser?.interests ?? [];
+    needsOnboarding = userInterests.length === 0;
   }
 
   const continueJourneys = await getContinueJourneys(session);
@@ -58,18 +60,18 @@ export default async function Home() {
   ] = await Promise.all([
     getFollowedCreatorsFeed({ userId, excludeJourneyIds: excludeFromDiscovery }),
     getFollowedCreatorsUpdates({ userId }),
-    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery }),
-    getRecommendedCreators({ userId }),
+    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, interests: userInterests }),
+    getRecommendedCreators({ userId, interests: userInterests }),
     getJourneyCountsByCategory(),
-    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: 10 }),
-    getLatestVideos({ limit: 10 }),
-    getTopJourneys({ limit: 10 }),
+    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: 10, interests: userInterests }),
+    getLatestVideos({ limit: 10, interests: userInterests }),
+    getTopJourneys({ limit: 10, interests: userInterests }),
   ]);
 
   const feedJourneyIds = followedFeed
     .filter((item) => item.type === "journey")
     .map((item) => item.journeyId);
-  const newJourneys = await getNewJourneys([...excludeFromDiscovery, ...feedJourneyIds]);
+  const newJourneys = await getNewJourneys([...excludeFromDiscovery, ...feedJourneyIds], userInterests);
 
   // DEMO DATA - replace when real data available: placeholder realistici per le sezioni
   // ancora vuote (nessun dato reale sufficiente), per una demo visiva completa. Ogni sezione
@@ -470,11 +472,19 @@ function RecommendedCreators({ creators }: { creators: CreatorSearchResult[] }) 
 /* NEW JOURNEYS                                                        */
 /* ------------------------------------------------------------------ */
 
-async function getNewJourneys(excludeJourneyIds: string[] = []): Promise<JourneyCardData[]> {
+async function getNewJourneys(
+  excludeJourneyIds: string[] = [],
+  interests: string[] = []
+): Promise<JourneyCardData[]> {
+  // Se l'utente ha interessi dichiarati, si guarda un gruppo più ampio di Journey recenti
+  // per poter dare priorità a quelli nelle sue categorie, mantenendo comunque l'ordine
+  // dal più recente al meno recente sia tra i match sia tra il resto (vedi sotto).
+  const pool = interests.length > 0 ? 20 : 5;
+
   const journeys = await prisma.journey.findMany({
     where: { status: "PUBLISHED", deletedAt: null, id: { notIn: excludeJourneyIds } },
     orderBy: { publishedAt: "desc" },
-    take: 5,
+    take: pool,
     include: { creator: { include: { _count: { select: { followers: true } } } } },
   });
 
@@ -488,7 +498,16 @@ async function getNewJourneys(excludeJourneyIds: string[] = []): Promise<Journey
     return anyPublished === 0 ? DEMO_JOURNEYS : [];
   }
 
-  return journeys.map((journey) => ({
+  const ordered = interests.length === 0
+    ? journeys
+    : (() => {
+        const interestSet = new Set(interests);
+        const matching = journeys.filter((journey) => journey.category && interestSet.has(journey.category));
+        const rest = journeys.filter((journey) => !(journey.category && interestSet.has(journey.category)));
+        return [...matching, ...rest];
+      })();
+
+  return ordered.slice(0, 5).map((journey) => ({
     id: journey.id,
     title: journey.title,
     coverUrl: journey.coverUrl,

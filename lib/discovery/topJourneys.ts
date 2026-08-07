@@ -10,8 +10,15 @@ export type TopJourneyItem = {
   episodesCount: number;
 };
 
-/** Journey pubblicati più seguiti (per numero di follower del creator), non un vero "trust score". */
-export async function getTopJourneys({ limit = 10 }: { limit?: number } = {}): Promise<TopJourneyItem[]> {
+/**
+ * Journey pubblicati più seguiti (per numero di follower del creator), non un vero "trust score".
+ * Se l'utente ha dichiarato interessi, quelli nelle sue categorie vengono mostrati per primi,
+ * mantenendo comunque l'ordinamento per follower dentro ciascun gruppo.
+ */
+export async function getTopJourneys({
+  limit = 10,
+  interests = [],
+}: { limit?: number; interests?: string[] } = {}): Promise<TopJourneyItem[]> {
   const journeys = await prisma.journey.findMany({
     where: { status: "PUBLISHED", deletedAt: null },
     take: 50,
@@ -25,7 +32,7 @@ export async function getTopJourneys({ limit = 10 }: { limit?: number } = {}): P
     },
   });
 
-  return journeys
+  const sorted = journeys
     .map((journey) => ({
       id: journey.id,
       title: journey.title,
@@ -35,6 +42,12 @@ export async function getTopJourneys({ limit = 10 }: { limit?: number } = {}): P
       followersCount: journey.creator._count.followers,
       episodesCount: journey.chapters.reduce((sum, chapter) => sum + chapter._count.episodes, 0),
     }))
-    .sort((a, b) => b.followersCount - a.followersCount)
-    .slice(0, limit);
+    .sort((a, b) => b.followersCount - a.followersCount);
+
+  if (interests.length === 0) return sorted.slice(0, limit);
+
+  const interestSet = new Set(interests);
+  const matching = sorted.filter((journey) => journey.category && interestSet.has(journey.category));
+  const rest = sorted.filter((journey) => !(journey.category && interestSet.has(journey.category)));
+  return [...matching, ...rest].slice(0, limit);
 }

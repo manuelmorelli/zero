@@ -12,8 +12,15 @@ export type LatestVideoItem = {
 /**
  * Ultimi episodi con un video caricato, pubblicati su tutta la piattaforma
  * (non filtrati per creator seguiti — è la riga "Latest Videos" della Home, non il Feed).
+ * Se l'utente ha dichiarato interessi, quelli nelle sue categorie vengono mostrati per primi,
+ * mantenendo comunque l'ordine dal più recente al meno recente dentro ciascun gruppo.
  */
-export async function getLatestVideos({ limit = 10 }: { limit?: number } = {}): Promise<LatestVideoItem[]> {
+export async function getLatestVideos({
+  limit = 10,
+  interests = [],
+}: { limit?: number; interests?: string[] } = {}): Promise<LatestVideoItem[]> {
+  const pool = interests.length > 0 ? Math.max(limit * 4, 20) : limit;
+
   const episodes = await prisma.episode.findMany({
     where: {
       videoKey: { not: null },
@@ -22,13 +29,22 @@ export async function getLatestVideos({ limit = 10 }: { limit?: number } = {}): 
       journey: { status: "PUBLISHED", deletedAt: null },
     },
     orderBy: { createdAt: "desc" },
-    take: limit,
+    take: pool,
     include: {
       journey: { include: { creator: true } },
     },
   });
 
-  return episodes.map((episode) => ({
+  const ordered = interests.length === 0
+    ? episodes
+    : (() => {
+        const interestSet = new Set(interests);
+        const matching = episodes.filter((episode) => episode.journey.category && interestSet.has(episode.journey.category));
+        const rest = episodes.filter((episode) => !(episode.journey.category && interestSet.has(episode.journey.category)));
+        return [...matching, ...rest];
+      })();
+
+  return ordered.slice(0, limit).map((episode) => ({
     episodeId: episode.id,
     journeyId: episode.journey.id,
     title: episode.title,
