@@ -123,3 +123,6 @@ architettura, decisioni di prodotto, struttura cartelle, design system, regole d
 Manuel non ha competenze tecniche di programmazione. Quando serve fargli una domanda o spiegargli qualcosa:
 - Usare linguaggio semplice, senza gergo tecnico.
 - Se bisogna far scegliere tra opzioni tecniche, spiegare prima in parole semplici cosa cambia **nella pratica** tra le opzioni, prima di chiedere di scegliere.
+## Regola di conferma obbligatoria
+
+Prima di modificare, creare o cancellare qualsiasi file, presentare sempre il piano completo e fermarsi. Aspettare che l'utente scriva esplicitamente "vai" in chat. Non procedere automaticamente dopo aver ricevuto risposte a domande di chiarimento — le risposte informano il piano, non autorizzano a scrivere codice.

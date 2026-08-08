@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
+import { PasswordField } from "@/components/common/PasswordField";
+import { DevEmailLinkNotice } from "@/components/common/DevEmailLinkNotice";
 
 export default function RegisterPage() {
   return (
@@ -78,10 +80,13 @@ function RegisterForm() {
 
   if (registered) {
     return (
-      <p className="mt-8 text-sm text-ink">
-        Account created! We&apos;ve sent you an email — open the link inside
-        to confirm your address and activate your account.
-      </p>
+      <div className="mt-8">
+        <p className="text-sm text-ink">
+          Account created! We&apos;ve sent you an email — open the link inside
+          to confirm your address and activate your account.
+        </p>
+        <DevEmailLinkNotice email={email} kind="verify-email" />
+      </div>
     );
   }
 
@@ -105,20 +110,18 @@ function RegisterForm() {
         autoComplete="email"
         required
       />
-      <Field
-        label="Password"
+      <PasswordField
         id="password"
-        type="password"
+        label="Password"
         value={password}
         onChange={setPassword}
         autoComplete="new-password"
         minLength={8}
         required
       />
-      <Field
-        label="Confirm password"
+      <PasswordField
         id="confirmPassword"
-        type="password"
+        label="Confirm password"
         value={confirmPassword}
         onChange={setConfirmPassword}
         autoComplete="new-password"

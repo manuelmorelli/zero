@@ -96,6 +96,11 @@ enum ReportStatus {
   DISMISSED
 }
 
+enum LikeTargetType {
+  EPISODE
+  UPDATE
+}
+
 enum NotificationType {
   NEW_FOLLOWER
   NEW_MEMBER
@@ -117,7 +122,9 @@ model User {
   email         String        @unique
   emailVerified Boolean       @default(false)
   avatarUrl     String? // mappato da Better Auth come campo "image", vedi user.fields in lib/auth.ts
+  coverUrl      String? // foto di copertina del Profilo pubblico
   bio           String?
+  location      String?
   // Categorie scelte durante l'Onboarding (stessa lista fissa di JOURNEY_CATEGORIES,
   // vedi lib/constants/categories.ts). Vuoto = Onboarding non ancora completato.
   interests     String[]      @default([])
@@ -138,6 +145,7 @@ model User {
   notifications      Notification[]
   reports            Report[]
   journeyProgresses  JourneyProgress[]
+  likes              Like[]
 
   @@map("users")
 }
@@ -241,6 +249,7 @@ model Journey {
   status         JourneyStatus @default(DRAFT)
   discoveryEndsAt DateTime?
   journeyScore   Float         @default(0) // valore corrente, aggiornato dal job di scoring
+  viewsCount     Int           @default(0) // contatore semplice, incrementato a ogni caricamento della Pagina Journey pubblica
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   publishedAt    DateTime? // valorizzato solo la prima volta che il Journey passa da Draft a Published; non cambia più in seguito
@@ -544,6 +553,25 @@ model Follow {
 
   @@unique([userId, creatorId])
   @@map("follows")
+}
+
+// ------------------------------------------------------------
+// LIKE (Episodi e Update — nessun sistema di commenti, vedi 12_MVP_Features.md)
+// ------------------------------------------------------------
+
+model Like {
+  id         String         @id @default(uuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id])
+  targetType LikeTargetType
+  // Id dell'Episodio o dell'Update, a seconda di targetType: nessuna relation
+  // diretta perché un solo campo Like deve poter puntare a due modelli diversi.
+  targetId   String
+  createdAt  DateTime       @default(now())
+
+  @@unique([userId, targetType, targetId])
+  @@index([targetType, targetId])
+  @@map("likes")
 }
 
 // ------------------------------------------------------------

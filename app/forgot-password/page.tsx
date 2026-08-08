@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
+import { DevEmailLinkNotice } from "@/components/common/DevEmailLinkNotice";
 
 export default function ForgotPasswordPage() {
   return (
@@ -64,10 +65,13 @@ function ForgotPasswordForm() {
 
   if (sent) {
     return (
-      <p className="mt-8 text-sm text-ink">
-        Check your email: if the address is registered, you&apos;ll receive
-        a password reset link shortly.
-      </p>
+      <div className="mt-8">
+        <p className="text-sm text-ink">
+          Check your email: if the address is registered, you&apos;ll receive
+          a password reset link shortly.
+        </p>
+        <DevEmailLinkNotice email={email} kind="reset-password" />
+      </div>
     );
   }
 

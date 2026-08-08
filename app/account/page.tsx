@@ -1,64 +1,9 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
-import { SignOutButton } from "@/components/common/SignOutButton";
-import { AccountForm } from "@/components/account/AccountForm";
-import { BackButton } from "@/components/common/BackButton";
 
+// Sostituita dal pannello "Edit profile" sul Profilo pubblico (components/profile/EditProfileButton.tsx):
+// nessuna pagina Account separata, per non avere due punti scollegati per la stessa cosa.
 export default async function AccountPage() {
   const { user } = await requireSession();
-  const [creator, profile] = await Promise.all([
-    prisma.creator.findUnique({ where: { userId: user.id } }),
-    prisma.user.findUniqueOrThrow({
-      where: { id: user.id },
-      select: { name: true, username: true, bio: true, interests: true },
-    }),
-  ]);
-
-  return (
-    <main className="mx-auto max-w-lg px-6 py-16">
-      <div className="flex items-center justify-between gap-4">
-        <Link
-          href="/"
-          className="font-sans text-xl font-extrabold tracking-tight"
-        >
-          ZERO
-        </Link>
-        <BackButton fallbackHref="/" />
-      </div>
-      <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-        Your account
-      </h1>
-
-      <div className="mt-8 space-y-4 rounded-xl border border-border bg-surface p-6">
-        <InfoRow label="Email" value={user.email} />
-      </div>
-
-      <div className="mt-8">
-        <AccountForm user={profile} />
-      </div>
-
-      <Link
-        href={creator ? "/dashboard" : "/dashboard/new"}
-        className="mt-6 block rounded-full bg-ink px-6 py-3 text-center text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
-      >
-        {creator ? "Go to Dashboard" : "Become a creator"}
-      </Link>
-
-      <SignOutButton className="mt-3 w-full rounded-full border border-border px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink-muted">
-        Sign out
-      </SignOutButton>
-    </main>
-  );
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
-        {label}
-      </p>
-      <p className="mt-1 text-sm text-ink">{value}</p>
-    </div>
-  );
+  redirect(`/profile/${user.id}`);
 }

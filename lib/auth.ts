@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
+import { recordDevEmailLink } from "@/lib/devEmailLog";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -14,6 +15,7 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
+      recordDevEmailLink(user.email, "reset-password", url);
       await sendEmail({
         to: user.email,
         subject: "Reset your password — Zero",
@@ -23,6 +25,7 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
+      recordDevEmailLink(user.email, "verify-email", url);
       await sendEmail({
         to: user.email,
         subject: "Confirm your email — Zero",

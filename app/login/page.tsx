@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
+import { PasswordField } from "@/components/common/PasswordField";
 
 export default function LoginPage() {
   return (
@@ -85,29 +86,22 @@ function LoginForm() {
         autoComplete="email"
         required
       />
-      <div>
-        <div className="flex items-center justify-between">
-          <label htmlFor="password" className="text-sm font-medium text-ink-muted">
-            Password
-          </label>
+      <PasswordField
+        id="password"
+        label="Password"
+        value={password}
+        onChange={setPassword}
+        autoComplete="current-password"
+        required
+        labelRight={
           <Link
             href="/forgot-password"
             className="text-xs text-ink-muted hover:text-ink hover:underline"
           >
             Forgot password?
           </Link>
-        </div>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          autoComplete="current-password"
-          required
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-        />
-      </div>
+        }
+      />
 
       {error && <p className="text-sm text-danger">{error}</p>}
       {needsVerification && (

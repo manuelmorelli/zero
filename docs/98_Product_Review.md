@@ -1,7 +1,7 @@
 ---
 title: Product Review
 doc_id: 98-product-review
-version: "1.1"
+version: "1.3"
 status: living
 related_docs:
   - 07_Creator_Experience
@@ -16,10 +16,10 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ## UX
 
-☐ [High] Add show/hide password (eye icon) to every password field.
+☑ [High] Add show/hide password (eye icon) to every password field.
 ☐ [High] Ask for confirmation before deleting Journeys, Chapters and Episodes.
 ☐ [High] Verify and improve drag & drop for Chapters.
-☐ [High] Add Back navigation inside internal pages instead of relying only on the browser Back button.
+☑ [High] ~~Add Back navigation inside internal pages~~ — reversed on Manuel's request: all Back buttons removed instead (see 99_Current_Project_Status.md).
 ☐ [Medium] Reduce the number of clicks required to complete common actions.
 ☐ [Medium] Improve transitions and overall navigation fluidity.
 
@@ -27,9 +27,9 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ☐ [High] Redesign the Account page. The current page contains almost no useful information and feels like an unnecessary intermediate step.
 ☐ [High] Redesign the Creator Dashboard to make it feel like the creator's control center instead of a simple list.
-☐ [High] Improve the Public Profile with a richer layout and better presentation of the creator.
-☐ [Medium] Add profile avatar.
-☐ [Medium] Add profile cover image.
+☑ [High] Improve the Public Profile with a richer layout and better presentation of the creator.
+☑ [Medium] Add profile avatar.
+☑ [Medium] Add profile cover image.
 ☐ [Medium] Improve Journey presentation inside the profile.
 ☐ [Medium] Improve Episode presentation inside Journeys.
 ☐ [Medium] Improve overall visual hierarchy of creator pages.

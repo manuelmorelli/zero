@@ -3,6 +3,7 @@
 import { useActionState, useId, useState } from "react";
 import { createEpisode, createEpisodeVideoUploadUrl, updateEpisode } from "@/lib/actions/episode";
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
+import { uploadFileWithProgress } from "@/lib/upload";
 
 type EpisodeFormProps = {
   journeyId: string;
@@ -25,23 +26,6 @@ function toDateInputValue(date: Date): string {
 
 function formatMB(bytes: number): string {
   return `${Math.round(bytes / (1024 * 1024))}MB`;
-}
-
-function uploadWithProgress(url: string, file: File, onProgress: (percent: number) => void): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("PUT", url);
-    xhr.setRequestHeader("Content-Type", file.type);
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) onProgress(Math.round((event.loaded / event.total) * 100));
-    };
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) resolve();
-      else reject(new Error("Upload failed."));
-    };
-    xhr.onerror = () => reject(new Error("Upload failed."));
-    xhr.send(file);
-  });
 }
 
 export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: EpisodeFormProps) {
@@ -83,7 +67,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
         setUploadProgress(null);
         return;
       }
-      await uploadWithProgress(result.uploadUrl, file, setUploadProgress);
+      await uploadFileWithProgress(result.uploadUrl, file, setUploadProgress);
       setVideoKey(result.key);
     } catch {
       setUploadError("Upload failed. Please try again.");

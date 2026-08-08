@@ -8,6 +8,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { VIDEO_EXTENSIONS } from "@/lib/constants/video";
+import { IMAGE_EXTENSIONS } from "@/lib/constants/image";
 
 const bucket = process.env.R2_BUCKET_NAME!;
 
@@ -47,5 +48,26 @@ export async function getVideoSize(key: string): Promise<number | null> {
 }
 
 export async function deleteVideo(key: string): Promise<void> {
+  await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key })).catch(() => {});
+}
+
+/** @param prefix "avatars" o "covers", per tenere separati i due tipi di foto del Profilo. */
+export function newImageKey(prefix: string, contentType: string): string {
+  return `${prefix}/${randomUUID()}.${IMAGE_EXTENSIONS[contentType]}`;
+}
+
+/** URL temporaneo (5 minuti) per caricare l'immagine direttamente dal browser a R2. */
+export async function getImageUploadUrl(key: string, contentType: string): Promise<string> {
+  const command = new PutObjectCommand({ Bucket: bucket, Key: key, ContentType: contentType });
+  return getSignedUrl(s3, command, { expiresIn: 300 });
+}
+
+/** URL temporaneo (1 ora) per la visualizzazione, rigenerato a ogni caricamento della pagina. */
+export async function getImagePlaybackUrl(key: string): Promise<string> {
+  const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+  return getSignedUrl(s3, command, { expiresIn: 3600 });
+}
+
+export async function deleteImage(key: string): Promise<void> {
   await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key })).catch(() => {});
 }

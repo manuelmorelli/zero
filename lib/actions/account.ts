@@ -15,8 +15,13 @@ const AccountSchema = z.object({
     .toLowerCase()
     .regex(/^[a-z0-9_-]{3,30}$/, "Username must be 3-30 characters: lowercase letters, numbers, - or _.")
     .optional(),
-  bio: z.string().trim().min(250, "Bio must be at least 250 characters long."),
+  bio: z.string().trim().max(250, "Bio must be at most 250 characters long."),
+  location: z.string().trim().max(100).optional(),
   interests: z.array(z.enum(JOURNEY_CATEGORIES)).min(1, "Pick at least one interest."),
+  // Chiave R2 della nuova foto caricata in questo salvataggio: vuota/assente = nessun
+  // cambiamento, la foto esistente (se c'è) resta quella già salvata.
+  avatarKey: z.string().trim().optional(),
+  coverKey: z.string().trim().optional(),
 });
 
 export async function updateAccount(
@@ -29,7 +34,10 @@ export async function updateAccount(
     name: formData.get("name"),
     username: formData.get("username") || undefined,
     bio: formData.get("bio"),
+    location: formData.get("location") || undefined,
     interests: formData.getAll("interests"),
+    avatarKey: formData.get("avatarKey") || undefined,
+    coverKey: formData.get("coverKey") || undefined,
   });
 
   if (!parsed.success) {
@@ -42,8 +50,11 @@ export async function updateAccount(
       data: {
         name: parsed.data.name,
         username: parsed.data.username ?? null,
-        bio: parsed.data.bio,
+        bio: parsed.data.bio || null,
+        location: parsed.data.location ?? null,
         interests: parsed.data.interests,
+        ...(parsed.data.avatarKey ? { avatarUrl: parsed.data.avatarKey } : {}),
+        ...(parsed.data.coverKey ? { coverUrl: parsed.data.coverKey } : {}),
       },
     });
   } catch (error) {
@@ -53,6 +64,7 @@ export async function updateAccount(
     throw error;
   }
 
-  revalidatePath("/account");
+  revalidatePath(`/profile/${user.id}`);
+  if (parsed.data.username) revalidatePath(`/profile/${parsed.data.username}`);
   return { error: null };
 }

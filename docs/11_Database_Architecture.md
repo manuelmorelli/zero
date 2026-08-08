@@ -1,7 +1,7 @@
 ---
 title: Database Architecture
 doc_id: 11-database-architecture
-version: "3.2"
+version: "3.3"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -68,6 +68,7 @@ Il database comprende, tra le altre, le seguenti entità:
 - Episode
 - Update
 - Follow
+- Like
 - Community
 - Subscription
 - Notification
@@ -89,6 +90,8 @@ Le relazioni tra le entità devono:
 - facilitare interrogazioni efficienti.
 
 `Episode.chapterId` è opzionale (`String?`), coerente con il modello narrativo ufficiale (`05_Journey.md`): un Episodio può esistere senza Capitolo. Ogni Episodio ha inoltre un `journeyId` diretto, così resta collegato al proprio Journey anche senza passare da un Capitolo (migrazione `20260803154620_episode_optional_chapter`, con backfill di `journeyId` dai Capitoli esistenti).
+
+`Like` punta a un Episodio o a un Update tramite `targetType` (`EPISODE`/`UPDATE`) + `targetId`, un solo modello invece di due tabelle quasi identiche una per ciascun target — nessuna relation diretta verso Episode/Update, per questo `targetId` non è vincolato da una foreign key (migrazione `20260804165919_profile_richness`, che aggiunge anche `User.coverUrl`, `User.location` e `Journey.viewsCount`).
 
 ## Regole
 

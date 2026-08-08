@@ -33,7 +33,7 @@ export function AuthStatus() {
   return (
     <>
       <Link
-        href="/account"
+        href={`/profile/${data.user.id}`}
         className="hidden text-sm font-medium text-ink-muted hover:text-ink transition-colors sm:block"
       >
         Hi, {data.user.name}

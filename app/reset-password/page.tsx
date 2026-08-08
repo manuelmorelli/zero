@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense, useState, type SubmitEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { PasswordField } from "@/components/common/PasswordField";
 
 export default function ResetPasswordPage() {
   return (
@@ -75,38 +76,24 @@ function ResetPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-      <div>
-        <label htmlFor="password" className="text-sm font-medium text-ink-muted">
-          New password
-        </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          autoComplete="new-password"
-          minLength={8}
-          required
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-        />
-      </div>
-      <div>
-        <label htmlFor="confirmPassword" className="text-sm font-medium text-ink-muted">
-          Confirm new password
-        </label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          value={confirmPassword}
-          onChange={(event) => setConfirmPassword(event.target.value)}
-          autoComplete="new-password"
-          minLength={8}
-          required
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-        />
-      </div>
+      <PasswordField
+        id="password"
+        label="New password"
+        value={password}
+        onChange={setPassword}
+        autoComplete="new-password"
+        minLength={8}
+        required
+      />
+      <PasswordField
+        id="confirmPassword"
+        label="Confirm new password"
+        value={confirmPassword}
+        onChange={setConfirmPassword}
+        autoComplete="new-password"
+        minLength={8}
+        required
+      />
 
       {error && <p className="text-sm text-danger">{error}</p>}
 
