@@ -13,7 +13,7 @@ export function VideoCard({ video }: VideoCardProps) {
 
   return (
     <Link
-      href={`/journeys/${journeyId}#${episodeId}`}
+      href={`/journeys/${journeyId}/episodes#${episodeId}`}
       style={{ scrollSnapAlign: "start" }}
       className="group w-64 shrink-0"
     >

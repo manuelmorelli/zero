@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { formatCompactNumber } from "@/lib/utils";
 
 /**
@@ -20,13 +21,30 @@ export type JourneyCardData = {
 
 type JourneyCardProps = {
   journey: JourneyCardData;
+  className?: string;
+  style?: React.CSSProperties;
+  /** Contenuto assoluto sovrapposto in alto a destra, es. il badge "Archived". */
+  badge?: React.ReactNode;
+  /** Contenuto extra sotto la card, dentro lo stesso link (es. conteggio episodi in "Top Journeys"). */
+  footer?: React.ReactNode;
 };
 
-export function JourneyCard({ journey }: JourneyCardProps) {
-  const { title, coverUrl, category, creator, followersCount } = journey;
+// Il link fa parte del componente stesso (non va aggiunto dai chiamanti): un punto della UI
+// che dimentica di avvolgere la card in un <Link> è una classe di bug già capitata più volte
+// (vedi 99_Current_Project_Status.md). Se un chiamante deve mostrare altro contenuto cliccabile
+// insieme alla card (es. il conteggio episodi in "Top Journeys"), usa la prop `footer` invece di
+// avvolgere di nuovo la card in un secondo <Link>, che creerebbe un <a> annidato non valido.
+export function JourneyCard({ journey, className, style, badge, footer }: JourneyCardProps) {
+  const { id, title, coverUrl, category, creator, followersCount } = journey;
 
   return (
-    <div className="group overflow-hidden rounded-xl border border-border bg-surface transition-all duration-300 hover:-translate-y-1 hover:border-ember/40 hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]">
+    <Link
+      href={`/journeys/${id}`}
+      style={style}
+      className={`group relative block overflow-hidden rounded-xl border border-border bg-surface transition-all duration-300 hover:-translate-y-1 hover:border-ember/40 hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)] ${className ?? ""}`}
+    >
+      {badge && <div className="absolute right-3 top-3 z-10">{badge}</div>}
+
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface-2">
         {coverUrl ? (
           <Image
@@ -57,6 +75,8 @@ export function JourneyCard({ journey }: JourneyCardProps) {
           <span>{formatCompactNumber(followersCount)} followers</span>
         </div>
       </div>
-    </div>
+
+      {footer}
+    </Link>
   );
 }

@@ -1,21 +1,3 @@
-"use client";
-
-import { useState, useTransition } from "react";
-import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  type DragEndEvent,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { moveEpisodeToIndex } from "@/lib/actions/episode";
 import { EpisodeItem } from "@/components/creator/EpisodeItem";
 
 type EpisodeListItem = {
@@ -27,6 +9,9 @@ type EpisodeListItem = {
   chapterId: string | null;
 };
 
+// Il trascinamento per riordinare non vive più qui: si è spostato nel Profilo (vedi
+// components/profile/EpisodeReorderSection.tsx), più vicino a dove il creator vede già i propri
+// episodi pubblicati. Questa lista resta per creare/modificare/eliminare, in ordine di lettura.
 export function EpisodeList({
   journeyId,
   chapters,
@@ -36,35 +21,7 @@ export function EpisodeList({
   chapters: { id: string; title: string }[];
   episodes: EpisodeListItem[];
 }) {
-  const [items, setItems] = useState(episodes);
-  const [prevEpisodes, setPrevEpisodes] = useState(episodes);
-  const [, startTransition] = useTransition();
-
-  if (episodes !== prevEpisodes) {
-    setPrevEpisodes(episodes);
-    setItems(episodes);
-  }
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
-
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = items.findIndex((item) => item.id === active.id);
-    const newIndex = items.findIndex((item) => item.id === over.id);
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    setItems(arrayMove(items, oldIndex, newIndex));
-    startTransition(() => {
-      moveEpisodeToIndex(String(active.id), newIndex);
-    });
-  }
-
-  if (items.length === 0) {
+  if (episodes.length === 0) {
     return (
       <p className="rounded-xl border border-border bg-surface p-5 text-sm text-ink-muted">
         You haven&apos;t added any episodes yet.
@@ -73,14 +30,10 @@ export function EpisodeList({
   }
 
   return (
-    <DndContext id="episode-list" sensors={sensors} onDragEnd={handleDragEnd}>
-      <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-3">
-          {items.map((episode) => (
-            <EpisodeItem key={episode.id} journeyId={journeyId} chapters={chapters} episode={episode} />
-          ))}
-        </div>
-      </SortableContext>
-    </DndContext>
+    <div className="space-y-3">
+      {episodes.map((episode) => (
+        <EpisodeItem key={episode.id} journeyId={journeyId} chapters={chapters} episode={episode} />
+      ))}
+    </div>
   );
 }

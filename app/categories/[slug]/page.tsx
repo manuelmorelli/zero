@@ -42,18 +42,17 @@ export default async function CategoryPage({
         {journeys.length > 0 && (
           <div className="grid gap-5 sm:grid-cols-2">
             {journeys.map((journey) => (
-              <Link key={journey.id} href={`/journeys/${journey.id}`}>
-                <JourneyCard
-                  journey={{
-                    id: journey.id,
-                    title: journey.title,
-                    coverUrl: journey.coverUrl,
-                    category: journey.category,
-                    creator: { displayName: journey.creator.displayName },
-                    followersCount: journey.creator._count.followers,
-                  }}
-                />
-              </Link>
+              <JourneyCard
+                key={journey.id}
+                journey={{
+                  id: journey.id,
+                  title: journey.title,
+                  coverUrl: journey.coverUrl,
+                  category: journey.category,
+                  creator: { displayName: journey.creator.displayName },
+                  followersCount: journey.creator._count.followers,
+                }}
+              />
             ))}
           </div>
         )}

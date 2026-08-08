@@ -11,7 +11,7 @@ export function FeedItem({ item }: FeedItemProps) {
   const href =
     item.type === "journey"
       ? `/journeys/${item.journeyId}`
-      : `/journeys/${item.journeyId}#${item.episodeId}`;
+      : `/journeys/${item.journeyId}/episodes#${item.episodeId}`;
   const title = item.type === "journey" ? item.title : item.journeyTitle;
   const description =
     item.type === "journey" ? "Published a new Journey" : `New episode: ${item.episodeTitle}`;

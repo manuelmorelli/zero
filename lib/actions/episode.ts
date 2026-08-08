@@ -93,6 +93,41 @@ async function assertVideoWithinLimit(videoKey: string | undefined): Promise<str
   return null;
 }
 
+// Logica di creazione condivisa tra `createEpisode` (form della Dashboard, termina con un
+// redirect) e `quickCreateEpisode` (flusso rapido dal pulsante "+" globale, resta in un riquadro
+// sopra la pagina corrente e quindi non può fare un redirect): stessa validazione dimensione video
+// e stesso calcolo della posizione, un solo punto da aggiornare se la regola cambia.
+async function insertEpisode(
+  journey: { id: string },
+  chapterId: string | null,
+  data: z.infer<typeof EpisodeSchema>
+): Promise<{ error: string | null }> {
+  const sizeError = await assertVideoWithinLimit(data.videoKey || undefined);
+  if (sizeError) return { error: sizeError };
+
+  const lastEpisode = await prisma.episode.findFirst({
+    where: { journeyId: journey.id, chapterId, deletedAt: null },
+    orderBy: { order: "desc" },
+  });
+
+  await prisma.episode.create({
+    data: {
+      journeyId: journey.id,
+      chapterId,
+      title: data.title,
+      caption: data.caption,
+      videoKey: data.videoKey || undefined,
+      occurredAt: data.occurredAt,
+      order: (lastEpisode?.order ?? 0) + 1,
+    },
+  });
+
+  revalidatePath(`/dashboard/journeys/${journey.id}`);
+  revalidatePath(`/journeys/${journey.id}`);
+  if (chapterId) revalidatePath(`/dashboard/journeys/${journey.id}/chapters/${chapterId}`);
+  return { error: null };
+}
+
 export async function createEpisode(
   _prevState: { error: string | null },
   formData: FormData
@@ -114,31 +149,42 @@ export async function createEpisode(
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
-  const sizeError = await assertVideoWithinLimit(parsed.data.videoKey || undefined);
-  if (sizeError) return { error: sizeError };
-
-  const lastEpisode = await prisma.episode.findFirst({
-    where: { journeyId: journey.id, chapterId, deletedAt: null },
-    orderBy: { order: "desc" },
-  });
-
-  await prisma.episode.create({
-    data: {
-      journeyId: journey.id,
-      chapterId,
-      title: parsed.data.title,
-      caption: parsed.data.caption,
-      videoKey: parsed.data.videoKey || undefined,
-      occurredAt: parsed.data.occurredAt,
-      order: (lastEpisode?.order ?? 0) + 1,
-    },
-  });
+  const result = await insertEpisode(journey, chapterId, parsed.data);
+  if (result.error) return result;
 
   // Il creator viene riportato alla pagina del Journey (hub di gestione di Capitoli ed
   // Episodi), così ha un feedback visivo immediato che l'episodio è stato salvato.
-  revalidatePath(`/dashboard/journeys/${journey.id}`);
-  if (chapterId) revalidatePath(`/dashboard/journeys/${journey.id}/chapters/${chapterId}`);
   redirect(`/dashboard/journeys/${journey.id}`);
+}
+
+// Variante per il pulsante "+" globale (vedi components/creator/QuickUploadButton.tsx): stesso
+// risultato di `createEpisode`, ma senza redirect, perché il flusso resta in un riquadro sopra la
+// pagina in cui l'utente si trovava, non naviga verso la Dashboard.
+export type QuickEpisodeState = { error: string | null; done: boolean };
+
+export async function quickCreateEpisode(
+  _prevState: QuickEpisodeState,
+  formData: FormData
+): Promise<QuickEpisodeState> {
+  const journeyId = formData.get("journeyId");
+  if (typeof journeyId !== "string" || !journeyId) {
+    return { error: "Invalid journey.", done: false };
+  }
+  const journey = await requireOwnedJourney(journeyId);
+  const chapterId = await resolveChapterId(formData.get("chapterId"), journey.id);
+
+  const parsed = EpisodeSchema.safeParse({
+    title: formData.get("title"),
+    caption: formData.get("caption") || undefined,
+    videoKey: formData.get("videoKey") || undefined,
+    occurredAt: formData.get("occurredAt"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data.", done: false };
+  }
+
+  const result = await insertEpisode(journey, chapterId, parsed.data);
+  return { error: result.error, done: !result.error };
 }
 
 export async function updateEpisode(
@@ -254,4 +300,8 @@ export async function moveEpisodeToIndex(episodeId: string, targetIndex: number)
 
   revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
   if (episode.chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${episode.chapterId}`);
+  // Il drag & drop ora vive anche nel Profilo (vedi components/profile/EpisodeReorderSection.tsx),
+  // e l'ordine si riflette sulla pagina episodi pubblica: entrambe vanno rivalidate.
+  revalidatePath(`/journeys/${episode.journeyId}`);
+  revalidatePath(`/journeys/${episode.journeyId}/episodes`);
 }

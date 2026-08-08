@@ -41,9 +41,7 @@ export default async function SearchPage({
           <h2 className="text-lg font-bold tracking-tight">Journeys</h2>
           <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {journeys.map((journey) => (
-              <Link key={journey.id} href={`/journeys/${journey.id}`}>
-                <JourneyCard journey={journey} />
-              </Link>
+              <JourneyCard key={journey.id} journey={journey} />
             ))}
           </div>
         </section>

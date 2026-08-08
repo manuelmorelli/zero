@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
+import { requireSession } from "@/lib/session";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 
 async function requireOwnedJourney(journeyId: string) {
@@ -69,6 +70,46 @@ export async function createJourney(
   });
 
   redirect(`/dashboard/journeys/${journey.id}`);
+}
+
+// Passo 1 del pulsante "+" globale (vedi components/creator/QuickUploadButton.tsx): chi non ha
+// ancora un Journey attivo ne crea uno con solo il titolo, senza passare dalla Dashboard né da
+// "Become a creator" — se manca anche il profilo Creator viene creato al volo (nome dell'account
+// come displayName di partenza, modificabile in seguito dal Profilo). Nessun redirect: il flusso
+// resta nello stesso riquadro e passa allo step successivo (caricare il video).
+const QuickJourneySchema = z.object({
+  title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
+});
+
+export type QuickJourneyState = { error: string | null; journeyId: string | null };
+
+export async function quickStartJourney(
+  _prevState: QuickJourneyState,
+  formData: FormData
+): Promise<QuickJourneyState> {
+  const { user } = await requireSession();
+
+  let creator = await prisma.creator.findUnique({ where: { userId: user.id } });
+  if (!creator) {
+    creator = await prisma.creator.create({ data: { userId: user.id, displayName: user.name } });
+  }
+
+  const activeJourney = await prisma.journey.findFirst({
+    where: { creatorId: creator.id, status: { not: "ARCHIVED" } },
+  });
+  if (activeJourney) return { error: null, journeyId: activeJourney.id };
+
+  const parsed = QuickJourneySchema.safeParse({ title: formData.get("title") });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data.", journeyId: null };
+  }
+
+  const journey = await prisma.journey.create({
+    data: { creatorId: creator.id, title: parsed.data.title },
+  });
+
+  revalidatePath("/dashboard");
+  return { error: null, journeyId: journey.id };
 }
 
 export async function updateJourney(

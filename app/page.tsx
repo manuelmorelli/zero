@@ -162,26 +162,24 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
       viewAllHref="/categories"
     >
       {journeys.map((journey) => (
-        <Link
+        <JourneyCard
           key={journey.id}
-          href={`/journeys/${journey.id}`}
           style={{ scrollSnapAlign: "start" }}
           className="w-64 shrink-0"
-        >
-          <JourneyCard
-            journey={{
-              id: journey.id,
-              title: journey.title,
-              coverUrl: journey.coverUrl,
-              category: journey.category,
-              creator: { displayName: journey.creatorName },
-              followersCount: journey.followersCount,
-            }}
-          />
-          <p className="mt-1 text-xs text-ink-muted">
-            {journey.episodesCount} {journey.episodesCount === 1 ? "episode" : "episodes"}
-          </p>
-        </Link>
+          journey={{
+            id: journey.id,
+            title: journey.title,
+            coverUrl: journey.coverUrl,
+            category: journey.category,
+            creator: { displayName: journey.creatorName },
+            followersCount: journey.followersCount,
+          }}
+          footer={
+            <p className="px-4 pb-4 text-xs text-ink-muted">
+              {journey.episodesCount} {journey.episodesCount === 1 ? "episode" : "episodes"}
+            </p>
+          }
+        />
       ))}
     </NetflixRow>
   );
@@ -284,7 +282,11 @@ function ContinueJourney({ items }: { items: ContinueJourneyItem[] }) {
           {items.map((item, index) => (
             <Reveal key={item.journeyId} delayMs={index * 80}>
               <Link
-                href={item.episodeId ? `/journeys/${item.journeyId}#${item.episodeId}` : `/journeys/${item.journeyId}`}
+                href={
+                  item.episodeId
+                    ? `/journeys/${item.journeyId}/episodes#${item.episodeId}`
+                    : `/journeys/${item.journeyId}`
+                }
                 className="group flex overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-ink-muted"
               >
                 <div className="relative aspect-square w-24 flex-shrink-0 overflow-hidden bg-surface-2">
