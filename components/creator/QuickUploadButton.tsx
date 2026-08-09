@@ -8,14 +8,23 @@ import { uploadFileWithProgress } from "@/lib/upload";
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 
 type Chapter = { id: string; title: string };
+type Journey = { id: string; title: string; chapters: Chapter[] };
 
 type QuickUploadButtonProps = {
-  /** null = l'utente non ha ancora un Journey attivo: il primo passo lo crea al volo. */
-  journeyId: string | null;
-  chapters: Chapter[];
+  /** Journey attivi (non archiviati) del creator. Un creator può averne più di uno in parallelo
+   * (vedi 00-project-context.md, sezione "Archiviazione del Journey"): con zero se ne crea uno al
+   * volo, con uno solo si salta dritti al video (nessuna frizione in più), con due o più si chiede
+   * prima a quale aggiungere il video. */
+  journeys: Journey[];
 };
 
-type Step = "journey" | "video" | "details";
+type Step = "journey" | "picker" | "video" | "details";
+
+function initialStepFor(journeys: Journey[]): Step {
+  if (journeys.length === 0) return "journey";
+  if (journeys.length === 1) return "video";
+  return "picker";
+}
 
 function todayInputValue(): string {
   return new Date().toISOString().slice(0, 10);
@@ -25,19 +34,24 @@ function formatMB(bytes: number): string {
   return `${Math.round(bytes / (1024 * 1024))}MB`;
 }
 
-export function QuickUploadButton({ journeyId: initialJourneyId, chapters }: QuickUploadButtonProps) {
+export function QuickUploadButton({ journeys }: QuickUploadButtonProps) {
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<Step>(initialJourneyId ? "video" : "journey");
-  const [journeyId, setJourneyId] = useState(initialJourneyId);
+  const [step, setStep] = useState<Step>(() => initialStepFor(journeys));
+  const [journeyId, setJourneyId] = useState<string | null>(journeys.length === 1 ? journeys[0].id : null);
 
   function openFlow() {
-    setStep(journeyId ? "video" : "journey");
+    setStep(initialStepFor(journeys));
+    setJourneyId(journeys.length === 1 ? journeys[0].id : null);
     setOpen(true);
   }
 
   function close() {
     setOpen(false);
   }
+
+  // Un Journey appena creato al volo (step "journey") non ha ancora Capitoli: nessuna voce
+  // corrispondente in `journeys` (snapshot caricato dal server all'apertura della pagina).
+  const chapters = journeys.find((journey) => journey.id === journeyId)?.chapters ?? [];
 
   return (
     <>
@@ -55,6 +69,7 @@ export function QuickUploadButton({ journeyId: initialJourneyId, chapters }: Qui
         <QuickUploadModal
           step={step}
           setStep={setStep}
+          journeys={journeys}
           journeyId={journeyId}
           setJourneyId={setJourneyId}
           chapters={chapters}
@@ -68,6 +83,7 @@ export function QuickUploadButton({ journeyId: initialJourneyId, chapters }: Qui
 function QuickUploadModal({
   step,
   setStep,
+  journeys,
   journeyId,
   setJourneyId,
   chapters,
@@ -75,6 +91,7 @@ function QuickUploadModal({
 }: {
   step: Step;
   setStep: (step: Step) => void;
+  journeys: Journey[];
   journeyId: string | null;
   setJourneyId: (id: string) => void;
   chapters: Chapter[];
@@ -94,9 +111,10 @@ function QuickUploadModal({
       >
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">
-            {step === "journey" && "Step 1 of 2 — Your Journey"}
+            {step === "picker" && "Which Journey?"}
+            {step === "journey" && "New Journey"}
             {step === "video" && "New video"}
-            {step === "details" && "Step 2 of 2 — Add details"}
+            {step === "details" && "Add details"}
           </p>
           <button
             type="button"
@@ -109,6 +127,16 @@ function QuickUploadModal({
         </div>
 
         <div className="overflow-y-auto p-5">
+          {step === "picker" && (
+            <PickerStep
+              journeys={journeys}
+              onPick={(id) => {
+                setJourneyId(id);
+                setStep("video");
+              }}
+              onStartNew={() => setStep("journey")}
+            />
+          )}
           {step === "journey" && (
             <JourneyStep
               onCreated={(id) => {
@@ -139,6 +167,46 @@ function QuickUploadModal({
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function PickerStep({
+  journeys,
+  onPick,
+  onStartNew,
+}: {
+  journeys: Journey[];
+  onPick: (journeyId: string) => void;
+  onStartNew: () => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-base font-bold text-ink">Add this video to…</h2>
+        <p className="mt-1 text-sm text-ink-muted">Pick which Journey this episode belongs to.</p>
+      </div>
+
+      <div className="space-y-2">
+        {journeys.map((journey) => (
+          <button
+            key={journey.id}
+            type="button"
+            onClick={() => onPick(journey.id)}
+            className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-left text-sm font-medium text-ink transition-colors hover:border-ink-muted"
+          >
+            {journey.title}
+          </button>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        onClick={onStartNew}
+        className="w-full rounded-full border border-border px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink-muted"
+      >
+        Start a new Journey
+      </button>
     </div>
   );
 }

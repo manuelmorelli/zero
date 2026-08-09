@@ -4,17 +4,21 @@ import { QuickUploadButton } from "@/components/creator/QuickUploadButton";
 
 /**
  * Pulsante "+" globale (montato una sola volta in app/layout.tsx, visibile su tutto il sito
- * per chi è loggato): recupera qui, lato server, il Journey attivo e i suoi Capitoli, così il
- * componente client non deve andarli a cercare lui stesso al momento dell'apertura.
+ * per chi è loggato): recupera qui, lato server, i Journey attivi (non archiviati) e i loro
+ * Capitoli, così il componente client non deve andarli a cercare lui stesso al momento
+ * dell'apertura. Un creator può avere più Journey attivi in parallelo (vedi
+ * 00-project-context.md, sezione "Archiviazione del Journey"), quindi il componente client
+ * decide da sé se serve uno step di scelta oppure no.
  */
 export async function QuickUpload() {
   const session = await getCurrentSession();
   if (!session) return null;
 
   const creator = await prisma.creator.findUnique({ where: { userId: session.user.id } });
-  const activeJourney = creator
-    ? await prisma.journey.findFirst({
+  const activeJourneys = creator
+    ? await prisma.journey.findMany({
         where: { creatorId: creator.id, status: { not: "ARCHIVED" } },
+        orderBy: { updatedAt: "desc" },
         include: {
           chapters: {
             where: { deletedAt: null },
@@ -23,12 +27,15 @@ export async function QuickUpload() {
           },
         },
       })
-    : null;
+    : [];
 
   return (
     <QuickUploadButton
-      journeyId={activeJourney?.id ?? null}
-      chapters={activeJourney?.chapters ?? []}
+      journeys={activeJourneys.map((journey) => ({
+        id: journey.id,
+        title: journey.title,
+        chapters: journey.chapters,
+      }))}
     />
   );
 }

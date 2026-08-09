@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-type ActiveJourneySectionProps = {
+type FeaturedJourneySectionProps = {
   journey: {
     id: string;
     title: string;
@@ -11,10 +11,13 @@ type ActiveJourneySectionProps = {
   };
 };
 
-export function ActiveJourneySection({ journey }: ActiveJourneySectionProps) {
+// Il Journey "in evidenza": tra i Journey pubblicati del creator, quello che ha ricevuto
+// l'episodio più recente (vedi lib/profile/featuredJourney.ts). Con un solo Journey pubblicato
+// coincide semplicemente con quello.
+export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps) {
   return (
     <section>
-      <h2 className="text-lg font-bold tracking-tight text-ink">Active journey</h2>
+      <h2 className="text-lg font-bold tracking-tight text-ink">Featured Journey</h2>
 
       <Link
         href={`/journeys/${journey.id}`}

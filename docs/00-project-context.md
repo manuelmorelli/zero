@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "3.8"
+version: "3.9"
 status: approved
 related_docs:
   - 01_Vision
@@ -148,9 +148,11 @@ Questa è una decisione di prodotto permanente, non limitata alla fase attuale d
 
 ### Archiviazione del Journey
 
-Un creator può avere un solo Journey attivo alla volta, cioè con `status` diverso da `ARCHIVED`. La regola è applicata lato server al momento della creazione di un nuovo Journey.
+**Revisione (2026-08-09)**: un creator può avere più Journey attivi in parallelo (cioè con `status` diverso da `ARCHIVED`). Il limite precedente ("un solo Journey attivo alla volta") è stato rimosso su decisione di Manuel: non esiste più nessun controllo lato server che blocchi la creazione di un nuovo Journey mentre un altro è già attivo.
 
-Un Journey può essere archiviato ma non eliminato: l'archiviazione imposta `status: ARCHIVED` sulla riga esistente, senza mai cancellarla né usare `deletedAt`. L'archiviazione è un'azione a senso unico nell'MVP: nessuna funzionalità riporta un Journey archiviato a Bozza o Pubblicato. Dopo aver archiviato il proprio Journey attivo, il creator può crearne uno nuovo, perché il vincolo "un solo Journey attivo" non conta più i Journey archiviati.
+Sul Profilo pubblico, tra i Journey pubblicati di un creator, quello mostrato "in evidenza" (card principale della tab Overview) è quello che ha ricevuto l'episodio più recente — per data di caricamento dell'episodio (`createdAt`), non per la data reale dell'evento (`occurredAt`), stesso principio già in uso per `Journey.publishedAt` (vedi sezione "Data di pubblicazione del Journey" più sotto). Con un solo Journey pubblicato coincide semplicemente con quello.
+
+Un Journey può essere archiviato ma non eliminato: l'archiviazione imposta `status: ARCHIVED` sulla riga esistente, senza mai cancellarla né usare `deletedAt`. L'archiviazione è un'azione a senso unico nell'MVP: nessuna funzionalità riporta un Journey archiviato a Bozza o Pubblicato.
 
 Il Journey archiviato resta visibile nel profilo pubblico del creator, insieme ai Journey pubblicati, e la sua Pagina Journey pubblica resta raggiungibile (sola lettura, nessuna modifica alle regole di Follow). Un Journey archiviato non compare invece in nessuna sezione di Discovery (Home, Categories, Ricerca, Feed, Recommended): quelle sezioni restano riservate ai Journey con `status: PUBLISHED`, coerentemente con il loro scopo di mostrare contenuti attivi.
 

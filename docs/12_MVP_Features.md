@@ -1,7 +1,7 @@
 ---
 title: MVP Features
 doc_id: 12-mvp-features
-version: "3.3"
+version: "3.4"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -45,7 +45,7 @@ Ha l'obiettivo di dimostrare che il concetto di Journey rappresenta un'alternati
 - Gestione della struttura del Journey.
 - Archiviazione del Journey (Archive Journey).
 
-Nell'MVP un creator può avere un solo Journey attivo alla volta (non archiviato). Un Journey può essere archiviato ma non eliminato; dopo l'archiviazione il creator può crearne uno nuovo. Un Journey archiviato resta visibile nel profilo pubblico ma non partecipa alla Discovery.
+Un creator può avere più Journey attivi (non archiviati) in parallelo (vedi `00-project-context.md`, sezione "Archiviazione del Journey"). Un Journey può essere archiviato ma non eliminato; l'archiviazione è un'azione a senso unico. Un Journey archiviato resta visibile nel profilo pubblico ma non partecipa alla Discovery.
 
 ---
 

@@ -38,16 +38,6 @@ export async function createJourney(
 ): Promise<{ error: string | null }> {
   const { creator } = await requireCreator();
 
-  const activeJourney = await prisma.journey.findFirst({
-    where: { creatorId: creator.id, status: { not: "ARCHIVED" } },
-  });
-  if (activeJourney) {
-    return {
-      error:
-        "You already have an active Journey. Archive it before creating a new one.",
-    };
-  }
-
   const parsed = JourneySchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description") || undefined,
@@ -72,11 +62,13 @@ export async function createJourney(
   redirect(`/dashboard/journeys/${journey.id}`);
 }
 
-// Passo 1 del pulsante "+" globale (vedi components/creator/QuickUploadButton.tsx): chi non ha
-// ancora un Journey attivo ne crea uno con solo il titolo, senza passare dalla Dashboard né da
-// "Become a creator" — se manca anche il profilo Creator viene creato al volo (nome dell'account
-// come displayName di partenza, modificabile in seguito dal Profilo). Nessun redirect: il flusso
-// resta nello stesso riquadro e passa allo step successivo (caricare il video).
+// Passo "new journey" del pulsante "+" globale (vedi components/creator/QuickUploadButton.tsx):
+// crea sempre un nuovo Journey con solo il titolo, senza passare dalla Dashboard né da "Become a
+// creator" — se manca anche il profilo Creator viene creato al volo (nome dell'account come
+// displayName di partenza, modificabile in seguito dal Profilo). Nessun redirect: il flusso resta
+// nello stesso riquadro e passa allo step successivo (caricare il video). Un creator può avere più
+// Journey attivi in parallelo (vedi 00-project-context.md, sezione "Archiviazione del Journey"),
+// quindi qui non c'è più nessun controllo "ne hai già uno": si crea sempre.
 const QuickJourneySchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
 });
@@ -93,11 +85,6 @@ export async function quickStartJourney(
   if (!creator) {
     creator = await prisma.creator.create({ data: { userId: user.id, displayName: user.name } });
   }
-
-  const activeJourney = await prisma.journey.findFirst({
-    where: { creatorId: creator.id, status: { not: "ARCHIVED" } },
-  });
-  if (activeJourney) return { error: null, journeyId: activeJourney.id };
 
   const parsed = QuickJourneySchema.safeParse({ title: formData.get("title") });
   if (!parsed.success) {

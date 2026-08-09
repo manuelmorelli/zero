@@ -22,23 +22,29 @@ export default async function CreatorDashboardPage() {
     where: { creatorId: creator.id },
     orderBy: { createdAt: "desc" },
   });
-  const activeJourney = journeys.find((journey) => journey.status !== "ARCHIVED") ?? null;
+  // Un creator può avere più Journey attivi (non archiviati) in parallelo — vedi
+  // 00-project-context.md, sezione "Archiviazione del Journey".
+  const activeJourneys = journeys.filter((journey) => journey.status !== "ARCHIVED");
   const archivedJourneys = journeys.filter((journey) => journey.status === "ARCHIVED");
 
-  let chapterCount = 0;
-  let episodeCount = 0;
-  if (activeJourney) {
-    chapterCount = await prisma.chapter.count({
-      where: { journeyId: activeJourney.id, deletedAt: null },
-    });
-    episodeCount = await prisma.episode.count({
-      where: {
-        deletedAt: null,
-        journeyId: activeJourney.id,
-        OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
-      },
-    });
-  }
+  const [chapterCounts, episodeCounts] = await Promise.all([
+    Promise.all(
+      activeJourneys.map((journey) =>
+        prisma.chapter.count({ where: { journeyId: journey.id, deletedAt: null } })
+      )
+    ),
+    Promise.all(
+      activeJourneys.map((journey) =>
+        prisma.episode.count({
+          where: {
+            deletedAt: null,
+            journeyId: journey.id,
+            OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
+          },
+        })
+      )
+    ),
+  ]);
 
   await deleteExpiredUpdates();
   const updates = await prisma.update.findMany({
@@ -56,18 +62,16 @@ export default async function CreatorDashboardPage() {
             <h1 className="text-2xl font-extrabold tracking-tight">
               Hi, {creator.displayName}
             </h1>
-            {!activeJourney && (
-              <Link
-                href="/dashboard/journeys/new"
-                className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
-              >
-                New Journey
-              </Link>
-            )}
+            <Link
+              href="/dashboard/journeys/new"
+              className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
+            >
+              New Journey
+            </Link>
           </div>
 
           <p className="mt-2 text-sm text-ink-muted">
-            Manage your Journey from here.
+            Manage your Journeys from here.
           </p>
 
           <Link
@@ -80,52 +84,57 @@ export default async function CreatorDashboardPage() {
 
         <Reveal delayMs={80}>
           <div className="mt-12 border-t border-border pt-10">
-            <h2 className="text-lg font-bold tracking-tight text-ink">Your Journey</h2>
+            <h2 className="text-lg font-bold tracking-tight text-ink">Your Journeys</h2>
 
-            {!activeJourney && (
+            {activeJourneys.length === 0 && (
               <p className="mt-4 rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
                 You don&apos;t have an active Journey yet. Start one to begin sharing your story.
               </p>
             )}
 
-            {activeJourney && (
-              <div className="mt-4 rounded-xl border border-border bg-surface p-6 transition-colors hover:border-ink-muted">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-ink">{activeJourney.title}</h3>
-                    <p className="mt-2 text-xs font-medium text-ink-muted">
-                      {chapterCount} {chapterCount === 1 ? "chapter" : "chapters"} · {episodeCount}{" "}
-                      {episodeCount === 1 ? "episode" : "episodes"}
-                    </p>
+            <div className="mt-4 space-y-4">
+              {activeJourneys.map((journey, index) => (
+                <div
+                  key={journey.id}
+                  className="rounded-xl border border-border bg-surface p-6 transition-colors hover:border-ink-muted"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-ink">{journey.title}</h3>
+                      <p className="mt-2 text-xs font-medium text-ink-muted">
+                        {chapterCounts[index]} {chapterCounts[index] === 1 ? "chapter" : "chapters"} ·{" "}
+                        {episodeCounts[index]} {episodeCounts[index] === 1 ? "episode" : "episodes"}
+                      </p>
+                    </div>
+                    <span className="shrink-0 rounded-full border border-border px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
+                      {STATUS_LABEL[journey.status] ?? journey.status}
+                    </span>
                   </div>
-                  <span className="shrink-0 rounded-full border border-border px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
-                    {STATUS_LABEL[activeJourney.status] ?? activeJourney.status}
-                  </span>
-                </div>
 
-                <div className="mt-5 flex flex-wrap items-center gap-4">
-                  <Link
-                    href={`/dashboard/journeys/${activeJourney.id}`}
-                    className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
-                  >
-                    Manage
-                  </Link>
-                  <JourneyPublishControl journeyId={activeJourney.id} status={activeJourney.status} />
-                  {activeJourney.status === "PUBLISHED" && (
+                  <div className="mt-5 flex flex-wrap items-center gap-4">
                     <Link
-                      href={`/journeys/${activeJourney.id}`}
-                      className="text-sm font-medium text-ink underline underline-offset-2"
+                      href={`/dashboard/journeys/${journey.id}`}
+                      className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
                     >
-                      View public page →
+                      Manage
                     </Link>
-                  )}
-                </div>
+                    <JourneyPublishControl journeyId={journey.id} status={journey.status} />
+                    {journey.status === "PUBLISHED" && (
+                      <Link
+                        href={`/journeys/${journey.id}`}
+                        className="text-sm font-medium text-ink underline underline-offset-2"
+                      >
+                        View public page →
+                      </Link>
+                    )}
+                  </div>
 
-                <div className="mt-4 border-t border-border pt-4">
-                  <JourneyArchiveButton journeyId={activeJourney.id} />
+                  <div className="mt-4 border-t border-border pt-4">
+                    <JourneyArchiveButton journeyId={journey.id} />
+                  </div>
                 </div>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
         </Reveal>
 

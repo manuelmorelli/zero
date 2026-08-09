@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/common/Reveal";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileTabs, type ProfileTab } from "@/components/profile/ProfileTabs";
-import { ActiveJourneySection } from "@/components/profile/ActiveJourneySection";
+import { FeaturedJourneySection } from "@/components/profile/FeaturedJourneySection";
 import { AboutCard } from "@/components/profile/AboutCard";
 import { JourneyStatsCard } from "@/components/profile/JourneyStatsCard";
 import { FeedPhotoItem } from "@/components/profile/FeedPhotoItem";
@@ -19,6 +19,7 @@ import { EpisodeReorderSection } from "@/components/profile/EpisodeReorderSectio
 import { getCreatorFeed } from "@/lib/profile/creatorFeed";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { computeTrustScore } from "@/lib/profile/trustScore";
+import { getFeaturedJourney } from "@/lib/profile/featuredJourney";
 import { DEMO_FEED_ITEMS } from "@/lib/demo/demoProfile";
 import Link from "next/link";
 
@@ -60,7 +61,10 @@ export default async function PublicProfilePage({
         orderBy: { createdAt: "desc" },
       })
     : [];
-  const activeJourney = journeys.find((journey) => journey.status === "PUBLISHED") ?? null;
+  // Un creator può avere più Journey pubblicati in parallelo (vedi 00-project-context.md, sezione
+  // "Archiviazione del Journey"): quello "in evidenza" è quello con l'episodio più recente.
+  const publishedJourneys = journeys.filter((journey) => journey.status === "PUBLISHED");
+  const featuredJourney = await getFeaturedJourney(publishedJourneys);
 
   const session = await getCurrentSession();
   const isOwnProfile = session?.user.id === user.id;
@@ -84,13 +88,17 @@ export default async function PublicProfilePage({
       : false;
 
   const stats = creator
-    ? await getProfileStats({ creatorId: creator.id, journeys, activeJourneyId: activeJourney?.id ?? null })
+    ? await getProfileStats({
+        creatorId: creator.id,
+        journeys,
+        publishedJourneyIds: publishedJourneys.map((journey) => journey.id),
+      })
     : { publishedEpisodesCount: 0, totalViews: 0, likesReceived: 0, completionRate: null };
 
   const trustScore = computeTrustScore({
     followersCount,
     publishedEpisodesCount: stats.publishedEpisodesCount,
-    hasActivePublishedJourney: activeJourney !== null,
+    hasPublishedJourney: publishedJourneys.length > 0,
   });
 
   let feedItems = null;
@@ -101,11 +109,11 @@ export default async function PublicProfilePage({
     feedItems = isDemoFeed ? DEMO_FEED_ITEMS : realFeed;
   }
 
-  // Drag & drop per riordinare gli episodi: solo sul proprio Profilo, solo per il Journey attivo
-  // (prima viveva nella Dashboard, vedi components/profile/EpisodeReorderSection.tsx).
+  // Drag & drop per riordinare gli episodi: solo sul proprio Profilo, solo per il Journey in
+  // evidenza (prima viveva nella Dashboard, vedi components/profile/EpisodeReorderSection.tsx).
   const reorderGroups =
-    activeTab === "overview" && isOwnProfile && activeJourney
-      ? (await getEpisodeTimeline(activeJourney.id)).groups
+    activeTab === "overview" && isOwnProfile && featuredJourney
+      ? (await getEpisodeTimeline(featuredJourney.id)).groups
       : [];
 
   let activeUpdates: { id: string; creatorId: string; creatorName: string; content: string; publishedAt: Date }[] = [];
@@ -187,9 +195,9 @@ export default async function PublicProfilePage({
           <div className="min-w-0 space-y-10">
             {activeTab === "overview" && (
               <>
-                {activeJourney && (
+                {featuredJourney && (
                   <Reveal>
-                    <ActiveJourneySection journey={activeJourney} />
+                    <FeaturedJourneySection journey={featuredJourney} />
                   </Reveal>
                 )}
 
@@ -202,8 +210,8 @@ export default async function PublicProfilePage({
                 <Reveal delayMs={80}>
                   <section>
                     <h2 className="text-lg font-bold tracking-tight text-ink">Latest Episodes</h2>
-                    {activeJourney && (
-                      <p className="mt-1 text-sm text-ink-muted">{activeJourney.title}</p>
+                    {featuredJourney && (
+                      <p className="mt-1 text-sm text-ink-muted">{featuredJourney.title}</p>
                     )}
 
                     {feedItems && feedItems.length > 0 ? (
@@ -247,6 +255,10 @@ export default async function PublicProfilePage({
                             journey.status === "ARCHIVED" ? (
                               <span className="rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-semibold text-white">
                                 Archived
+                              </span>
+                            ) : journey.id === featuredJourney?.id ? (
+                              <span className="rounded-full bg-ember px-2.5 py-1 text-[11px] font-semibold text-white">
+                                Featured
                               </span>
                             ) : undefined
                           }
@@ -302,14 +314,12 @@ export default async function PublicProfilePage({
 async function getProfileStats({
   creatorId,
   journeys,
-  activeJourneyId,
+  publishedJourneyIds,
 }: {
   creatorId: string;
   journeys: { id: string; status: string; viewsCount: number }[];
-  activeJourneyId: string | null;
+  publishedJourneyIds: string[];
 }) {
-  const publishedJourneyIds = journeys.filter((journey) => journey.status === "PUBLISHED").map((journey) => journey.id);
-
   const [publishedEpisodesCount, allEpisodeIds, allUpdateIds, progressRows] = await Promise.all([
     prisma.episode.count({
       where: { deletedAt: null, journeyId: { in: publishedJourneyIds } },
@@ -319,8 +329,13 @@ async function getProfileStats({
       select: { id: true },
     }),
     prisma.update.findMany({ where: { creatorId }, select: { id: true } }),
-    activeJourneyId
-      ? prisma.journeyProgress.findMany({ where: { journeyId: activeJourneyId }, select: { completedAt: true } })
+    // Completion rate aggregato su tutti i Journey pubblicati (prima solo sul singolo Journey
+    // attivo): con più Journey attivi in parallelo è la lettura più corretta dello stato reale.
+    publishedJourneyIds.length > 0
+      ? prisma.journeyProgress.findMany({
+          where: { journeyId: { in: publishedJourneyIds } },
+          select: { completedAt: true },
+        })
       : Promise.resolve([]),
   ]);
 

@@ -7,19 +7,19 @@
 type TrustScoreInput = {
   followersCount: number;
   publishedEpisodesCount: number;
-  hasActivePublishedJourney: boolean;
+  hasPublishedJourney: boolean;
 };
 
 export function computeTrustScore({
   followersCount,
   publishedEpisodesCount,
-  hasActivePublishedJourney,
+  hasPublishedJourney,
 }: TrustScoreInput): number {
   const base = 40;
   const followersContribution = Math.min(followersCount, 500) * 0.05;
   const continuityContribution = Math.min(publishedEpisodesCount, 50) * 0.6;
-  const activeJourneyBonus = hasActivePublishedJourney ? 10 : 0;
+  const publishedJourneyBonus = hasPublishedJourney ? 10 : 0;
 
-  const score = base + followersContribution + continuityContribution + activeJourneyBonus;
+  const score = base + followersContribution + continuityContribution + publishedJourneyBonus;
   return Math.round(Math.min(score, 100));
 }

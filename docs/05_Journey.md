@@ -1,7 +1,7 @@
 ---
 title: Journey
 doc_id: 05-journey
-version: "3.2"
+version: "3.3"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -78,9 +78,9 @@ Un Journey:
 
 ## Gestione
 
-Un creator può avere un solo Journey attivo alla volta, cioè non archiviato.
+Un creator può avere più Journey attivi (non archiviati) in parallelo (vedi `00-project-context.md`, sezione "Archiviazione del Journey").
 
-Un Journey può essere archiviato ma non eliminato: l'archiviazione è un'azione a senso unico e non riporta il Journey in Bozza o Pubblicato. Dopo aver archiviato il proprio Journey attivo, il creator può crearne uno nuovo.
+Un Journey può essere archiviato ma non eliminato: l'archiviazione è un'azione a senso unico e non riporta il Journey in Bozza o Pubblicato.
 
 Il Journey archiviato resta visibile nel profilo pubblico del creator e la sua Pagina Journey pubblica resta raggiungibile in sola lettura, ma non compare in nessuna sezione di Discovery (Home, Categories, Ricerca, Feed, Recommended), riservate ai Journey pubblicati.
 
