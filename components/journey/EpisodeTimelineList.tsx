@@ -79,9 +79,17 @@ function EpisodeRow({
         )}
       </div>
       <div className="flex flex-1 flex-col justify-center px-4 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">
-          Episode {episode.number}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">
+            Episode {episode.number}
+          </p>
+          {episode.progress?.completedAt && (
+            <span className="flex items-center gap-1 text-xs font-semibold text-ink-muted">
+              <CheckIcon className="h-3 w-3" />
+              Completed
+            </span>
+          )}
+        </div>
         <h3 className="mt-1 text-sm font-bold leading-snug text-ink">{episode.title}</h3>
       </div>
     </button>
@@ -124,7 +132,13 @@ function EpisodeOverlay({
         </div>
 
         {episode.videoKey && episode.videoSrc ? (
-          <EpisodeVideoPlayer episodeId={episode.id} src={episode.videoSrc} />
+          <EpisodeVideoPlayer
+            key={episode.id}
+            episodeId={episode.id}
+            src={episode.videoSrc}
+            initialPositionSec={episode.progress?.positionSec ?? 0}
+            initialCompleted={Boolean(episode.progress?.completedAt)}
+          />
         ) : (
           <p className="rounded-xl border border-border bg-surface p-5 text-sm text-ink-muted">
             No video for this episode yet.
@@ -143,6 +157,14 @@ function PlayIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 12 12" fill="currentColor" className={className} aria-hidden="true">
       <path d="M2 1.5v9l8-4.5-8-4.5z" />
+    </svg>
+  );
+}
+
+function CheckIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={2} className={className} aria-hidden="true">
+      <path d="M4 10.5l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

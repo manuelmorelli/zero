@@ -320,7 +320,7 @@ async function getProfileStats({
   journeys: { id: string; status: string; viewsCount: number }[];
   publishedJourneyIds: string[];
 }) {
-  const [publishedEpisodesCount, allEpisodeIds, allUpdateIds, progressRows] = await Promise.all([
+  const [publishedEpisodesCount, allEpisodeIds, allUpdateIds, journeyProgressRows] = await Promise.all([
     prisma.episode.count({
       where: { deletedAt: null, journeyId: { in: publishedJourneyIds } },
     }),
@@ -331,10 +331,12 @@ async function getProfileStats({
     prisma.update.findMany({ where: { creatorId }, select: { id: true } }),
     // Completion rate aggregato su tutti i Journey pubblicati (prima solo sul singolo Journey
     // attivo): con più Journey attivi in parallelo è la lettura più corretta dello stato reale.
+    // Il completamento vive per episodio (EpisodeProgress): un lettore conta come "completato" su
+    // un Journey se ha finito l'episodio a cui si trova (currentEpisodeId).
     publishedJourneyIds.length > 0
       ? prisma.journeyProgress.findMany({
-          where: { journeyId: { in: publishedJourneyIds } },
-          select: { completedAt: true },
+          where: { journeyId: { in: publishedJourneyIds }, currentEpisodeId: { not: null } },
+          select: { userId: true, currentEpisodeId: true },
         })
       : Promise.resolve([]),
   ]);
@@ -345,9 +347,25 @@ async function getProfileStats({
 
   const totalViews = journeys.reduce((sum, journey) => sum + journey.viewsCount, 0);
 
+  const completedEpisodeProgress =
+    journeyProgressRows.length > 0
+      ? await prisma.episodeProgress.findMany({
+          where: {
+            completedAt: { not: null },
+            OR: journeyProgressRows.map((row) => ({ userId: row.userId, episodeId: row.currentEpisodeId! })),
+          },
+          select: { userId: true, episodeId: true },
+        })
+      : [];
+  const completedKeys = new Set(completedEpisodeProgress.map((row) => `${row.userId}:${row.episodeId}`));
+
   const completionRate =
-    progressRows.length > 0
-      ? Math.round((progressRows.filter((row) => row.completedAt !== null).length / progressRows.length) * 100)
+    journeyProgressRows.length > 0
+      ? Math.round(
+          (journeyProgressRows.filter((row) => completedKeys.has(`${row.userId}:${row.currentEpisodeId}`)).length /
+            journeyProgressRows.length) *
+            100
+        )
       : null;
 
   return { publishedEpisodesCount, totalViews, likesReceived, completionRate };

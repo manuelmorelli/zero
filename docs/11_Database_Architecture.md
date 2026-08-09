@@ -1,7 +1,7 @@
 ---
 title: Database Architecture
 doc_id: 11-database-architecture
-version: "3.3"
+version: "3.4"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -92,6 +92,8 @@ Le relazioni tra le entità devono:
 `Episode.chapterId` è opzionale (`String?`), coerente con il modello narrativo ufficiale (`05_Journey.md`): un Episodio può esistere senza Capitolo. Ogni Episodio ha inoltre un `journeyId` diretto, così resta collegato al proprio Journey anche senza passare da un Capitolo (migrazione `20260803154620_episode_optional_chapter`, con backfill di `journeyId` dai Capitoli esistenti).
 
 `Like` punta a un Episodio o a un Update tramite `targetType` (`EPISODE`/`UPDATE`) + `targetId`, un solo modello invece di due tabelle quasi identiche una per ciascun target — nessuna relation diretta verso Episode/Update, per questo `targetId` non è vincolato da una foreign key (migrazione `20260804165919_profile_richness`, che aggiunge anche `User.coverUrl`, `User.location` e `Journey.viewsCount`).
+
+L'avanzamento di visione si legge su due livelli separati, non su un unico modello: `JourneyProgress` (una riga per utente+Journey) resta solo il puntatore all'ultimo episodio visto (`currentEpisodeId`), usato da "Continua il tuo Journey"; la posizione video e il completamento vivono per singolo episodio in `EpisodeProgress` (una riga per utente+episodio, `positionSec` + `completedAt`), perché un Journey con più episodi richiede di sapere quali episodi specifici sono stati completati, non solo l'ultimo aperto (migrazione `20260809103604_episode_progress`, che rimuove anche `positionSec`/`completedAt` da `JourneyProgress`, rimasti inutilizzati finché non esisteva un player capace di scriverli).
 
 ## Regole
 

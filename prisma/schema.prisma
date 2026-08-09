@@ -145,6 +145,7 @@ model User {
   notifications      Notification[]
   reports            Report[]
   journeyProgresses  JourneyProgress[]
+  episodeProgresses  EpisodeProgress[]
   likes              Like[]
 
   @@map("users")
@@ -300,24 +301,43 @@ model Episode {
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
 
+  progress    EpisodeProgress[]
+
   @@index([journeyId, chapterId, order])
   @@map("episodes")
 }
 
-// Tiene traccia di "Continua il tuo Journey" (ultimo episodio visto + posizione video)
+// Tiene traccia di "Continua il tuo Journey": solo il puntatore all'ultimo episodio visto.
+// La posizione video e il completamento vivono per episodio in EpisodeProgress, non qui:
+// una sola riga per Journey non basta a ricordare quali episodi singoli sono stati completati.
 model JourneyProgress {
-  id             String   @id @default(uuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id])
-  journeyId      String
-  journey        Journey  @relation(fields: [journeyId], references: [id])
-  currentEpisodeId String?
-  positionSec    Int      @default(0)
-  completedAt    DateTime?
-  updatedAt      DateTime @updatedAt
+  id                String    @id @default(uuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id])
+  journeyId         String
+  journey           Journey   @relation(fields: [journeyId], references: [id])
+  currentEpisodeId  String?
+  updatedAt         DateTime  @updatedAt
 
   @@unique([userId, journeyId])
   @@map("journey_progresses")
+}
+
+// Posizione di riproduzione e completamento per singolo episodio e singolo utente. Base per la
+// ripresa esatta del video e per un futuro segnale di completamento reale (Trust Score/Algoritmo,
+// vedi 08_Algorithm.md "completamento dei Journey" / "tempo di fruizione significativo").
+model EpisodeProgress {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  episodeId   String
+  episode     Episode   @relation(fields: [episodeId], references: [id])
+  positionSec Int       @default(0)
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, episodeId])
+  @@map("episode_progresses")
 }
 
 // ------------------------------------------------------------

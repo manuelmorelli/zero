@@ -10,6 +10,8 @@ export type TimelineEpisode = {
   videoSrc?: string;
   /** Posizione 1-based nell'intero Journey (loose episodes + tutti i Capitoli insieme). */
   number: number;
+  /** Avanzamento dell'utente corrente su questo episodio; null se non loggato o mai iniziato. */
+  progress: { positionSec: number; completedAt: Date | null } | null;
 };
 
 export type TimelineGroup = {
@@ -40,7 +42,7 @@ function earliestCreatedAt(episodes: EpisodeRow[]): Date {
  */
 export async function getEpisodeTimeline(
   journeyId: string,
-  { withPlaybackUrls = false }: { withPlaybackUrls?: boolean } = {}
+  { withPlaybackUrls = false, userId }: { withPlaybackUrls?: boolean; userId?: string } = {}
 ): Promise<EpisodeTimeline> {
   const [looseEpisodes, chapters] = await Promise.all([
     prisma.episode.findMany({
@@ -90,6 +92,7 @@ export async function getEpisodeTimeline(
         occurredAt: episode.occurredAt,
         videoKey: episode.videoKey,
         number: counter,
+        progress: null,
       };
       flatEpisodes.push(timelineEpisode);
       return timelineEpisode;
@@ -105,6 +108,21 @@ export async function getEpisodeTimeline(
           episode.videoSrc = await getVideoPlaybackUrl(episode.videoKey!);
         })
     );
+  }
+
+  if (userId && flatEpisodes.length > 0) {
+    const progresses = await prisma.episodeProgress.findMany({
+      where: { userId, episodeId: { in: flatEpisodes.map((episode) => episode.id) } },
+    });
+    const progressByEpisodeId = new Map(
+      progresses.map((progress) => [progress.episodeId, progress])
+    );
+    for (const episode of flatEpisodes) {
+      const progress = progressByEpisodeId.get(episode.id);
+      if (progress) {
+        episode.progress = { positionSec: progress.positionSec, completedAt: progress.completedAt };
+      }
+    }
   }
 
   return { groups, flatEpisodes };

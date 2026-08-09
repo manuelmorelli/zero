@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getCurrentSession } from "@/lib/session";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { EpisodeTimelineList } from "@/components/journey/EpisodeTimelineList";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -21,7 +22,11 @@ export default async function JourneyEpisodesPage({
   if (!journey || journey.deletedAt || (journey.status !== "PUBLISHED" && journey.status !== "ARCHIVED"))
     notFound();
 
-  const { groups } = await getEpisodeTimeline(journey.id, { withPlaybackUrls: true });
+  const session = await getCurrentSession();
+  const { groups } = await getEpisodeTimeline(journey.id, {
+    withPlaybackUrls: true,
+    userId: session?.user.id,
+  });
 
   return (
     <main>
