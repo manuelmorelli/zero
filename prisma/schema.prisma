@@ -109,6 +109,8 @@ enum NotificationType {
   UPDATE
   WORKSHOP
   EVENT
+  NEW_EPISODE
+  NEW_JOURNEY
 }
 
 // ------------------------------------------------------------
@@ -605,9 +607,12 @@ model Notification {
   user      User             @relation(fields: [userId], references: [id])
   type      NotificationType
   content   String
+  // Percorso interno da aprire al click (es. "/journeys/abc"), null per i tipi che non ne hanno bisogno.
+  link      String?
   read      Boolean          @default(false)
   createdAt DateTime         @default(now())
 
+  @@index([userId, createdAt])
   @@map("notifications")
 }
 

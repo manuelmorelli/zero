@@ -9,10 +9,14 @@ import { requireCreator } from "@/lib/creator";
 import { requireSession } from "@/lib/session";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { DISCOVERY_PHASE_DAYS } from "@/lib/constants/journeyStatus";
+import { notifyNewJourney } from "@/lib/notifications";
 
 async function requireOwnedJourney(journeyId: string) {
   const { creator } = await requireCreator();
-  const journey = await prisma.journey.findUnique({ where: { id: journeyId } });
+  const journey = await prisma.journey.findUnique({
+    where: { id: journeyId },
+    include: { creator: true },
+  });
   if (!journey || journey.creatorId !== creator.id) notFound();
   return journey;
 }
@@ -179,6 +183,7 @@ export async function publishJourney(
   const alreadyHadDiscoveryPhase = journey.discoveryEndsAt !== null && journey.discoveryEndsAt <= new Date();
   const discoveryEndsAt =
     journey.discoveryEndsAt ?? new Date(Date.now() + DISCOVERY_PHASE_DAYS * 24 * 60 * 60 * 1000);
+  const isFirstPublish = journey.publishedAt === null;
 
   await prisma.journey.update({
     where: { id: journey.id },
@@ -188,6 +193,17 @@ export async function publishJourney(
       discoveryEndsAt,
     },
   });
+
+  // Solo alla prima pubblicazione: un ciclo bozza→ripubblica non deve avvisare i follower
+  // una seconda volta per lo stesso Journey (stesso principio già in uso per publishedAt/discoveryEndsAt).
+  if (isFirstPublish) {
+    await notifyNewJourney({
+      creatorId: journey.creatorId,
+      creatorName: journey.creator.displayName,
+      journeyId: journey.id,
+      journeyTitle: journey.title,
+    });
+  }
 
   revalidatePath(`/dashboard/journeys/${journey.id}`);
   revalidatePath(`/journeys/${journey.id}`);

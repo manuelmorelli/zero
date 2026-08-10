@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { QuickUpload } from "@/components/creator/QuickUpload";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,6 +27,7 @@ export default function RootLayout({
         className={`${inter.variable} font-sans bg-bg text-ink antialiased`}
       >
         {children}
+        <NotificationBell />
         <QuickUpload />
       </body>
     </html>

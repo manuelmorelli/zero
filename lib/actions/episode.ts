@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { deleteVideo, getVideoSize, getVideoUploadUrl, newVideoKey } from "@/lib/r2";
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { notifyNewEpisode } from "@/lib/notifications";
 
 const EpisodeSchema = z
   .object({
@@ -27,7 +29,10 @@ const EpisodeSchema = z
 
 async function requireOwnedJourney(journeyId: string) {
   const { creator } = await requireCreator();
-  const journey = await prisma.journey.findUnique({ where: { id: journeyId } });
+  const journey = await prisma.journey.findUnique({
+    where: { id: journeyId },
+    include: { creator: true },
+  });
   if (!journey || journey.creatorId !== creator.id) notFound();
   return journey;
 }
@@ -98,7 +103,7 @@ async function assertVideoWithinLimit(videoKey: string | undefined): Promise<str
 // sopra la pagina corrente e quindi non può fare un redirect): stessa validazione dimensione video
 // e stesso calcolo della posizione, un solo punto da aggiornare se la regola cambia.
 async function insertEpisode(
-  journey: { id: string },
+  journey: Awaited<ReturnType<typeof requireOwnedJourney>>,
   chapterId: string | null,
   data: z.infer<typeof EpisodeSchema>
 ): Promise<{ error: string | null }> {
@@ -110,7 +115,7 @@ async function insertEpisode(
     orderBy: { order: "desc" },
   });
 
-  await prisma.episode.create({
+  const episode = await prisma.episode.create({
     data: {
       journeyId: journey.id,
       chapterId,
@@ -121,6 +126,21 @@ async function insertEpisode(
       order: (lastEpisode?.order ?? 0) + 1,
     },
   });
+
+  // Notifica i follower solo se l'episodio si aggiunge a un Journey già pubblicato: gli episodi
+  // caricati mentre il Journey è ancora in Bozza diventano visibili tutti insieme alla prima
+  // pubblicazione, già coperta da `notifyNewJourney` (vedi lib/actions/journey.ts). Stessa regola
+  // già usata dal Feed dei creator seguiti in Home (lib/discovery/feed.ts).
+  if (LIVE_JOURNEY_STATUSES.includes(journey.status) && journey.publishedAt) {
+    await notifyNewEpisode({
+      creatorId: journey.creatorId,
+      creatorName: journey.creator.displayName,
+      journeyId: journey.id,
+      journeyTitle: journey.title,
+      episodeId: episode.id,
+      episodeTitle: episode.title,
+    });
+  }
 
   revalidatePath(`/dashboard/journeys/${journey.id}`);
   revalidatePath(`/journeys/${journey.id}`);
