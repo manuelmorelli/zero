@@ -1,7 +1,7 @@
 ---
 title: MVP Features
 doc_id: 12-mvp-features
-version: "3.4"
+version: "3.5"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -62,6 +62,7 @@ Un creator può avere più Journey attivi (non archiviati) in parallelo (vedi `0
 ### Community
 
 - Seguire creator.
+- Notifiche interne al sito per i creator seguiti (nuovo Journey pubblicato, nuovo Episodio aggiunto a un Journey già pubblicato).
 - Gestione della Community Premium.
 - Accesso ai contenuti riservati.
 
