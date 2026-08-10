@@ -12,7 +12,7 @@ export function JourneyPublishControl({ journeyId, status }: JourneyPublishContr
   if (status === "DRAFT") {
     return <PublishForm journeyId={journeyId} />;
   }
-  if (status === "PUBLISHED") {
+  if (status === "PUBLISHED" || status === "DISCOVERY") {
     return <UnpublishForm journeyId={journeyId} />;
   }
   return null;

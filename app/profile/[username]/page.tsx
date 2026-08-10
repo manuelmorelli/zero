@@ -18,8 +18,9 @@ import { EditProfileButton } from "@/components/profile/EditProfileButton";
 import { EpisodeReorderSection } from "@/components/profile/EpisodeReorderSection";
 import { getCreatorFeed } from "@/lib/profile/creatorFeed";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
-import { computeTrustScore } from "@/lib/profile/trustScore";
+import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
 import { getFeaturedJourney } from "@/lib/profile/featuredJourney";
+import { PUBLICLY_REACHABLE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { DEMO_FEED_ITEMS } from "@/lib/demo/demoProfile";
 import Link from "next/link";
 
@@ -51,20 +52,22 @@ export default async function PublicProfilePage({
   const user = await findUserByUsernameOrId(username);
   if (!user) notFound();
 
+  await promoteExpiredDiscoveryJourneys();
   const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
 
-  // Published Journeys are shown alongside archived ones: archiving retires a Journey
-  // from active management, but it stays visible on the public profile (never deleted).
+  // Journey live (pubblicati o in Discovery Phase) sono mostrati insieme a quelli archiviati:
+  // archiviare un Journey lo ritira dalla gestione attiva, ma resta visibile sul profilo pubblico
+  // (mai cancellato).
   const journeys = creator
     ? await prisma.journey.findMany({
-        where: { creatorId: creator.id, status: { in: ["PUBLISHED", "ARCHIVED"] }, deletedAt: null },
+        where: { creatorId: creator.id, status: { in: PUBLICLY_REACHABLE_JOURNEY_STATUSES }, deletedAt: null },
         orderBy: { createdAt: "desc" },
       })
     : [];
-  // Un creator può avere più Journey pubblicati in parallelo (vedi 00-project-context.md, sezione
+  // Un creator può avere più Journey live in parallelo (vedi 00-project-context.md, sezione
   // "Archiviazione del Journey"): quello "in evidenza" è quello con l'episodio più recente.
-  const publishedJourneys = journeys.filter((journey) => journey.status === "PUBLISHED");
-  const featuredJourney = await getFeaturedJourney(publishedJourneys);
+  const liveJourneys = journeys.filter((journey) => journey.status === "PUBLISHED" || journey.status === "DISCOVERY");
+  const featuredJourney = await getFeaturedJourney(liveJourneys);
 
   const session = await getCurrentSession();
   const isOwnProfile = session?.user.id === user.id;
@@ -91,15 +94,18 @@ export default async function PublicProfilePage({
     ? await getProfileStats({
         creatorId: creator.id,
         journeys,
-        publishedJourneyIds: publishedJourneys.map((journey) => journey.id),
+        publishedJourneyIds: liveJourneys.map((journey) => journey.id),
       })
     : { publishedEpisodesCount: 0, totalViews: 0, likesReceived: 0, completionRate: null };
 
-  const trustScore = computeTrustScore({
-    followersCount,
-    publishedEpisodesCount: stats.publishedEpisodesCount,
-    hasPublishedJourney: publishedJourneys.length > 0,
-  });
+  const trustScore = computeTrustScore(
+    creator ? await getCreatorTrustInputs(creator.id, followersCount) : {
+      followersCount,
+      averageJourneyScore: 0,
+      hasLiveJourney: false,
+      confirmedReportsCount: 0,
+    }
+  );
 
   let feedItems = null;
   let isDemoFeed = false;
@@ -255,6 +261,10 @@ export default async function PublicProfilePage({
                             journey.status === "ARCHIVED" ? (
                               <span className="rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-semibold text-white">
                                 Archived
+                              </span>
+                            ) : journey.status === "DISCOVERY" ? (
+                              <span className="rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-semibold text-white">
+                                Discovering
                               </span>
                             ) : journey.id === featuredJourney?.id ? (
                               <span className="rounded-full bg-ember px-2.5 py-1 text-[11px] font-semibold text-white">

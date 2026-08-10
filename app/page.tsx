@@ -14,20 +14,30 @@ import { Reveal } from "@/components/common/Reveal";
 import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
-import { DEMO_UPDATES, DEMO_FEED, DEMO_CREATORS, DEMO_LATEST_VIDEOS, DEMO_TOP_JOURNEYS } from "@/lib/demo/demoContent";
+import {
+  DEMO_UPDATES,
+  DEMO_FEED,
+  DEMO_CREATORS,
+  DEMO_LATEST_VIDEOS,
+  DEMO_TOP_JOURNEYS,
+  DEMO_DISCOVERING_NOW,
+} from "@/lib/demo/demoContent";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
 import { getFollowedCreatorsFeed, type FeedItem as FeedItemData } from "@/lib/discovery/feed";
 import { getFollowedCreatorsUpdates, type FollowedUpdate } from "@/lib/discovery/updates";
 import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
+import { getDiscoveringNowJourneys, type DiscoveringNowItem } from "@/lib/discovery/discoveringNow";
 import { UpdateCard } from "@/components/journey/UpdateCard";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
+import { LIVE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { SearchForm, SearchIcon } from "@/components/search/SearchForm";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 
 export default async function Home() {
+  await promoteExpiredDiscoveryJourneys();
   const session = await getCurrentSession();
   const userId = session?.user.id ?? null;
 
@@ -57,15 +67,19 @@ export default async function Home() {
     momentJourneys,
     latestVideos,
     topJourneys,
+    discoveringNow,
   ] = await Promise.all([
     getFollowedCreatorsFeed({ userId, excludeJourneyIds: excludeFromDiscovery }),
-    getFollowedCreatorsUpdates({ userId }),
+    getFollowedCreatorsUpdates({ userId, interests: userInterests }),
     getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, interests: userInterests }),
     getRecommendedCreators({ userId, interests: userInterests }),
     getJourneyCountsByCategory(),
     getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: 10, interests: userInterests }),
     getLatestVideos({ limit: 10, interests: userInterests }),
     getTopJourneys({ limit: 10, interests: userInterests }),
+    // Nessuna personalizzazione: "Discovering Now" mostra tutti i Journey in Discovery Phase a
+    // chiunque, loggato o no, indipendentemente da interessi o creator seguiti (08_Algorithm.md).
+    getDiscoveringNowJourneys(10),
   ]);
 
   const feedJourneyIds = followedFeed
@@ -79,6 +93,7 @@ export default async function Home() {
   const displayedMomentJourneys = momentJourneys.length > 0 ? momentJourneys : DEMO_JOURNEYS;
   const displayedLatestVideos = latestVideos.length > 0 ? latestVideos : DEMO_LATEST_VIDEOS;
   const displayedTopJourneys = topJourneys.length > 0 ? topJourneys : DEMO_TOP_JOURNEYS;
+  const displayedDiscoveringNow = discoveringNow.length > 0 ? discoveringNow : DEMO_DISCOVERING_NOW;
   const displayedFeed = followedFeed.length > 0 ? followedFeed : DEMO_FEED;
   const displayedUpdates = followedUpdates.length > 0 ? followedUpdates : DEMO_UPDATES;
   const displayedRecommendedJourneys = recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS.slice(0, 5);
@@ -91,6 +106,7 @@ export default async function Home() {
       <Hero updates={displayedUpdates} />
 
       <div id="discover">
+        <DiscoveringNow journeys={displayedDiscoveringNow} />
         <JourneysOfTheMoment journeys={displayedMomentJourneys} />
         <LatestVideos videos={displayedLatestVideos} />
         <TopJourneys journeys={displayedTopJourneys} />
@@ -108,6 +124,55 @@ export default async function Home() {
       <FinalCta />
       <SiteFooter />
     </main>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* DISCOVERING NOW (riga Netflix) — Discovery Phase, 08_Algorithm.md   */
+/* ------------------------------------------------------------------ */
+
+function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
+  return (
+    <NetflixRow
+      icon={<CompassIcon className="h-5 w-5" />}
+      title="Discovering Now"
+      subtitle="Brand new Journeys, shown to everyone — not just people who already follow this topic."
+      viewAllHref="/categories"
+    >
+      {journeys.map((journey) => (
+        <JourneyCard
+          key={journey.id}
+          style={{ scrollSnapAlign: "start" }}
+          className="w-64 shrink-0"
+          journey={{
+            id: journey.id,
+            title: journey.title,
+            coverUrl: journey.coverUrl,
+            category: journey.category,
+            creator: { displayName: journey.creatorName },
+            followersCount: journey.followersCount,
+          }}
+          footer={
+            <p className="px-4 pb-4 text-xs text-ink-muted">
+              {journey.daysLeft} {journey.daysLeft === 1 ? "day" : "days"} left in Discovery
+            </p>
+          }
+        />
+      ))}
+    </NetflixRow>
+  );
+}
+
+function CompassIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className} aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m15 9-4.5 1.5L9 15l4.5-1.5L15 9Z"
+      />
+    </svg>
   );
 }
 
@@ -240,7 +305,7 @@ async function getContinueJourneys(
   const progresses = await prisma.journeyProgress.findMany({
     where: {
       userId: session.user.id,
-      journey: { status: "PUBLISHED", deletedAt: null },
+      journey: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
     },
     orderBy: { updatedAt: "desc" },
     include: { journey: { include: { creator: true } } },
@@ -484,7 +549,7 @@ async function getNewJourneys(
   const pool = interests.length > 0 ? 20 : 5;
 
   const journeys = await prisma.journey.findMany({
-    where: { status: "PUBLISHED", deletedAt: null, id: { notIn: excludeJourneyIds } },
+    where: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null, id: { notIn: excludeJourneyIds } },
     orderBy: { publishedAt: "desc" },
     take: pool,
     include: { creator: { include: { _count: { select: { followers: true } } } } },
@@ -495,7 +560,7 @@ async function getNewJourneys(
     // "tutti i Journey pubblicati sono già esclusi" (es. tutti nel Feed): solo nel primo caso
     // ha senso il fallback demo, altrimenti la sezione resta vuota di proposito.
     const anyPublished = await prisma.journey.count({
-      where: { status: "PUBLISHED", deletedAt: null },
+      where: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
     });
     return anyPublished === 0 ? DEMO_JOURNEYS : [];
   }

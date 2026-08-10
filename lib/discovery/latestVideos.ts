@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 
 export type LatestVideoItem = {
   episodeId: string;
@@ -26,7 +27,7 @@ export async function getLatestVideos({
       videoKey: { not: null },
       deletedAt: null,
       OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
-      journey: { status: "PUBLISHED", deletedAt: null },
+      journey: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
     },
     orderBy: { createdAt: "desc" },
     take: pool,

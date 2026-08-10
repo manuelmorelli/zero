@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 import { getFollowedCreatorIds, getOwnCreatorId, getFollowedCategories } from "@/lib/discovery/follows";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 
 type CreatorWithUser = Awaited<ReturnType<typeof findPublishedCreators>>[number];
 
@@ -76,7 +77,7 @@ async function findPublishedCreators(filters: {
       id: { notIn: [...filters.excludedCreatorIds] },
       journeys: {
         some: {
-          status: "PUBLISHED",
+          status: { in: LIVE_JOURNEY_STATUSES },
           deletedAt: null,
           ...(filters.categories ? { category: { in: filters.categories } } : {}),
         },

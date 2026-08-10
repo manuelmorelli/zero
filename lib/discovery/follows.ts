@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 
 /**
  * Id dei Creator seguiti da un utente (Follow.creatorId). Usato da tutte le sezioni
@@ -28,7 +29,7 @@ export async function getFollowedCategories(creatorIds: string[]): Promise<strin
   const journeys = await prisma.journey.findMany({
     where: {
       creatorId: { in: creatorIds },
-      status: "PUBLISHED",
+      status: { in: LIVE_JOURNEY_STATUSES },
       deletedAt: null,
       category: { not: null },
     },

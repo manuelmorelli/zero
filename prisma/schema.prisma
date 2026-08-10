@@ -249,7 +249,8 @@ model Journey {
   tags           String[]
   status         JourneyStatus @default(DRAFT)
   discoveryEndsAt DateTime?
-  journeyScore   Float         @default(0) // valore corrente, aggiornato dal job di scoring
+  journeyScore   Float         @default(0) // Journey Score 0-100, ricalcolato al massimo 1x/giorno (vedi lib/scoring/journeyScore.ts)
+  journeyScoreUpdatedAt DateTime? // null = mai calcolato; usato per sapere quando il punteggio è "stale" e va ricalcolato
   viewsCount     Int           @default(0) // contatore semplice, incrementato a ogni caricamento della Pagina Journey pubblica
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt

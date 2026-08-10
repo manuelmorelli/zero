@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "3.9"
+version: "4.0"
 status: approved
 related_docs:
   - 01_Vision
@@ -154,7 +154,15 @@ Sul Profilo pubblico, tra i Journey pubblicati di un creator, quello mostrato "i
 
 Un Journey può essere archiviato ma non eliminato: l'archiviazione imposta `status: ARCHIVED` sulla riga esistente, senza mai cancellarla né usare `deletedAt`. L'archiviazione è un'azione a senso unico nell'MVP: nessuna funzionalità riporta un Journey archiviato a Bozza o Pubblicato.
 
-Il Journey archiviato resta visibile nel profilo pubblico del creator, insieme ai Journey pubblicati, e la sua Pagina Journey pubblica resta raggiungibile (sola lettura, nessuna modifica alle regole di Follow). Un Journey archiviato non compare invece in nessuna sezione di Discovery (Home, Categories, Ricerca, Feed, Recommended): quelle sezioni restano riservate ai Journey con `status: PUBLISHED`, coerentemente con il loro scopo di mostrare contenuti attivi.
+Il Journey archiviato resta visibile nel profilo pubblico del creator, insieme ai Journey pubblicati, e la sua Pagina Journey pubblica resta raggiungibile (sola lettura, nessuna modifica alle regole di Follow). Un Journey archiviato non compare invece in nessuna sezione di Discovery (Home, Categories, Ricerca, Feed, Recommended): quelle sezioni restano riservate ai Journey "live", cioè con `status: PUBLISHED` o `status: DISCOVERY` (vedi sezione "Discovery Phase" più sotto), coerentemente con il loro scopo di mostrare contenuti attivi.
+
+Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
+
+### Discovery Phase
+
+Ogni Journey, alla prima pubblicazione, entra automaticamente in Discovery Phase per 15 giorni (`status: DISCOVERY`, scadenza in `Journey.discoveryEndsAt`): resta pubblico a tutti gli effetti (pagina propria, profilo del creator, categorie, ricerca, Feed di chi segue il creator), ma è mostrato a **tutti** gli utenti nella sezione Home "Discovering Now", senza filtro per interessi o categorie — a differenza del resto della Discovery, che è invece personalizzata. Regole complete e criterio di ranking (Journey Score) in `08_Algorithm.md`.
+
+`discoveryEndsAt` si valorizza una sola volta, alla prima pubblicazione, con lo stesso principio già in uso per `publishedAt`: un ciclo bozza → ripubblicazione non riapre una seconda Discovery Phase sullo stesso Journey.
 
 Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 

@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { requireSession } from "@/lib/session";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
+import { DISCOVERY_PHASE_DAYS } from "@/lib/constants/journeyStatus";
 
 async function requireOwnedJourney(journeyId: string) {
   const { creator } = await requireCreator();
@@ -168,9 +169,24 @@ export async function publishJourney(
     return { error: `Before publishing, add: ${issues.join(", ")}.` };
   }
 
+  // Discovery Phase (08_Algorithm.md): un Journey pubblicato per la prima volta entra in
+  // DISCOVERY per 15 giorni (discoveryEndsAt), visibile a tutti indipendentemente dagli interessi.
+  // Sia publishedAt sia discoveryEndsAt si valorizzano una sola volta, mai ricalcolati: un ciclo
+  // bozza→ripubblica non riporta il Journey in Discovery una seconda volta (evita che un creator
+  // possa "resettare" la finestra di massima visibilità pubblicando e spubblicando a ripetizione).
+  // Se discoveryEndsAt esiste già ed è nel passato, la Discovery Phase è già stata vissuta: si
+  // ripubblica direttamente come PUBLISHED.
+  const alreadyHadDiscoveryPhase = journey.discoveryEndsAt !== null && journey.discoveryEndsAt <= new Date();
+  const discoveryEndsAt =
+    journey.discoveryEndsAt ?? new Date(Date.now() + DISCOVERY_PHASE_DAYS * 24 * 60 * 60 * 1000);
+
   await prisma.journey.update({
     where: { id: journey.id },
-    data: { status: "PUBLISHED", publishedAt: journey.publishedAt ?? new Date() },
+    data: {
+      status: alreadyHadDiscoveryPhase ? "PUBLISHED" : "DISCOVERY",
+      publishedAt: journey.publishedAt ?? new Date(),
+      discoveryEndsAt,
+    },
   });
 
   revalidatePath(`/dashboard/journeys/${journey.id}`);
@@ -188,7 +204,7 @@ export async function unpublishJourney(
   }
   const journey = await requireOwnedJourney(journeyId);
 
-  if (journey.status !== "PUBLISHED") {
+  if (journey.status !== "PUBLISHED" && journey.status !== "DISCOVERY") {
     return { error: "Only a published Journey can be moved back to Draft." };
   }
 

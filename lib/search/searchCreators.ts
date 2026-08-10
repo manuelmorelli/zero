@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 
 export type CreatorSearchResult = {
   id: string;
@@ -30,7 +31,7 @@ async function findMatchingCreators(query: string) {
       creator: {
         is: {
           deletedAt: null,
-          journeys: { some: { status: "PUBLISHED", deletedAt: null } },
+          journeys: { some: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null } },
         },
       },
       OR: [

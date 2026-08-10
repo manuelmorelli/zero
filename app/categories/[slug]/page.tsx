@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { categoryFromSlug } from "@/lib/constants/categories";
+import { LIVE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { JourneyCard } from "@/components/journey/JourneyCard";
 
 export default async function CategoryPage({
@@ -14,8 +15,9 @@ export default async function CategoryPage({
   const category = categoryFromSlug(slug);
   if (!category) notFound();
 
+  await promoteExpiredDiscoveryJourneys();
   const journeys = await prisma.journey.findMany({
-    where: { category, status: "PUBLISHED", deletedAt: null },
+    where: { category, status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
     orderBy: { publishedAt: "desc" },
     include: { creator: { include: { _count: { select: { followers: true } } } } },
   });

@@ -1,7 +1,7 @@
 ---
 title: UI Pages
 doc_id: 14-ui-pages
-version: "3.6"
+version: "3.7"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -36,11 +36,12 @@ Zero non separa "utenti" e "creator" come ruoli con destinazioni diverse: ogni p
 
 Si apre con una Hero a schermo intero: logo "ZERO", tagline e le due azioni principali ("Explore Journeys" ed "Create Your Journey"). Non è una sezione di Discovery: è il biglietto da visita della piattaforma, identico per chiunque arrivi in Home, loggato o no.
 
-Subito sotto la Hero, tre righe scorrevoli orizzontalmente (stile Netflix) mostrano contenuti globali della piattaforma, non personalizzati su chi l'utente segue:
+Subito sotto la Hero, quattro righe scorrevoli orizzontalmente (stile Netflix) mostrano contenuti globali della piattaforma, non personalizzati su chi l'utente segue:
 
+- **Discovering Now** — tutti i Journey attualmente in Discovery Phase (`08_Algorithm.md`), mostrati a chiunque indipendentemente dagli interessi: aiuta le persone a scoprire passioni nuove, non solo a confermare quelle che hanno già;
 - **Journeys of the Moment** — i Journey pubblicati più seguiti e rilevanti del momento;
 - **Latest Videos** — gli ultimi Episodi con un video caricato, pubblicati su tutta la piattaforma;
-- **Top Journeys** — i Journey pubblicati più seguiti in assoluto, con il conteggio dei loro Episodi.
+- **Top Journeys** — i Journey pubblicati con il Journey Score più alto (`08_Algorithm.md`), con il conteggio dei loro Episodi.
 
 Il resto della pagina segue, in quest'ordine:
 
@@ -53,7 +54,7 @@ Il resto della pagina segue, in quest'ordine:
 - Most Completed Journeys;
 - Categories.
 
-Le tre righe subito sotto la Hero danno alla Home un primo colpo d'occhio ricco anche a chi non segue ancora nessuno; il resto della pagina torna a riflettere la vicinanza all'utente: prima tutto ciò che riguarda le persone che segue già (continuità, Feed, Updates — massima rilevanza personale secondo `08_Algorithm.md`), poi ciò che aiuta a scoprire persone nuove (Recommended Journeys, Creator consigliati), infine i contenuti globali uguali per tutti (New Journeys, Most Completed Journeys), con Categories in fondo come strumento di navigazione libera per chi non ha trovato nulla di rilevante nelle sezioni precedenti.
+Le quattro righe subito sotto la Hero danno alla Home un primo colpo d'occhio ricco anche a chi non segue ancora nessuno; il resto della pagina torna a riflettere la vicinanza all'utente: prima tutto ciò che riguarda le persone che segue già (continuità, Feed, Updates — massima rilevanza personale secondo `08_Algorithm.md`), poi ciò che aiuta a scoprire persone nuove (Recommended Journeys, Creator consigliati), infine i contenuti globali uguali per tutti (New Journeys, Most Completed Journeys), con Categories in fondo come strumento di navigazione libera per chi non ha trovato nulla di rilevante nelle sezioni precedenti.
 
 Il Feed dei creator seguiti e gli Updates dei creator seguiti sono due sezioni distinte, non intercambiabili: il Feed mostra eventi permanenti del Journey (nuovi Journey pubblicati, nuovi Episodi), gli Updates mostrano i contenuti brevi e temporanei descritti in `09_Updates.md`. Un creator seguito può comparire in una sezione, nell'altra, in entrambe o in nessuna delle due, a seconda di cosa ha effettivamente pubblicato.
 

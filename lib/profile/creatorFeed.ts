@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { deleteExpiredUpdates } from "@/lib/updates";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 
 export type CreatorFeedItem = {
   date: Date;
@@ -36,7 +37,7 @@ export async function getCreatorFeed({
       where: {
         deletedAt: null,
         OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
-        journey: { creatorId, status: "PUBLISHED", deletedAt: null },
+        journey: { creatorId, status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
       },
       include: { journey: true },
       orderBy: { occurredAt: "desc" },
@@ -48,9 +49,9 @@ export async function getCreatorFeed({
       take: limit,
     }),
     // Gli Update non hanno un Journey proprio: per non lasciarli senza immagine nel feed
-    // fotografico, prendono in prestito la copertina del Journey pubblicato più recente.
+    // fotografico, prendono in prestito la copertina del Journey live più recente.
     prisma.journey.findFirst({
-      where: { creatorId, status: "PUBLISHED", deletedAt: null },
+      where: { creatorId, status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
       orderBy: { publishedAt: "desc" },
       select: { coverUrl: true },
     }),

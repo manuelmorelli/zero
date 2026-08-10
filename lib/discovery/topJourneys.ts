@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 
 export type TopJourneyItem = {
   id: string;
@@ -11,18 +12,27 @@ export type TopJourneyItem = {
 };
 
 /**
- * Journey pubblicati più seguiti (per numero di follower del creator), non un vero "trust score".
+ * Journey pubblicati con il Journey Score più alto (08_Algorithm.md, "Journey Score") — non più
+ * ordinati per follower: è la sezione "Long-Term Value" dell'algoritmo, dove il completamento e la
+ * continuità contano più della scala del creator. Solo i Journey già usciti dalla Discovery Phase
+ * partecipano (status PUBLISHED): quelli in DISCOVERY sono già garantiti da "Discovering Now".
  * Se l'utente ha dichiarato interessi, quelli nelle sue categorie vengono mostrati per primi,
- * mantenendo comunque l'ordinamento per follower dentro ciascun gruppo.
+ * mantenendo comunque l'ordinamento per punteggio dentro ciascun gruppo.
  */
 export async function getTopJourneys({
   limit = 10,
   interests = [],
 }: { limit?: number; interests?: string[] } = {}): Promise<TopJourneyItem[]> {
-  const journeys = await prisma.journey.findMany({
+  const candidateIds = await prisma.journey.findMany({
     where: { status: "PUBLISHED", deletedAt: null },
+    select: { id: true },
     take: 50,
     orderBy: { publishedAt: "desc" },
+  });
+  await ensureFreshJourneyScores(candidateIds.map((journey) => journey.id));
+
+  const journeys = await prisma.journey.findMany({
+    where: { id: { in: candidateIds.map((journey) => journey.id) } },
     include: {
       creator: { include: { _count: { select: { followers: true } } } },
       chapters: {
@@ -41,13 +51,16 @@ export async function getTopJourneys({
       creatorName: journey.creator.displayName,
       followersCount: journey.creator._count.followers,
       episodesCount: journey.chapters.reduce((sum, chapter) => sum + chapter._count.episodes, 0),
+      journeyScore: journey.journeyScore,
     }))
-    .sort((a, b) => b.followersCount - a.followersCount);
+    .sort((a, b) => b.journeyScore - a.journeyScore);
 
-  if (interests.length === 0) return sorted.slice(0, limit);
+  const withoutScore = sorted.map(({ journeyScore: _journeyScore, ...journey }) => journey);
+
+  if (interests.length === 0) return withoutScore.slice(0, limit);
 
   const interestSet = new Set(interests);
-  const matching = sorted.filter((journey) => journey.category && interestSet.has(journey.category));
-  const rest = sorted.filter((journey) => !(journey.category && interestSet.has(journey.category)));
+  const matching = withoutScore.filter((journey) => journey.category && interestSet.has(journey.category));
+  const rest = withoutScore.filter((journey) => !(journey.category && interestSet.has(journey.category)));
   return [...matching, ...rest].slice(0, limit);
 }

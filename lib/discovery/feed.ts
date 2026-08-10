@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getFollowedCreatorIds } from "@/lib/discovery/follows";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 
 export type FeedItem =
   | {
@@ -77,7 +78,7 @@ function findNewJourneys(creatorIds: string[], excludeJourneyIds: string[], limi
   return prisma.journey.findMany({
     where: {
       creatorId: { in: creatorIds },
-      status: "PUBLISHED",
+      status: { in: LIVE_JOURNEY_STATUSES },
       deletedAt: null,
       publishedAt: { not: null },
       id: { notIn: excludeJourneyIds },
@@ -98,7 +99,7 @@ function findNewEpisodes(creatorIds: string[], excludeJourneyIds: string[], limi
       OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
       journey: {
         creatorId: { in: creatorIds },
-        status: "PUBLISHED",
+        status: { in: LIVE_JOURNEY_STATUSES },
         deletedAt: null,
         publishedAt: { not: null },
         id: { notIn: excludeJourneyIds },

@@ -67,7 +67,7 @@ export default async function JourneyManagePage({
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <JourneyPublishControl journeyId={journey.id} status={journey.status} />
         {journey.status !== "ARCHIVED" && <JourneyArchiveButton journeyId={journey.id} />}
-        {(journey.status === "PUBLISHED" || journey.status === "ARCHIVED") && (
+        {journey.status !== "DRAFT" && (
           <Link
             href={`/journeys/${journey.id}`}
             className="text-sm font-medium text-ink underline underline-offset-2"

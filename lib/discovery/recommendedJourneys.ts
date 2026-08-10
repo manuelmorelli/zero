@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { getFollowedCreatorIds, getOwnCreatorId, getFollowedCategories } from "@/lib/discovery/follows";
+import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 
 type JourneyWithCreator = Awaited<ReturnType<typeof findPublishedJourneys>>[number];
 
@@ -52,7 +53,7 @@ export async function getRecommendedJourneys({
       excludedJourneyIds: excludeJourneyIds,
       categories: candidateCategories,
     });
-    for (const journey of sortByFollowersDesc(categoryMatches)) {
+    for (const journey of sortByJourneyScoreDesc(categoryMatches)) {
       if (selected.length >= limit) break;
       selected.push(journey);
       selectedIds.add(journey.id);
@@ -64,7 +65,7 @@ export async function getRecommendedJourneys({
       excludedCreatorIds,
       excludedJourneyIds: [...excludeJourneyIds, ...selectedIds],
     });
-    for (const journey of sortByFollowersDesc(popular)) {
+    for (const journey of sortByJourneyScoreDesc(popular)) {
       if (selected.length >= limit) break;
       selected.push(journey);
     }
@@ -78,20 +79,28 @@ async function findPublishedJourneys(filters: {
   excludedJourneyIds: string[] | Set<string>;
   categories?: string[];
 }) {
+  const where = {
+    status: "PUBLISHED" as const,
+    deletedAt: null,
+    creatorId: { notIn: filters.excludedCreatorIds },
+    id: { notIn: [...filters.excludedJourneyIds] },
+    ...(filters.categories ? { category: { in: filters.categories } } : {}),
+  };
+
+  const candidateIds = await prisma.journey.findMany({ where, select: { id: true } });
+  await ensureFreshJourneyScores(candidateIds.map((journey) => journey.id));
+
   return prisma.journey.findMany({
-    where: {
-      status: "PUBLISHED",
-      deletedAt: null,
-      creatorId: { notIn: filters.excludedCreatorIds },
-      id: { notIn: [...filters.excludedJourneyIds] },
-      ...(filters.categories ? { category: { in: filters.categories } } : {}),
-    },
+    where,
     include: { creator: { include: { _count: { select: { followers: true } } } } },
   });
 }
 
-function sortByFollowersDesc(journeys: JourneyWithCreator[]): JourneyWithCreator[] {
-  return [...journeys].sort((a, b) => b.creator._count.followers - a.creator._count.followers);
+// "Spinta extra" del Journey Score (08_Algorithm.md): dentro il gruppo già selezionato per
+// categoria/popolarità (la garanzia di base non cambia), l'ordine finale non premia più solo i
+// follower ma il punteggio reale — completamento, continuità ed engagement pesano di più.
+function sortByJourneyScoreDesc(journeys: JourneyWithCreator[]): JourneyWithCreator[] {
+  return [...journeys].sort((a, b) => b.journeyScore - a.journeyScore);
 }
 
 function toJourneyCardData(journey: JourneyWithCreator): JourneyCardData {

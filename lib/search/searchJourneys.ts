@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 
 type JourneyWithCreator = Awaited<ReturnType<typeof findMatchingJourneys>>[number];
 
@@ -19,7 +20,7 @@ export async function searchJourneys(query: string, limit = 12): Promise<Journey
 async function findMatchingJourneys(query: string) {
   return prisma.journey.findMany({
     where: {
-      status: "PUBLISHED",
+      status: { in: LIVE_JOURNEY_STATUSES },
       deletedAt: null,
       OR: [
         { title: { contains: query, mode: "insensitive" } },

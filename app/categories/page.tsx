@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
+import { promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 
 export default async function CategoriesPage() {
+  await promoteExpiredDiscoveryJourneys();
   const countByCategory = await getJourneyCountsByCategory();
 
   return (

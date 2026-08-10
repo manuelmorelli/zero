@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
+import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { FollowButton } from "@/components/creator/FollowButton";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/common/Reveal";
@@ -15,13 +16,13 @@ export default async function PublicJourneyPage({
 }) {
   const { id } = await params;
 
+  await promoteExpiredDiscoveryJourneys();
   const journey = await prisma.journey.findUnique({
     where: { id },
     include: { creator: true },
   });
 
-  if (!journey || journey.deletedAt || (journey.status !== "PUBLISHED" && journey.status !== "ARCHIVED"))
-    notFound();
+  if (!journey || journey.deletedAt || !isPubliclyReachableJourneyStatus(journey.status)) notFound();
 
   // Contatore semplice per "Total Views" nel Profilo pubblico: nessuna deduplica per
   // visitatore/sessione nell'MVP, coerente con l'approccio minimo già scelto altrove.

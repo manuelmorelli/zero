@@ -4,6 +4,7 @@ import { JourneyCard } from "@/components/journey/JourneyCard";
 import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
 import { searchJourneys } from "@/lib/search/searchJourneys";
 import { searchCreators } from "@/lib/search/searchCreators";
+import { promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 
 export default async function SearchPage({
   searchParams,
@@ -13,6 +14,7 @@ export default async function SearchPage({
   const { q } = await searchParams;
   const query = (Array.isArray(q) ? q[0] : q)?.trim() ?? "";
 
+  await promoteExpiredDiscoveryJourneys();
   const [journeys, creators] = query
     ? await Promise.all([searchJourneys(query), searchCreators(query)])
     : [[], []];

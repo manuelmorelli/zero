@@ -119,7 +119,7 @@ export default async function CreatorDashboardPage() {
                       Manage
                     </Link>
                     <JourneyPublishControl journeyId={journey.id} status={journey.status} />
-                    {journey.status === "PUBLISHED" && (
+                    {(journey.status === "PUBLISHED" || journey.status === "DISCOVERY") && (
                       <Link
                         href={`/journeys/${journey.id}`}
                         className="text-sm font-medium text-ink underline underline-offset-2"
