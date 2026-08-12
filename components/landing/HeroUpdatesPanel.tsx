@@ -1,4 +1,5 @@
 import { formatRelativeDate } from "@/lib/utils";
+import { summarizeUpdate } from "@/lib/updates";
 import type { FollowedUpdate } from "@/lib/discovery/updates";
 
 type HeroUpdatesPanelProps = {
@@ -36,7 +37,7 @@ export function HeroUpdatesPanel({ updates }: HeroUpdatesPanelProps) {
                   {formatRelativeDate(update.publishedAt)}
                 </span>
               </div>
-              <p className="mt-0.5 truncate text-xs text-ink-muted">{update.content}</p>
+              <p className="mt-0.5 truncate text-xs text-ink-muted">{summarizeUpdate(update)}</p>
             </div>
           </li>
         ))}

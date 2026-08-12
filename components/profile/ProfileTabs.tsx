@@ -1,11 +1,10 @@
 import Link from "next/link";
 
-export type ProfileTab = "overview" | "journeys" | "updates";
+export type ProfileTab = "overview" | "journeys";
 
 const TABS: { key: ProfileTab; label: string }[] = [
   { key: "overview", label: "Overview" },
   { key: "journeys", label: "Journeys" },
-  { key: "updates", label: "Updates" },
 ];
 
 type ProfileTabsProps = {

@@ -4,7 +4,6 @@ import { getCurrentSession } from "@/lib/session";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { FollowButton } from "@/components/creator/FollowButton";
 import { JourneyCard } from "@/components/journey/JourneyCard";
-import { UpdateCard } from "@/components/journey/UpdateCard";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/common/Reveal";
 import { ProfileHero } from "@/components/profile/ProfileHero";
@@ -34,7 +33,7 @@ async function findUserByUsernameOrId(usernameOrId: string) {
 }
 
 function parseTab(value: string | undefined): ProfileTab {
-  if (value === "journeys" || value === "updates") return value;
+  if (value === "journeys") return value;
   return "overview";
 }
 
@@ -121,21 +120,6 @@ export default async function PublicProfilePage({
     activeTab === "overview" && isOwnProfile && featuredJourney
       ? (await getEpisodeTimeline(featuredJourney.id)).groups
       : [];
-
-  let activeUpdates: { id: string; creatorId: string; creatorName: string; content: string; publishedAt: Date }[] = [];
-  if (activeTab === "updates" && creator) {
-    const updates = await prisma.update.findMany({
-      where: { creatorId: creator.id, archivedAt: { gt: new Date() } },
-      orderBy: { publishedAt: "desc" },
-    });
-    activeUpdates = updates.map((update) => ({
-      id: update.id,
-      creatorId: creator.id,
-      creatorName: creator.displayName,
-      content: update.content,
-      publishedAt: update.publishedAt,
-    }));
-  }
 
   return (
     <main>
@@ -273,24 +257,6 @@ export default async function PublicProfilePage({
                             ) : undefined
                           }
                         />
-                      </Reveal>
-                    ))}
-                  </div>
-                )}
-              </section>
-            )}
-
-            {activeTab === "updates" && (
-              <section>
-                {activeUpdates.length === 0 ? (
-                  <p className="rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
-                    {`${user.name} doesn't have any active Updates right now.`}
-                  </p>
-                ) : (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {activeUpdates.map((update, index) => (
-                      <Reveal key={update.id} delayMs={index * 60}>
-                        <UpdateCard update={update} />
                       </Reveal>
                     ))}
                   </div>

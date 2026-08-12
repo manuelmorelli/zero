@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
-import { deleteExpiredUpdates } from "@/lib/updates";
+import { getOwnUpdatesForDashboard } from "@/lib/updates";
 import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
 import { JourneyArchiveButton } from "@/components/creator/JourneyArchiveButton";
 import { UpdateForm } from "@/components/creator/UpdateForm";
@@ -46,11 +46,7 @@ export default async function CreatorDashboardPage() {
     ),
   ]);
 
-  await deleteExpiredUpdates();
-  const updates = await prisma.update.findMany({
-    where: { creatorId: creator.id, archivedAt: { gt: new Date() } },
-    orderBy: { publishedAt: "desc" },
-  });
+  const updates = await getOwnUpdatesForDashboard(creator.id);
 
   return (
     <main>

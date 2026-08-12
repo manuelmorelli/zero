@@ -1,4 +1,5 @@
 import type { FollowedUpdate } from "@/lib/discovery/updates";
+import type { CreatorStory } from "@/lib/discovery/stories";
 import type { FeedItem } from "@/lib/discovery/feed";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 import type { LatestVideoItem } from "@/lib/discovery/latestVideos";
@@ -17,6 +18,7 @@ export const DEMO_UPDATES: FollowedUpdate[] = [
     id: "demo-update-1",
     creatorId: "demo-creator-1",
     creatorName: "Marco R.",
+    type: "TEXT",
     content: "Week 6 done. Legs are shaking but the streak is alive. Onwards.",
     publishedAt: hoursAgo(3),
   },
@@ -24,6 +26,7 @@ export const DEMO_UPDATES: FollowedUpdate[] = [
     id: "demo-update-2",
     creatorId: "demo-creator-2",
     creatorName: "Sara J.",
+    type: "TEXT",
     content: "New personal best this morning. Small wins add up.",
     publishedAt: hoursAgo(9),
   },
@@ -31,8 +34,79 @@ export const DEMO_UPDATES: FollowedUpdate[] = [
     id: "demo-update-3",
     creatorId: "demo-creator-3",
     creatorName: "David L.",
+    type: "TEXT",
     content: "Filming the next chapter today — this one's a hard one to tell.",
     publishedAt: hoursAgo(20),
+  },
+];
+
+export const DEMO_STORIES: CreatorStory[] = [
+  {
+    creatorId: "demo-creator-1",
+    creatorName: "Marco R.",
+    creatorAvatarUrl: null,
+    hasUnseen: true,
+    updates: [
+      {
+        id: "demo-story-1a",
+        type: "TEXT",
+        content: "Week 6 done. Legs are shaking but the streak is alive. Onwards.",
+        mediaUrl: null,
+        publishedAt: hoursAgo(3),
+        viewedByMe: false,
+        myReaction: null,
+        poll: null,
+        answeredByMe: false,
+        link: null,
+      },
+    ],
+  },
+  {
+    creatorId: "demo-creator-2",
+    creatorName: "Sara J.",
+    creatorAvatarUrl: null,
+    hasUnseen: true,
+    updates: [
+      {
+        id: "demo-story-2a",
+        type: "IMAGE",
+        content: "New personal best this morning.",
+        mediaUrl: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80",
+        publishedAt: hoursAgo(9),
+        viewedByMe: false,
+        myReaction: null,
+        poll: null,
+        answeredByMe: false,
+        link: null,
+      },
+    ],
+  },
+  {
+    creatorId: "demo-creator-3",
+    creatorName: "David L.",
+    creatorAvatarUrl: null,
+    hasUnseen: false,
+    updates: [
+      {
+        id: "demo-story-3a",
+        type: "POLL",
+        content: "Which chapter should I film next?",
+        mediaUrl: null,
+        publishedAt: hoursAgo(20),
+        viewedByMe: true,
+        myReaction: null,
+        poll: {
+          options: [
+            { id: "demo-opt-1", label: "The hard one", votes: 12 },
+            { id: "demo-opt-2", label: "The fun one", votes: 8 },
+          ],
+          totalVotes: 20,
+          myOptionId: null,
+        },
+        answeredByMe: false,
+        link: null,
+      },
+    ],
   },
 ];
 

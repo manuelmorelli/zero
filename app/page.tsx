@@ -16,6 +16,7 @@ import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 import {
   DEMO_UPDATES,
+  DEMO_STORIES,
   DEMO_FEED,
   DEMO_CREATORS,
   DEMO_LATEST_VIDEOS,
@@ -25,11 +26,12 @@ import {
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
 import { getFollowedCreatorsFeed, type FeedItem as FeedItemData } from "@/lib/discovery/feed";
-import { getFollowedCreatorsUpdates, type FollowedUpdate } from "@/lib/discovery/updates";
+import { getFollowedCreatorsUpdates } from "@/lib/discovery/updates";
+import { getFollowedCreatorsStories } from "@/lib/discovery/stories";
 import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
 import { getDiscoveringNowJourneys, type DiscoveringNowItem } from "@/lib/discovery/discoveringNow";
-import { UpdateCard } from "@/components/journey/UpdateCard";
+import { StoriesRow } from "@/components/home/StoriesRow";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { LIVE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
@@ -61,6 +63,7 @@ export default async function Home() {
   const [
     followedFeed,
     followedUpdates,
+    creatorStories,
     recommendedJourneys,
     recommendedCreators,
     categoryCounts,
@@ -71,6 +74,7 @@ export default async function Home() {
   ] = await Promise.all([
     getFollowedCreatorsFeed({ userId, excludeJourneyIds: excludeFromDiscovery }),
     getFollowedCreatorsUpdates({ userId, interests: userInterests }),
+    getFollowedCreatorsStories({ userId }),
     getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, interests: userInterests }),
     getRecommendedCreators({ userId, interests: userInterests }),
     getJourneyCountsByCategory(),
@@ -96,6 +100,7 @@ export default async function Home() {
   const displayedDiscoveringNow = discoveringNow.length > 0 ? discoveringNow : DEMO_DISCOVERING_NOW;
   const displayedFeed = followedFeed.length > 0 ? followedFeed : DEMO_FEED;
   const displayedUpdates = followedUpdates.length > 0 ? followedUpdates : DEMO_UPDATES;
+  const displayedStories = creatorStories.length > 0 ? creatorStories : DEMO_STORIES;
   const displayedRecommendedJourneys = recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS.slice(0, 5);
   const displayedRecommendedCreators = recommendedCreators.length > 0 ? recommendedCreators : DEMO_CREATORS;
 
@@ -114,7 +119,7 @@ export default async function Home() {
 
       {continueJourneys.length > 0 && <ContinueJourney items={continueJourneys} />}
       <FollowedCreatorsFeed items={displayedFeed} />
-      <FollowedCreatorsUpdates items={displayedUpdates} />
+      <StoriesRow stories={displayedStories} />
       <RecommendedJourneys journeys={displayedRecommendedJourneys} />
       <RecommendedCreators creators={displayedRecommendedCreators} />
       <NewJourneys journeys={newJourneys} />
@@ -400,32 +405,6 @@ function FollowedCreatorsFeed({ items }: { items: FeedItemData[] }) {
               delayMs={index * 60}
             >
               <FeedItem item={item} />
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* UPDATES DEI CREATOR SEGUITI                                          */
-/* ------------------------------------------------------------------ */
-
-function FollowedCreatorsUpdates({ items }: { items: FollowedUpdate[] }) {
-  return (
-    <section id="updates" className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-10">
-        <Reveal>
-          <h2 className="font-sans text-2xl font-extrabold tracking-tight">
-            Updates from creators you follow
-          </h2>
-        </Reveal>
-
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map((item, index) => (
-            <Reveal key={item.id} delayMs={index * 60}>
-              <UpdateCard update={item} />
             </Reveal>
           ))}
         </div>

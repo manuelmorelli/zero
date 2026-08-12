@@ -149,6 +149,10 @@ model User {
   journeyProgresses  JourneyProgress[]
   episodeProgresses  EpisodeProgress[]
   likes              Like[]
+  updateVotes        UpdateVote[]
+  updateViews        UpdateView[]
+  updateAnswers      UpdateAnswer[]
+  updateReactions    UpdateReaction[]
 
   @@map("users")
 }
@@ -263,6 +267,7 @@ model Journey {
   episodes    Episode[]
   progresses  JourneyProgress[]
   analyticsSnapshots Analytics[]
+  linkedByUpdates Update[]
 
   @@map("journeys")
 }
@@ -305,6 +310,7 @@ model Episode {
   deletedAt   DateTime?
 
   progress    EpisodeProgress[]
+  linkedByUpdates Update[]
 
   @@index([journeyId, chapterId, order])
   @@map("episodes")
@@ -353,12 +359,103 @@ model Update {
   creator     Creator    @relation(fields: [creatorId], references: [id])
   type        UpdateType
   content     String
+  // Chiave del file su Cloudflare R2 (foto o video, a seconda di `type`), stesso pattern già in
+  // uso per Episode.videoKey e User.avatarUrl/coverUrl — mai il file stesso nel database.
+  mediaKey    String?
+  // Un Update può facoltativamente puntare a un Episodio o Journey del creator (es. "è uscito il
+  // nuovo episodio"), indipendentemente dal suo `type` — non sono a vicenda esclusivi con testo/
+  // foto/video/sondaggio/domanda, sono un aggancio in più.
+  linkedJourneyId String?
+  linkedJourney   Journey? @relation(fields: [linkedJourneyId], references: [id])
+  linkedEpisodeId String?
+  linkedEpisode   Episode? @relation(fields: [linkedEpisodeId], references: [id])
   publishedAt DateTime   @default(now())
   archivedAt  DateTime? // impostato automaticamente 24h dopo la pubblicazione
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
+  pollOptions PollOption[]
+  votes       UpdateVote[]
+  views       UpdateView[]
+  answers     UpdateAnswer[]
+  reactions   UpdateReaction[]
+
   @@map("updates")
+}
+
+// Opzioni di un Update di tipo POLL (2-4 per sondaggio, vedi lib/constants/updates.ts).
+model PollOption {
+  id        String   @id @default(uuid())
+  updateId  String
+  update    Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
+  label     String
+  order     Int
+  createdAt DateTime @default(now())
+
+  votes UpdateVote[]
+
+  @@index([updateId, order])
+  @@map("update_poll_options")
+}
+
+// Un voto per persona per sondaggio, non modificabile dopo il voto (decisione presa con Manuel).
+model UpdateVote {
+  id        String     @id @default(uuid())
+  updateId  String
+  update    Update     @relation(fields: [updateId], references: [id], onDelete: Cascade)
+  optionId  String
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  createdAt DateTime   @default(now())
+
+  @@unique([updateId, userId])
+  @@map("update_votes")
+}
+
+// Traccia chi ha già visto quale Update: base per il contorno "visto/non visto" dei cerchi
+// in stile Stories nella Home (nessuna tabella equivalente esisteva prima).
+model UpdateView {
+  id       String   @id @default(uuid())
+  updateId String
+  update   Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+  viewedAt DateTime @default(now())
+
+  @@unique([updateId, userId])
+  @@map("update_views")
+}
+
+// Risposta a un Update di tipo QUESTION: visibile solo al creator (mai pubblica), una
+// risposta per persona per domanda.
+model UpdateAnswer {
+  id        String   @id @default(uuid())
+  updateId  String
+  update    Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+
+  @@unique([updateId, userId])
+  @@map("update_answers")
+}
+
+// Reazione rapida a un tocco (emoji), non un commento: un tocco per persona per Update, il
+// tocco più recente sostituisce il precedente se la persona cambia idea.
+model UpdateReaction {
+  id        String   @id @default(uuid())
+  updateId  String
+  update    Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  emoji     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([updateId, userId])
+  @@map("update_reactions")
 }
 
 // ------------------------------------------------------------

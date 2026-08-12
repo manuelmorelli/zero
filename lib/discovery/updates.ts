@@ -2,11 +2,13 @@ import { prisma } from "@/lib/prisma";
 import { getFollowedCreatorIds, getOwnCreatorId, getFollowedCategories } from "@/lib/discovery/follows";
 import { deleteExpiredUpdates } from "@/lib/updates";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import type { UpdateType } from "@/generated/prisma/client";
 
 export type FollowedUpdate = {
   id: string;
   creatorId: string;
   creatorName: string;
+  type: UpdateType;
   content: string;
   publishedAt: Date;
 };
@@ -102,6 +104,7 @@ function toFollowedUpdate(update: UpdateWithCreator): FollowedUpdate {
     id: update.id,
     creatorId: update.creatorId,
     creatorName: update.creator.displayName,
+    type: update.type,
     content: update.content,
     publishedAt: update.publishedAt,
   };

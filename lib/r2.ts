@@ -21,8 +21,8 @@ const s3 = new S3Client({
   },
 });
 
-export function newVideoKey(contentType: string): string {
-  return `episodes/${randomUUID()}.${VIDEO_EXTENSIONS[contentType]}`;
+export function newVideoKey(contentType: string, prefix: string = "episodes"): string {
+  return `${prefix}/${randomUUID()}.${VIDEO_EXTENSIONS[contentType]}`;
 }
 
 /** URL temporaneo (5 minuti) per caricare il file direttamente dal browser a R2. */

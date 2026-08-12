@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { QuickUploadButton } from "@/components/creator/QuickUploadButton";
 
 /**
@@ -29,12 +30,33 @@ export async function QuickUpload() {
       })
     : [];
 
+  // Solo i Journey "live" (Pubblicato o in Discovery) hanno una pagina pubblica raggiungibile:
+  // un Update non può collegarsi a un Journey ancora in Bozza, il link porterebbe a un 404.
+  const linkableJourneys = creator
+    ? await prisma.journey.findMany({
+        where: { creatorId: creator.id, status: { in: LIVE_JOURNEY_STATUSES } },
+        orderBy: { updatedAt: "desc" },
+        include: {
+          episodes: {
+            where: { deletedAt: null },
+            orderBy: { order: "asc" },
+            select: { id: true, title: true },
+          },
+        },
+      })
+    : [];
+
   return (
     <QuickUploadButton
       journeys={activeJourneys.map((journey) => ({
         id: journey.id,
         title: journey.title,
         chapters: journey.chapters,
+      }))}
+      linkableJourneys={linkableJourneys.map((journey) => ({
+        id: journey.id,
+        title: journey.title,
+        episodes: journey.episodes,
       }))}
     />
   );
