@@ -1,7 +1,7 @@
 ---
 title: Updates
 doc_id: 09-updates
-version: "3.0"
+version: "4.0"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -69,6 +69,20 @@ Gli Updates possono essere utilizzati per:
 - anticipare nuovi Episodi;
 - interagire con la propria community.
 
+## Formati
+
+Un Update può essere pubblicato in cinque formati, tutti raggiungibili dal pulsante "+" globale:
+
+- **Testo** — la forma più semplice, pensata per un pensiero rapido.
+- **Foto** — un'immagine, con una didascalia facoltativa.
+- **Video** — una clip breve (fino a 60 secondi): un Update non è l'archivio del Journey, non deve competere con gli Episodi come durata o qualità produttiva.
+- **Sondaggio** — una domanda con 2-4 opzioni; ogni persona può votare una sola volta e i risultati compaiono solo dopo aver votato.
+- **Domanda** — un invito a rispondere in un campo di testo libero; le risposte sono visibili solo al creator, mai pubbliche.
+
+A prescindere dal formato, un Update può anche collegarsi a un Episodio o Journey del creator già pubblico (mai una Bozza), utile ad esempio per annunciare l'uscita di un nuovo Episodio con un link diretto.
+
+Ogni Update, di qualunque formato, permette a chi legge una reazione rapida con un'emoji (un tocco, non un commento): il conteggio delle reazioni è visibile solo al creator, mai un numero pubblico — coerente con la "bassa pressione" descritta più sopra.
+
 ## Regole
 
 Gli Updates non influenzano in modo significativo il ranking del Journey.
@@ -76,6 +90,8 @@ Gli Updates non influenzano in modo significativo il ranking del Journey.
 L'algoritmo continua a basare la distribuzione principalmente sulla qualità e sulla continuità del Journey.
 
 Gli Updates non devono sostituire gli Episodi come strumento principale di documentazione.
+
+La scadenza a 24 ore si applica a ogni formato allo stesso modo, senza eccezioni: un sondaggio o una domanda scaduti perdono anche i voti e le risposte ricevute, coerentemente con "contenuti temporanei" — nessuno storico permanente dei risultati.
 
 ## Implicazioni sul prodotto
 

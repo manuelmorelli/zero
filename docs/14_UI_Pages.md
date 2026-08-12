@@ -1,7 +1,7 @@
 ---
 title: UI Pages
 doc_id: 14-ui-pages
-version: "3.7"
+version: "3.8"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -47,7 +47,7 @@ Il resto della pagina segue, in quest'ordine:
 
 - Continue Your Journey;
 - Feed dei creator seguiti;
-- Updates dei creator seguiti;
+- Updates dei creator seguiti, in una riga di cerchi cliccabili in stile Instagram Stories (solo i creator seguiti, contorno colorato se c'è qualcosa di non ancora visto), che apre un visualizzatore a schermo intero;
 - Recommended Journeys;
 - Creator consigliati;
 - New Journeys;
@@ -56,7 +56,9 @@ Il resto della pagina segue, in quest'ordine:
 
 Le quattro righe subito sotto la Hero danno alla Home un primo colpo d'occhio ricco anche a chi non segue ancora nessuno; il resto della pagina torna a riflettere la vicinanza all'utente: prima tutto ciò che riguarda le persone che segue già (continuità, Feed, Updates — massima rilevanza personale secondo `08_Algorithm.md`), poi ciò che aiuta a scoprire persone nuove (Recommended Journeys, Creator consigliati), infine i contenuti globali uguali per tutti (New Journeys, Most Completed Journeys), con Categories in fondo come strumento di navigazione libera per chi non ha trovato nulla di rilevante nelle sezioni precedenti.
 
-Il Feed dei creator seguiti e gli Updates dei creator seguiti sono due sezioni distinte, non intercambiabili: il Feed mostra eventi permanenti del Journey (nuovi Journey pubblicati, nuovi Episodi), gli Updates mostrano i contenuti brevi e temporanei descritti in `09_Updates.md`. Un creator seguito può comparire in una sezione, nell'altra, in entrambe o in nessuna delle due, a seconda di cosa ha effettivamente pubblicato.
+Il Feed dei creator seguiti e gli Updates dei creator seguiti sono due sezioni distinte, non intercambiabili: il Feed mostra eventi permanenti del Journey (nuovi Journey pubblicati, nuovi Episodi), gli Updates mostrano i contenuti brevi e temporanei descritti in `09_Updates.md` (testo, foto, video, sondaggio, domanda). Un creator seguito può comparire in una sezione, nell'altra, in entrambe o in nessuna delle due, a seconda di cosa ha effettivamente pubblicato.
+
+Gli Updates vivono solo in questa riga della Home: il Profilo pubblico non ha una tab dedicata agli Updates.
 
 ---
 
@@ -125,7 +127,7 @@ Permette di:
 - gestire Journey;
 - gestire Episodi;
 - gestire facoltativamente i Capitoli;
-- pubblicare Updates;
+- pubblicare Updates (testo, foto, video, sondaggi, domande);
 - gestire Community Premium;
 - gestire prodotti;
 - consultare Analytics.

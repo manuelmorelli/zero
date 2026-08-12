@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "4.0"
+version: "4.1"
 status: approved
 related_docs:
   - 01_Vision
@@ -198,11 +198,22 @@ Commenti nel codice e documentazione tecnica possono restare in italiano, non es
 
 Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 
-### Updates: solo testo, scadenza senza job in background
+### Updates: tutti i formati, stile Stories, scadenza senza job in background
 
-Il modello `Update` prevede in schema più tipi (`TEXT`, `IMAGE`, `VIDEO`, `POLL`, `QUESTION`), ma l'MVP implementa solo Updates di testo: gli altri tipi restano previsti nello schema per il futuro, senza bisogno di una nuova migrazione quando arriverà il loro turno.
+Dal 2026-08-12 l'Update non è più solo testo: il modello `Update` supporta tutti e cinque i tipi previsti in schema fin dalla fondazione del progetto (`TEXT`, `IMAGE`, `VIDEO`, `POLL`, `QUESTION`), tutti pubblicabili dal pulsante "+" globale (`components/creator/QuickUploadButton.tsx`), che ora offre una prima scelta tra "Add to your Journey" (percorso video Episodio, invariato) e "Post an Update". La casella di solo testo già presente in Dashboard (`components/creator/UpdateForm.tsx`) resta com'era, come scorciatoia più semplice accanto al percorso completo del "+".
 
-La scadenza a 24 ore (`09_Updates.md`) non è gestita da un cron job o da un servizio in background: `archivedAt` viene calcolato e salvato al momento della pubblicazione (`publishedAt + 24h`), e ogni lettura di Update (Dashboard del creator, sezione Home dei creator seguiti) esegue prima una pulizia lazy (`deleteExpiredUpdates` in `lib/updates.ts`) che elimina dal database gli Update già scaduti. Nessun Update scaduto resta quindi salvato più del necessario, senza introdurre infrastruttura aggiuntiva.
+Un Update può inoltre collegarsi facoltativamente, a prescindere dal tipo, a un Episodio o Journey del creator (`Update.linkedJourneyId`/`linkedEpisodeId`) — solo tra quelli già pubblici (`PUBLISHED`/`DISCOVERY`), mai una Bozza, per non produrre un link che porta a un 404.
+
+Gli Update vivono **solo nella Home reale**, in una riga di cerchi cliccabili in stile Instagram Stories (`components/home/StoriesRow.tsx`), non nel Profilo pubblico: la tab "Updates" del Profilo, mai sviluppata oltre la versione testuale iniziale, è stata rimossa. La riga mostra solo i creator seguiti (non il mix 80/20 con creator "interessanti" usato altrove per gli Update, vedi `08_Algorithm.md`), con il cerchio colorato se c'è almeno un Update di quel creator non ancora visto (`UpdateView`, una riga per utente+Update). Cliccando si apre un visualizzatore a schermo intero (`components/home/StoryViewer.tsx`) con avanzamento automatico: a tempo fisso per testo/foto/sondaggio, alla fine della riproduzione per i video, mai per le Domande (restano finché non si risponde o non si scorre via a mano).
+
+Regole permanenti per i formati aggiuntivi:
+
+- **Sondaggio** (`PollOption`, `UpdateVote`): un voto per persona, non modificabile dopo; i risultati (percentuali) si vedono solo dopo aver votato.
+- **Domanda** (`UpdateAnswer`): una risposta di testo libero per persona, visibile solo al creator, mai pubblica — coerente con la bassa pressione già decisa per gli Update, nessuna "gara" di risposte.
+- **Reazione rapida** (`UpdateReaction`, un'emoji tra un set fisso): un tocco per persona, il tocco più recente sostituisce il precedente; il conteggio è visibile solo al creator (Dashboard), mai un contatore pubblico.
+- **Video**: limiti separati e più stretti di quelli di un Episodio (100MB, 60 secondi) — un Update è un contenuto che sparisce in 24 ore, non l'archivio del Journey.
+
+La scadenza a 24 ore (`09_Updates.md`) non è gestita da un cron job o da un servizio in background, e vale per ogni formato: `archivedAt` viene calcolato e salvato al momento della pubblicazione (`publishedAt + 24h`), e ogni lettura di Update (Dashboard del creator, Stories row in Home) esegue prima una pulizia lazy (`deleteExpiredUpdates` in `lib/updates.ts`) che elimina dal database gli Update già scaduti — se l'Update aveva una foto o un video su Cloudflare R2, il file viene eliminato nello stesso passaggio. Nessun Update scaduto resta quindi salvato più del necessario, senza introdurre infrastruttura aggiuntiva.
 
 Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 
