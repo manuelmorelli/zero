@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toggleLike } from "@/lib/actions/like";
 import { formatCompactNumber } from "@/lib/utils";
@@ -24,8 +25,20 @@ export function LikeButton({
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [isPending, startTransition] = useTransition();
 
+  if (!isLoggedIn) {
+    return (
+      <Link
+        href="/login"
+        aria-label="Log in to like"
+        className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
+      >
+        <ThumbsUpIcon className="h-3.5 w-3.5" />
+        {formatCompactNumber(likeCount)}
+      </Link>
+    );
+  }
+
   function handleClick() {
-    if (!isLoggedIn) return;
     const wasLiked = isLiked;
     setIsLiked(!wasLiked);
     setLikeCount((count) => count + (wasLiked ? -1 : 1));
@@ -43,7 +56,7 @@ export function LikeButton({
     <button
       type="button"
       onClick={handleClick}
-      disabled={isPending || !isLoggedIn}
+      disabled={isPending}
       aria-pressed={isLiked}
       aria-label={isLiked ? "Unlike" : "Like"}
       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${

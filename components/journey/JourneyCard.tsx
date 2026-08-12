@@ -1,12 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { formatCompactNumber } from "@/lib/utils";
+import { CategoryIcon } from "@/components/journey/CategoryIcon";
 
-/**
- * Subset of Journey (+ Creator) fields from prisma/schema.prisma needed to render the card.
- * followersCount comes from User.followers (Follow[], person-to-person), aggregated by the
- * caller (e.g. `_count: { select: { followers: true } }` on the creator's user query).
- */
+/** Subset of Journey (+ Creator) fields from prisma/schema.prisma needed to render the card. */
 export type JourneyCardData = {
   id: string;
   title: string;
@@ -16,7 +12,6 @@ export type JourneyCardData = {
   creator: {
     displayName: string;
   };
-  followersCount: number;
 };
 
 type JourneyCardProps = {
@@ -35,7 +30,7 @@ type JourneyCardProps = {
 // insieme alla card (es. il conteggio episodi in "Top Journeys"), usa la prop `footer` invece di
 // avvolgere di nuovo la card in un secondo <Link>, che creerebbe un <a> annidato non valido.
 export function JourneyCard({ journey, className, style, badge, footer }: JourneyCardProps) {
-  const { id, title, coverUrl, category, creator, followersCount } = journey;
+  const { id, title, coverUrl, category, creator } = journey;
 
   return (
     <Link
@@ -58,6 +53,7 @@ export function JourneyCard({ journey, className, style, badge, footer }: Journe
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-500 ease-out group-hover:scale-110" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <CategoryIcon category={category} className="absolute left-3 top-3 h-8 w-8" />
         <span className="absolute bottom-3 left-3 translate-y-2 text-xs font-semibold text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
           Start from Ep. 1 →
         </span>
@@ -70,10 +66,7 @@ export function JourneyCard({ journey, className, style, badge, footer }: Journe
           </p>
         )}
         <h3 className="mt-2 text-sm font-bold leading-snug">{title}</h3>
-        <div className="mt-3 flex items-center justify-between text-xs text-ink-muted">
-          <span>by {creator.displayName}</span>
-          <span>{formatCompactNumber(followersCount)} followers</span>
-        </div>
+        <p className="mt-3 text-xs text-ink-muted">by {creator.displayName}</p>
       </div>
 
       {footer}

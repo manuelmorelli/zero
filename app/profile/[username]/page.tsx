@@ -4,7 +4,7 @@ import { getCurrentSession } from "@/lib/session";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { JourneyCard } from "@/components/journey/JourneyCard";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { Header } from "@/components/layout/Header";
 import { Reveal } from "@/components/common/Reveal";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileTabs, type ProfileTab } from "@/components/profile/ProfileTabs";
@@ -130,7 +130,7 @@ export default async function PublicProfilePage({
 
   return (
     <main>
-      <PageHeader />
+      <Header />
 
       <ProfileHero
         coverUrl={coverUrl}
@@ -244,7 +244,6 @@ export default async function PublicProfilePage({
                             coverUrl: journey.coverUrl,
                             category: journey.category,
                             creator: { displayName: creator?.displayName ?? user.name },
-                            followersCount,
                           }}
                           badge={
                             journey.status === "ARCHIVED" ? (

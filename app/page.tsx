@@ -1,16 +1,18 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
+import { Compass, Flame, Video as VideoIcon, Star, ArrowRight, PlayCircle, Rss, Sparkles, UserPlus, Clock } from "lucide-react";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { MomentJourneyCard } from "@/components/journey/MomentJourneyCard";
 import { VideoCard } from "@/components/journey/VideoCard";
 import { FeedItem } from "@/components/journey/FeedItem";
 import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
-import { AuthStatus } from "@/components/layout/AuthStatus";
 import { Logo } from "@/components/layout/Logo";
+import { Header } from "@/components/layout/Header";
 import { OnboardingBanner } from "@/components/layout/OnboardingBanner";
 import { Hero } from "@/components/landing/Hero";
-import { NetflixRow } from "@/components/landing/NetflixRow";
 import { Reveal } from "@/components/common/Reveal";
+import { SectionHeading } from "@/components/common/SectionHeading";
+import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
 import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
@@ -35,7 +37,6 @@ import { StoriesRow } from "@/components/home/StoriesRow";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { LIVE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
-import { SearchForm, SearchIcon } from "@/components/search/SearchForm";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 
 export default async function Home() {
@@ -106,7 +107,7 @@ export default async function Home() {
 
   return (
     <main>
-      <SiteHeader />
+      <Header />
       {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
       <Hero updates={displayedUpdates} />
 
@@ -133,159 +134,136 @@ export default async function Home() {
 }
 
 /* ------------------------------------------------------------------ */
-/* DISCOVERING NOW (riga Netflix) — Discovery Phase, 08_Algorithm.md   */
+/* DISCOVERING NOW — Discovery Phase, 08_Algorithm.md                  */
 /* ------------------------------------------------------------------ */
 
 function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
   return (
-    <NetflixRow
-      icon={<CompassIcon className="h-5 w-5" />}
-      title="Discovering Now"
-      subtitle="Brand new Journeys, shown to everyone — not just people who already follow this topic."
-      viewAllHref="/categories"
-    >
-      {journeys.map((journey) => (
-        <JourneyCard
-          key={journey.id}
-          style={{ scrollSnapAlign: "start" }}
-          className="w-64 shrink-0"
-          journey={{
-            id: journey.id,
-            title: journey.title,
-            coverUrl: journey.coverUrl,
-            category: journey.category,
-            creator: { displayName: journey.creatorName },
-            followersCount: journey.followersCount,
-          }}
-          footer={
-            <p className="px-4 pb-4 text-xs text-ink-muted">
-              {journey.daysLeft} {journey.daysLeft === 1 ? "day" : "days"} left in Discovery
-            </p>
-          }
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<Compass className="h-6 w-6" aria-hidden="true" />}
+          title="Discovering Now"
+          subtitle="Brand new Journeys, shown to everyone — not just people who already follow this topic."
+          viewAllHref="/discover/now"
         />
-      ))}
-    </NetflixRow>
-  );
-}
+      </Reveal>
 
-function CompassIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className} aria-hidden="true">
-      <circle cx="12" cy="12" r="9" />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="m15 9-4.5 1.5L9 15l4.5-1.5L15 9Z"
-      />
-    </svg>
+      <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {journeys.map((journey, index) => (
+          <Reveal key={journey.id} as="li" delayMs={index * 70}>
+            <JourneyCard
+              journey={{
+                id: journey.id,
+                title: journey.title,
+                coverUrl: journey.coverUrl,
+                category: journey.category,
+                creator: { displayName: journey.creatorName },
+              }}
+              footer={
+                <p className="px-4 pb-4 text-xs text-ink-muted">
+                  {journey.daysLeft} {journey.daysLeft === 1 ? "day" : "days"} left in Discovery
+                </p>
+              }
+            />
+          </Reveal>
+        ))}
+      </ul>
+    </section>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* JOURNEYS OF THE MOMENT (riga Netflix)                               */
+/* JOURNEYS OF THE MOMENT                                               */
 /* ------------------------------------------------------------------ */
 
 function JourneysOfTheMoment({ journeys }: { journeys: JourneyCardData[] }) {
   return (
-    <NetflixRow
-      icon={<FireIcon className="h-5 w-5" />}
-      title="Journeys of the Moment"
-      subtitle="The most followed and impactful journeys right now."
-      viewAllHref="/categories"
-    >
-      {journeys.map((journey, index) => (
-        <MomentJourneyCard key={journey.id} journey={journey} rank={index + 1} />
-      ))}
-    </NetflixRow>
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<Flame className="h-6 w-6" aria-hidden="true" />}
+          title="Journeys of the Moment"
+          subtitle="The most followed and impactful journeys right now."
+          viewAllHref="/discover/moment"
+        />
+      </Reveal>
+
+      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {journeys.map((journey, index) => (
+          <Reveal key={journey.id} as="li" delayMs={index * 70}>
+            <MomentJourneyCard journey={journey} rank={index + 1} />
+          </Reveal>
+        ))}
+      </ul>
+    </section>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* LATEST VIDEOS (riga Netflix)                                        */
+/* LATEST VIDEOS                                                        */
 /* ------------------------------------------------------------------ */
 
 function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestVideos>> }) {
   return (
-    <NetflixRow
-      icon={<VideoIcon className="h-5 w-5" />}
-      title="Latest Videos"
-      subtitle="New episodes just published across Zero."
-      viewAllHref="/search"
-    >
-      {videos.map((video) => (
-        <VideoCard key={video.episodeId} video={video} />
-      ))}
-    </NetflixRow>
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<VideoIcon className="h-6 w-6" aria-hidden="true" />}
+          title="Latest Videos"
+          subtitle="New episodes just published across Zero."
+          viewAllHref="/discover/latest-videos"
+        />
+      </Reveal>
+
+      <ul className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {videos.map((video, index) => (
+          <Reveal key={video.episodeId} as="li" delayMs={index * 70}>
+            <VideoCard video={video} />
+          </Reveal>
+        ))}
+      </ul>
+    </section>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* TOP JOURNEYS (riga Netflix)                                         */
+/* TOP JOURNEYS                                                         */
 /* ------------------------------------------------------------------ */
 
 function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJourneys>> }) {
   return (
-    <NetflixRow
-      icon={<StarIcon className="h-5 w-5" />}
-      title="Top Journeys"
-      subtitle="Timeless stories that continue to inspire."
-      viewAllHref="/categories"
-    >
-      {journeys.map((journey) => (
-        <JourneyCard
-          key={journey.id}
-          style={{ scrollSnapAlign: "start" }}
-          className="w-64 shrink-0"
-          journey={{
-            id: journey.id,
-            title: journey.title,
-            coverUrl: journey.coverUrl,
-            category: journey.category,
-            creator: { displayName: journey.creatorName },
-            followersCount: journey.followersCount,
-          }}
-          footer={
-            <p className="px-4 pb-4 text-xs text-ink-muted">
-              {journey.episodesCount} {journey.episodesCount === 1 ? "episode" : "episodes"}
-            </p>
-          }
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<Star className="h-6 w-6 fill-current" aria-hidden="true" />}
+          title="Top Journeys"
+          subtitle="Timeless stories that continue to inspire."
+          viewAllHref="/discover/top"
         />
-      ))}
-    </NetflixRow>
-  );
-}
+      </Reveal>
 
-function FireIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className} aria-hidden="true">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 3s4 3.5 4 8a4 4 0 0 1-8 0c0-1.2.5-2 1-2.8.3.9 1 1.3 1.5 1.3-.3-2 .2-4.2 1.5-6.5Z"
-      />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8.5 14.5A4.5 4.5 0 0 0 12 21a4.5 4.5 0 0 0 4-6.5" />
-    </svg>
-  );
-}
-
-function VideoIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className} aria-hidden="true">
-      <rect x="2.5" y="5.5" width="14" height="13" rx="2.5" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="m21.5 8.5-5 3.5 5 3.5v-7Z" />
-    </svg>
-  );
-}
-
-function StarIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className} aria-hidden="true">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 3.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.6-4.1 6.1-.6L12 3.5Z"
-      />
-    </svg>
+      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {journeys.map((journey, index) => (
+          <Reveal key={journey.id} as="li" delayMs={index * 70}>
+            <JourneyCard
+              journey={{
+                id: journey.id,
+                title: journey.title,
+                coverUrl: journey.coverUrl,
+                category: journey.category,
+                creator: { displayName: journey.creatorName },
+              }}
+              footer={
+                <p className="px-4 pb-4 text-xs text-ink-muted">
+                  {journey.episodesCount} {journey.episodesCount === 1 ? "episode" : "episodes"}
+                </p>
+              }
+            />
+          </Reveal>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -340,45 +318,45 @@ async function getContinueJourneys(
 
 function ContinueJourney({ items }: { items: ContinueJourneyItem[] }) {
   return (
-    <section className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-10">
-        <Reveal>
-          <h2 className="font-sans text-2xl font-extrabold tracking-tight">
-            Continue Your Journey
-          </h2>
-        </Reveal>
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<PlayCircle className="h-6 w-6" aria-hidden="true" />}
+          title="Continue Your Journey"
+          subtitle="Pick up right where you left off."
+        />
+      </Reveal>
 
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map((item, index) => (
-            <Reveal key={item.journeyId} delayMs={index * 80}>
-              <Link
-                href={
-                  item.episodeId
-                    ? `/journeys/${item.journeyId}/episodes#${item.episodeId}`
-                    : `/journeys/${item.journeyId}`
-                }
-                className="group flex overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-ink-muted"
-              >
-                <div className="relative aspect-square w-24 flex-shrink-0 overflow-hidden bg-surface-2">
-                  {item.coverUrl ? (
-                    <Image src={item.coverUrl} alt={item.title} fill sizes="96px" className="object-cover" />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
-                  )}
-                </div>
-                <div className="flex flex-1 flex-col justify-center px-4 py-3">
-                  <h3 className="text-sm font-bold leading-snug text-ink">{item.title}</h3>
-                  <p className="mt-1 text-xs text-ink-muted">by {item.creatorName}</p>
-                  {item.episodeTitle && (
-                    <p className="mt-2 text-xs font-semibold text-ink-muted">
-                      Continue: {item.episodeTitle}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map((item, index) => (
+          <Reveal key={item.journeyId} delayMs={index * 70}>
+            <Link
+              href={
+                item.episodeId
+                  ? `/journeys/${item.journeyId}/episodes#${item.episodeId}`
+                  : `/journeys/${item.journeyId}`
+              }
+              className="group flex overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-ink-muted"
+            >
+              <div className="relative aspect-square w-24 flex-shrink-0 overflow-hidden bg-surface-2">
+                {item.coverUrl ? (
+                  <Image src={item.coverUrl} alt={item.title} fill sizes="96px" className="object-cover" />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+                )}
+              </div>
+              <div className="flex flex-1 flex-col justify-center px-4 py-3">
+                <h3 className="text-sm font-bold leading-snug text-ink">{item.title}</h3>
+                <p className="mt-1 text-xs text-ink-muted">by {item.creatorName}</p>
+                {item.episodeTitle && (
+                  <p className="mt-2 text-xs font-semibold text-ink-muted">
+                    Continue: {item.episodeTitle}
+                  </p>
+                )}
+              </div>
+            </Link>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
@@ -390,69 +368,26 @@ function ContinueJourney({ items }: { items: ContinueJourneyItem[] }) {
 
 function FollowedCreatorsFeed({ items }: { items: FeedItemData[] }) {
   return (
-    <section className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-10">
-        <Reveal>
-          <h2 className="font-sans text-2xl font-extrabold tracking-tight">
-            From creators you follow
-          </h2>
-        </Reveal>
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<Rss className="h-6 w-6" aria-hidden="true" />}
+          title="From creators you follow"
+          subtitle="New Journeys and episodes from people you follow."
+        />
+      </Reveal>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {items.map((item, index) => (
-            <Reveal
-              key={item.type === "journey" ? item.journeyId : item.episodeId}
-              delayMs={index * 60}
-            >
-              <FeedItem item={item} />
-            </Reveal>
-          ))}
-        </div>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        {items.map((item, index) => (
+          <Reveal
+            key={item.type === "journey" ? item.journeyId : item.episodeId}
+            delayMs={index * 60}
+          >
+            <FeedItem item={item} />
+          </Reveal>
+        ))}
       </div>
     </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* HEADER                                                              */
-/* ------------------------------------------------------------------ */
-
-function SiteHeader() {
-  return (
-    <header className="sticky top-0 z-50 border-b border-border bg-bg/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-        <Link href="/">
-          <Logo className="h-6" />
-        </Link>
-        <nav className="hidden items-center gap-8 text-sm font-medium text-ink-muted md:flex">
-          <Link href="/categories" className="hover:text-ink transition-colors">
-            Discover
-          </Link>
-          <a href="#journey" className="hover:text-ink transition-colors">
-            Journeys
-          </a>
-          <a href="#updates" className="hover:text-ink transition-colors">
-            Updates
-          </a>
-          <Link href="/pricing" className="hover:text-ink transition-colors">
-            Pricing
-          </Link>
-        </nav>
-        <div className="flex items-center gap-3">
-          <div className="hidden w-56 md:block">
-            <SearchForm />
-          </div>
-          <Link
-            href="/search"
-            aria-label="Search"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-ink-muted transition-colors hover:text-ink md:hidden"
-          >
-            <SearchIcon className="h-4 w-4" />
-          </Link>
-          <AuthStatus />
-        </div>
-      </div>
-    </header>
   );
 }
 
@@ -462,25 +397,23 @@ function SiteHeader() {
 
 function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
   return (
-    <section className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-14">
-        <Reveal>
-          <div className="mb-10">
-            <h2 className="font-sans text-3xl font-extrabold tracking-tight">
-              Recommended for you
-            </h2>
-            <p className="mt-2 text-ink-muted">Picked based on who you follow.</p>
-          </div>
-        </Reveal>
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<Sparkles className="h-6 w-6" aria-hidden="true" />}
+          title="Recommended for you"
+          subtitle="Picked based on who you follow."
+          viewAllHref="/discover/recommended"
+        />
+      </Reveal>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {journeys.map((journey, index) => (
-            <Reveal key={journey.id} delayMs={index * 80}>
-              <JourneyCard journey={journey} />
-            </Reveal>
-          ))}
-        </div>
-      </div>
+      <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {journeys.map((journey, index) => (
+          <Reveal key={journey.id} as="li" delayMs={index * 70}>
+            <JourneyCard journey={journey} />
+          </Reveal>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -491,25 +424,23 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
 
 function RecommendedCreators({ creators }: { creators: CreatorSearchResult[] }) {
   return (
-    <section className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-14">
-        <Reveal>
-          <div className="mb-10">
-            <h2 className="font-sans text-3xl font-extrabold tracking-tight">
-              Creators to follow
-            </h2>
-            <p className="mt-2 text-ink-muted">People documenting journeys like the ones you follow.</p>
-          </div>
-        </Reveal>
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<UserPlus className="h-6 w-6" aria-hidden="true" />}
+          title="Creators to follow"
+          subtitle="People documenting journeys like the ones you follow."
+          viewAllHref="/discover/creators"
+        />
+      </Reveal>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {creators.map((creator, index) => (
-            <Reveal key={creator.id} delayMs={index * 80}>
-              <CreatorResultCard creator={creator} />
-            </Reveal>
-          ))}
-        </div>
-      </div>
+      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {creators.map((creator, index) => (
+          <Reveal key={creator.id} as="li" delayMs={index * 70}>
+            <CreatorResultCard creator={creator} />
+          </Reveal>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -565,33 +496,23 @@ async function getNewJourneys(
 
 function NewJourneys({ journeys }: { journeys: JourneyCardData[] }) {
   return (
-    <section id="journey" className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-14">
-        <Reveal>
-          <div className="mb-10 flex items-end justify-between">
-            <div>
-              <h2 className="font-sans text-3xl font-extrabold tracking-tight">
-                New Journeys
-              </h2>
-              <p className="mt-2 text-ink-muted">Real stories. Real impact.</p>
-            </div>
-            <a
-              href="#journey"
-              className="hidden text-sm font-semibold text-ink-muted hover:text-ink transition-colors sm:block"
-            >
-              View all →
-            </a>
-          </div>
-        </Reveal>
+    <section id="journey" className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<Clock className="h-6 w-6" aria-hidden="true" />}
+          title="New Journeys"
+          subtitle="Real stories. Real impact."
+          viewAllHref="/discover/new"
+        />
+      </Reveal>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {journeys.map((journey, index) => (
-            <Reveal key={journey.id} delayMs={index * 80}>
-              <JourneyCard journey={journey} />
-            </Reveal>
-          ))}
-        </div>
-      </div>
+      <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {journeys.map((journey, index) => (
+          <Reveal key={journey.id} as="li" delayMs={index * 70}>
+            <JourneyCard journey={journey} />
+          </Reveal>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -602,43 +523,33 @@ function NewJourneys({ journeys }: { journeys: JourneyCardData[] }) {
 
 function Categories({ countByCategory }: { countByCategory: Map<string, number> }) {
   return (
-    <section className="border-b border-border bg-surface">
-      <div className="mx-auto max-w-7xl px-6 py-14">
-        <Reveal>
-          <div className="mb-10 flex items-end justify-between">
-            <div>
-              <h2 className="font-sans text-3xl font-extrabold tracking-tight">
-                Categories
-              </h2>
-              <p className="mt-2 text-ink-muted">Not sure where to start? Browse by category.</p>
-            </div>
-            <Link
-              href="/categories"
-              className="hidden text-sm font-semibold text-ink-muted hover:text-ink transition-colors sm:block"
-            >
-              View all →
-            </Link>
-          </div>
-        </Reveal>
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<Compass className="h-6 w-6" aria-hidden="true" />}
+          title="Categories"
+          subtitle="Not sure where to start? Browse by category."
+          viewAllHref="/categories"
+        />
+      </Reveal>
 
-        <Reveal>
-          <div className="flex flex-wrap gap-3">
-            {JOURNEY_CATEGORIES.map((category) => {
-              const count = countByCategory.get(category) ?? 0;
-              return (
-                <Link
-                  key={category}
-                  href={`/categories/${categoryToSlug(category)}`}
-                  className="rounded-full border border-border bg-surface-2 px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-ink-muted"
-                >
-                  {category}
-                  <span className="ml-2 text-ink-faint">{count}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </Reveal>
-      </div>
+      <Reveal delayMs={60}>
+        <div className="mt-4 flex flex-wrap gap-3">
+          {JOURNEY_CATEGORIES.map((category) => {
+            const count = countByCategory.get(category) ?? 0;
+            return (
+              <Link
+                key={category}
+                href={`/categories/${categoryToSlug(category)}`}
+                className="rounded-full border border-border bg-surface-2 px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-ink-muted"
+              >
+                {category}
+                <span className="ml-2 text-ink-faint">{count}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </Reveal>
     </section>
   );
 }
@@ -670,24 +581,22 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 py-14">
-        <Reveal>
-          <h2 className="mb-14 font-sans text-3xl font-extrabold tracking-tight">
-            How it works
-          </h2>
-        </Reveal>
-        <div className="grid gap-10 md:grid-cols-3">
-          {steps.map((step, index) => (
-            <Reveal key={step.number} delayMs={index * 120}>
-              <span className="text-sm font-bold text-ink-faint">
-                {step.number}
-              </span>
-              <h3 className="mt-3 text-lg font-bold">{step.title}</h3>
-              <p className="mt-2 text-ink-muted">{step.text}</p>
-            </Reveal>
-          ))}
-        </div>
+    <section id="how-it-works" className="mx-auto max-w-[1400px] px-5 py-10 md:px-8">
+      <Reveal>
+        <h2 className="mb-14 text-2xl font-bold tracking-tight sm:text-3xl">
+          How it works
+        </h2>
+      </Reveal>
+      <div className="grid gap-10 md:grid-cols-3">
+        {steps.map((step, index) => (
+          <Reveal key={step.number} delayMs={index * 120}>
+            <span className="text-sm font-bold text-ink-faint">
+              {step.number}
+            </span>
+            <h3 className="mt-3 text-lg font-bold">{step.title}</h3>
+            <p className="mt-2 text-ink-muted">{step.text}</p>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
@@ -718,28 +627,26 @@ function Faq() {
   ];
 
   return (
-    <section id="faq" className="border-b border-border bg-surface">
-      <div className="mx-auto max-w-3xl px-6 py-14">
-        <Reveal>
-          <h2 className="mb-10 font-sans text-3xl font-extrabold tracking-tight">
-            Frequently asked questions
-          </h2>
-        </Reveal>
-        <div className="divide-y divide-border">
-          {questions.map((item, index) => (
-            <Reveal key={item.q} delayMs={index * 60}>
-              <details className="group py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-ink">
-                  {item.q}
-                  <span className="ml-4 text-ink-muted transition-transform group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <p className="mt-3 text-ink-muted">{item.a}</p>
-              </details>
-            </Reveal>
-          ))}
-        </div>
+    <section id="faq" className="mx-auto max-w-3xl px-5 py-10 md:px-8">
+      <Reveal>
+        <h2 className="mb-10 text-2xl font-bold tracking-tight sm:text-3xl">
+          Frequently asked questions
+        </h2>
+      </Reveal>
+      <div className="divide-y divide-border">
+        {questions.map((item, index) => (
+          <Reveal key={item.q} delayMs={index * 60}>
+            <details className="group py-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-ink">
+                {item.q}
+                <span className="ml-4 text-ink-muted transition-transform group-open:rotate-45">
+                  +
+                </span>
+              </summary>
+              <p className="mt-3 text-ink-muted">{item.a}</p>
+            </details>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
@@ -751,25 +658,36 @@ function Faq() {
 
 function FinalCta() {
   return (
-    <section className="border-b border-border">
-      <div className="mx-auto max-w-3xl px-6 py-14 text-center">
-        <Reveal>
-          <h2 className="font-sans text-3xl font-extrabold tracking-tight md:text-4xl">
-            Your Journey starts from ZERO.
-          </h2>
-          <p className="mt-4 text-ink-muted">
-            Sign up and discover the transformations that are already inspiring the community.
-          </p>
-          <div className="mt-8">
-            <Link
-              href="/register"
-              className="rounded-full bg-ink px-8 py-3 text-sm font-semibold text-bg hover:bg-ink-muted transition-colors"
-            >
-              Create your account
-            </Link>
+    <section className="mx-auto max-w-[1400px] px-5 py-4 pb-10 md:px-8">
+      <Reveal>
+        <div className="relative overflow-hidden rounded-2xl border border-border">
+          <Image
+            src="/images/hero-2.jpg"
+            alt=""
+            fill
+            sizes="(min-width: 1400px) 1400px, 100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/60" />
+          <div className="relative grid items-center gap-6 p-7 md:grid-cols-[minmax(0,1fr)_auto] md:p-10">
+            <div className="min-w-0">
+              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+                Ready to start your journey?
+              </h2>
+              <p className="mt-2 max-w-md text-sm text-ink-muted">
+                Join thousands of creators and start documenting your transformation.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <ButtonPrimary href="/register">
+                Start Your Journey
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </ButtonPrimary>
+              <ButtonSecondary href="/categories">Explore Journeys</ButtonSecondary>
+            </div>
           </div>
-        </Reveal>
-      </div>
+        </div>
+      </Reveal>
     </section>
   );
 }
@@ -781,7 +699,7 @@ function FinalCta() {
 function SiteFooter() {
   return (
     <footer>
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-10 text-sm text-ink-muted sm:flex-row">
+      <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-4 px-5 py-10 text-sm text-ink-muted sm:flex-row md:px-8">
         <Logo className="h-6" />
         <p>© {new Date().getFullYear()} Zero. Every journey starts from zero.</p>
       </div>

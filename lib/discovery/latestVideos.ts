@@ -6,6 +6,7 @@ export type LatestVideoItem = {
   journeyId: string;
   title: string;
   coverUrl: string | null;
+  category: string | null;
   creatorName: string;
   createdAt: Date;
 };
@@ -50,6 +51,7 @@ export async function getLatestVideos({
     journeyId: episode.journey.id,
     title: episode.title,
     coverUrl: episode.journey.coverUrl,
+    category: episode.journey.category,
     creatorName: episode.journey.creator.displayName,
     createdAt: episode.createdAt,
   }));

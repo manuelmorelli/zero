@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { formatCompactNumber } from "@/lib/utils";
+import { CategoryIcon } from "@/components/journey/CategoryIcon";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 
 type MomentJourneyCardProps = {
@@ -8,52 +8,43 @@ type MomentJourneyCardProps = {
   rank: number;
 };
 
-/** Card per la riga "Journeys of the Moment": stesso stile delle altre card, con numero di posizione. */
+/** Card per la riga "Journeys of the Moment": copertina 4:3, numero di posizione + icona categoria in alto. */
 export function MomentJourneyCard({ journey, rank }: MomentJourneyCardProps) {
-  const { title, description, coverUrl, category, creator, followersCount } = journey;
+  const { title, description, coverUrl, category, creator } = journey;
 
   return (
     <Link
       href={`/journeys/${journey.id}`}
-      style={{ scrollSnapAlign: "start" }}
-      className="group w-64 shrink-0 overflow-hidden rounded-2xl border border-border bg-surface transition-all duration-300 hover:-translate-y-1 hover:border-ember/40 hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
+      className="group relative block aspect-4/3 overflow-hidden rounded-xl border border-border"
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-2">
-        {coverUrl ? (
-          <Image
-            src={coverUrl}
-            alt={title}
-            fill
-            sizes="256px"
-            className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-500 ease-out group-hover:scale-110" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0" />
-        <span className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg bg-black/70 text-sm font-black text-white backdrop-blur-sm">
-          {rank}
-        </span>
-      </div>
-
-      <div className="p-4">
-        {category && (
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
-            {category}
-          </p>
-        )}
-        <h3 className="mt-2 text-sm font-bold leading-snug">{title}</h3>
-        {description && (
-          <p className="mt-1 line-clamp-1 text-xs text-ink-muted">{description}</p>
-        )}
-        <div className="mt-3 flex items-center justify-between text-xs text-ink-muted">
-          <span className="flex min-w-0 items-center gap-1.5">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-surface-2 text-[10px] font-semibold text-ink-muted">
-              {creator.displayName.charAt(0).toUpperCase()}
-            </span>
-            <span className="truncate">{creator.displayName}</span>
+      {coverUrl ? (
+        <Image
+          src={coverUrl}
+          alt={title}
+          fill
+          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-bg/25" />
+      <div className="absolute inset-0 flex flex-col justify-between p-4">
+        <div className="flex items-center gap-2">
+          <span className="grid h-8 w-8 place-items-center rounded-md border border-white/15 bg-bg/40 text-sm font-bold backdrop-blur-md">
+            {rank}
           </span>
-          <span className="shrink-0">{formatCompactNumber(followersCount)} followers</span>
+          <CategoryIcon category={category} />
+        </div>
+        <div>
+          {category && (
+            <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[0.65rem] font-medium backdrop-blur-md">
+              {category}
+            </span>
+          )}
+          <h3 className="mt-2.5 text-lg font-bold leading-tight">{title}</h3>
+          {description && <p className="mt-1 line-clamp-1 text-xs text-ink-muted">{description}</p>}
+          <p className="mt-3 truncate text-xs text-ink-muted">by {creator.displayName}</p>
         </div>
       </div>
     </Link>

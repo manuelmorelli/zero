@@ -7,11 +7,13 @@ type RevealProps = {
   className?: string;
   delayMs?: number;
   y?: number;
+  as?: "div" | "li";
 };
 
-export function Reveal({ children, className, delayMs = 0, y = 24 }: RevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
+export function Reveal({ children, className, delayMs = 0, y = 24, as = "div" }: RevealProps) {
+  const ref = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
+  const Tag = as;
 
   useEffect(() => {
     const node = ref.current;
@@ -32,8 +34,8 @@ export function Reveal({ children, className, delayMs = 0, y = 24 }: RevealProps
   }, []);
 
   return (
-    <div
-      ref={ref}
+    <Tag
+      ref={ref as React.Ref<HTMLDivElement & HTMLLIElement>}
       className={`transition-[opacity,transform] duration-700 ease-out ${
         visible ? "opacity-100 translate-y-0" : "opacity-0"
       } ${className ?? ""}`}
@@ -43,6 +45,6 @@ export function Reveal({ children, className, delayMs = 0, y = 24 }: RevealProps
       }}
     >
       {children}
-    </div>
+    </Tag>
   );
 }

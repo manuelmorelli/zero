@@ -6,7 +6,7 @@ import { JourneyPublishControl } from "@/components/creator/JourneyPublishContro
 import { JourneyArchiveButton } from "@/components/creator/JourneyArchiveButton";
 import { UpdateForm } from "@/components/creator/UpdateForm";
 import { UpdateItem } from "@/components/creator/UpdateItem";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { Header } from "@/components/layout/Header";
 import { Reveal } from "@/components/common/Reveal";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -50,9 +50,9 @@ export default async function CreatorDashboardPage() {
 
   return (
     <main>
-      <PageHeader />
+      <Header />
 
-      <div className="mx-auto max-w-2xl px-6 py-14">
+      <div className="mx-auto max-w-2xl px-6 pb-14 pt-24">
         <Reveal>
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-extrabold tracking-tight">

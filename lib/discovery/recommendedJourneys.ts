@@ -111,6 +111,5 @@ function toJourneyCardData(journey: JourneyWithCreator): JourneyCardData {
     coverUrl: journey.coverUrl,
     category: journey.category,
     creator: { displayName: journey.creator.displayName },
-    followersCount: journey.creator.user._count.followers,
   };
 }

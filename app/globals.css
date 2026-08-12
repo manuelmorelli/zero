@@ -1,18 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  /* Palette Zero — nero puro + bianco, coerente con logo e mockup ufficiali */
-  --color-bg: #000000;
-  --color-surface: #0a0a0a;
-  --color-surface-2: #131313;
-  --color-border: #262626;
-  --color-ink: #ffffff;
-  --color-ink-muted: #a3a3a3;
-  --color-ink-faint: #6b6b6b;
-  --color-danger: #f87171;
+  /* Palette Zero — valori esatti del design di riferimento (Lovable), oklch */
+  --color-bg: oklch(0.15 0.008 250);
+  --color-surface: oklch(0.21 0.008 250);
+  --color-surface-2: oklch(0.26 0.008 250);
+  --color-border: oklch(1 0 0 / 14%);
+  --color-ink: oklch(1 0 0);
+  --color-ink-muted: oklch(0.78 0.005 250);
+  /* Terzo livello di testo attenuato: il riferimento non lo prevede, derivato mantenendo la stessa tonalità di ink-muted ma più scuro */
+  --color-ink-faint: oklch(0.55 0.005 250);
+  --color-danger: oklch(0.577 0.245 27.325);
 
-  /* Unico accento cromatico del sito: ambra da tramonto, usato con estrema parsimonia (hero scrubber) */
-  --color-ember: #e2914d;
+  /* Unico accento cromatico del sito: ambra dorata, usato con estrema parsimonia */
+  --color-ember: oklch(0.769 0.155 70.5);
 
   /* Un'unica famiglia di font, pesi diversi (da Design System) */
   --font-sans: var(--font-inter);
