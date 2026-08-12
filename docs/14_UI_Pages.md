@@ -1,7 +1,7 @@
 ---
 title: UI Pages
 doc_id: 14-ui-pages
-version: "3.8"
+version: "3.9"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -10,6 +10,7 @@ related_docs:
   - 09_Updates
   - 13_User_Flows
   - 15_Design_System
+  - 19_Messaging
 ---
 
 # UI Pages
@@ -177,6 +178,16 @@ Permette la gestione di:
 - notifiche;
 - privacy;
 - preferenze.
+
+---
+
+### Messaggi
+
+Elenco delle conversazioni private dell'utente, ordinate per ultimo messaggio ricevuto o inviato. Ogni conversazione apre uno scambio uno a uno, solo testo (`19_Messaging.md`).
+
+Raggiungibile in due modi: un pulsante flottante globale (impilato con la campanella delle notifiche e il pulsante "+", visibile su tutto il sito per chi è loggato) e la pagina `/messages` per l'elenco completo.
+
+Si può iniziare una nuova conversazione solo dal pulsante "Message" sul Profilo di un'altra persona, non da questa pagina.
 
 ## Regole
 

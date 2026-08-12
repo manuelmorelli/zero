@@ -17,6 +17,7 @@ import { EditProfileButton } from "@/components/profile/EditProfileButton";
 import { EpisodeReorderSection } from "@/components/profile/EpisodeReorderSection";
 import { getCreatorFeed } from "@/lib/profile/creatorFeed";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
+import { canMessage } from "@/lib/messaging";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
 import { getFeaturedJourney } from "@/lib/profile/featuredJourney";
 import { PUBLICLY_REACHABLE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
@@ -90,6 +91,10 @@ export default async function PublicProfilePage({
           })
         )
       : false;
+
+  // Basta che una delle due persone segua l'altra per potersi scrivere (vedi
+  // 00-project-context.md, sezione "Follow universale"), non serve il follow reciproco.
+  const canMessageUser = session && !isOwnProfile ? await canMessage(session.user.id, user.id) : false;
 
   const stats = creator
     ? await getProfileStats({
@@ -172,7 +177,7 @@ export default async function PublicProfilePage({
                 initialIsFollowing={isFollowing}
                 isLoggedIn={isLoggedIn}
               />
-              <MessageButton name={user.name} />
+              {canMessageUser && <MessageButton userId={user.id} />}
             </>
           )
         }

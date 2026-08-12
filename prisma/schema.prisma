@@ -156,6 +156,9 @@ model User {
   updateViews        UpdateView[]
   updateAnswers      UpdateAnswer[]
   updateReactions    UpdateReaction[]
+  conversationsAsA   Conversation[]    @relation("ConversationsAsA")
+  conversationsAsB   Conversation[]    @relation("ConversationsAsB")
+  messagesSent       Message[]
 
   @@map("users")
 }
@@ -677,6 +680,47 @@ model Follow {
 
   @@unique([followerId, followingId])
   @@map("follows")
+}
+
+// ------------------------------------------------------------
+// MESSAGING — conversazioni 1:1, permesse se almeno una delle due persone
+// segue l'altra (non serve il follow reciproco, vedi 00-project-context.md,
+// sezione "Follow universale"). Solo testo nella V1 (19_Messaging.md).
+// ------------------------------------------------------------
+
+// userAId/userBId sono normalizzati (userAId sempre < userBId, ordine lessicografico
+// sugli id) così la coppia di persone ha sempre una sola riga possibile, a prescindere
+// da chi ha scritto per primo — a differenza di Follow, dove le due direzioni contano
+// come righe distinte.
+model Conversation {
+  id            String   @id @default(uuid())
+  userAId       String
+  userA         User     @relation("ConversationsAsA", fields: [userAId], references: [id])
+  userBId       String
+  userB         User     @relation("ConversationsAsB", fields: [userBId], references: [id])
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  messages Message[]
+
+  @@unique([userAId, userBId])
+  @@index([userAId, lastMessageAt])
+  @@index([userBId, lastMessageAt])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id])
+  content        String
+  read           Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
 }
 
 // ------------------------------------------------------------

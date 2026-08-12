@@ -52,38 +52,3 @@ export const DEMO_FEED_ITEMS: CreatorFeedItem[] = [
   },
 ];
 
-export type DemoMessage = {
-  id: string;
-  name: string;
-  initials: string;
-  preview: string;
-  time: string;
-  unread: boolean;
-};
-
-export const DEMO_MESSAGES: DemoMessage[] = [
-  {
-    id: "demo-msg-1",
-    name: "Alex R.",
-    initials: "AR",
-    preview: "Hey! Really loved the last episode, following along closely.",
-    time: "2h",
-    unread: true,
-  },
-  {
-    id: "demo-msg-2",
-    name: "Priya K.",
-    initials: "PK",
-    preview: "Question about week 3 — did you change your routine?",
-    time: "1d",
-    unread: true,
-  },
-  {
-    id: "demo-msg-3",
-    name: "Tom H.",
-    initials: "TH",
-    preview: "Thanks for sharing this, exactly what I needed to read today.",
-    time: "3d",
-    unread: false,
-  },
-];

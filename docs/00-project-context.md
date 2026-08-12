@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "4.1"
+version: "4.2"
 status: approved
 related_docs:
   - 01_Vision
@@ -134,7 +134,9 @@ Dal 2026-08-12 il "Follow" collega due persone, non una persona a un profilo Cre
 
 Chi non è creator resta seguibile e conta comunque nei follower del suo profilo, ma non genera notifiche "nuovo episodio"/"nuovo Journey" (perché non pubblica nulla) e non compare nelle sezioni di Discovery riservate ai creator (Recommended Creators, Feed). Seguire un creator continua quindi a produrre esattamente gli stessi effetti di prima (notifiche, Feed, Recommended); cambia solo che ora è un caso particolare di un meccanismo di Follow più generale, non un sistema a parte.
 
-Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo. È inoltre la base su cui si costruirà la messaggistica privata (vedi Roadmap): la regola concordata è che due persone possono scriversi solo se si seguono a vicenda (follow reciproco).
+Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo. È inoltre la base su cui è costruita la messaggistica privata (`19_Messaging.md`).
+
+**Revisione (2026-08-12)**: la regola per scrivere a qualcuno non richiede il follow reciproco. Basta che una delle due persone segua l'altra, in una sola direzione, per poter iniziare una conversazione; una volta aperta, entrambe possono scrivere liberamente. Se in seguito quell'unico follow viene rimosso, la conversazione resta leggibile ma non più scrivibile, finché non torna almeno un follow in una direzione qualsiasi. Dettagli completi in `19_Messaging.md`.
 
 ### Drag & Drop
 

@@ -1,7 +1,7 @@
 ---
 title: MVP Features
 doc_id: 12-mvp-features
-version: "3.5"
+version: "3.6"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -9,6 +9,7 @@ related_docs:
   - 11_Database_Architecture
   - 13_User_Flows
   - 17_Project_Architecture
+  - 19_Messaging
 ---
 
 # MVP Features
@@ -83,6 +84,13 @@ Un creator può avere più Journey attivi (non archiviati) in parallelo (vedi `0
 - Analisi di base.
 - Gestione Community Premium.
 
+---
+
+### Messaggistica
+
+- Conversazioni private uno a uno, solo testo.
+- Permesse se almeno una delle due persone segue l'altra (dettagli in `19_Messaging.md`).
+
 ## Funzionalità escluse
 
 Le seguenti funzionalità non fanno parte dell'MVP:
@@ -90,7 +98,7 @@ Le seguenti funzionalità non fanno parte dell'MVP:
 - Login con Google.
 - Login con Apple.
 - Autenticazione a due fattori (2FA).
-- Messaggistica privata.
+- Messaggistica di gruppo, foto/video nei messaggi, eliminazione messaggi (vedi `19_Messaging.md`).
 - Live streaming.
 - Marketplace avanzato.
 - Algoritmi avanzati di raccomandazione.

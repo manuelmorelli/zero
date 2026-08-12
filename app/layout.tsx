@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { QuickUpload } from "@/components/creator/QuickUpload";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { MessagesWidget } from "@/components/messages/MessagesWidget";
 import "./globals.css";
 
 const inter = Inter({
@@ -28,6 +29,7 @@ export default function RootLayout({
       >
         {children}
         <NotificationBell />
+        <MessagesWidget />
         <QuickUpload />
       </body>
     </html>
