@@ -4,25 +4,25 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 
 export async function toggleFollow(
-  creatorId: string
+  targetUserId: string
 ): Promise<{ error: string | null; isFollowing?: boolean }> {
   const session = await getCurrentSession();
-  if (!session) return { error: "You need to sign in to follow a creator." };
-
-  const creator = await prisma.creator.findUnique({ where: { id: creatorId } });
-  if (!creator) return { error: "Creator not found." };
-  if (creator.userId === session.user.id) {
+  if (!session) return { error: "You need to sign in to follow someone." };
+  if (targetUserId === session.user.id) {
     return { error: "You can't follow yourself." };
   }
 
+  const targetUser = await prisma.user.findUnique({ where: { id: targetUserId } });
+  if (!targetUser) return { error: "User not found." };
+
   const existing = await prisma.follow.findUnique({
-    where: { userId_creatorId: { userId: session.user.id, creatorId } },
+    where: { followerId_followingId: { followerId: session.user.id, followingId: targetUserId } },
   });
 
   if (existing) {
     await prisma.follow.delete({ where: { id: existing.id } });
   } else {
-    await prisma.follow.create({ data: { userId: session.user.id, creatorId } });
+    await prisma.follow.create({ data: { followerId: session.user.id, followingId: targetUserId } });
   }
 
   return { error: null, isFollowing: !existing };

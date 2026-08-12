@@ -4,8 +4,8 @@ import { formatCompactNumber } from "@/lib/utils";
 
 /**
  * Subset of Journey (+ Creator) fields from prisma/schema.prisma needed to render the card.
- * followersCount comes from Creator.followers (Follow[]), aggregated by the caller
- * (e.g. `_count: { select: { followers: true } }` on the creator query).
+ * followersCount comes from User.followers (Follow[], person-to-person), aggregated by the
+ * caller (e.g. `_count: { select: { followers: true } }` on the creator's user query).
  */
 export type JourneyCardData = {
   id: string;

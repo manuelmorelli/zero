@@ -531,7 +531,7 @@ async function getNewJourneys(
     where: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null, id: { notIn: excludeJourneyIds } },
     orderBy: { publishedAt: "desc" },
     take: pool,
-    include: { creator: { include: { _count: { select: { followers: true } } } } },
+    include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
   });
 
   if (journeys.length === 0) {
@@ -559,7 +559,7 @@ async function getNewJourneys(
     coverUrl: journey.coverUrl,
     category: journey.category,
     creator: { displayName: journey.creator.displayName },
-    followersCount: journey.creator._count.followers,
+    followersCount: journey.creator.user._count.followers,
   }));
 }
 

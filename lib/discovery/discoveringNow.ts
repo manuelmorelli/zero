@@ -23,7 +23,7 @@ export async function getDiscoveringNowJourneys(limit = 10): Promise<Discovering
     where: { status: "DISCOVERY", deletedAt: null },
     orderBy: { publishedAt: "desc" },
     take: limit,
-    include: { creator: { include: { _count: { select: { followers: true } } } } },
+    include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
   });
 
   const now = Date.now();
@@ -33,7 +33,7 @@ export async function getDiscoveringNowJourneys(limit = 10): Promise<Discovering
     coverUrl: journey.coverUrl,
     category: journey.category,
     creatorName: journey.creator.displayName,
-    followersCount: journey.creator._count.followers,
+    followersCount: journey.creator.user._count.followers,
     daysLeft: journey.discoveryEndsAt
       ? Math.max(1, Math.ceil((journey.discoveryEndsAt.getTime() - now) / (24 * 60 * 60 * 1000)))
       : 1,

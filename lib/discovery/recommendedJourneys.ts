@@ -92,7 +92,7 @@ async function findPublishedJourneys(filters: {
 
   return prisma.journey.findMany({
     where,
-    include: { creator: { include: { _count: { select: { followers: true } } } } },
+    include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
   });
 }
 
@@ -111,6 +111,6 @@ function toJourneyCardData(journey: JourneyWithCreator): JourneyCardData {
     coverUrl: journey.coverUrl,
     category: journey.category,
     creator: { displayName: journey.creator.displayName },
-    followersCount: journey.creator._count.followers,
+    followersCount: journey.creator.user._count.followers,
   };
 }

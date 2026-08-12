@@ -19,7 +19,7 @@ export default async function CategoryPage({
   const journeys = await prisma.journey.findMany({
     where: { category, status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
     orderBy: { publishedAt: "desc" },
-    include: { creator: { include: { _count: { select: { followers: true } } } } },
+    include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
   });
 
   return (
@@ -52,7 +52,7 @@ export default async function CategoryPage({
                   coverUrl: journey.coverUrl,
                   category: journey.category,
                   creator: { displayName: journey.creator.displayName },
-                  followersCount: journey.creator._count.followers,
+                  followersCount: journey.creator.user._count.followers,
                 }}
               />
             ))}

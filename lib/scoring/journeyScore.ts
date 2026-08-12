@@ -54,7 +54,7 @@ export async function ensureFreshJourneyScores(journeyIds: string[]): Promise<vo
     select: {
       id: true,
       publishedAt: true,
-      creator: { select: { _count: { select: { followers: true } } } },
+      creator: { select: { user: { select: { _count: { select: { followers: true } } } } } },
     },
   });
   if (staleJourneys.length === 0) return;
@@ -63,7 +63,7 @@ export async function ensureFreshJourneyScores(journeyIds: string[]): Promise<vo
     staleJourneys.map((journey) => ({
       journeyId: journey.id,
       publishedAt: journey.publishedAt,
-      followersCount: journey.creator._count.followers,
+      followersCount: journey.creator.user._count.followers,
     }))
   );
 

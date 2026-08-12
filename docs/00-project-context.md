@@ -128,6 +128,14 @@ Da questo derivano tre conseguenze permanenti sull'architettura del prodotto:
 
 Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo.
 
+### Follow universale (persona-segue-persona)
+
+Dal 2026-08-12 il "Follow" collega due persone, non una persona a un profilo Creator: qualunque utente può seguirne un altro con lo stesso pulsante e lo stesso conteggio, indipendentemente dal fatto che chi viene seguito abbia mai pubblicato un Journey. Conseguenza diretta del principio "Modello utente unico" appena sopra: se il profilo pubblico rappresenta una persona e non un ruolo, anche il Follow deve valere per la persona, non solo per il suo eventuale stato di creator.
+
+Chi non è creator resta seguibile e conta comunque nei follower del suo profilo, ma non genera notifiche "nuovo episodio"/"nuovo Journey" (perché non pubblica nulla) e non compare nelle sezioni di Discovery riservate ai creator (Recommended Creators, Feed). Seguire un creator continua quindi a produrre esattamente gli stessi effetti di prima (notifiche, Feed, Recommended); cambia solo che ora è un caso particolare di un meccanismo di Follow più generale, non un sistema a parte.
+
+Questa è una decisione di prodotto permanente, non limitata alla fase attuale di sviluppo. È inoltre la base su cui si costruirà la messaggistica privata (vedi Roadmap): la regola concordata è che due persone possono scriversi solo se si seguono a vicenda (follow reciproco).
+
 ### Drag & Drop
 
 La riorganizzazione tramite drag & drop di Capitoli ed Episodi è una funzionalità distintiva di Zero.

@@ -2,16 +2,25 @@ import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 
 /**
- * Id dei Creator seguiti da un utente (Follow.creatorId). Usato da tutte le sezioni
- * Discovery che dipendono da "chi segui" (Recommended Journeys, Recommended Creators,
- * Feed dei creator seguiti), per non duplicare la stessa query in più moduli.
+ * Id dei Creator seguiti da un utente. Follow è persona-segue-persona (vedi
+ * 00-project-context.md, sezione "Modello utente unico"): si parte dagli userId seguiti
+ * e si risolvono i Creator corrispondenti, non tutti hanno pubblicato un Journey. Usato da
+ * tutte le sezioni Discovery che dipendono da "chi segui" (Recommended Journeys, Recommended
+ * Creators, Feed dei creator seguiti), per non duplicare la stessa query in più moduli.
  */
 export async function getFollowedCreatorIds(userId: string): Promise<string[]> {
   const follows = await prisma.follow.findMany({
-    where: { userId },
-    select: { creatorId: true },
+    where: { followerId: userId },
+    select: { followingId: true },
   });
-  return follows.map((follow) => follow.creatorId);
+  const followedUserIds = follows.map((follow) => follow.followingId);
+  if (followedUserIds.length === 0) return [];
+
+  const creators = await prisma.creator.findMany({
+    where: { userId: { in: followedUserIds } },
+    select: { id: true },
+  });
+  return creators.map((creator) => creator.id);
 }
 
 /** Id del profilo Creator dell'utente stesso, se ne ha uno (per escluderlo dai propri suggerimenti). */

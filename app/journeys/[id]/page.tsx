@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
-import { FollowButton } from "@/components/creator/FollowButton";
+import { FollowButton } from "@/components/profile/FollowButton";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/common/Reveal";
 
@@ -33,12 +33,16 @@ export default async function PublicJourneyPage({
 
   const session = await getCurrentSession();
   const isOwnJourney = session?.user.id === journey.creator.userId;
-  const followersCount = await prisma.follow.count({ where: { creatorId: journey.creatorId } });
+  // Follow è persona-segue-persona (vedi 00-project-context.md, sezione "Modello utente
+  // unico"): si segue la persona dietro il creator, non un "Follow di Creator" a parte.
+  const followersCount = await prisma.follow.count({ where: { followingId: journey.creator.userId } });
   const isFollowing =
     session && !isOwnJourney
       ? Boolean(
           await prisma.follow.findUnique({
-            where: { userId_creatorId: { userId: session.user.id, creatorId: journey.creatorId } },
+            where: {
+              followerId_followingId: { followerId: session.user.id, followingId: journey.creator.userId },
+            },
           })
         )
       : false;
@@ -98,7 +102,7 @@ export default async function PublicJourneyPage({
           {!isOwnJourney && (
             <div className="mt-4">
               <FollowButton
-                creatorId={journey.creatorId}
+                userId={journey.creator.userId}
                 initialFollowersCount={followersCount}
                 initialIsFollowing={isFollowing}
                 isLoggedIn={Boolean(session)}

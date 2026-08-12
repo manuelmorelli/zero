@@ -140,7 +140,10 @@ model User {
   accounts  Account[]
 
   creator            Creator?
-  follows            Follow[]
+  // Follow universale tra persone (non legato allo stato di Creator): "following" sono le
+  // righe in cui questo utente è chi segue, "followers" quelle in cui è chi viene seguito.
+  following          Follow[]          @relation("Following")
+  followers          Follow[]          @relation("Followers")
   purchases          Purchase[]
   communityMembers   CommunityMember[]
   tipsSent           Tip[]
@@ -231,7 +234,6 @@ model Creator {
   services         PersonalService[]
   discountCodes    DiscountCode[]
   tipsReceived     Tip[]
-  followers        Follow[]
   analyticsSnapshots Analytics[]
 
   // Vincolo applicativo (non esprimibile in Prisma): un solo Journey
@@ -660,18 +662,20 @@ model DiscountCode {
 }
 
 // ------------------------------------------------------------
-// FOLLOW
+// FOLLOW — persona segue persona, indipendente dallo stato di Creator
+// (chi ha pubblicato un Journey è comunque un utente come tutti gli
+// altri, vedi 00-project-context.md sezione "Modello utente unico")
 // ------------------------------------------------------------
 
 model Follow {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  creatorId String
-  creator   Creator  @relation(fields: [creatorId], references: [id])
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  followerId  String
+  follower    User     @relation("Following", fields: [followerId], references: [id])
+  followingId String
+  following   User     @relation("Followers", fields: [followingId], references: [id])
+  createdAt   DateTime @default(now())
 
-  @@unique([userId, creatorId])
+  @@unique([followerId, followingId])
   @@map("follows")
 }
 

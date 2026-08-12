@@ -33,7 +33,7 @@ async function findMatchingJourneys(query: string) {
         { tags: { hasSome: [query] } },
       ],
     },
-    include: { creator: { include: { _count: { select: { followers: true } } } } },
+    include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
     take: 50,
   });
 }
@@ -57,6 +57,6 @@ function toJourneyCardData(journey: JourneyWithCreator): JourneyCardData {
     coverUrl: journey.coverUrl,
     category: journey.category,
     creator: { displayName: journey.creator.displayName },
-    followersCount: journey.creator._count.followers,
+    followersCount: journey.creator.user._count.followers,
   };
 }

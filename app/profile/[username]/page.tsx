@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { getImagePlaybackUrl } from "@/lib/r2";
-import { FollowButton } from "@/components/creator/FollowButton";
+import { FollowButton } from "@/components/profile/FollowButton";
 import { JourneyCard } from "@/components/journey/JourneyCard";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/common/Reveal";
@@ -79,12 +79,14 @@ export default async function PublicProfilePage({
     user.coverUrl ? getImagePlaybackUrl(user.coverUrl) : Promise.resolve(null),
   ]);
 
-  const followersCount = creator ? await prisma.follow.count({ where: { creatorId: creator.id } }) : 0;
+  // Follow è persona-segue-persona (vedi 00-project-context.md, sezione "Modello utente
+  // unico"): ogni profilo è seguibile, non solo quello di un creator.
+  const followersCount = await prisma.follow.count({ where: { followingId: user.id } });
   const isFollowing =
-    creator && session && !isOwnProfile
+    session && !isOwnProfile
       ? Boolean(
           await prisma.follow.findUnique({
-            where: { userId_creatorId: { userId: session.user.id, creatorId: creator.id } },
+            where: { followerId_followingId: { followerId: session.user.id, followingId: user.id } },
           })
         )
       : false;
@@ -164,14 +166,12 @@ export default async function PublicProfilePage({
             </>
           ) : (
             <>
-              {creator && (
-                <FollowButton
-                  creatorId={creator.id}
-                  initialFollowersCount={followersCount}
-                  initialIsFollowing={isFollowing}
-                  isLoggedIn={isLoggedIn}
-                />
-              )}
+              <FollowButton
+                userId={user.id}
+                initialFollowersCount={followersCount}
+                initialIsFollowing={isFollowing}
+                isLoggedIn={isLoggedIn}
+              />
               <MessageButton name={user.name} />
             </>
           )

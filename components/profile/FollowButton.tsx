@@ -6,14 +6,14 @@ import { toggleFollow } from "@/lib/actions/follow";
 import { formatCompactNumber } from "@/lib/utils";
 
 type FollowButtonProps = {
-  creatorId: string;
+  userId: string;
   initialFollowersCount: number;
   initialIsFollowing: boolean;
   isLoggedIn: boolean;
 };
 
 export function FollowButton({
-  creatorId,
+  userId,
   initialFollowersCount,
   initialIsFollowing,
   isLoggedIn,
@@ -44,7 +44,7 @@ export function FollowButton({
     setFollowersCount((count) => count + (wasFollowing ? -1 : 1));
 
     startTransition(async () => {
-      const result = await toggleFollow(creatorId);
+      const result = await toggleFollow(userId);
       if (result.error) {
         setIsFollowing(wasFollowing);
         setFollowersCount((count) => count + (wasFollowing ? 1 : -1));

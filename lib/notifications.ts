@@ -29,22 +29,30 @@ async function notifyFollowers(params: {
   content: string;
   link: string;
 }): Promise<void> {
-  const followers = await prisma.follow.findMany({
-    where: { creatorId: params.creatorId },
+  // Follow è persona-segue-persona (vedi 00-project-context.md, sezione "Modello utente
+  // unico"): si risolve prima l'utente dietro il Creator, poi chi lo segue come persona.
+  const creator = await prisma.creator.findUnique({
+    where: { id: params.creatorId },
     select: { userId: true },
+  });
+  if (!creator) return;
+
+  const followers = await prisma.follow.findMany({
+    where: { followingId: creator.userId },
+    select: { followerId: true },
   });
   if (followers.length === 0) return;
 
   await prisma.notification.createMany({
     data: followers.map((follower) => ({
-      userId: follower.userId,
+      userId: follower.followerId,
       type: params.type,
       content: params.content,
       link: params.link,
     })),
   });
 
-  await Promise.all(followers.map((follower) => pruneOldNotifications(follower.userId)));
+  await Promise.all(followers.map((follower) => pruneOldNotifications(follower.followerId)));
 }
 
 /**

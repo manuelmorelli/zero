@@ -40,7 +40,7 @@ async function findMatchingCreators(query: string) {
         { bio: { contains: query, mode: "insensitive" } },
       ],
     },
-    include: { creator: { include: { _count: { select: { followers: true } } } } },
+    include: { _count: { select: { followers: true } } },
     take: 50,
   });
 }
@@ -63,6 +63,6 @@ function toCreatorSearchResult(user: UserWithCreator): CreatorSearchResult {
     username: user.username,
     name: user.name,
     bio: user.bio,
-    followersCount: user.creator?._count.followers ?? 0,
+    followersCount: user._count.followers,
   };
 }

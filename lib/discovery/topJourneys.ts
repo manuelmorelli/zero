@@ -34,7 +34,7 @@ export async function getTopJourneys({
   const journeys = await prisma.journey.findMany({
     where: { id: { in: candidateIds.map((journey) => journey.id) } },
     include: {
-      creator: { include: { _count: { select: { followers: true } } } },
+      creator: { include: { user: { include: { _count: { select: { followers: true } } } } } },
       chapters: {
         where: { deletedAt: null },
         select: { _count: { select: { episodes: { where: { deletedAt: null } } } } },
@@ -49,7 +49,7 @@ export async function getTopJourneys({
       coverUrl: journey.coverUrl,
       category: journey.category,
       creatorName: journey.creator.displayName,
-      followersCount: journey.creator._count.followers,
+      followersCount: journey.creator.user._count.followers,
       episodesCount: journey.chapters.reduce((sum, chapter) => sum + chapter._count.episodes, 0),
       journeyScore: journey.journeyScore,
     }))

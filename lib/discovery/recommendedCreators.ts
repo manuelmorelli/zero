@@ -83,12 +83,12 @@ async function findPublishedCreators(filters: {
         },
       },
     },
-    include: { user: true, _count: { select: { followers: true } } },
+    include: { user: { include: { _count: { select: { followers: true } } } } },
   });
 }
 
 function sortByFollowersDesc(creators: CreatorWithUser[]): CreatorWithUser[] {
-  return [...creators].sort((a, b) => b._count.followers - a._count.followers);
+  return [...creators].sort((a, b) => b.user._count.followers - a.user._count.followers);
 }
 
 function toCreatorSearchResult(creator: CreatorWithUser): CreatorSearchResult {
@@ -97,6 +97,6 @@ function toCreatorSearchResult(creator: CreatorWithUser): CreatorSearchResult {
     username: creator.user.username,
     name: creator.user.name,
     bio: creator.user.bio,
-    followersCount: creator._count.followers,
+    followersCount: creator.user._count.followers,
   };
 }
