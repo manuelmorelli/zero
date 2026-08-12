@@ -321,7 +321,6 @@ export async function moveEpisodeToIndex(episodeId: string, targetIndex: number)
   revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
   if (episode.chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${episode.chapterId}`);
   // Il drag & drop ora vive anche nel Profilo (vedi components/profile/EpisodeReorderSection.tsx),
-  // e l'ordine si riflette sulla pagina episodi pubblica: entrambe vanno rivalidate.
+  // e l'ordine si riflette sulla Pagina Journey pubblica (elenco episodi incluso): va rivalidata.
   revalidatePath(`/journeys/${episode.journeyId}`);
-  revalidatePath(`/journeys/${episode.journeyId}/episodes`);
 }

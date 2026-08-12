@@ -333,7 +333,7 @@ function ContinueJourney({ items }: { items: ContinueJourneyItem[] }) {
             <Link
               href={
                 item.episodeId
-                  ? `/journeys/${item.journeyId}/episodes#${item.episodeId}`
+                  ? `/journeys/${item.journeyId}/episodes/${item.episodeId}`
                   : `/journeys/${item.journeyId}`
               }
               className="group flex overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-ink-muted"
