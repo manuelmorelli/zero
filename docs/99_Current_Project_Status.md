@@ -1,12 +1,13 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.37"
+version: "1.38"
 status: living
 related_docs:
   - 12_MVP_Features
   - 11_Database_Architecture
   - 17_Project_Architecture
+  - 97_Lovable_Redesign_Checklist
 ---
 
 # Current Project Status
@@ -35,12 +36,12 @@ Confronto con le funzionalità definite in `12_MVP_Features.md`:
 | Journey (creazione, Capitoli, Episodi) | ✅ Fatto |
 | Journey (modifica del Journey stesso) | ✅ Fatto |
 | Journey (struttura: riordino libero) | ✅ Fatto — drag & drop di Capitoli ed Episodi |
-| Esplorazione (homepage) | 🟡 Parziale — allineata al design di riferimento Lovable (vedi "Ultimo task completato"): Hero, quattro righe in griglia densa "Discovering Now" / "Journeys of the Moment" / "Latest Videos" / "Top Journeys" subito sotto, con dati reali quando disponibili e placeholder demo altrimenti; "Continue Your Journey" (solo dati reali, mai demo), "From creators you follow" (Feed), riga di cerchi Updates in stile Stories (solo creator seguiti), "Recommended for you", "Creator consigliati", "New Journeys" e "Categories" più in basso in Home, stesso principio dati reali/demo; pagine "View all" dedicate per ogni riga (`/discover/...`); Most Completed resta da fare (vedi Roadmap, Fase 3) |
-| Esplorazione (pagina Journey pubblica) | ✅ Fatto — pagina unica (hero + episodi), allineata al design di riferimento Lovable |
-| Esplorazione (profilo pubblico, ricerca, scoperta) | 🟡 Parziale — profilo pubblico allineato al design di riferimento Lovable (Hero con copertina/avatar/location/Trust Score in riquadro, tab Overview/Journeys fissi in scroll, sezione Focus collegata agli interessi reali, feed fotografico con Like, sidebar About + Journey Stats, anteprima Messaggi); navigazione per categoria fatta (`/categories`); Ricerca base fatta (`/search`, Journey e Creator) |
+| Esplorazione (homepage) | 🟡 In corso — riallineamento preciso al design di riferimento Lovable, checklist dettagliata e stato aggiornato in `97_Lovable_Redesign_Checklist.md` (leggerla prima di toccare la Home). Struttura attuale: Hero (logo/immagine `zero-wordmark.png`, foto rotante, cerchi Updates dopo i bottoni solo per chi ha fatto login), poi "Discovering Now" / "Latest Videos" / "Journeys of the Moment" (max 4 in Home) / "Top Journeys" in griglia densa, poi "Recommended for you", "Creator consigliati", "Categories". "Continue Your Journey", "From creators you follow" e "New Journeys" sono stati rimossi dalla Home su richiesta di Manuel (logica non cancellata, solo scollegata — vedi 97 per dove); pagine "View all" dedicate per ogni riga (`/discover/...`); Most Completed resta da fare (vedi Roadmap, Fase 3) |
+| Esplorazione (pagina Journey pubblica) | 🟡 Parziale — pagina unica (hero + episodi) funzionante; allineamento preciso al design di riferimento Lovable non ancora fatto, vedi `97_Lovable_Redesign_Checklist.md` Fase 2 |
+| Esplorazione (profilo pubblico, ricerca, scoperta) | 🟡 Parziale — profilo pubblico funzionante (Hero con copertina/avatar/location/Trust Score in riquadro, tab Overview/Journeys fissi in scroll, sezione Focus collegata agli interessi reali, feed fotografico con Like, sidebar About + Journey Stats, anteprima Messaggi); allineamento preciso al design di riferimento Lovable non ancora fatto, vedi `97_Lovable_Redesign_Checklist.md` Fase 3; navigazione per categoria fatta (`/categories`); Ricerca base fatta (`/search`, Journey e Creator) |
 | Community (seguire creator, Community Premium) | 🟡 Parziale — Follow fatto (pulsante su Profilo e Pagina Journey, conteggio reale); Community Premium ancora da fare (vedi Roadmap, Fase 4) |
-| Updates | ✅ Fatto — tutti e 5 i formati (testo, foto, video, sondaggio, domanda) dal pulsante "+" globale, riga di cerchi stile Stories in Home con visualizzatore a schermo intero, reazioni e scadenza automatica (24h, pulizia lazy senza cron job) |
-| Dashboard (Updates, analisi base, Community Premium) | 🟡 Parziale — Dashboard come hub centrale del Journey (statistiche, Publish/Unpublish, Archive), gestione Updates e allineamento al design di riferimento Lovable fatti (placeholder "Analytics — coming soon" per i numeri non ancora reali); analisi reali e Community Premium ancora da fare (vedi Roadmap, Fase 4) |
+| Updates | ✅ Fatto — tutti e 5 i formati (testo, foto, video, sondaggio, domanda) dal pulsante "+" globale; anteprima come cerchi cliccabili nella Hero della Home (solo per chi ha fatto login, subito dopo i bottoni Explore/Create — non più una riga a sé sotto la Hero), massimo 6 mostrati + "View all", visualizzatore a schermo intero, reazioni e scadenza automatica (24h, pulizia lazy senza cron job) |
+| Dashboard (Updates, analisi base, Community Premium) | 🟡 Parziale — Dashboard come hub centrale del Journey (statistiche, Publish/Unpublish, Archive) e gestione Updates fatti (placeholder "Analytics — coming soon" per i numeri non ancora reali); allineamento preciso al design di riferimento Lovable non ancora fatto, vedi `97_Lovable_Redesign_Checklist.md` Fase 5; analisi reali e Community Premium ancora da fare (vedi Roadmap, Fase 4) |
 | Messaggistica (conversazioni uno a uno) | ✅ Fatto — sbloccata da un follow in una sola direzione (non serve il follow reciproco), pulsante flottante dedicato, aggiornamento della chat aperta ogni 15s |
 
 In sintesi: il percorso di creazione e gestione lato Creator (Journey → Capitoli → Episodi, con modifica, Publish/Unpublish e riordino via drag & drop) è completo e verificato end-to-end, senza alcun intervento necessario sul database. Il Profilo pubblico esiste ora in versione minima (nome, bio, Journey pubblicati, con Follow). Follow è fatto ed è la base per il resto della Discovery (Recommended Journeys, Feed, Updates e Creator consigliati, tutti fatti). La navigazione per categoria (`/categories`) è fatta come pagina a sé, ed è ora riproposta anche in Home. "Recommended for you", "Creator consigliati", "From creators you follow" (Feed), la riga di Updates in stile Stories e "Categories" sono ora in Home con dati reali. La Ricerca base (`/search`, Journey e Creator) è fatta. Il sistema Updates (tutti i formati dal pulsante "+", scadenza automatica a 24h, visualizzatore Stories in Home) è completo. La Messaggistica privata (conversazioni uno a uno, solo testo) è fatta, appoggiata sul Follow universale. Manca ancora tutto ciò che riguarda video reali, Community Premium/Analytics e la preparazione al lancio pubblico — vedi "Roadmap" più sotto.
@@ -144,19 +145,18 @@ Nessuna funzionalità in corso di implementazione al momento.
 
 ### Ultimo task completato
 
-**Allineamento al design di riferimento Lovable** — porting 1:1 del design definitivo costruito su Lovable (repo `manuelmorelli/zero-your-transformation-journey`) nel progetto reale, pagina per pagina, con dati veri al posto dei placeholder del mockup:
+**Allineamento al design di riferimento Lovable — round di correzioni precisione (2026-08-13)**. Il porting iniziale (fatto leggendo il repo GitHub "a occhio") non assomigliava al vero design di Manuel ("il risultato finale non è per niente simile al lavoro che ho creato su lovable"). Da qui in poi il lavoro si fa leggendo il codice sorgente esatto tramite lo strumento Lovable collegato (progetto `6da6089f-6d97-45d2-ab83-ec839401dc7d`), non a memoria — **lo stato dettagliato e sempre aggiornato è in `97_Lovable_Redesign_Checklist.md`, da leggere prima di continuare questo lavoro**. Riassunto di cosa è stato corretto:
 
-- Palette colori, tipografia e componenti base (bottoni, avatar, badge Trust Score, icone di categoria) allineati ai valori esatti del riferimento; header unico per tutto il sito (prima due componenti separati), sempre con stato di login reale (mai il "Sign In / Get Started" statico del mockup).
-- Home ricostruita: le righe "Discovering Now", "Journeys of the Moment", "Latest Videos", "Top Journeys" passano da scorrimento orizzontale a griglia densa; tutte le altre sezioni riallineate alla stessa densità visiva; conteggio follower rimosso da tutte le card Journey, icona di categoria aggiunta.
-- **Pagina Journey pubblica** — le due route separate (hero + lista episodi) sono diventate un'unica pagina, come già previsto da questo documento.
-- **Player video** — nuova pagina dedicata (`/journeys/[id]/episodes/[episodeId]`) con controlli costruiti su misura (barra di avanzamento, play/pausa, volume, schermo intero) al posto dei controlli nativi del browser e della finestra a comparsa precedente; sidebar "Up next" con tutti gli episodi del Journey. Riprende la logica già esistente di ripresa/salvataggio/completamento, nessuna riscrittura della parte funzionale.
-- **Profilo pubblico** e **Dashboard creator** — restyling secondo il riferimento (statistiche in riquadro, tab fissi in scroll, pulsanti in stile coerente); la sezione "Focus" del Profilo è collegata ai veri interessi dichiarati dall'utente. La Dashboard mostra un placeholder "Analytics — coming soon" al posto dei numeri finti del mockup (views/completion/interazioni non sono ancora calcolati realmente, fanno parte della Fase 4 non ancora iniziata).
-- **"What is Zero"** (`/what-is-zero`) — pagina nuova, non esisteva né sul sito né sul riferimento prima d'ora; contenuto testuale statico.
-- **Pagine "View all"** — una pagina a griglia piena per ciascuna riga della Home (`/discover/now`, `/discover/moment`, `/discover/latest-videos`, `/discover/top`, `/discover/recommended`, `/discover/creators`, `/discover/new`), che riusa le stesse card già in uso.
+- Hero riscritta identica al sorgente: logo `zero-wordmark.png` (ritagliato dal file originale, sfondo trasparente vero) al posto del testo CSS, foto cinematografica rotante con citazione, bottoni corretti; header lasciato con il logo precedente (la richiesta riguardava solo la Hero).
+- JourneyCard passata da "foto sopra + testo sotto" a card poster con testo overlay (usata ovunque sul sito).
+- Home ristrutturata su richiesta esplicita di Manuel: "Journeys of the Moment" limitata a 4 card in Home; rimosse "Continue Your Journey", "From creators you follow" e "New Journeys" (logica non cancellata, solo scollegata dalla Home — vedi 97 per dove andranno); Updates spostati dentro la Hero (cerchi dopo i bottoni Explore/Create, solo per chi ha fatto login, max 6 + "View all"); ordine "Latest Videos"/"Journeys of the Moment" invertito; "Recommended for you" spostata al posto di "From creators you follow".
+- Ancora da fare: pagina Journey/Player, Profilo pubblico, righe extra della Home, Dashboard — tutto nel dettaglio in `97_Lovable_Redesign_Checklist.md`.
 
-Verificato: `npx tsc --noEmit` pulito, `npm run build` di produzione pulito, e un giro di controllo automatico (Playwright) su tutte le pagine toccate senza errori di console. Non verificato con login reale in questa sessione (Profilo/Journey/Player/Home/View-all sì, tramite dati reali già presenti; Dashboard solo tramite build/redirect, nessuna sessione autenticata disponibile via script in questa sessione).
+Verificato ad ogni passo: `npx tsc --noEmit` pulito, `npm run build` di produzione pulito, giro Playwright su tutte le pagine toccate senza errori di console, screenshot confrontati a schermo. Non verificato con login reale in questa sessione (Dashboard e la riga Updates in Hero richiedono una sessione autenticata vera in browser, non ottenibile via script in questo ambiente — vedi le Note aperte in 97).
 
-Task precedente: **Messaggistica privata** — vedi la voce corrispondente più sopra in "Funzionalità implementate". Conversazioni uno a uno solo testo, sbloccate da un follow in una sola direzione (non serve più il follow reciproco pianificato inizialmente), pulsante flottante "Messages" dedicato, aggiornamento della chat aperta ogni 15s.
+Task precedente al round di correzioni: **prima versione del porting Lovable** (Hero/card/Header/Journey/Player/Profilo/Dashboard/"What is Zero"/pagine "View all") — vedi `97_Lovable_Redesign_Checklist.md` per cosa di quella prima versione è stato confermato corretto e cosa richiede ancora lavoro.
+
+Task precedente ancora: **Messaggistica privata** — vedi la voce corrispondente più sopra in "Funzionalità implementate". Conversazioni uno a uno solo testo, sbloccate da un follow in una sola direzione (non serve più il follow reciproco pianificato inizialmente), pulsante flottante "Messages" dedicato, aggiornamento della chat aperta ogni 15s.
 
 ### Note prima del rilascio pubblico
 
@@ -195,16 +195,16 @@ Tutto il lavoro di base del prodotto: autenticazione, creazione e gestione dei J
 
 ### Phase 2 — Product Polish
 
-Il redesign secondo il prototipo grafico Lovable è stato fatto (vedi "Ultimo task completato"); alcune voci minori di rifinitura restano — vedi anche `98_Product_Review.md` per il dettaglio di ogni voce.
+Il redesign secondo il prototipo grafico Lovable è **in corso**, non concluso — stato dettagliato e sempre aggiornato in `97_Lovable_Redesign_Checklist.md` (una prima versione richiedeva correzioni di precisione significative, vedi "Ultimo task completato"); vedi anche `98_Product_Review.md` per il dettaglio delle voci minori di rifinitura non legate al redesign.
 
-- 🟡 **Creator Dashboard** — hub centrale del Journey (statistiche, Manage, Publish/Unpublish, Archive, storico Journey archiviati) e gestione Updates, ora anche restyled secondo il riferimento Lovable (header unico, placeholder Analytics); i numeri reali di Analytics (views/completion/interazioni) restano da fare, vedi Fase 4.
-- ✅ **Profile Page** — redesign secondo il riferimento Lovable fatto (statistiche in riquadro, tab fissi in scroll, sezione Focus collegata agli interessi reali).
-- ✅ **Journey Page** — unificata in un'unica pagina (hero + episodi) secondo il riferimento Lovable, al posto delle due route separate precedenti.
-- 🟡 **Updates Page** — sistema completo (tutti i formati, riga Stories) fatto in Fase 1; raggruppamento visivo di Update multipli per creator ora fatto (riga di cerchi in Home); contatore caratteri e conferma prima di eliminare non ancora fatti.
+- 🟡 **Creator Dashboard** — hub centrale del Journey (statistiche, Manage, Publish/Unpublish, Archive, storico Journey archiviati) e gestione Updates fatti; il restyling preciso secondo il riferimento Lovable (selettore Journey a griglia, drag & drop capitoli/episodi, pannello statistiche esatto) è la Fase 5 di `97_Lovable_Redesign_Checklist.md`, non ancora iniziata; i numeri reali di Analytics restano da fare, vedi Fase 4 di questa roadmap.
+- 🟡 **Profile Page** — funzionalità fatta; l'allineamento preciso al riferimento Lovable (anello decorativo sull'avatar, card poster, popup di modifica reali) è la Fase 3 di `97_Lovable_Redesign_Checklist.md`, non ancora iniziata.
+- 🟡 **Journey Page** — unificata in un'unica pagina (hero + episodi); l'allineamento preciso al riferimento Lovable (pannello vetro nell'header) è la Fase 2 di `97_Lovable_Redesign_Checklist.md`, non ancora iniziata.
+- 🟡 **Updates Page** — sistema completo (tutti i formati) fatto in Fase 1; la riga di cerchi ora vive dentro la Hero della Home, non più come sezione a sé; contatore caratteri e conferma prima di eliminare non ancora fatti.
 - 🟡 **Account / Settings** — nome, username, bio e interessi modificabili da `/account`; foto profilo ancora da fare (in attesa di Cloudflare R2).
 - 🟡 **Responsive Design** — approccio mobile-first già applicato per convenzione in tutto il progetto, nessuna verifica/audit dedicata.
 - ⬜ **UX Improvements** — non iniziato.
-- ✅ **UI Consistency** — allineamento al prototipo grafico Lovable fatto (vedi "Ultimo task completato").
+- 🟡 **UI Consistency** — allineamento al prototipo grafico Lovable in corso, non fatto — vedi `97_Lovable_Redesign_Checklist.md`.
 - ⬜ **Loading States** — non iniziato.
 - 🟡 **Empty States** — già presenti in diversi punti (Dashboard, pagine pubbliche), nessuna revisione sistematica.
 - 🟡 **Error States** — messaggi di errore dei form già presenti; nessuna pagina di errore dedicata.

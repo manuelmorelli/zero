@@ -1,7 +1,7 @@
 ---
 title: Lovable Redesign Checklist
 doc_id: 97-lovable-redesign-checklist
-version: "1.0"
+version: "1.1"
 status: in-progress
 related_docs:
   - 14_UI_Pages
@@ -15,6 +15,8 @@ Mappa di lavoro per l'allineamento pixel-preciso del progetto reale al design di
 
 **Regola fissa**: prima di iniziare uno qualsiasi dei lavori "Da fare" sotto, presentare il piano per quel lavoro e aspettare che Manuel scriva esplicitamente "vai" in chat — anche se questo documento lo elenca come prossimo passo previsto. Questo documento dice *cosa* resta da fare, non autorizza a farlo.
 
+**Contesto importante**: un primo tentativo di questo porting (prima del 2026-08-13) era stato fatto leggendo il repo GitHub "a occhio", senza lo strumento Lovable collegato in tempo reale — il risultato non assomigliava al vero design ("il risultato finale non è per niente simile al lavoro che ho creato su lovable", feedback di Manuel). Tutto il lavoro elencato come "Fatto" qui sotto è stato rifatto/verificato dal 2026-08-13 in poi leggendo il codice sorgente esatto tramite lo strumento Lovable (`list_files`/`read_file` sul progetto `6da6089f-6d97-45d2-ab83-ec839401dc7d`), non a memoria — quindi affidabile. Se in una sessione futura questo documento risultasse in contraddizione con quanto si vede nel browser, fidarsi di quello che si vede e ricontrollare il sorgente Lovable, non di questo file.
+
 Ogni volta che un punto viene completato: spuntarlo qui (`- [x]`), aggiungere una riga con la data e il commit, e solo dopo aggiornare `99_Current_Project_Status.md` se il cambiamento è abbastanza rilevante da meritarlo.
 
 ## Fatto
@@ -27,7 +29,9 @@ Ogni volta che un punto viene completato: spuntarlo qui (`- [x]`), aggiungere un
 - [x] MomentJourneyCard e VideoCard: aggiunto avatar accanto al nome autore, VideoCard con icona Clock — 2026-08-13
 - [x] Pannello "vetro" (bordo sottile, sfondo quasi trasparente) sulla prima riga della Home ("Discovering Now") — 2026-08-13
 - [x] Home ristrutturata: "Journeys of the Moment" limitata a 4 card; rimosse "From creators you follow", "Continue Your Journey", "New Journeys" (logica conservata, non cancellata — vedi Note); ordine "Latest Videos"/"Journeys of the Moment" invertito; "Recommended for you" spostata al posto di "From creators you follow" — 2026-08-13
-- [x] Logo Hero rifinito: `logo.svg` ritagliato via script (solo lettere "ZERO", niente tagline/simbolo cerchio-onda) ed esportato come `public/images/zero-wordmark.png` con sfondo davvero trasparente; eyebrow "Every journey starts from" come testo separato sopra; dimensione aumentata, spaziatura lettere leggermente compressa; Hero più compatta (Discovering Now visibile senza scroll su desktop) — 2026-08-13
+- [x] Logo Hero rifinito: `logo.svg` ritagliato via script (solo lettere "ZERO", niente tagline/simbolo cerchio-onda) ed esportato come `public/images/zero-wordmark.png` con sfondo davvero trasparente; eyebrow "Every journey starts from" come testo separato sopra; dimensione aumentata, spaziatura lettere leggermente compressa; Hero più compatta (Discovering Now visibile senza scroll su desktop, corretta dopo un primo taglio troppo aggressivo) — 2026-08-13
+- [x] Logo Header: ripristinato il wordmark precedente (`logo.png`) — la richiesta di "cambia il logo" riguardava solo la Hero, non l'header — 2026-08-13
+- [x] Cerchi Updates nella Hero: spaziatura ridotta (gap-3 → gap-1.5), massimo 6 mostrati, freccetta "View all" subito dopo il sesto (apre lo stesso visualizzatore a schermo intero) — 2026-08-13
 
 ## Da fare
 
