@@ -1,7 +1,7 @@
 ---
 title: UI Pages
 doc_id: 14-ui-pages
-version: "3.9"
+version: "3.10"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -111,9 +111,15 @@ Contiene:
 
 ### Pagina Episodio
 
-Visualizza un singolo Episodio mantenendo il contesto del Journey.
+Visualizza un singolo Episodio mantenendo il contesto del Journey (il Player, `/journeys/[id]/episodes/[episodeId]`).
 
-L'utente può passare facilmente all'episodio precedente o successivo.
+L'utente può passare facilmente a un altro episodio tramite la lista "Up next" a fianco del video, con l'episodio in riproduzione sempre evidenziato.
+
+---
+
+### What is Zero
+
+Pagina editoriale statica (`/what-is-zero`) che spiega cos'è Zero e cosa lo rende diverso: nessun dato dinamico, stesso header del resto del sito.
 
 ## Area autenticata
 

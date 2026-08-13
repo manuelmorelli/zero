@@ -33,6 +33,7 @@ import { getFollowedCreatorsStories } from "@/lib/discovery/stories";
 import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
 import { getDiscoveringNowJourneys, type DiscoveringNowItem } from "@/lib/discovery/discoveringNow";
+import { getNewJourneys } from "@/lib/discovery/newJourneys";
 import { StoriesRow } from "@/components/home/StoriesRow";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
@@ -448,51 +449,6 @@ function RecommendedCreators({ creators }: { creators: CreatorSearchResult[] }) 
 /* ------------------------------------------------------------------ */
 /* NEW JOURNEYS                                                        */
 /* ------------------------------------------------------------------ */
-
-async function getNewJourneys(
-  excludeJourneyIds: string[] = [],
-  interests: string[] = []
-): Promise<JourneyCardData[]> {
-  // Se l'utente ha interessi dichiarati, si guarda un gruppo più ampio di Journey recenti
-  // per poter dare priorità a quelli nelle sue categorie, mantenendo comunque l'ordine
-  // dal più recente al meno recente sia tra i match sia tra il resto (vedi sotto).
-  const pool = interests.length > 0 ? 20 : 5;
-
-  const journeys = await prisma.journey.findMany({
-    where: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null, id: { notIn: excludeJourneyIds } },
-    orderBy: { publishedAt: "desc" },
-    take: pool,
-    include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
-  });
-
-  if (journeys.length === 0) {
-    // Nessun risultato può voler dire "nessun Journey pubblicato" (mostra la demo) oppure
-    // "tutti i Journey pubblicati sono già esclusi" (es. tutti nel Feed): solo nel primo caso
-    // ha senso il fallback demo, altrimenti la sezione resta vuota di proposito.
-    const anyPublished = await prisma.journey.count({
-      where: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
-    });
-    return anyPublished === 0 ? DEMO_JOURNEYS : [];
-  }
-
-  const ordered = interests.length === 0
-    ? journeys
-    : (() => {
-        const interestSet = new Set(interests);
-        const matching = journeys.filter((journey) => journey.category && interestSet.has(journey.category));
-        const rest = journeys.filter((journey) => !(journey.category && interestSet.has(journey.category)));
-        return [...matching, ...rest];
-      })();
-
-  return ordered.slice(0, 5).map((journey) => ({
-    id: journey.id,
-    title: journey.title,
-    coverUrl: journey.coverUrl,
-    category: journey.category,
-    creator: { displayName: journey.creator.displayName },
-    followersCount: journey.creator.user._count.followers,
-  }));
-}
 
 function NewJourneys({ journeys }: { journeys: JourneyCardData[] }) {
   return (
