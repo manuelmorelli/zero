@@ -86,8 +86,8 @@ export function Hero({ stories }: HeroProps) {
           </div>
 
           {stories.length > 0 ? (
-            <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
-              {stories.map((story, index) => (
+            <div className="mt-4 flex gap-1.5 overflow-x-auto pb-1">
+              {stories.slice(0, 6).map((story, index) => (
                 <button
                   key={story.creatorId}
                   type="button"
@@ -113,6 +113,16 @@ export function Hero({ stories }: HeroProps) {
                   </span>
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={() => setOpenStoryIndex(0)}
+                className="flex shrink-0 flex-col items-center gap-1.5"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-2 text-ink-muted transition-colors hover:text-ember">
+                  &rarr;
+                </span>
+                <span className="text-[0.65rem] text-ink-muted">View all</span>
+              </button>
             </div>
           ) : (
             <div className="mt-4 flex items-center gap-4">
