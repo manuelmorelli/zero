@@ -29,7 +29,6 @@ import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
 import { getDiscoveringNowJourneys, type DiscoveringNowItem } from "@/lib/discovery/discoveringNow";
 import { getContinueJourneys } from "@/lib/discovery/continueJourneys";
-import { StoriesRow } from "@/components/home/StoriesRow";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
@@ -98,10 +97,7 @@ export default async function Home() {
     <main>
       <Header />
       {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
-      <Hero />
-
-      {/* Updates: solo per chi ha fatto il sign in, subito sotto la Hero */}
-      {userId && <StoriesRow stories={displayedStories} />}
+      <Hero stories={userId ? displayedStories : []} />
 
       <div id="discover">
         <DiscoveringNow journeys={displayedDiscoveringNow} />

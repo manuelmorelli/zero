@@ -5,12 +5,20 @@ import Image from "next/image";
 import { Play, Quote } from "lucide-react";
 import { Avatar } from "@/components/common/Avatar";
 import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
+import { StoryViewer } from "@/components/home/StoryViewer";
 import { heroSlides } from "@/lib/demo/heroSlides";
+import type { CreatorStory } from "@/lib/discovery/stories";
 
 const creators = ["Alex R.", "Sarah J.", "David L.", "Emma W.", "James T."];
 
-export function Hero() {
+type HeroProps = {
+  /** Updates dei creator seguiti: solo per chi ha fatto il sign in (vuoto per gli ospiti). */
+  stories: CreatorStory[];
+};
+
+export function Hero({ stories }: HeroProps) {
   const [active, setActive] = useState(0);
+  const [openStoryIndex, setOpenStoryIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -46,12 +54,14 @@ export function Hero() {
 
       <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-10 pb-3 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-8 md:pt-12 md:pb-3">
         <div className="max-w-lg md:col-start-1 md:row-start-1">
-          <p className="text-[0.7rem] uppercase tracking-[0.42em] text-ink-muted">
-            Every journey starts from
-          </p>
-          <h1 className="mt-2 bg-gradient-to-b from-white via-white to-white/45 bg-clip-text text-[18vw] leading-[0.82] font-black tracking-tight text-transparent sm:text-[6.5rem] lg:text-[8rem]">
-            ZERO
-          </h1>
+          <Image
+            src="/images/logo.svg"
+            alt="ZERO — Every journey starts from zero"
+            width={1254}
+            height={1254}
+            unoptimized
+            className="mix-blend-screen w-48 sm:w-56 lg:w-64"
+          />
           <p className="mt-3 max-w-[19ch] text-2xl leading-tight font-semibold text-balance sm:text-[1.5rem]">
             For real people <span className="text-ink-muted">building real transformations.</span>
           </p>
@@ -62,7 +72,7 @@ export function Hero() {
           </p>
         </div>
 
-        {/* Bottoni + avatar — la citazione a destra si allinea a questa riga */}
+        {/* Bottoni + avatar/Updates — la citazione a destra si allinea a questa riga */}
         <div className="max-w-lg md:col-start-1 md:row-start-2">
           <div className="flex flex-wrap gap-3">
             <ButtonPrimary href="#discover">
@@ -72,22 +82,53 @@ export function Hero() {
             <ButtonSecondary href="/register">Create Your Journey</ButtonSecondary>
           </div>
 
-          <div className="mt-4 flex items-center gap-4">
-            <div className="flex -space-x-2.5">
-              {creators.map((name) => (
-                <Avatar
-                  key={name}
-                  name={name}
-                  className="h-9 w-9 border-2 border-bg bg-surface-2 text-[0.65rem]"
-                />
+          {stories.length > 0 ? (
+            <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
+              {stories.map((story, index) => (
+                <button
+                  key={story.creatorId}
+                  type="button"
+                  onClick={() => setOpenStoryIndex(index)}
+                  className="flex shrink-0 flex-col items-center gap-1.5"
+                >
+                  <span
+                    className={`flex h-11 w-11 items-center justify-center rounded-full p-[2px] ${
+                      story.hasUnseen ? "bg-gradient-to-br from-ember to-danger" : "bg-border"
+                    }`}
+                  >
+                    <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-bg bg-surface-2 text-xs font-semibold text-ink-muted">
+                      {story.creatorAvatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={story.creatorAvatarUrl} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        story.creatorName.charAt(0).toUpperCase()
+                      )}
+                    </span>
+                  </span>
+                  <span className="max-w-11 truncate text-[0.65rem] text-ink-muted">
+                    {story.creatorName}
+                  </span>
+                </button>
               ))}
             </div>
-            <p className="text-xs leading-relaxed text-ink-muted">
-              Join thousands of creators
-              <br />
-              and millions of followers
-            </p>
-          </div>
+          ) : (
+            <div className="mt-4 flex items-center gap-4">
+              <div className="flex -space-x-2.5">
+                {creators.map((name) => (
+                  <Avatar
+                    key={name}
+                    name={name}
+                    className="h-9 w-9 border-2 border-bg bg-surface-2 text-[0.65rem]"
+                  />
+                ))}
+              </div>
+              <p className="text-xs leading-relaxed text-ink-muted">
+                Join thousands of creators
+                <br />
+                and millions of followers
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Citazione sopra la foto, allineata alla riga dei bottoni */}
@@ -114,6 +155,14 @@ export function Hero() {
           </div>
         </div>
       </div>
+
+      {openStoryIndex !== null && (
+        <StoryViewer
+          stories={stories}
+          initialCreatorIndex={openStoryIndex}
+          onClose={() => setOpenStoryIndex(null)}
+        />
+      )}
     </section>
   );
 }
