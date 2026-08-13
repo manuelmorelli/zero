@@ -21,7 +21,17 @@ export function StoriesRow({ stories }: StoriesRowProps) {
     <section id="updates" className="border-b border-border">
       <div className="mx-auto max-w-7xl px-6 py-10">
         <Reveal>
-          <h2 className="font-sans text-2xl font-extrabold tracking-tight">Updates</h2>
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="font-sans text-2xl font-extrabold tracking-tight">Updates</h2>
+            <button
+              type="button"
+              onClick={() => setOpenIndex(0)}
+              className="group inline-flex shrink-0 items-center gap-1.5 text-sm text-ink-muted transition-colors hover:text-ember"
+            >
+              View all
+              <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
+            </button>
+          </div>
         </Reveal>
 
         <Reveal delayMs={60}>

@@ -8,7 +8,7 @@ import { SearchIcon } from "@/components/search/SearchForm";
 
 const NAV_LINKS = [
   { label: "Discover", href: "/categories" },
-  { label: "Journeys", href: "/#journey" },
+  { label: "Journeys", href: "/#discover" },
   { label: "What is Zero", href: "/what-is-zero" },
   { label: "Pricing", href: "/pricing" },
 ];
