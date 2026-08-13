@@ -9,6 +9,7 @@ type ProfileHeroProps = {
   avatarUrl: string | null;
   name: string;
   bio: string | null;
+  interests: string[];
   location: string | null;
   joinedAt: Date;
   trustScore: number;
@@ -28,6 +29,7 @@ export function ProfileHero({
   avatarUrl,
   name,
   bio,
+  interests,
   location,
   joinedAt,
   trustScore,
@@ -57,7 +59,7 @@ export function ProfileHero({
             app/profile/[username]/page.tsx). Dentro il riquadro della copertina (che taglia ciò che
             eccede): non deve mai scendere fino a sovrapporsi al pulsante Follow/Edit più in basso. */}
         <div className="absolute right-6 top-6 z-10 hidden w-full max-w-xs space-y-3 lg:block">
-          <AboutCard name={name} bio={bio} transparent />
+          <AboutCard name={name} bio={bio} interests={interests} transparent />
           <JourneyStatsCard {...stats} transparent />
         </div>
       </div>
@@ -99,40 +101,26 @@ export function ProfileHero({
           {actions && <div className="flex shrink-0 items-center gap-3 pb-1">{actions}</div>}
         </div>
 
-        <div className="flex flex-wrap items-center gap-8 border-t border-border pb-6 pt-5">
-          <Stat label="Trust Score" value={trustScore.toString()} emphasized ember />
-          <Stat label="Journeys" value={formatCompactNumber(journeysCount)} />
-          <Stat label="Followers" value={formatCompactNumber(followersCount)} />
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-6">
+          <ul className="grid shrink-0 grid-cols-3 gap-2 rounded-xl border border-border bg-surface px-3 py-2">
+            <Stat label="Trust Score" value={trustScore.toString()} ember />
+            <Stat label="Journeys" value={formatCompactNumber(journeysCount)} />
+            <Stat label="Followers" value={formatCompactNumber(followersCount)} />
+          </ul>
         </div>
       </div>
     </div>
   );
 }
 
-function Stat({
-  label,
-  value,
-  emphasized,
-  ember,
-}: {
-  label: string;
-  value: string;
-  emphasized?: boolean;
-  ember?: boolean;
-}) {
+function Stat({ label, value, ember }: { label: string; value: string; ember?: boolean }) {
   return (
-    <div>
-      <p
-        className={
-          emphasized
-            ? `text-2xl font-extrabold tracking-tight ${ember ? "text-ember" : "text-ink"}`
-            : "text-xl font-bold tracking-tight text-ink"
-        }
-      >
+    <li className="text-center">
+      <p className={`text-sm font-bold tracking-tight md:text-base ${ember ? "text-ember" : "text-ink"}`}>
         {value}
       </p>
-      <p className="mt-0.5 text-xs font-medium uppercase tracking-wider text-ink-faint">{label}</p>
-    </div>
+      <p className="text-[0.6rem] font-medium uppercase tracking-wider text-ink-faint">{label}</p>
+    </li>
   );
 }
 

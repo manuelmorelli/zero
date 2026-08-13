@@ -14,6 +14,7 @@ import { JourneyStatsCard } from "@/components/profile/JourneyStatsCard";
 import { FeedPhotoItem } from "@/components/profile/FeedPhotoItem";
 import { MessageButton } from "@/components/profile/MessageButton";
 import { EditProfileButton } from "@/components/profile/EditProfileButton";
+import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
 import { EpisodeReorderSection } from "@/components/profile/EpisodeReorderSection";
 import { getCreatorFeed } from "@/lib/profile/creatorFeed";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
@@ -137,6 +138,7 @@ export default async function PublicProfilePage({
         avatarUrl={avatarUrl}
         name={user.name}
         bio={user.bio}
+        interests={user.interests}
         location={user.location}
         joinedAt={user.createdAt}
         trustScore={trustScore}
@@ -164,10 +166,11 @@ export default async function PublicProfilePage({
               />
               <Link
                 href={creator ? "/dashboard" : "/dashboard/new"}
-                className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-ink-muted"
+                className="rounded-full border border-ember/50 bg-ember/15 px-5 py-2.5 text-sm font-semibold text-ember transition-colors hover:bg-ember/25"
               >
                 {creator ? "Dashboard" : "Become a creator"}
               </Link>
+              <ShareProfileButton />
             </>
           ) : (
             <>
@@ -210,7 +213,7 @@ export default async function PublicProfilePage({
                     )}
 
                     {feedItems && feedItems.length > 0 ? (
-                      <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                      <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
                         {feedItems.map((item, index) => (
                           <Reveal key={item.type === "episode" ? item.episodeId : item.updateId} delayMs={index * 60}>
                             <FeedPhotoItem item={item} isLoggedIn={isLoggedIn && !isDemoFeed} />
@@ -234,7 +237,7 @@ export default async function PublicProfilePage({
                     {`${user.name} hasn't published any Journey yet.`}
                   </p>
                 ) : (
-                  <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
                     {journeys.map((journey, index) => (
                       <Reveal key={journey.id} delayMs={index * 80}>
                         <JourneyCard
@@ -273,7 +276,7 @@ export default async function PublicProfilePage({
               qui restano solo come fallback per schermi stretti, dove sovrapporle alla foto
               sarebbe illeggibile. */}
           <aside className="space-y-6 lg:hidden">
-            <AboutCard name={user.name} bio={user.bio} />
+            <AboutCard name={user.name} bio={user.bio} interests={user.interests} />
             <JourneyStatsCard
               episodesPublished={stats.publishedEpisodesCount}
               totalViews={stats.totalViews}
