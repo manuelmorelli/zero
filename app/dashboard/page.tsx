@@ -107,6 +107,15 @@ export default async function CreatorDashboardPage() {
                     </span>
                   </div>
 
+                  <div className="mt-4 rounded-lg border border-dashed border-border px-4 py-3">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">
+                      Analytics
+                    </p>
+                    <p className="mt-1 text-xs text-ink-muted">
+                      Views, completion rate and interactions per Journey are coming soon.
+                    </p>
+                  </div>
+
                   <div className="mt-5 flex flex-wrap items-center gap-4">
                     <Link
                       href={`/dashboard/journeys/${journey.id}`}

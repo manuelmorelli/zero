@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
@@ -9,6 +8,8 @@ import { EpisodeList } from "@/components/creator/EpisodeList";
 import { JourneyForm } from "@/components/creator/JourneyForm";
 import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
 import { JourneyArchiveButton } from "@/components/creator/JourneyArchiveButton";
+import { Header } from "@/components/layout/Header";
+import Link from "next/link";
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: "Draft",
@@ -40,12 +41,11 @@ export default async function JourneyManagePage({
   });
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16">
-      <Link href="/dashboard" className="font-sans text-xl font-extrabold tracking-tight">
-        ZERO
-      </Link>
+    <main>
+      <Header />
 
-      <div className="mt-8 flex items-start justify-between gap-4">
+      <div className="mx-auto max-w-2xl px-6 pb-16 pt-24">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">{journey.title}</h1>
           {journey.description && (
@@ -151,6 +151,7 @@ export default async function JourneyManagePage({
             />
           </div>
         </div>
+      </div>
       </div>
     </main>
   );

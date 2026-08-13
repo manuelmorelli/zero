@@ -6,6 +6,7 @@ import { ChapterForm } from "@/components/creator/ChapterForm";
 import { EpisodeForm } from "@/components/creator/EpisodeForm";
 import { EpisodeList } from "@/components/creator/EpisodeList";
 import { deleteChapter } from "@/lib/actions/chapter";
+import { Header } from "@/components/layout/Header";
 
 export default async function ChapterManagePage({
   params,
@@ -31,7 +32,9 @@ export default async function ChapterManagePage({
   });
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16">
+    <main>
+      <Header />
+      <div className="mx-auto max-w-2xl px-6 pb-16 pt-24">
       <Link href={`/dashboard/journeys/${id}`} className="text-sm font-medium text-ink-muted hover:text-ink">
         ← {chapter.journey.title}
       </Link>
@@ -64,6 +67,7 @@ export default async function ChapterManagePage({
             <EpisodeForm journeyId={id} chapters={chapters} defaultChapterId={chapter.id} />
           </div>
         </div>
+      </div>
       </div>
     </main>
   );
