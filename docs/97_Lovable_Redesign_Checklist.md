@@ -27,6 +27,7 @@ Ogni volta che un punto viene completato: spuntarlo qui (`- [x]`), aggiungere un
 - [x] MomentJourneyCard e VideoCard: aggiunto avatar accanto al nome autore, VideoCard con icona Clock — 2026-08-13
 - [x] Pannello "vetro" (bordo sottile, sfondo quasi trasparente) sulla prima riga della Home ("Discovering Now") — 2026-08-13
 - [x] Home ristrutturata: "Journeys of the Moment" limitata a 4 card; rimosse "From creators you follow", "Continue Your Journey", "New Journeys" (logica conservata, non cancellata — vedi Note); ordine "Latest Videos"/"Journeys of the Moment" invertito; "Recommended for you" spostata al posto di "From creators you follow" — 2026-08-13
+- [x] Logo Hero rifinito: `logo.svg` ritagliato via script (solo lettere "ZERO", niente tagline/simbolo cerchio-onda) ed esportato come `public/images/zero-wordmark.png` con sfondo davvero trasparente; eyebrow "Every journey starts from" come testo separato sopra; dimensione aumentata, spaziatura lettere leggermente compressa; Hero più compatta (Discovering Now visibile senza scroll su desktop) — 2026-08-13
 
 ## Da fare
 

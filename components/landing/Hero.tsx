@@ -52,15 +52,18 @@ export function Hero({ stories }: HeroProps) {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
       </div>
 
-      <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-10 pb-3 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-8 md:pt-12 md:pb-3">
+      <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-3 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-8 md:pt-[70px] md:pb-3">
         <div className="max-w-lg md:col-start-1 md:row-start-1">
+          <p className="text-[0.7rem] uppercase tracking-[0.42em] text-ink-muted">
+            Every journey starts from
+          </p>
           <Image
-            src="/images/logo.svg"
-            alt="ZERO — Every journey starts from zero"
-            width={1254}
-            height={1254}
+            src="/images/zero-wordmark.png"
+            alt="ZERO"
+            width={3000}
+            height={795}
             unoptimized
-            className="mix-blend-screen w-48 sm:w-56 lg:w-64"
+            className="mt-1 w-72 origin-left scale-x-95 sm:w-80 lg:w-96"
           />
           <p className="mt-3 max-w-[19ch] text-2xl leading-tight font-semibold text-balance sm:text-[1.5rem]">
             For real people <span className="text-ink-muted">building real transformations.</span>
