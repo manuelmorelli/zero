@@ -36,7 +36,7 @@ export default async function DiscoveringNowPage() {
                     creator: { displayName: journey.creatorName },
                   }}
                   footer={
-                    <p className="px-4 pb-4 text-xs text-ink-muted">
+                    <p className="mt-2 text-xs text-ink-muted">
                       {journey.daysLeft} {journey.daysLeft === 1 ? "day" : "days"} left in Discovery
                     </p>
                   }

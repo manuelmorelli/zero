@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Clock } from "lucide-react";
 import { formatRelativeDate } from "@/lib/utils";
+import { Avatar } from "@/components/common/Avatar";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
 import type { LatestVideoItem } from "@/lib/discovery/latestVideos";
 
@@ -37,8 +39,14 @@ export function VideoCard({ video }: VideoCardProps) {
 
       <h3 className="mt-3 truncate text-sm font-semibold transition-colors group-hover:text-ember">{title}</h3>
       <div className="mt-2 flex items-center justify-between gap-2 text-xs text-ink-muted">
-        <span className="truncate">{creatorName}</span>
-        <span className="shrink-0">{formatRelativeDate(createdAt)}</span>
+        <span className="flex min-w-0 items-center gap-2">
+          <Avatar name={creatorName} />
+          <span className="truncate">{creatorName}</span>
+        </span>
+        <span className="flex shrink-0 items-center gap-1">
+          <Clock className="h-3 w-3" aria-hidden="true" />
+          {formatRelativeDate(createdAt)}
+        </span>
       </div>
     </Link>
   );

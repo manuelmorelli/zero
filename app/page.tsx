@@ -17,7 +17,6 @@ import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 import {
-  DEMO_UPDATES,
   DEMO_STORIES,
   DEMO_FEED,
   DEMO_CREATORS,
@@ -28,7 +27,6 @@ import {
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
 import { getFollowedCreatorsFeed, type FeedItem as FeedItemData } from "@/lib/discovery/feed";
-import { getFollowedCreatorsUpdates } from "@/lib/discovery/updates";
 import { getFollowedCreatorsStories } from "@/lib/discovery/stories";
 import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
@@ -64,7 +62,6 @@ export default async function Home() {
 
   const [
     followedFeed,
-    followedUpdates,
     creatorStories,
     recommendedJourneys,
     recommendedCreators,
@@ -75,7 +72,6 @@ export default async function Home() {
     discoveringNow,
   ] = await Promise.all([
     getFollowedCreatorsFeed({ userId, excludeJourneyIds: excludeFromDiscovery }),
-    getFollowedCreatorsUpdates({ userId, interests: userInterests }),
     getFollowedCreatorsStories({ userId }),
     getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, interests: userInterests }),
     getRecommendedCreators({ userId, interests: userInterests }),
@@ -101,7 +97,6 @@ export default async function Home() {
   const displayedTopJourneys = topJourneys.length > 0 ? topJourneys : DEMO_TOP_JOURNEYS;
   const displayedDiscoveringNow = discoveringNow.length > 0 ? discoveringNow : DEMO_DISCOVERING_NOW;
   const displayedFeed = followedFeed.length > 0 ? followedFeed : DEMO_FEED;
-  const displayedUpdates = followedUpdates.length > 0 ? followedUpdates : DEMO_UPDATES;
   const displayedStories = creatorStories.length > 0 ? creatorStories : DEMO_STORIES;
   const displayedRecommendedJourneys = recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS.slice(0, 5);
   const displayedRecommendedCreators = recommendedCreators.length > 0 ? recommendedCreators : DEMO_CREATORS;
@@ -110,7 +105,7 @@ export default async function Home() {
     <main>
       <Header />
       {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
-      <Hero updates={displayedUpdates} />
+      <Hero />
 
       <div id="discover">
         <DiscoveringNow journeys={displayedDiscoveringNow} />
@@ -141,35 +136,37 @@ export default async function Home() {
 function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
   return (
     <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
-      <Reveal>
-        <SectionHeading
-          icon={<Compass className="h-6 w-6" aria-hidden="true" />}
-          title="Discovering Now"
-          subtitle="Brand new Journeys, shown to everyone — not just people who already follow this topic."
-          viewAllHref="/discover/now"
-        />
-      </Reveal>
+      <div className="rounded-2xl border border-border bg-ink/[0.02] p-4 md:p-5">
+        <Reveal>
+          <SectionHeading
+            icon={<Compass className="h-6 w-6" aria-hidden="true" />}
+            title="Discovering Now"
+            subtitle="Brand new Journeys, shown to everyone — not just people who already follow this topic."
+            viewAllHref="/discover/now"
+          />
+        </Reveal>
 
-      <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        {journeys.map((journey, index) => (
-          <Reveal key={journey.id} as="li" delayMs={index * 70}>
-            <JourneyCard
-              journey={{
-                id: journey.id,
-                title: journey.title,
-                coverUrl: journey.coverUrl,
-                category: journey.category,
-                creator: { displayName: journey.creatorName },
-              }}
-              footer={
-                <p className="px-4 pb-4 text-xs text-ink-muted">
-                  {journey.daysLeft} {journey.daysLeft === 1 ? "day" : "days"} left in Discovery
-                </p>
-              }
-            />
-          </Reveal>
-        ))}
-      </ul>
+        <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          {journeys.map((journey, index) => (
+            <Reveal key={journey.id} as="li" delayMs={index * 70}>
+              <JourneyCard
+                journey={{
+                  id: journey.id,
+                  title: journey.title,
+                  coverUrl: journey.coverUrl,
+                  category: journey.category,
+                  creator: { displayName: journey.creatorName },
+                }}
+                footer={
+                  <p className="mt-2 text-xs text-ink-muted">
+                    {journey.daysLeft} {journey.daysLeft === 1 ? "day" : "days"} left in Discovery
+                  </p>
+                }
+              />
+            </Reveal>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
@@ -256,7 +253,7 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
                 creator: { displayName: journey.creatorName },
               }}
               footer={
-                <p className="px-4 pb-4 text-xs text-ink-muted">
+                <p className="mt-2 text-xs text-ink-muted">
                   {journey.episodesCount} {journey.episodesCount === 1 ? "episode" : "episodes"}
                 </p>
               }

@@ -33,30 +33,6 @@ body {
   display: none;
 }
 
-/* Ingresso staggered degli elementi della hero al caricamento pagina */
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Comparsa a dissolvenza/leggero ingrandimento del logo ufficiale in Hero */
-@keyframes logo-in {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 /* Texture grain/noise leggerissima e statica su tutto il sito (CSS puro, nessuna immagine esterna) */
 body::before {
   content: "";

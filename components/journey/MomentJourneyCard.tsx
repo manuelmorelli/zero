@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Avatar } from "@/components/common/Avatar";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 
@@ -44,7 +45,10 @@ export function MomentJourneyCard({ journey, rank }: MomentJourneyCardProps) {
           )}
           <h3 className="mt-2.5 text-lg font-bold leading-tight">{title}</h3>
           {description && <p className="mt-1 line-clamp-1 text-xs text-ink-muted">{description}</p>}
-          <p className="mt-3 truncate text-xs text-ink-muted">by {creator.displayName}</p>
+          <div className="mt-3 flex min-w-0 items-center gap-2 text-xs text-ink-muted">
+            <Avatar name={creator.displayName} />
+            <span className="truncate">by {creator.displayName}</span>
+          </div>
         </div>
       </div>
     </Link>

@@ -35,8 +35,8 @@ export function Header() {
         scrolled ? "border-b border-border bg-bg/40 backdrop-blur-md" : "bg-transparent"
       }`}
     >
-      <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-2 md:grid-cols-[1fr_auto_1fr] md:px-8">
-        <Link href="/" className="flex min-w-0 items-center" aria-label="Zero home">
+      <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-1.5 md:grid-cols-[1fr_auto_1fr] md:px-8">
+        <Link href="/" className="-ml-5 flex min-w-0 items-center md:-ml-8" aria-label="Zero home">
           <Logo className="h-7" />
         </Link>
 

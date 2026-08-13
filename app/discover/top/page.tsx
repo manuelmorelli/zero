@@ -41,7 +41,7 @@ export default async function TopJourneysPage() {
                   creator: { displayName: journey.creatorName },
                 }}
                 footer={
-                  <p className="px-4 pb-4 text-xs text-ink-muted">
+                  <p className="mt-2 text-xs text-ink-muted">
                     {journey.episodesCount} {journey.episodesCount === 1 ? "episode" : "episodes"}
                   </p>
                 }

@@ -1,82 +1,119 @@
-import Link from "next/link";
-import { HeroBackgroundSlideshow } from "@/components/landing/HeroBackgroundSlideshow";
-import { HeroUpdatesPanel } from "@/components/landing/HeroUpdatesPanel";
-import { Logo } from "@/components/layout/Logo";
-import { SplitReveal } from "@/components/common/SplitReveal";
-import type { FollowedUpdate } from "@/lib/discovery/updates";
+"use client";
 
-type HeroProps = {
-  updates: FollowedUpdate[];
-};
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Play, Quote } from "lucide-react";
+import { Avatar } from "@/components/common/Avatar";
+import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
+import { heroSlides } from "@/lib/demo/heroSlides";
 
-export function Hero({ updates }: HeroProps) {
+const creators = ["Alex R.", "Sarah J.", "David L.", "Emma W.", "James T."];
+
+export function Hero() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setActive((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const slide = heroSlides[active] ?? heroSlides[0]!;
+
   return (
-    <section className="relative isolate overflow-hidden border-b border-border">
-      <HeroBackgroundSlideshow />
-      <HeroUpdatesPanel updates={updates} />
+    <section className="relative overflow-hidden">
+      {/* Foto cinematografica: a schermo intero su mobile, colonna destra su desktop */}
+      <div className="absolute inset-0 md:left-[26%]">
+        {heroSlides.map((item, index) => (
+          <Image
+            key={item.alt}
+            src={item.image}
+            alt={item.alt}
+            fill
+            sizes="100vw"
+            preload={index === 0}
+            className={`object-cover transition-opacity duration-1000 ${
+              index === active ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
+        <div className="absolute inset-0 bg-bg/65 md:bg-bg/25" />
+        <div className="absolute inset-0 bg-gradient-to-r from-bg from-5% via-bg/70 to-transparent md:from-bg md:from-20% md:via-bg/45 md:via-55%" />
+        <div className="absolute inset-y-0 left-0 hidden w-32 bg-gradient-to-r from-bg to-transparent md:block" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
+      </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[62vh] max-w-7xl flex-col justify-center px-6 py-16 lg:min-h-[70vh] lg:py-20">
-        <div className="max-w-xl">
-          <p className="animate-[fade-up_0.8s_ease-out_both] text-xs font-semibold uppercase tracking-[0.3em] text-ink-muted">
+      <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-10 pb-3 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-8 md:pt-12 md:pb-3">
+        <div className="max-w-lg md:col-start-1 md:row-start-1">
+          <p className="text-[0.7rem] uppercase tracking-[0.42em] text-ink-muted">
             Every journey starts from
           </p>
-
-          <div className="mt-4 animate-[logo-in_1.1s_ease-out_both] [animation-delay:100ms]">
-            <Logo className="h-16 sm:h-20 lg:h-24" />
-          </div>
-
-          <p className="mt-6 max-w-md animate-[fade-up_0.8s_ease-out_both] text-lg font-semibold text-ink [animation-delay:520ms]">
-            The platform for real people building real transformations.
+          <h1 className="mt-2 bg-gradient-to-b from-white via-white to-white/45 bg-clip-text text-[18vw] leading-[0.82] font-black tracking-tight text-transparent sm:text-[6.5rem] lg:text-[8rem]">
+            ZERO
+          </h1>
+          <p className="mt-3 max-w-[19ch] text-2xl leading-tight font-semibold text-balance sm:text-[1.5rem]">
+            For real people <span className="text-ink-muted">building real transformations.</span>
           </p>
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-muted">
+            Share your journey. Inspire others. Grow together.
+            <br />
+            This is not content. This is change.
+          </p>
+        </div>
 
-          <SplitReveal
-            lines={[
-              "Share your journey. Inspire others. Grow together.",
-              "This isn't content: it's change.",
-            ]}
-            className="mt-3 max-w-md text-ink-muted"
-            delay={0.7}
-          />
-
-          <div className="mt-8 flex flex-wrap gap-4 animate-[fade-up_0.8s_ease-out_both] [animation-delay:620ms]">
-            <a
-              href="#discover"
-              className="relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-transform duration-150 after:absolute after:inset-0 after:scale-50 after:rounded-full after:bg-white/40 after:opacity-0 after:transition-all after:duration-500 hover:bg-ink-muted active:scale-95 active:after:scale-150 active:after:opacity-100"
-            >
-              <PlayIcon className="h-3 w-3" />
+        {/* Bottoni + avatar — la citazione a destra si allinea a questa riga */}
+        <div className="max-w-lg md:col-start-1 md:row-start-2">
+          <div className="flex flex-wrap gap-3">
+            <ButtonPrimary href="#discover">
+              <Play className="h-4 w-4 fill-current" aria-hidden="true" />
               Explore Journeys
-            </a>
-            <Link
-              href="/register"
-              className="relative overflow-hidden rounded-full border border-white/25 bg-black/20 px-6 py-3 text-sm font-semibold text-ink backdrop-blur-sm transition-transform duration-150 after:absolute after:inset-0 after:scale-50 after:rounded-full after:bg-white/30 after:opacity-0 after:transition-all after:duration-500 hover:border-white/50 active:scale-95 active:after:scale-150 active:after:opacity-100"
-            >
-              Create Your Journey
-            </Link>
+            </ButtonPrimary>
+            <ButtonSecondary href="/register">Create Your Journey</ButtonSecondary>
           </div>
 
-          <div className="mt-8 flex items-center gap-3 animate-[fade-up_0.8s_ease-out_both] [animation-delay:720ms]">
-            <div className="flex -space-x-3">
-              {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-9 w-9 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-sm"
+          <div className="mt-4 flex items-center gap-4">
+            <div className="flex -space-x-2.5">
+              {creators.map((name) => (
+                <Avatar
+                  key={name}
+                  name={name}
+                  className="h-9 w-9 border-2 border-bg bg-surface-2 text-[0.65rem]"
                 />
               ))}
             </div>
-            <p className="text-sm text-ink-muted">
-              Join thousands of creators and millions of followers
+            <p className="text-xs leading-relaxed text-ink-muted">
+              Join thousands of creators
+              <br />
+              and millions of followers
             </p>
+          </div>
+        </div>
+
+        {/* Citazione sopra la foto, allineata alla riga dei bottoni */}
+        <div className="relative flex md:col-start-2 md:row-start-2 md:justify-end md:self-start">
+          <div className="w-full md:max-w-[22rem]">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-md">
+              <Quote className="h-3.5 w-3.5 text-ember" aria-hidden="true" />
+              <p className="mt-2 text-xs leading-relaxed text-ink/90">{slide.quote}</p>
+              <p className="mt-2 text-[0.65rem] text-ink-muted">&mdash; {slide.author}</p>
+            </div>
+            <div className="mt-2.5 flex items-center gap-2 md:justify-end">
+              {heroSlides.map((item, index) => (
+                <button
+                  key={item.alt}
+                  type="button"
+                  aria-label={`Show journey ${index + 1}`}
+                  onClick={() => setActive(index)}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                    index === active ? "w-7 bg-ember" : "w-1.5 bg-white/30 hover:bg-white/60"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function PlayIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 12 12" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M2 1.5v9l8-4.5-8-4.5z" />
-    </svg>
   );
 }
