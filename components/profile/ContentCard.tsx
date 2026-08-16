@@ -37,10 +37,10 @@ export function ContentCard({
   menu,
 }: ContentCardProps) {
   return (
-    <div className="group relative block">
+    <div className="group relative block transition-transform duration-300 hover:-translate-y-1">
       <Link
         href={href}
-        className="relative block aspect-4/5 overflow-hidden rounded-xl border border-border"
+        className="relative block aspect-4/5 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
       >
         {imageUrl ? (
           <Image

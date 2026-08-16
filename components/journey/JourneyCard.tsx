@@ -36,7 +36,7 @@ export function JourneyCard({ journey, className, style, badge, footer }: Journe
     <div className={className} style={style}>
       <Link
         href={`/journeys/${id}`}
-        className="group relative block aspect-4/5 overflow-hidden rounded-xl border border-border"
+        className="group relative block aspect-4/5 overflow-hidden rounded-xl border border-border transition-all duration-300 hover:-translate-y-1 hover:border-ember/40 hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
       >
         {badge && <div className="absolute right-3 top-3 z-10">{badge}</div>}
 

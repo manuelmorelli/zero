@@ -57,11 +57,11 @@ Ogni volta che un punto viene completato: spuntarlo qui (`- [x]`), aggiungere un
   - Voci collegate in `JourneyCardMenu.tsx`, disattivate quando il Journey è già il primo/ultimo; posizione calcolata sull'elenco completo (non sulla sola anteprima "Published Journeys" dell'Overview), così il riordino è coerente ovunque
   - Verificato end-to-end con un utente di test reale via Playwright (registrazione, verifica email dal link di sviluppo, creator, 3 Journey pubblicati, riordino dal Profilo) — dati di test poi rimossi dal database
 
-## Da fare
-
-### Fase 4 — Righe extra della Home (non presenti nel mockup Lovable)
-- [ ] "Recommended for you" e "Creators to follow": rivedere lo stile puntualmente (oggi solo riposizionate, non ristilizzate)
-- [ ] Categories, How it works, FAQ: valutare se serve lo stesso linguaggio visivo (pannello vetro) o restano come sono
+- [x] Fase 4 — Righe extra della Home (non presenti nel mockup Lovable) — 2026-08-16:
+  - Verificato puntualmente: "Recommended for you" usa già `JourneyCard`, identica allo stile "Explore Journeys" del sorgente Lovable — nessuna modifica necessaria
+  - `CreatorResultCard` ("Creators to follow") era rimasta allo stile pre-redesign (sfondo pieno, sollevamento + bagliore arancione) mentre il resto del sito era passato al linguaggio "vetro" — su richiesta di Manuel non è stata portata al vetro, ma l'effetto arancione (sollevamento + bagliore) è stato esteso a **tutte** le card fotografiche del sito, in aggiunta allo zoom della foto già presente: `JourneyCard`, `VideoCard`, `MomentJourneyCard`, `ContentCard` (Profilo), `FeaturedJourneySection` (Profilo). Scelta di stile voluta da Manuel, non presente nel sorgente Lovable originale (che usa solo lo zoom) — divergenza consapevole, non un errore di allineamento
+  - Categories: confermato da Manuel che va bene così com'è, nessuna modifica
+  - How it works + FAQ: tolte dalla Home come sezioni intere, sostituite da una card compatta e rettangolare ("How Zero works") che apre la nuova pagina statica dedicata `/how-it-works` (stesso pattern di `/what-is-zero`), dove vive tutto il contenuto spostato
 
 ### Fase 5 — Dashboard
 - [ ] Selettore Journey a griglia (con badge stato, menu a tre puntini)

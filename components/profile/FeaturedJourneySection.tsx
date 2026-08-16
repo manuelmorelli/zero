@@ -18,7 +18,7 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
   return (
     <Link
       href={`/journeys/${journey.id}`}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white/[0.02] transition-colors hover:border-ink-muted"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white/[0.02] transition-all duration-300 hover:-translate-y-1 hover:border-ember/40 hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
     >
       <div className="relative h-44 shrink-0 overflow-hidden md:h-52">
         {journey.coverUrl ? (

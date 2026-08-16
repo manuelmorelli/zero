@@ -15,8 +15,11 @@ export function VideoCard({ video }: VideoCardProps) {
   const { journeyId, episodeId, title, coverUrl, category, creatorName, createdAt } = video;
 
   return (
-    <Link href={`/journeys/${journeyId}/episodes/${episodeId}`} className="group block">
-      <div className="relative aspect-video overflow-hidden rounded-xl border border-border">
+    <Link
+      href={`/journeys/${journeyId}/episodes/${episodeId}`}
+      className="group block transition-transform duration-300 hover:-translate-y-1"
+    >
+      <div className="relative aspect-video overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]">
         {coverUrl ? (
           <Image
             src={coverUrl}

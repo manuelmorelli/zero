@@ -16,7 +16,7 @@ export function MomentJourneyCard({ journey, rank }: MomentJourneyCardProps) {
   return (
     <Link
       href={`/journeys/${journey.id}`}
-      className="group relative block aspect-4/3 overflow-hidden rounded-xl border border-border"
+      className="group relative block aspect-4/3 overflow-hidden rounded-xl border border-border transition-all duration-300 hover:-translate-y-1 hover:border-ember/40 hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
     >
       {coverUrl ? (
         <Image

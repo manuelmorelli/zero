@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Compass, Flame, Video as VideoIcon, Star, ArrowRight, Sparkles, UserPlus } from "lucide-react";
+import { Compass, Flame, Video as VideoIcon, Star, ArrowRight, Sparkles, UserPlus, HelpCircle } from "lucide-react";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { MomentJourneyCard } from "@/components/journey/MomentJourneyCard";
 import { VideoCard } from "@/components/journey/VideoCard";
@@ -109,8 +109,7 @@ export default async function Home() {
       <RecommendedJourneys journeys={displayedRecommendedJourneys} />
       <RecommendedCreators creators={displayedRecommendedCreators} />
       <Categories countByCategory={categoryCounts} />
-      <HowItWorks />
-      <Faq />
+      <HowItWorksCta />
       <FinalCta />
       <SiteFooter />
     </main>
@@ -343,99 +342,34 @@ function Categories({ countByCategory }: { countByCategory: Map<string, number> 
 }
 
 /* ------------------------------------------------------------------ */
-/* HOW IT WORKS                                                        */
+/* HOW IT WORKS — card compatta, contenuto completo su /how-it-works   */
 /* ------------------------------------------------------------------ */
 
-function HowItWorks() {
-  const steps = [
-    {
-      number: "01",
-      title: "Choose a Journey",
-      text:
-        "Browse real transformations from other people and choose the one that inspires you most.",
-    },
-    {
-      number: "02",
-      title: "Follow it chapter by chapter",
-      text:
-        "Pick up exactly where you left off, just like a streaming platform.",
-    },
-    {
-      number: "03",
-      title: "Build your own",
-      text:
-        "Become a creator and document your transformation, mistakes included.",
-    },
-  ];
-
+function HowItWorksCta() {
   return (
-    <section id="how-it-works" className="mx-auto max-w-[1400px] px-5 py-10 md:px-8">
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
       <Reveal>
-        <h2 className="mb-14 text-2xl font-bold tracking-tight sm:text-3xl">
-          How it works
-        </h2>
-      </Reveal>
-      <div className="grid gap-10 md:grid-cols-3">
-        {steps.map((step, index) => (
-          <Reveal key={step.number} delayMs={index * 120}>
-            <span className="text-sm font-bold text-ink-faint">
-              {step.number}
+        <Link
+          href="/how-it-works"
+          className="group flex items-center justify-between gap-4 rounded-xl border border-border bg-white/[0.02] px-5 py-4 transition-colors hover:border-ink-muted"
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-surface-2">
+              <HelpCircle className="h-5 w-5" aria-hidden="true" />
             </span>
-            <h3 className="mt-3 text-lg font-bold">{step.title}</h3>
-            <p className="mt-2 text-ink-muted">{step.text}</p>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* FAQ                                                                  */
-/* ------------------------------------------------------------------ */
-
-function Faq() {
-  const questions = [
-    {
-      q: "What is a Journey?",
-      a: "It's the complete path of a real transformation, told in chapters and episodes: not just the final outcome, but the whole process.",
-    },
-    {
-      q: "Is Zero free?",
-      a: "Yes, following Journeys and using Zero as a viewer is free. Some creators offer paid communities, workshops, or services.",
-    },
-    {
-      q: "Can I become a creator?",
-      a: "Yes. Create a creator profile and publish your first Journey — in the first version you can have one active Journey at a time.",
-    },
-    {
-      q: "Is my data safe?",
-      a: "Yes, payments go through Stripe only and your data is never shared with third parties without your consent.",
-    },
-  ];
-
-  return (
-    <section id="faq" className="mx-auto max-w-3xl px-5 py-10 md:px-8">
-      <Reveal>
-        <h2 className="mb-10 text-2xl font-bold tracking-tight sm:text-3xl">
-          Frequently asked questions
-        </h2>
+            <div className="min-w-0">
+              <h2 className="text-sm font-bold text-ink">How Zero works</h2>
+              <p className="truncate text-xs text-ink-muted">
+                Three steps to get started, plus answers to common questions.
+              </p>
+            </div>
+          </div>
+          <ArrowRight
+            className="h-4 w-4 shrink-0 text-ink-muted transition-transform group-hover:translate-x-1"
+            aria-hidden="true"
+          />
+        </Link>
       </Reveal>
-      <div className="divide-y divide-border">
-        {questions.map((item, index) => (
-          <Reveal key={item.q} delayMs={index * 60}>
-            <details className="group py-5">
-              <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-ink">
-                {item.q}
-                <span className="ml-4 text-ink-muted transition-transform group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <p className="mt-3 text-ink-muted">{item.a}</p>
-            </details>
-          </Reveal>
-        ))}
-      </div>
     </section>
   );
 }
