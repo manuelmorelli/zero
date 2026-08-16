@@ -3,12 +3,14 @@
 import Image from "next/image";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { updateAccount } from "@/lib/actions/account";
 import { createProfileImageUploadUrl } from "@/lib/actions/profileMedia";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { JOURNEY_CATEGORIES, type JourneyCategory } from "@/lib/constants/categories";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const BIO_MAX_LENGTH = 250;
 
@@ -29,7 +31,7 @@ export function EditProfileButton({ user, avatarUrl, coverUrl }: EditProfileButt
   const [open, setOpen] = useState(false);
 
   return (
-    <>
+    <Dialog open={open} onOpenChange={setOpen}>
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -46,7 +48,7 @@ export function EditProfileButton({ user, avatarUrl, coverUrl }: EditProfileButt
           onClose={() => setOpen(false)}
         />
       )}
-    </>
+    </Dialog>
   );
 }
 
@@ -150,32 +152,19 @@ function EditProfileModal({
   useEffect(() => {
     if (submitted && !pending && !state.error && !closedOnSuccess.current) {
       closedOnSuccess.current = true;
+      toast.success("Profile updated");
       router.refresh();
       onClose();
     }
   }, [submitted, pending, state.error, router, onClose]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-8"
-      onClick={onClose}
-    >
-      <div
-        className="flex max-h-full w-full max-w-lg flex-col overflow-hidden rounded-xl border border-border bg-surface"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <h2 className="text-sm font-bold text-ink">Edit profile</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="text-ink-muted transition-colors hover:text-ink"
-          >
-            <CloseIcon className="h-4 w-4" />
-          </button>
-        </div>
+    <DialogContent className="max-w-lg p-0">
+      <DialogHeader className="sr-only">
+        <DialogTitle>Edit profile</DialogTitle>
+      </DialogHeader>
 
+      <div className="flex max-h-[85vh] flex-col overflow-hidden">
         <form
           action={(formData) => {
             formData.set("avatarKey", avatarKey);
@@ -366,15 +355,7 @@ function EditProfileModal({
           onConfirm={handleCropConfirm}
         />
       )}
-    </div>
-  );
-}
-
-function CloseIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.8} className={className} aria-hidden="true">
-      <path d="M5 5l10 10M15 5 5 15" strokeLinecap="round" />
-    </svg>
+    </DialogContent>
   );
 }
 

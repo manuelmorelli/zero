@@ -124,37 +124,35 @@ export default async function Home() {
 function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
   return (
     <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
-      <div className="rounded-2xl border border-border bg-ink/[0.02] p-4 md:p-5">
-        <Reveal>
-          <SectionHeading
-            icon={<Compass className="h-6 w-6" aria-hidden="true" />}
-            title="Discovering Now"
-            subtitle="Brand new Journeys, shown to everyone — not just people who already follow this topic."
-            viewAllHref="/discover/now"
-          />
-        </Reveal>
+      <Reveal>
+        <SectionHeading
+          icon={<Compass className="h-6 w-6" aria-hidden="true" />}
+          title="Discovering Now"
+          subtitle="Brand new Journeys, shown to everyone — not just people who already follow this topic."
+          viewAllHref="/discover/now"
+        />
+      </Reveal>
 
-        <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          {journeys.map((journey, index) => (
-            <Reveal key={journey.id} as="li" delayMs={index * 70}>
-              <JourneyCard
-                journey={{
-                  id: journey.id,
-                  title: journey.title,
-                  coverUrl: journey.coverUrl,
-                  category: journey.category,
-                  creator: { displayName: journey.creatorName },
-                }}
-                footer={
-                  <p className="mt-2 text-xs text-ink-muted">
-                    {journey.daysLeft} {journey.daysLeft === 1 ? "day" : "days"} left in Discovery
-                  </p>
-                }
-              />
-            </Reveal>
-          ))}
-        </ul>
-      </div>
+      <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {journeys.map((journey, index) => (
+          <Reveal key={journey.id} as="li" delayMs={index * 70}>
+            <JourneyCard
+              journey={{
+                id: journey.id,
+                title: journey.title,
+                coverUrl: journey.coverUrl,
+                category: journey.category,
+                creator: { displayName: journey.creatorName },
+              }}
+              footer={
+                <p className="mt-2 text-xs text-ink-muted">
+                  {journey.daysLeft} {journey.daysLeft === 1 ? "day" : "days"} left in Discovery
+                </p>
+              }
+            />
+          </Reveal>
+        ))}
+      </ul>
     </section>
   );
 }

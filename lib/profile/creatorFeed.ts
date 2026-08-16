@@ -8,7 +8,14 @@ export type CreatorFeedItem = {
   likeCount: number;
   isLiked: boolean;
 } & (
-  | { type: "episode"; episodeId: string; title: string; caption: string | null }
+  | {
+      type: "episode";
+      episodeId: string;
+      journeyId: string;
+      title: string;
+      caption: string | null;
+      category: string | null;
+    }
   | { type: "update"; updateId: string; content: string }
 );
 
@@ -69,8 +76,10 @@ export async function getCreatorFeed({
       type: "episode",
       date: episode.occurredAt,
       episodeId: episode.id,
+      journeyId: episode.journeyId,
       title: episode.title,
       caption: episode.caption,
+      category: episode.journey.category,
       coverUrl: episode.journey.coverUrl,
       likeCount: countByTarget.get(`EPISODE:${episode.id}`) ?? 0,
       isLiked: likedByViewer.has(`EPISODE:${episode.id}`),

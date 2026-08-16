@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import { QuickUpload } from "@/components/creator/QuickUpload";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { MessagesWidget } from "@/components/messages/MessagesWidget";
@@ -31,6 +32,18 @@ export default function RootLayout({
         <NotificationBell />
         <MessagesWidget />
         <QuickUpload />
+        <Toaster
+          theme="dark"
+          position="bottom-right"
+          toastOptions={{
+            classNames: {
+              toast: "!rounded-xl !border !border-border !bg-surface !text-ink !shadow-2xl !shadow-black/50",
+              description: "!text-ink-muted",
+              actionButton: "!bg-ink !text-bg",
+              cancelButton: "!bg-surface-2 !text-ink-muted",
+            },
+          }}
+        />
       </body>
     </html>
   );

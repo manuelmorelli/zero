@@ -16,42 +16,40 @@ type FeaturedJourneySectionProps = {
 // coincide semplicemente con quello.
 export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps) {
   return (
-    <section>
-      <h2 className="text-lg font-bold tracking-tight text-ink">Featured Journey</h2>
+    <Link
+      href={`/journeys/${journey.id}`}
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white/[0.02] transition-colors hover:border-ink-muted"
+    >
+      <div className="relative h-44 shrink-0 overflow-hidden md:h-52">
+        {journey.coverUrl ? (
+          <Image
+            src={journey.coverUrl}
+            alt={journey.title}
+            fill
+            sizes="(min-width: 1024px) 34vw, 100vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/40 to-transparent" />
+        <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wider backdrop-blur-md">
+          In Progress
+        </span>
+      </div>
 
-      <Link
-        href={`/journeys/${journey.id}`}
-        className="group mt-4 flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-ink-muted sm:flex-row"
-      >
-        <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-surface-2 sm:aspect-square sm:w-56">
-          {journey.coverUrl ? (
-            <Image
-              src={journey.coverUrl}
-              alt={journey.title}
-              fill
-              sizes="(min-width: 640px) 224px, 100vw"
-              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
-          )}
-        </div>
-
-        <div className="flex flex-1 flex-col justify-center p-5">
-          {journey.category && (
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
-              {journey.category}
-            </p>
-          )}
-          <h3 className="mt-1.5 text-lg font-bold text-ink">{journey.title}</h3>
-          {journey.description && (
-            <p className="mt-2 line-clamp-2 text-sm text-ink-muted">{journey.description}</p>
-          )}
-          <span className="mt-3 text-sm font-semibold text-ink-muted transition-colors group-hover:text-ink">
-            View Journey →
-          </span>
-        </div>
-      </Link>
-    </section>
+      <div className="flex flex-1 flex-col justify-center p-4">
+        {journey.category && (
+          <p className="text-[0.7rem] uppercase tracking-wider text-ink-faint">{journey.category}</p>
+        )}
+        <h3 className="mt-1 text-xl font-bold tracking-tight text-ink">{journey.title}</h3>
+        {journey.description && (
+          <p className="mt-2 line-clamp-2 text-sm text-ink-muted">{journey.description}</p>
+        )}
+        <span className="mt-4 inline-flex w-fit items-center justify-center rounded-full bg-ink px-4 py-2.5 text-[0.8rem] font-semibold text-bg transition-colors group-hover:bg-ink-muted">
+          View Journey
+        </span>
+      </div>
+    </Link>
   );
 }

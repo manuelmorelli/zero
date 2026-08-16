@@ -32,7 +32,7 @@ export function Hero({ stories }: HeroProps) {
   return (
     <section className="relative overflow-hidden">
       {/* Foto cinematografica: a schermo intero su mobile, colonna destra su desktop */}
-      <div className="absolute inset-0 md:left-[26%]">
+      <div className="absolute inset-0">
         {heroSlides.map((item, index) => (
           <Image
             key={item.alt}
@@ -46,13 +46,13 @@ export function Hero({ stories }: HeroProps) {
             }`}
           />
         ))}
-        <div className="absolute inset-0 bg-bg/65 md:bg-bg/25" />
-        <div className="absolute inset-0 bg-gradient-to-r from-bg from-5% via-bg/70 to-transparent md:from-bg md:from-20% md:via-bg/45 md:via-55%" />
-        <div className="absolute inset-y-0 left-0 hidden w-32 bg-gradient-to-r from-bg to-transparent md:block" />
+        <div className="absolute inset-0 bg-bg/65 md:bg-bg/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-bg from-5% via-bg/70 to-transparent md:from-bg/55 md:from-10% md:via-bg/20 md:via-45%" />
+        <div className="absolute inset-y-0 left-0 hidden w-32 bg-gradient-to-r from-bg/40 to-transparent md:block" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
       </div>
 
-      <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-3 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-8 md:pt-[70px] md:pb-3">
+      <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-8 md:pt-[70px] md:pb-12">
         <div className="max-w-lg md:col-start-1 md:row-start-1">
           <p className="text-[0.7rem] uppercase tracking-[0.42em] text-ink-muted">
             Every journey starts from

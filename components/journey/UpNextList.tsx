@@ -26,7 +26,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                 className={`group flex items-center gap-3 rounded-xl border p-2 transition-colors ${
                   active
                     ? "border-ember/40 bg-ember/10"
-                    : "border-border bg-surface hover:border-ink-muted"
+                    : "border-border bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.05]"
                 }`}
               >
                 <span className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">

@@ -13,6 +13,8 @@ export const DEMO_FEED_ITEMS: CreatorFeedItem[] = [
     episodeId: "demo-feed-ep-1",
     title: "Week one, day one",
     caption: "First real step. Slower than I'd like, but it's a start.",
+    category: null,
+    journeyId: "demo-journey",
     coverUrl:
       "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80",
     likeCount: 24,
@@ -34,6 +36,8 @@ export const DEMO_FEED_ITEMS: CreatorFeedItem[] = [
     episodeId: "demo-feed-ep-2",
     title: "The setback",
     caption: "Missed two days in a row. Documenting it anyway — that's the point.",
+    category: null,
+    journeyId: "demo-journey",
     coverUrl:
       "https://images.unsplash.com/photo-1517960413843-0aee8e2b3285?auto=format&fit=crop&w=1200&q=80",
     likeCount: 41,
@@ -45,6 +49,8 @@ export const DEMO_FEED_ITEMS: CreatorFeedItem[] = [
     episodeId: "demo-feed-ep-3",
     title: "Back on track",
     caption: "Reset, restarted, still here.",
+    category: null,
+    journeyId: "demo-journey",
     coverUrl:
       "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1200&q=80",
     likeCount: 17,

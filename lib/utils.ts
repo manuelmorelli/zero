@@ -1,3 +1,11 @@
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+/** Unisce classi Tailwind condizionali risolvendo i conflitti (usato dai componenti shadcn/ui in components/ui/). */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 /** Formats large counts compactly, e.g. 24000 -> "24K". */
 export function formatCompactNumber(value: number): string {
   return new Intl.NumberFormat("en-US", { notation: "compact" }).format(
