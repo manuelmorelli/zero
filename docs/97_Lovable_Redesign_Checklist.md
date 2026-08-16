@@ -1,7 +1,7 @@
 ---
 title: Lovable Redesign Checklist
 doc_id: 97-lovable-redesign-checklist
-version: "1.1"
+version: "1.2"
 status: in-progress
 related_docs:
   - 14_UI_Pages
