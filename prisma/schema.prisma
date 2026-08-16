@@ -259,6 +259,7 @@ model Journey {
   category       String?
   tags           String[]
   status         JourneyStatus @default(DRAFT)
+  order          Int // Posizione manuale nella lista dei Journey del creator (Profilo), non collegata alla data di creazione — vedi moveJourney in lib/actions/journey.ts.
   discoveryEndsAt DateTime?
   journeyScore   Float         @default(0) // Journey Score 0-100, ricalcolato al massimo 1x/giorno (vedi lib/scoring/journeyScore.ts)
   journeyScoreUpdatedAt DateTime? // null = mai calcolato; usato per sapere quando il punteggio è "stale" e va ricalcolato
@@ -274,6 +275,7 @@ model Journey {
   analyticsSnapshots Analytics[]
   linkedByUpdates Update[]
 
+  @@index([creatorId, order])
   @@map("journeys")
 }
 

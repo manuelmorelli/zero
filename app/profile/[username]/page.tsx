@@ -1,29 +1,32 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { FollowButton } from "@/components/profile/FollowButton";
-import { JourneyCard } from "@/components/journey/JourneyCard";
+import { LikeButton } from "@/components/journey/LikeButton";
+import { ContentCard } from "@/components/profile/ContentCard";
+import { ShareIconButton } from "@/components/profile/ShareIconButton";
+import { JourneyCardMenu } from "@/components/profile/JourneyCardMenu";
 import { Header } from "@/components/layout/Header";
 import { Reveal } from "@/components/common/Reveal";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileTabs, type ProfileTab } from "@/components/profile/ProfileTabs";
 import { FeaturedJourneySection } from "@/components/profile/FeaturedJourneySection";
 import { AboutCard } from "@/components/profile/AboutCard";
-import { JourneyStatsCard } from "@/components/profile/JourneyStatsCard";
-import { FeedPhotoItem } from "@/components/profile/FeedPhotoItem";
 import { MessageButton } from "@/components/profile/MessageButton";
 import { EditProfileButton } from "@/components/profile/EditProfileButton";
 import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
-import { EpisodeReorderSection } from "@/components/profile/EpisodeReorderSection";
 import { getCreatorFeed } from "@/lib/profile/creatorFeed";
-import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { canMessage } from "@/lib/messaging";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
 import { getFeaturedJourney } from "@/lib/profile/featuredJourney";
 import { PUBLICLY_REACHABLE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { DEMO_FEED_ITEMS } from "@/lib/demo/demoProfile";
-import Link from "next/link";
+
+/** Quante Published Journeys mostrare in anteprima nell'Overview prima del link "View all"
+ * verso la tab Journeys (che resta la lista completa, archiviati compresi). */
+const PUBLISHED_JOURNEYS_PREVIEW_COUNT = 5;
 
 // L'username non è ancora impostabile da UI: come fallback temporaneo si accetta
 // anche l'id dell'utente nello stesso segmento di rotta, finché non esiste una
@@ -62,7 +65,7 @@ export default async function PublicProfilePage({
   const journeys = creator
     ? await prisma.journey.findMany({
         where: { creatorId: creator.id, status: { in: PUBLICLY_REACHABLE_JOURNEY_STATUSES }, deletedAt: null },
-        orderBy: { createdAt: "desc" },
+        orderBy: { order: "asc" },
       })
     : [];
   // Un creator può avere più Journey live in parallelo (vedi 00-project-context.md, sezione
@@ -83,7 +86,10 @@ export default async function PublicProfilePage({
 
   // Follow è persona-segue-persona (vedi 00-project-context.md, sezione "Modello utente
   // unico"): ogni profilo è seguibile, non solo quello di un creator.
-  const followersCount = await prisma.follow.count({ where: { followingId: user.id } });
+  const [followersCount, followingCount] = await Promise.all([
+    prisma.follow.count({ where: { followingId: user.id } }),
+    prisma.follow.count({ where: { followerId: user.id } }),
+  ]);
   const isFollowing =
     session && !isOwnProfile
       ? Boolean(
@@ -96,14 +102,6 @@ export default async function PublicProfilePage({
   // Basta che una delle due persone segua l'altra per potersi scrivere (vedi
   // 00-project-context.md, sezione "Follow universale"), non serve il follow reciproco.
   const canMessageUser = session && !isOwnProfile ? await canMessage(session.user.id, user.id) : false;
-
-  const stats = creator
-    ? await getProfileStats({
-        creatorId: creator.id,
-        journeys,
-        publishedJourneyIds: liveJourneys.map((journey) => journey.id),
-      })
-    : { publishedEpisodesCount: 0, totalViews: 0, likesReceived: 0, completionRate: null };
 
   const trustScore = computeTrustScore(
     creator ? await getCreatorTrustInputs(creator.id, followersCount) : {
@@ -121,13 +119,9 @@ export default async function PublicProfilePage({
     isDemoFeed = realFeed.length === 0;
     feedItems = isDemoFeed ? DEMO_FEED_ITEMS : realFeed;
   }
-
-  // Drag & drop per riordinare gli episodi: solo sul proprio Profilo, solo per il Journey in
-  // evidenza (prima viveva nella Dashboard, vedi components/profile/EpisodeReorderSection.tsx).
-  const reorderGroups =
-    activeTab === "overview" && isOwnProfile && featuredJourney
-      ? (await getEpisodeTimeline(featuredJourney.id)).groups
-      : [];
+  // "Recent Episodes" è scoped ai soli episodi (gli Update non hanno una pagina propria da
+  // aprire — vengono mostrati altrove, nel visualizzatore a schermo intero della Hero).
+  const episodeFeedItems = feedItems?.filter((item) => item.type === "episode") ?? [];
 
   return (
     <main>
@@ -137,19 +131,13 @@ export default async function PublicProfilePage({
         coverUrl={coverUrl}
         avatarUrl={avatarUrl}
         name={user.name}
-        bio={user.bio}
-        interests={user.interests}
+        username={user.username}
         location={user.location}
         joinedAt={user.createdAt}
         trustScore={trustScore}
         journeysCount={journeys.length}
         followersCount={followersCount}
-        stats={{
-          episodesPublished: stats.publishedEpisodesCount,
-          totalViews: stats.totalViews,
-          likesReceived: stats.likesReceived,
-          completionRate: stats.completionRate,
-        }}
+        followingCount={followingCount}
         actions={
           isOwnProfile ? (
             <>
@@ -188,168 +176,170 @@ export default async function PublicProfilePage({
 
       <ProfileTabs basePath={`/profile/${username}`} activeTab={activeTab} />
 
-      <div className="mx-auto max-w-6xl px-6 py-10">
-        <div className="grid gap-10">
-          <div className="min-w-0 space-y-10">
-            {activeTab === "overview" && (
-              <>
-                {featuredJourney && (
-                  <Reveal>
-                    <FeaturedJourneySection journey={featuredJourney} />
-                  </Reveal>
-                )}
+      <div className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+        {activeTab === "overview" && (
+          <>
+            {/* 1. Journey in corso + Bio */}
+            <Reveal>
+              {featuredJourney ? (
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,34%)_minmax(0,32%)] lg:justify-between">
+                  <FeaturedJourneySection journey={featuredJourney} />
+                  <AboutCard name={user.name} bio={user.bio} interests={user.interests} />
+                </div>
+              ) : (
+                <div className="max-w-md">
+                  <AboutCard name={user.name} bio={user.bio} interests={user.interests} />
+                </div>
+              )}
+            </Reveal>
 
-                {reorderGroups.length > 0 && (
-                  <Reveal delayMs={40}>
-                    <EpisodeReorderSection groups={reorderGroups} />
-                  </Reveal>
-                )}
-
-                <Reveal delayMs={80}>
-                  <section>
-                    <h2 className="text-lg font-bold tracking-tight text-ink">Latest Episodes</h2>
-                    {featuredJourney && (
-                      <p className="mt-1 text-sm text-ink-muted">{featuredJourney.title}</p>
-                    )}
-
-                    {feedItems && feedItems.length > 0 ? (
-                      <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-                        {feedItems.map((item, index) => (
-                          <Reveal key={item.type === "episode" ? item.episodeId : item.updateId} delayMs={index * 60}>
-                            <FeedPhotoItem item={item} isLoggedIn={isLoggedIn && !isDemoFeed} />
-                          </Reveal>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="mt-5 rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
-                        {`${user.name} hasn't shared anything yet.`}
-                      </p>
-                    )}
-                  </section>
-                </Reveal>
-              </>
-            )}
-
-            {activeTab === "journeys" && (
+            {/* 2. Recent Episodes */}
+            <Reveal delayMs={40} className="mt-6 block">
               <section>
-                {journeys.length === 0 ? (
-                  <p className="rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
-                    {`${user.name} hasn't published any Journey yet.`}
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-                    {journeys.map((journey, index) => (
-                      <Reveal key={journey.id} delayMs={index * 80}>
-                        <JourneyCard
-                          journey={{
-                            id: journey.id,
-                            title: journey.title,
-                            coverUrl: journey.coverUrl,
-                            category: journey.category,
-                            creator: { displayName: creator?.displayName ?? user.name },
-                          }}
-                          badge={
-                            journey.status === "ARCHIVED" ? (
-                              <span className="rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-semibold text-white">
-                                Archived
-                              </span>
-                            ) : journey.status === "DISCOVERY" ? (
-                              <span className="rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-semibold text-white">
-                                Discovering
-                              </span>
-                            ) : journey.id === featuredJourney?.id ? (
-                              <span className="rounded-full bg-ember px-2.5 py-1 text-[11px] font-semibold text-white">
-                                Featured
-                              </span>
+                <h2 className="text-lg font-bold tracking-tight text-ink">Recent Episodes</h2>
+
+                {episodeFeedItems.length > 0 ? (
+                  <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                    {episodeFeedItems.map((item, index) => (
+                      <Reveal key={item.episodeId} delayMs={index * 60}>
+                        <ContentCard
+                          href={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
+                          imageUrl={item.coverUrl}
+                          imageAlt={item.title}
+                          title={item.title}
+                          category={item.category}
+                          likeSlot={
+                            <LikeButton
+                              targetType="EPISODE"
+                              targetId={item.episodeId}
+                              initialLikeCount={item.likeCount}
+                              initialIsLiked={item.isLiked}
+                              isLoggedIn={isLoggedIn && !isDemoFeed}
+                            />
+                          }
+                          menu={
+                            isOwnProfile && !isDemoFeed ? (
+                              <ShareIconButton
+                                path={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
+                                label={item.title}
+                              />
                             ) : undefined
                           }
                         />
                       </Reveal>
                     ))}
                   </div>
+                ) : (
+                  <p className="mt-4 rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+                    {`${user.name} hasn't shared any episode yet.`}
+                  </p>
                 )}
               </section>
-            )}
-          </div>
+            </Reveal>
 
-          {/* Su desktop About/Journey Stats vivono già sovrapposte alla copertina (ProfileHero):
-              qui restano solo come fallback per schermi stretti, dove sovrapporle alla foto
-              sarebbe illeggibile. */}
-          <aside className="space-y-6 lg:hidden">
-            <AboutCard name={user.name} bio={user.bio} interests={user.interests} />
-            <JourneyStatsCard
-              episodesPublished={stats.publishedEpisodesCount}
-              totalViews={stats.totalViews}
-              likesReceived={stats.likesReceived}
-              completionRate={stats.completionRate}
-            />
-          </aside>
-        </div>
+            {/* 3. Published Journeys (anteprima, "View all" -> tab Journeys) */}
+            <Reveal delayMs={120} className="mt-6 block">
+              <section>
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-lg font-bold tracking-tight text-ink">Published Journeys</h2>
+                  {liveJourneys.length > PUBLISHED_JOURNEYS_PREVIEW_COUNT && (
+                    <Link
+                      href={`/profile/${username}?tab=journeys`}
+                      className="text-sm text-ink-muted transition-colors hover:text-ember"
+                    >
+                      View all →
+                    </Link>
+                  )}
+                </div>
+
+                {liveJourneys.length > 0 ? (
+                  <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                    {liveJourneys.slice(0, PUBLISHED_JOURNEYS_PREVIEW_COUNT).map((journey, index) => {
+                      // Posizione nell'elenco completo (non nella sola anteprima): "Move" deve
+                      // rispecchiare l'ordine reale, che include anche i Journey archiviati non
+                      // mostrati qui.
+                      const globalIndex = journeys.findIndex((item) => item.id === journey.id);
+                      return (
+                        <Reveal key={journey.id} delayMs={index * 60}>
+                          <ContentCard
+                            href={`/journeys/${journey.id}`}
+                            imageUrl={journey.coverUrl}
+                            imageAlt={journey.title}
+                            title={journey.title}
+                            category={journey.category}
+                            status={journey.status === "DISCOVERY" ? "Discovery" : undefined}
+                            trust={Math.round(journey.journeyScore)}
+                            menu={
+                              isOwnProfile ? (
+                                <JourneyCardMenu
+                                  journeyId={journey.id}
+                                  title={journey.title}
+                                  alreadyArchived={false}
+                                  canMoveBack={globalIndex > 0}
+                                  canMoveForward={globalIndex < journeys.length - 1}
+                                />
+                              ) : undefined
+                            }
+                          />
+                        </Reveal>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="mt-4 rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+                    {`${user.name} hasn't published any Journey yet.`}
+                  </p>
+                )}
+              </section>
+            </Reveal>
+          </>
+        )}
+
+        {activeTab === "journeys" && (
+          <section>
+            {journeys.length === 0 ? (
+              <p className="rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+                {`${user.name} hasn't published any Journey yet.`}
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                {journeys.map((journey, index) => (
+                  <Reveal key={journey.id} delayMs={index * 80}>
+                    <ContentCard
+                      href={`/journeys/${journey.id}`}
+                      imageUrl={journey.coverUrl}
+                      imageAlt={journey.title}
+                      title={journey.title}
+                      category={journey.category}
+                      status={
+                        journey.status === "ARCHIVED"
+                          ? "Archived"
+                          : journey.status === "DISCOVERY"
+                            ? "Discovery"
+                            : journey.id === featuredJourney?.id
+                              ? "In Progress"
+                              : undefined
+                      }
+                      trust={Math.round(journey.journeyScore)}
+                      menu={
+                        isOwnProfile ? (
+                          <JourneyCardMenu
+                            journeyId={journey.id}
+                            title={journey.title}
+                            alreadyArchived={journey.status === "ARCHIVED"}
+                            canMoveBack={index > 0}
+                            canMoveForward={index < journeys.length - 1}
+                          />
+                        ) : undefined
+                      }
+                    />
+                  </Reveal>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
       </div>
     </main>
   );
-}
-
-/* ------------------------------------------------------------------ */
-/* STATISTICHE PROFILO (sidebar "Journey Stats" + input del Trust Score) */
-/* ------------------------------------------------------------------ */
-
-async function getProfileStats({
-  creatorId,
-  journeys,
-  publishedJourneyIds,
-}: {
-  creatorId: string;
-  journeys: { id: string; status: string; viewsCount: number }[];
-  publishedJourneyIds: string[];
-}) {
-  const [publishedEpisodesCount, allEpisodeIds, allUpdateIds, journeyProgressRows] = await Promise.all([
-    prisma.episode.count({
-      where: { deletedAt: null, journeyId: { in: publishedJourneyIds } },
-    }),
-    prisma.episode.findMany({
-      where: { deletedAt: null, journeyId: { in: journeys.map((journey) => journey.id) } },
-      select: { id: true },
-    }),
-    prisma.update.findMany({ where: { creatorId }, select: { id: true } }),
-    // Completion rate aggregato su tutti i Journey pubblicati (prima solo sul singolo Journey
-    // attivo): con più Journey attivi in parallelo è la lettura più corretta dello stato reale.
-    // Il completamento vive per episodio (EpisodeProgress): un lettore conta come "completato" su
-    // un Journey se ha finito l'episodio a cui si trova (currentEpisodeId).
-    publishedJourneyIds.length > 0
-      ? prisma.journeyProgress.findMany({
-          where: { journeyId: { in: publishedJourneyIds }, currentEpisodeId: { not: null } },
-          select: { userId: true, currentEpisodeId: true },
-        })
-      : Promise.resolve([]),
-  ]);
-
-  const likeTargetIds = [...allEpisodeIds.map((episode) => episode.id), ...allUpdateIds.map((update) => update.id)];
-  const likesReceived =
-    likeTargetIds.length > 0 ? await prisma.like.count({ where: { targetId: { in: likeTargetIds } } }) : 0;
-
-  const totalViews = journeys.reduce((sum, journey) => sum + journey.viewsCount, 0);
-
-  const completedEpisodeProgress =
-    journeyProgressRows.length > 0
-      ? await prisma.episodeProgress.findMany({
-          where: {
-            completedAt: { not: null },
-            OR: journeyProgressRows.map((row) => ({ userId: row.userId, episodeId: row.currentEpisodeId! })),
-          },
-          select: { userId: true, episodeId: true },
-        })
-      : [];
-  const completedKeys = new Set(completedEpisodeProgress.map((row) => `${row.userId}:${row.episodeId}`));
-
-  const completionRate =
-    journeyProgressRows.length > 0
-      ? Math.round(
-          (journeyProgressRows.filter((row) => completedKeys.has(`${row.userId}:${row.currentEpisodeId}`)).length /
-            journeyProgressRows.length) *
-            100
-        )
-      : null;
-
-  return { publishedEpisodesCount, totalViews, likesReceived, completionRate };
 }

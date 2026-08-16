@@ -8,17 +8,28 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { requireSession } from "@/lib/session";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
-import { DISCOVERY_PHASE_DAYS } from "@/lib/constants/journeyStatus";
+import { DISCOVERY_PHASE_DAYS, PUBLICLY_REACHABLE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewJourney } from "@/lib/notifications";
 
 async function requireOwnedJourney(journeyId: string) {
   const { creator } = await requireCreator();
   const journey = await prisma.journey.findUnique({
     where: { id: journeyId },
-    include: { creator: true },
+    include: { creator: { include: { user: true } } },
   });
   if (!journey || journey.creatorId !== creator.id) notFound();
   return journey;
+}
+
+// I nuovi Journey vanno in cima alla lista del Profilo (stesso comportamento visivo di prima,
+// quando l'ordine era per data di creazione discendente): prendono un valore più piccolo del
+// più piccolo esistente, invece di essere accodati in fondo come capitoli/episodi.
+async function nextJourneyOrder(creatorId: string): Promise<number> {
+  const firstJourney = await prisma.journey.findFirst({
+    where: { creatorId, deletedAt: null },
+    orderBy: { order: "asc" },
+  });
+  return (firstJourney?.order ?? 0) - 1;
 }
 
 const JourneySchema = z.object({
@@ -61,6 +72,7 @@ export async function createJourney(
       description: parsed.data.description,
       category: parsed.data.category,
       tags: parseTags(parsed.data.tags),
+      order: await nextJourneyOrder(creator.id),
     },
   });
 
@@ -97,7 +109,7 @@ export async function quickStartJourney(
   }
 
   const journey = await prisma.journey.create({
-    data: { creatorId: creator.id, title: parsed.data.title },
+    data: { creatorId: creator.id, title: parsed.data.title, order: await nextJourneyOrder(creator.id) },
   });
 
   revalidatePath("/dashboard");
@@ -261,4 +273,31 @@ export async function archiveJourney(
   revalidatePath(`/dashboard/journeys/${journey.id}`);
   revalidatePath(`/journeys/${journey.id}`);
   return { error: null };
+}
+
+// Riordino manuale dei Journey nel Profilo (menu "..." -> Move Back/Move Forward): stessa
+// tecnica di scambio con il vicino già usata per gli episodi (vedi moveEpisode in
+// lib/actions/episode.ts). Il gruppo di "vicini" è esattamente l'elenco di Journey mostrato sul
+// Profilo pubblico (PUBLICLY_REACHABLE_JOURNEY_STATUSES): i Draft non sono visibili lì, quindi
+// non devono interferire con le posizioni.
+export async function moveJourney(journeyId: string, direction: "up" | "down"): Promise<void> {
+  const journey = await requireOwnedJourney(journeyId);
+
+  const siblings = await prisma.journey.findMany({
+    where: { creatorId: journey.creatorId, status: { in: PUBLICLY_REACHABLE_JOURNEY_STATUSES }, deletedAt: null },
+    orderBy: { order: "asc" },
+  });
+  const index = siblings.findIndex((sibling) => sibling.id === journey.id);
+  const targetIndex = direction === "up" ? index - 1 : index + 1;
+  const target = siblings[targetIndex];
+
+  if (target) {
+    await prisma.$transaction([
+      prisma.journey.update({ where: { id: journey.id }, data: { order: target.order } }),
+      prisma.journey.update({ where: { id: target.id }, data: { order: journey.order } }),
+    ]);
+  }
+
+  revalidatePath(`/profile/${journey.creator.userId}`);
+  if (journey.creator.user.username) revalidatePath(`/profile/${journey.creator.user.username}`);
 }
