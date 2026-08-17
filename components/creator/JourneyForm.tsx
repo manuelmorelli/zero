@@ -115,116 +115,119 @@ export function JourneyForm({ journey }: JourneyFormProps) {
           formData.set("coverKey", coverKey);
           formAction(formData);
         }}
-        className="space-y-4"
       >
         {journey && <input type="hidden" name="journeyId" value={journey.id} />}
 
-        {journey && (
-          <div>
-            <span className="text-sm font-medium text-ink-muted">Cover</span>
-            <div className="relative mt-1.5 aspect-4/5 w-32 overflow-hidden rounded-xl border border-border bg-surface-2">
-              {coverPreview ? (
-                <Image src={coverPreview} alt="" fill sizes="128px" className="object-cover" />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
-              )}
-              <button
-                type="button"
-                onClick={() => coverInputRef.current?.click()}
-                className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-black/0 text-[0.65rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
-              >
-                <ImagePlus className="h-4 w-4" aria-hidden="true" />
-                {coverProgress !== null ? `${coverProgress}%` : "Change"}
-              </button>
+        <div className="grid gap-4 md:grid-cols-[1fr_minmax(0,220px)]">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="title" className="text-sm font-medium text-ink-muted">
+                Title
+              </label>
               <input
-                ref={coverInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleCoverChosen}
-                className="hidden"
+                id="title"
+                name="title"
+                type="text"
+                required
+                minLength={2}
+                maxLength={100}
+                value={draft.title}
+                onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))}
+                className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
               />
             </div>
-            {coverError && <p className="mt-1.5 text-xs text-danger">{coverError}</p>}
+
+            <div>
+              <label htmlFor="description" className="text-sm font-medium text-ink-muted">
+                Caption <span className="text-ink-faint">(optional)</span>
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                rows={4}
+                maxLength={2000}
+                placeholder="Goal, context, motivations, what followers can expect."
+                value={draft.description}
+                onChange={(event) => setDraft((prev) => ({ ...prev, description: event.target.value }))}
+                className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+              />
+            </div>
+
+            <div>
+              <span className="text-sm font-medium text-ink-muted">
+                Category <span className="text-ink-faint">(optional)</span>
+              </span>
+              <input type="hidden" name="category" value={draft.category} />
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {JOURNEY_CATEGORIES.map((category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() =>
+                      setDraft((prev) => ({ ...prev, category: prev.category === category ? "" : category }))
+                    }
+                    className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                      draft.category === category
+                        ? "border-ember/50 bg-ember/15 text-ember"
+                        : "border-border text-ink-muted hover:border-ink-muted hover:text-ink"
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="tags" className="text-sm font-medium text-ink-muted">
+                Tags <span className="text-ink-faint">(comma-separated)</span>
+              </label>
+              <input
+                id="tags"
+                name="tags"
+                type="text"
+                maxLength={200}
+                placeholder="fitness, running"
+                value={draft.tags}
+                onChange={(event) => setDraft((prev) => ({ ...prev, tags: event.target.value }))}
+                className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+              />
+            </div>
           </div>
-        )}
 
-        <div>
-          <label htmlFor="title" className="text-sm font-medium text-ink-muted">
-            Title
-          </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            required
-            minLength={2}
-            maxLength={100}
-            value={draft.title}
-            onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))}
-            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-          />
+          {journey && (
+            <div>
+              <span className="text-sm font-medium text-ink-muted">Cover</span>
+              <div className="relative mt-1.5 aspect-4/5 w-full overflow-hidden rounded-xl border border-border bg-surface-2">
+                {coverPreview ? (
+                  <Image src={coverPreview} alt="" fill sizes="220px" className="object-cover" />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+                )}
+                <button
+                  type="button"
+                  onClick={() => coverInputRef.current?.click()}
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-black/0 text-[0.65rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
+                >
+                  <ImagePlus className="h-4 w-4" aria-hidden="true" />
+                  {coverProgress !== null ? `${coverProgress}%` : "Change"}
+                </button>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverChosen}
+                  className="hidden"
+                />
+              </div>
+              {coverError && <p className="mt-1.5 text-xs text-danger">{coverError}</p>}
+            </div>
+          )}
         </div>
 
-        <div>
-          <label htmlFor="description" className="text-sm font-medium text-ink-muted">
-            Presentation <span className="text-ink-faint">(optional)</span>
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            rows={4}
-            maxLength={2000}
-            placeholder="Goal, context, motivations, what followers can expect."
-            value={draft.description}
-            onChange={(event) => setDraft((prev) => ({ ...prev, description: event.target.value }))}
-            className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-          />
-        </div>
+        {state.error && <p className="mt-4 text-sm text-danger">{state.error}</p>}
 
-        <div>
-          <span className="text-sm font-medium text-ink-muted">
-            Category <span className="text-ink-faint">(optional)</span>
-          </span>
-          <input type="hidden" name="category" value={draft.category} />
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {JOURNEY_CATEGORIES.map((category) => (
-              <button
-                key={category}
-                type="button"
-                onClick={() =>
-                  setDraft((prev) => ({ ...prev, category: prev.category === category ? "" : category }))
-                }
-                className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
-                  draft.category === category
-                    ? "border-ember/50 bg-ember/15 text-ember"
-                    : "border-border text-ink-muted hover:border-ink-muted hover:text-ink"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label htmlFor="tags" className="text-sm font-medium text-ink-muted">
-            Tags <span className="text-ink-faint">(comma-separated)</span>
-          </label>
-          <input
-            id="tags"
-            name="tags"
-            type="text"
-            maxLength={200}
-            placeholder="fitness, running"
-            value={draft.tags}
-            onChange={(event) => setDraft((prev) => ({ ...prev, tags: event.target.value }))}
-            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-          />
-        </div>
-
-        {state.error && <p className="text-sm text-danger">{state.error}</p>}
-
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
           {journey ? (
             <button
               type="button"

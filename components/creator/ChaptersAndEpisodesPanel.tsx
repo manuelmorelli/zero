@@ -181,9 +181,9 @@ function ChapterBlock({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`mt-4 rounded-xl border border-border bg-surface-2 p-3 ${isDragging ? "opacity-50" : ""}`}
+      className={`mt-4 ${isDragging ? "opacity-50" : ""}`}
     >
-      <div className="flex items-center justify-between gap-3">
+      <div className="mb-2 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
           <button
             type="button"
@@ -194,7 +194,7 @@ function ChapterBlock({
           >
             <GripVertical className="h-4 w-4" aria-hidden="true" />
           </button>
-          <h3 className="truncate text-[0.82rem] font-semibold text-ink">{chapter.title}</h3>
+          <h3 className="truncate text-[0.72rem] uppercase tracking-wider text-ink-muted">{chapter.title}</h3>
         </div>
         <ChapterEditButton
           journeyId={journeyId}
@@ -202,14 +202,12 @@ function ChapterBlock({
         />
       </div>
 
-      <div className="mt-2.5">
-        <EpisodeList
-          journeyId={journeyId}
-          chapters={chaptersList}
-          episodes={chapter.episodes}
-          coverUrl={coverUrl}
-        />
-      </div>
+      <EpisodeList
+        journeyId={journeyId}
+        chapters={chaptersList}
+        episodes={chapter.episodes}
+        coverUrl={coverUrl}
+      />
     </div>
   );
 }

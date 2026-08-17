@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { Rocket } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
@@ -10,7 +9,6 @@ import { JourneyArchiveButton } from "@/components/creator/JourneyArchiveButton"
 import { DashboardPanel } from "@/components/creator/DashboardPanel";
 import { ChaptersAndEpisodesPanel } from "@/components/creator/ChaptersAndEpisodesPanel";
 import { PrivateStatsPanel } from "@/components/creator/PrivateStatsPanel";
-import { FirstEpisodeForm } from "@/components/creator/FirstEpisodeForm";
 import { Header } from "@/components/layout/Header";
 import { Reveal } from "@/components/common/Reveal";
 import Link from "next/link";
@@ -28,7 +26,7 @@ export default async function JourneyManagePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { user, creator } = await requireCreator();
+  const { creator } = await requireCreator();
 
   const journey = await prisma.journey.findUnique({ where: { id } });
   if (!journey || journey.creatorId !== creator.id || journey.deletedAt) notFound();
@@ -43,9 +41,6 @@ export default async function JourneyManagePage({
     where: { journeyId: journey.id, chapterId: null, deletedAt: null },
     orderBy: { order: "asc" },
   });
-
-  const totalEpisodeCount =
-    looseEpisodes.length + chapters.reduce((sum, chapter) => sum + chapter.episodes.length, 0);
 
   const [coverUrl, stats] = await Promise.all([
     resolveCoverUrl(journey.coverUrl),
@@ -82,12 +77,6 @@ export default async function JourneyManagePage({
                   View public page →
                 </Link>
               )}
-              <Link
-                href={`/profile/${user.id}`}
-                className="text-sm text-ink-muted transition-colors hover:text-ink"
-              >
-                View Public Profile →
-              </Link>
             </div>
           </div>
           {journey.status === "ARCHIVED" && (
@@ -98,19 +87,8 @@ export default async function JourneyManagePage({
           )}
         </Reveal>
 
-        {totalEpisodeCount === 0 && (
-          <Reveal delayMs={60}>
-            <DashboardPanel title="Publish your first episode" icon={<Rocket className="h-4 w-4" aria-hidden="true" />}>
-              <FirstEpisodeForm journeyId={journey.id} />
-              <p className="mt-2 text-[0.72rem] text-ink-muted">
-                Two steps: add a title and publish. You can add a cover, duration and chapters at any time.
-              </p>
-            </DashboardPanel>
-          </Reveal>
-        )}
-
         <Reveal delayMs={90}>
-          <DashboardPanel title="Journey details">
+          <DashboardPanel title="Journey details" className="max-w-3xl">
             <JourneyForm
               journey={{
                 id: journey.id,

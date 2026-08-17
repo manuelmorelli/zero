@@ -109,6 +109,12 @@ async function insertEpisode(
   data: z.infer<typeof EpisodeSchema>,
   published: boolean
 ): Promise<{ error: string | null }> {
+  // Un episodio non può diventare Published senza un video reale caricato (una caption da sola
+  // non basta): niente pubblicazioni silenziose di contenuto vuoto.
+  if (published && !data.videoKey) {
+    return { error: "Add a video before publishing this episode." };
+  }
+
   const sizeError = await assertVideoWithinLimit(data.videoKey || undefined);
   if (sizeError) return { error: sizeError };
 
@@ -250,6 +256,10 @@ export async function updateEpisode(
   }
 
   const published = formData.get("published") === "on";
+  // Stessa regola di insertEpisode: niente Published senza un video reale.
+  if (published && !newVideoKeyValue) {
+    return { error: "Add a video before publishing this episode." };
+  }
 
   await prisma.episode.update({
     where: { id: episode.id },

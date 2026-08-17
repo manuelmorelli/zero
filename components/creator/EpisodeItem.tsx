@@ -41,23 +41,20 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`flex items-center gap-3 rounded-xl border border-border bg-surface p-3 transition-colors hover:border-ink-muted ${
+      {...attributes}
+      {...listeners}
+      aria-label={`Drag to reorder ${episode.title}`}
+      className={`flex items-center gap-3 rounded-xl border border-border bg-surface p-3 transition-colors hover:border-ink-muted cursor-grab touch-none active:cursor-grabbing ${
         isDragging ? "opacity-50" : ""
       }`}
     >
-      <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        aria-label="Drag to reorder episode"
-        className="shrink-0 cursor-grab touch-none text-ink-muted hover:text-ink active:cursor-grabbing"
-      >
-        <GripVertical className="h-4 w-4" aria-hidden="true" />
-      </button>
+      <span className="shrink-0 text-ink-muted" aria-hidden="true">
+        <GripVertical className="h-4 w-4" />
+      </span>
 
       <div className="relative h-9 w-14 shrink-0 overflow-hidden rounded-md border border-border bg-surface-2">
         {coverUrl ? (
-          <Image src={coverUrl} alt="" fill sizes="56px" className="object-cover" />
+          <Image src={coverUrl} alt="" fill sizes="56px" draggable={false} className="object-cover" />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
         )}

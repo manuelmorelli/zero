@@ -176,18 +176,23 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
         )}
       </div>
 
-      <label className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3.5 py-2">
+      <label
+        className={`flex items-center gap-2 rounded-lg border border-border bg-surface px-3.5 py-2 ${
+          videoKey ? "" : "opacity-60"
+        }`}
+      >
         <input
           type="checkbox"
           name="published"
           checked={published}
+          disabled={!videoKey}
           onChange={(event) => setPublished(event.target.checked)}
-          className="h-4 w-4 accent-ink"
+          className="h-4 w-4 accent-ink disabled:cursor-not-allowed"
         />
         <span className="text-xs font-medium text-ink">
           {published ? "Published" : "Draft"}
           <span className="ml-1 font-normal text-ink-faint">
-            {published ? "— visible to everyone" : "— only visible to you"}
+            {videoKey ? (published ? "— visible to everyone" : "— only visible to you") : "— add a video to publish"}
           </span>
         </span>
       </label>
