@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 export type DiscoveringNowItem = {
   id: string;
@@ -27,7 +28,7 @@ export async function getDiscoveringNowJourneys(limit = 10): Promise<Discovering
   });
 
   const now = Date.now();
-  return journeys.map((journey) => ({
+  const items = journeys.map((journey) => ({
     id: journey.id,
     title: journey.title,
     coverUrl: journey.coverUrl,
@@ -38,4 +39,5 @@ export async function getDiscoveringNowJourneys(limit = 10): Promise<Discovering
       ? Math.max(1, Math.ceil((journey.discoveryEndsAt.getTime() - now) / (24 * 60 * 60 * 1000)))
       : 1,
   }));
+  return withResolvedCoverUrls(items);
 }

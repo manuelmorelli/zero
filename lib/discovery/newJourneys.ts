@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
+import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 /**
  * Ultimi Journey pubblicati su tutta la piattaforma. Se l'utente ha interessi dichiarati, quelli
@@ -44,11 +45,12 @@ export async function getNewJourneys(
         return [...matching, ...rest];
       })();
 
-  return ordered.slice(0, limit).map((journey) => ({
+  const items = ordered.slice(0, limit).map((journey) => ({
     id: journey.id,
     title: journey.title,
     coverUrl: journey.coverUrl,
     category: journey.category,
     creator: { displayName: journey.creator.displayName },
   }));
+  return withResolvedCoverUrls(items);
 }

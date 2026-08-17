@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 type JourneyWithCreator = Awaited<ReturnType<typeof findMatchingJourneys>>[number];
 
@@ -12,9 +13,10 @@ type JourneyWithCreator = Awaited<ReturnType<typeof findMatchingJourneys>>[numbe
  */
 export async function searchJourneys(query: string, limit = 12): Promise<JourneyCardData[]> {
   const journeys = await findMatchingJourneys(query);
-  return rankByRelevance(journeys, query)
+  const items = rankByRelevance(journeys, query)
     .slice(0, limit)
     .map(toJourneyCardData);
+  return withResolvedCoverUrls(items);
 }
 
 async function findMatchingJourneys(query: string) {

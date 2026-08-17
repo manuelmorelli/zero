@@ -10,6 +10,8 @@ import { requireSession } from "@/lib/session";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { DISCOVERY_PHASE_DAYS, PUBLICLY_REACHABLE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewJourney } from "@/lib/notifications";
+import { deleteImage, getImageUploadUrl, newImageKey } from "@/lib/r2";
+import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
 
 async function requireOwnedJourney(journeyId: string) {
   const { creator } = await requireCreator();
@@ -17,7 +19,7 @@ async function requireOwnedJourney(journeyId: string) {
     where: { id: journeyId },
     include: { creator: { include: { user: true } } },
   });
-  if (!journey || journey.creatorId !== creator.id) notFound();
+  if (!journey || journey.creatorId !== creator.id || journey.deletedAt) notFound();
   return journey;
 }
 
@@ -37,7 +39,27 @@ const JourneySchema = z.object({
   description: z.string().trim().max(2000).optional(),
   category: z.enum(JOURNEY_CATEGORIES).optional(),
   tags: z.string().trim().max(200).optional(),
+  coverKey: z.string().trim().optional(),
 });
+
+// Genera l'URL temporaneo con cui il browser carica la copertina direttamente su R2 (stesso
+// meccanismo del video degli episodi, vedi createEpisodeVideoUploadUrl in lib/actions/episode.ts).
+// Richiede un Journey già esistente: a differenza dei "cover" finti del mockup Lovable (scelti da
+// una manciata di foto stock), qui la foto è reale e va caricata dopo che il Journey esiste già.
+export async function createJourneyCoverUploadUrl(
+  journeyId: string,
+  contentType: string
+): Promise<{ uploadUrl: string; key: string } | { error: string }> {
+  await requireOwnedJourney(journeyId);
+
+  if (!ALLOWED_IMAGE_TYPES.has(contentType)) {
+    return { error: "Unsupported image format." };
+  }
+
+  const key = newImageKey("journey-covers", contentType);
+  const uploadUrl = await getImageUploadUrl(key, contentType);
+  return { uploadUrl, key };
+}
 
 function parseTags(raw: string | undefined): string[] {
   if (!raw) return [];
@@ -137,6 +159,9 @@ export async function updateJourney(
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
+  const newCoverKey = parsed.data.coverKey || null;
+  const replacesCover = newCoverKey !== null && newCoverKey !== journey.coverUrl;
+
   await prisma.journey.update({
     where: { id: journey.id },
     data: {
@@ -146,8 +171,14 @@ export async function updateJourney(
       description: parsed.data.description ?? null,
       category: parsed.data.category ?? null,
       tags: parseTags(parsed.data.tags),
+      ...(replacesCover ? { coverUrl: newCoverKey } : {}),
     },
   });
+
+  // Il vecchio file resta orfano su R2 se non viene ripulito qui: nessun'altra riga lo referenzia più.
+  if (replacesCover && journey.coverUrl) {
+    await deleteImage(journey.coverUrl);
+  }
 
   revalidatePath(`/dashboard/journeys/${journey.id}`);
   redirect(`/dashboard/journeys/${journey.id}`);
@@ -273,6 +304,27 @@ export async function archiveJourney(
   revalidatePath(`/dashboard/journeys/${journey.id}`);
   revalidatePath(`/journeys/${journey.id}`);
   return { error: null };
+}
+
+// Diverso da Archive: Delete rimuove il Journey per sempre, anche dal profilo pubblico (Archive
+// invece lo ritira solo dalla gestione attiva, restando visibile pubblicamente). Soft delete
+// (deletedAt), stesso meccanismo già usato per Capitoli ed Episodi — Capitoli/Episodi/Progressi
+// legati restano nel database ma smettono di comparire ovunque grazie ai filtri `deletedAt: null`
+// già presenti in ogni query che li legge.
+export async function deleteJourney(formData: FormData): Promise<void> {
+  const journeyId = formData.get("journeyId");
+  if (typeof journeyId !== "string" || !journeyId) notFound();
+  const journey = await requireOwnedJourney(journeyId);
+
+  await prisma.journey.update({
+    where: { id: journey.id },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/profile/${journey.creator.userId}`);
+  if (journey.creator.user.username) revalidatePath(`/profile/${journey.creator.user.username}`);
+  redirect("/dashboard");
 }
 
 // Riordino manuale dei Journey nel Profilo (menu "..." -> Move Back/Move Forward): stessa

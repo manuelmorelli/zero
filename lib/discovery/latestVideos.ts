@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 export type LatestVideoItem = {
   episodeId: string;
@@ -46,7 +47,7 @@ export async function getLatestVideos({
         return [...matching, ...rest];
       })();
 
-  return ordered.slice(0, limit).map((episode) => ({
+  const items = ordered.slice(0, limit).map((episode) => ({
     episodeId: episode.id,
     journeyId: episode.journey.id,
     title: episode.title,
@@ -55,4 +56,5 @@ export async function getLatestVideos({
     creatorName: episode.journey.creator.displayName,
     createdAt: episode.createdAt,
   }));
+  return withResolvedCoverUrls(items);
 }

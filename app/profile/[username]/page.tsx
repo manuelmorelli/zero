@@ -22,6 +22,7 @@ import { canMessage } from "@/lib/messaging";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
 import { getFeaturedJourney } from "@/lib/profile/featuredJourney";
 import { PUBLICLY_REACHABLE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
+import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { DEMO_FEED_ITEMS } from "@/lib/demo/demoProfile";
 
 /** Quante Published Journeys mostrare in anteprima nell'Overview prima del link "View all"
@@ -63,10 +64,12 @@ export default async function PublicProfilePage({
   // archiviare un Journey lo ritira dalla gestione attiva, ma resta visibile sul profilo pubblico
   // (mai cancellato).
   const journeys = creator
-    ? await prisma.journey.findMany({
-        where: { creatorId: creator.id, status: { in: PUBLICLY_REACHABLE_JOURNEY_STATUSES }, deletedAt: null },
-        orderBy: { order: "asc" },
-      })
+    ? await withResolvedCoverUrls(
+        await prisma.journey.findMany({
+          where: { creatorId: creator.id, status: { in: PUBLICLY_REACHABLE_JOURNEY_STATUSES }, deletedAt: null },
+          orderBy: { order: "asc" },
+        })
+      )
     : [];
   // Un creator può avere più Journey live in parallelo (vedi 00-project-context.md, sezione
   // "Archiviazione del Journey"): quello "in evidenza" è quello con l'episodio più recente.

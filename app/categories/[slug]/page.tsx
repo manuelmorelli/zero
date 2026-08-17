@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { categoryFromSlug } from "@/lib/constants/categories";
 import { LIVE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { JourneyCard } from "@/components/journey/JourneyCard";
+import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 export default async function CategoryPage({
   params,
@@ -16,11 +17,12 @@ export default async function CategoryPage({
   if (!category) notFound();
 
   await promoteExpiredDiscoveryJourneys();
-  const journeys = await prisma.journey.findMany({
+  const rawJourneys = await prisma.journey.findMany({
     where: { category, status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
     orderBy: { publishedAt: "desc" },
     include: { creator: true },
   });
+  const journeys = await withResolvedCoverUrls(rawJourneys);
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">

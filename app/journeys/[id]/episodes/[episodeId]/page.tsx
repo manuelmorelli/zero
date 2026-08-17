@@ -5,6 +5,7 @@ import { getVideoPlaybackUrl } from "@/lib/r2";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
+import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { Header } from "@/components/layout/Header";
 import { EpisodePlayer } from "@/components/journey/EpisodePlayer";
 import { UpNextList } from "@/components/journey/UpNextList";
@@ -44,6 +45,7 @@ export default async function EpisodePlayerPage({
   const trustScore = computeTrustScore(await getCreatorTrustInputs(journey.creator.id, followersCount));
   const currentNumber = flatEpisodes.find((item) => item.id === episodeId)?.number ?? 1;
   const videoSrc = episode.videoKey ? await getVideoPlaybackUrl(episode.videoKey) : null;
+  const journeyCoverUrl = await resolveCoverUrl(journey.coverUrl);
 
   return (
     <main>
@@ -62,7 +64,7 @@ export default async function EpisodePlayerPage({
             caption: episode.caption,
             number: currentNumber,
             videoSrc,
-            posterUrl: journey.coverUrl,
+            posterUrl: journeyCoverUrl,
           }}
           initialPositionSec={progress?.positionSec ?? 0}
           initialCompleted={Boolean(progress?.completedAt)}
@@ -74,7 +76,7 @@ export default async function EpisodePlayerPage({
         <UpNextList
           journeyId={journey.id}
           journeyTitle={journey.title}
-          coverUrl={journey.coverUrl}
+          coverUrl={journeyCoverUrl}
           episodes={flatEpisodes}
           activeEpisodeId={episode.id}
         />

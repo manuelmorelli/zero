@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getFollowedCreatorIds } from "@/lib/discovery/follows";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 export type FeedItem =
   | {
@@ -71,7 +72,7 @@ export async function getFollowedCreatorsFeed({
       .map(toEpisodeFeedItem),
   ];
 
-  return rankByDate(items).slice(0, limit);
+  return withResolvedCoverUrls(rankByDate(items).slice(0, limit));
 }
 
 function findNewJourneys(creatorIds: string[], excludeJourneyIds: string[], limit: number) {

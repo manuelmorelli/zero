@@ -92,7 +92,7 @@ export async function updateChapter(
   });
 
   revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
-  redirect(`/dashboard/journeys/${chapter.journeyId}/chapters/${chapter.id}`);
+  redirect(`/dashboard/journeys/${chapter.journeyId}`);
 }
 
 export async function deleteChapter(formData: FormData): Promise<void> {

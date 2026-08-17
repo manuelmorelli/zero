@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Archive, ArrowLeft, ArrowRight, MoreHorizontal, Pencil, Share2 } from "lucide-react";
+import { Archive, ArrowLeft, ArrowRight, MoreHorizontal, Pencil, Share2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { archiveJourney, moveJourney } from "@/lib/actions/journey";
+import { archiveJourney, deleteJourney, moveJourney } from "@/lib/actions/journey";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,6 +49,7 @@ export function JourneyCardMenu({
   canMoveForward,
 }: JourneyCardMenuProps) {
   const [archiveOpen, setArchiveOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const router = useRouter();
 
   async function handleShare() {
@@ -97,18 +98,23 @@ export function JourneyCardMenu({
             <Share2 className="h-4 w-4" aria-hidden="true" />
             Share
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
           {!alreadyArchived && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-danger focus:text-danger"
-                onSelect={() => setArchiveOpen(true)}
-              >
-                <Archive className="h-4 w-4" aria-hidden="true" />
-                Archive
-              </DropdownMenuItem>
-            </>
+            <DropdownMenuItem
+              className="text-danger focus:text-danger"
+              onSelect={() => setArchiveOpen(true)}
+            >
+              <Archive className="h-4 w-4" aria-hidden="true" />
+              Archive
+            </DropdownMenuItem>
           )}
+          <DropdownMenuItem
+            className="text-danger focus:text-danger"
+            onSelect={() => setDeleteOpen(true)}
+          >
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -118,6 +124,14 @@ export function JourneyCardMenu({
           title={title}
           open={archiveOpen}
           onOpenChange={setArchiveOpen}
+        />
+      )}
+      {deleteOpen && (
+        <DeleteJourneyDialog
+          journeyId={journeyId}
+          title={title}
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
         />
       )}
     </>
@@ -178,6 +192,49 @@ function ArchiveJourneyDialog({
               className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90 disabled:opacity-50"
             >
               {pending ? "Archiving…" : "Archive"}
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DeleteJourneyDialog({
+  journeyId,
+  title,
+  open,
+  onOpenChange,
+}: {
+  journeyId: string;
+  title: string;
+  open: boolean;
+  onOpenChange: (next: boolean) => void;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Delete Journey</DialogTitle>
+          <DialogDescription>
+            {`"${title}" will be deleted for good, including its Chapters and Episodes — it will also disappear from your public profile. This can't be undone.`}
+          </DialogDescription>
+        </DialogHeader>
+        <form action={deleteJourney}>
+          <input type="hidden" name="journeyId" value={journeyId} />
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90"
+            >
+              Delete
             </button>
           </DialogFooter>
         </form>

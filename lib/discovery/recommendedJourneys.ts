@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { getFollowedCreatorIds, getOwnCreatorId, getFollowedCategories } from "@/lib/discovery/follows";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
+import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 type JourneyWithCreator = Awaited<ReturnType<typeof findPublishedJourneys>>[number];
 
@@ -71,7 +72,7 @@ export async function getRecommendedJourneys({
     }
   }
 
-  return selected.map(toJourneyCardData);
+  return withResolvedCoverUrls(selected.map(toJourneyCardData));
 }
 
 async function findPublishedJourneys(filters: {

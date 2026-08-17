@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 export type ContinueJourneyItem = {
   journeyId: string;
@@ -36,7 +37,7 @@ export async function getContinueJourneys(
   });
   const episodeById = new Map(episodes.map((episode) => [episode.id, episode]));
 
-  return progresses.map((progress) => {
+  const items = progresses.map((progress) => {
     const episode = progress.currentEpisodeId ? episodeById.get(progress.currentEpisodeId) : undefined;
     return {
       journeyId: progress.journeyId,
@@ -47,4 +48,5 @@ export async function getContinueJourneys(
       episodeTitle: episode?.title ?? null,
     };
   });
+  return withResolvedCoverUrls(items);
 }

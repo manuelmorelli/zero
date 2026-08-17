@@ -7,6 +7,7 @@ import { getCurrentSession } from "@/lib/session";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
+import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { Avatar } from "@/components/common/Avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
@@ -33,6 +34,8 @@ export default async function PublicJourneyPage({
   // Contatore semplice per "Total Views" nel Profilo pubblico: nessuna deduplica per
   // visitatore/sessione nell'MVP, coerente con l'approccio minimo già scelto altrove.
   void prisma.journey.update({ where: { id: journey.id }, data: { viewsCount: { increment: 1 } } }).catch(() => {});
+
+  const journeyCoverUrl = await resolveCoverUrl(journey.coverUrl);
 
   const session = await getCurrentSession();
   const { groups, flatEpisodes } = await getEpisodeTimeline(journey.id, { userId: session?.user.id });
@@ -63,9 +66,9 @@ export default async function PublicJourneyPage({
         <Reveal>
           <div className="grid gap-4 rounded-2xl border border-border bg-white/[0.02] p-4 md:grid-cols-2 md:p-5">
             <div className="relative aspect-video overflow-hidden rounded-xl border border-border bg-surface-2">
-              {journey.coverUrl ? (
+              {journeyCoverUrl ? (
                 <Image
-                  src={journey.coverUrl}
+                  src={journeyCoverUrl}
                   alt={journey.title}
                   fill
                   sizes="(min-width: 768px) 660px, 100vw"
@@ -157,7 +160,7 @@ export default async function PublicJourneyPage({
                   )}
                   <ul className="mt-2 space-y-2">
                     {group.episodes.map((episode) => (
-                      <EpisodeRow key={episode.id} episode={episode} journeyId={journey.id} coverUrl={journey.coverUrl} />
+                      <EpisodeRow key={episode.id} episode={episode} journeyId={journey.id} coverUrl={journeyCoverUrl} />
                     ))}
                   </ul>
                 </div>

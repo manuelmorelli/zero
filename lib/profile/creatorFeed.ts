@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { deleteExpiredUpdates } from "@/lib/updates";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { resolveCoverUrl, withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 export type CreatorFeedItem = {
   date: Date;
@@ -63,7 +64,7 @@ export async function getCreatorFeed({
       select: { coverUrl: true },
     }),
   ]);
-  const updateCoverUrl = latestJourney?.coverUrl ?? null;
+  const updateCoverUrl = await resolveCoverUrl(latestJourney?.coverUrl ?? null);
 
   const likeTargets = [
     ...episodes.map((episode) => ({ targetType: "EPISODE" as const, targetId: episode.id })),
@@ -95,7 +96,7 @@ export async function getCreatorFeed({
     })),
   ];
 
-  return items.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, limit);
+  return withResolvedCoverUrls(items.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, limit));
 }
 
 async function getLikeSummary(

@@ -1,14 +1,18 @@
 import { notFound } from "next/navigation";
+import { Rocket } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
-import { ChapterForm } from "@/components/creator/ChapterForm";
-import { ChapterList } from "@/components/creator/ChapterList";
-import { EpisodeForm } from "@/components/creator/EpisodeForm";
-import { EpisodeList } from "@/components/creator/EpisodeList";
+import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
+import { getJourneyPrivateStats } from "@/lib/dashboard/journeyStats";
 import { JourneyForm } from "@/components/creator/JourneyForm";
 import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
 import { JourneyArchiveButton } from "@/components/creator/JourneyArchiveButton";
+import { DashboardPanel } from "@/components/creator/DashboardPanel";
+import { ChaptersAndEpisodesPanel } from "@/components/creator/ChaptersAndEpisodesPanel";
+import { PrivateStatsPanel } from "@/components/creator/PrivateStatsPanel";
+import { FirstEpisodeForm } from "@/components/creator/FirstEpisodeForm";
 import { Header } from "@/components/layout/Header";
+import { Reveal } from "@/components/common/Reveal";
 import Link from "next/link";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -27,12 +31,12 @@ export default async function JourneyManagePage({
   const { creator } = await requireCreator();
 
   const journey = await prisma.journey.findUnique({ where: { id } });
-  if (!journey || journey.creatorId !== creator.id) notFound();
+  if (!journey || journey.creatorId !== creator.id || journey.deletedAt) notFound();
 
   const chapters = await prisma.chapter.findMany({
     where: { journeyId: journey.id, deletedAt: null },
     orderBy: { order: "asc" },
-    include: { episodes: { where: { deletedAt: null } } },
+    include: { episodes: { where: { deletedAt: null }, orderBy: { order: "asc" } } },
   });
 
   const looseEpisodes = await prisma.episode.findMany({
@@ -40,118 +44,92 @@ export default async function JourneyManagePage({
     orderBy: { order: "asc" },
   });
 
+  const totalEpisodeCount =
+    looseEpisodes.length + chapters.reduce((sum, chapter) => sum + chapter.episodes.length, 0);
+
+  const [coverUrl, stats] = await Promise.all([
+    resolveCoverUrl(journey.coverUrl),
+    getJourneyPrivateStats(journey.id, journey.viewsCount),
+  ]);
+
   return (
     <main>
       <Header />
 
-      <div className="mx-auto max-w-2xl px-6 pb-16 pt-24">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">{journey.title}</h1>
-          {journey.description && (
-            <p className="mt-2 text-sm text-ink-muted">{journey.description}</p>
+      <div className="mx-auto max-w-[1400px] space-y-4 px-5 pb-16 pt-24 md:px-8">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-ember transition-colors hover:text-ink"
+              >
+                ← All Journeys
+              </Link>
+              <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">{journey.title}</h1>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-muted">
+                {STATUS_LABEL[journey.status] ?? journey.status}
+              </span>
+              <JourneyPublishControl journeyId={journey.id} status={journey.status} />
+              {journey.status !== "ARCHIVED" && <JourneyArchiveButton journeyId={journey.id} />}
+              {journey.status !== "DRAFT" && (
+                <Link
+                  href={`/journeys/${journey.id}`}
+                  className="text-sm text-ink-muted transition-colors hover:text-ink"
+                >
+                  View public page →
+                </Link>
+              )}
+            </div>
+          </div>
+          {journey.status === "ARCHIVED" && (
+            <p className="mt-3 rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-ink-muted">
+              This Journey is archived. It stays visible on your public profile, but it&apos;s no
+              longer your active Journey.
+            </p>
           )}
-        </div>
-        <span className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-muted">
-          {STATUS_LABEL[journey.status] ?? journey.status}
-        </span>
-      </div>
+        </Reveal>
 
-      {journey.status === "ARCHIVED" && (
-        <p className="mt-4 rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-ink-muted">
-          This Journey is archived. It stays visible on your public profile, but it&apos;s no
-          longer your active Journey.
-        </p>
-      )}
-
-      <div className="mt-4 flex flex-wrap items-center gap-4">
-        <JourneyPublishControl journeyId={journey.id} status={journey.status} />
-        {journey.status !== "ARCHIVED" && <JourneyArchiveButton journeyId={journey.id} />}
-        {journey.status !== "DRAFT" && (
-          <Link
-            href={`/journeys/${journey.id}`}
-            className="text-sm font-medium text-ink underline underline-offset-2"
-          >
-            View public page →
-          </Link>
+        {totalEpisodeCount === 0 && (
+          <Reveal delayMs={60}>
+            <DashboardPanel title="Publish your first episode" icon={<Rocket className="h-4 w-4" aria-hidden="true" />}>
+              <FirstEpisodeForm journeyId={journey.id} />
+              <p className="mt-2 text-[0.72rem] text-ink-muted">
+                Two steps: add a title and publish. You can add a cover, duration and chapters at any time.
+              </p>
+            </DashboardPanel>
+          </Reveal>
         )}
-      </div>
 
-      {(journey.category || journey.tags.length > 0) && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {journey.category && (
-            <span className="rounded-full bg-surface-2 px-3 py-1 text-xs text-ink-muted">
-              {journey.category}
-            </span>
-          )}
-          {journey.tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-surface-2 px-3 py-1 text-xs text-ink-muted">
-              #{tag}
-            </span>
-          ))}
-        </div>
-      )}
-
-      <div className="mt-8 rounded-xl border border-border bg-surface p-6">
-        <h2 className="text-sm font-semibold text-ink">Edit Journey</h2>
-        <div className="mt-4">
-          <JourneyForm
-            journey={{
-              id: journey.id,
-              title: journey.title,
-              description: journey.description,
-              category: journey.category,
-              tags: journey.tags,
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="mt-10">
-        <h2 className="text-sm font-semibold text-ink">Chapters</h2>
-
-        <ChapterList
-          journeyId={journey.id}
-          chapters={chapters.map((chapter) => ({
-            id: chapter.id,
-            title: chapter.title,
-            description: chapter.description,
-            episodeCount: chapter.episodes.length,
-          }))}
-        />
-
-        <div className="mt-6 rounded-xl border border-border bg-surface p-6">
-          <h3 className="text-sm font-semibold text-ink">Add a chapter</h3>
-          <div className="mt-4">
-            <ChapterForm journeyId={journey.id} />
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-10">
-        <h2 className="text-sm font-semibold text-ink">Episodes</h2>
-        <p className="mt-1 text-sm text-ink-muted">
-          Episodes without a chapter, shown here in a simple chronological list.
-        </p>
-
-        <div className="mt-4">
-          <EpisodeList
-            journeyId={journey.id}
-            chapters={chapters.map((chapter) => ({ id: chapter.id, title: chapter.title }))}
-            episodes={looseEpisodes}
-          />
-        </div>
-
-        <div className="mt-6 rounded-xl border border-border bg-surface p-6">
-          <h3 className="text-sm font-semibold text-ink">Add an episode</h3>
-          <div className="mt-4">
-            <EpisodeForm
-              journeyId={journey.id}
-              chapters={chapters.map((chapter) => ({ id: chapter.id, title: chapter.title }))}
+        <Reveal delayMs={90}>
+          <DashboardPanel title="Journey details">
+            <JourneyForm
+              journey={{
+                id: journey.id,
+                title: journey.title,
+                description: journey.description,
+                category: journey.category,
+                tags: journey.tags,
+                coverUrl,
+              }}
             />
-          </div>
-        </div>
-      </div>
+          </DashboardPanel>
+        </Reveal>
+
+        <Reveal delayMs={120}>
+          <ChaptersAndEpisodesPanel
+            journeyId={journey.id}
+            chapters={chapters}
+            looseEpisodes={looseEpisodes}
+            coverUrl={coverUrl}
+          />
+        </Reveal>
+
+        <Reveal delayMs={150}>
+          <PrivateStatsPanel stats={stats} />
+        </Reveal>
       </div>
     </main>
   );

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
+import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 export type TopJourneyItem = {
   id: string;
@@ -57,10 +58,10 @@ export async function getTopJourneys({
 
   const withoutScore = sorted.map(({ journeyScore: _journeyScore, ...journey }) => journey);
 
-  if (interests.length === 0) return withoutScore.slice(0, limit);
+  if (interests.length === 0) return withResolvedCoverUrls(withoutScore.slice(0, limit));
 
   const interestSet = new Set(interests);
   const matching = withoutScore.filter((journey) => journey.category && interestSet.has(journey.category));
   const rest = withoutScore.filter((journey) => !(journey.category && interestSet.has(journey.category)));
-  return [...matching, ...rest].slice(0, limit);
+  return withResolvedCoverUrls([...matching, ...rest].slice(0, limit));
 }
