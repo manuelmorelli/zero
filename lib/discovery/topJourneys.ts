@@ -38,7 +38,7 @@ export async function getTopJourneys({
       creator: { include: { user: { include: { _count: { select: { followers: true } } } } } },
       chapters: {
         where: { deletedAt: null },
-        select: { _count: { select: { episodes: { where: { deletedAt: null } } } } },
+        select: { _count: { select: { episodes: { where: { deletedAt: null, publishedAt: { not: null } } } } } },
       },
     },
   });

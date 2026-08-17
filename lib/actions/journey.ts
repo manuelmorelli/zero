@@ -206,11 +206,12 @@ export async function publishJourney(
     where: {
       deletedAt: null,
       journeyId: journey.id,
+      publishedAt: { not: null },
       OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
     },
   });
   if (episodeCount === 0) {
-    issues.push("at least one Episode");
+    issues.push("at least one published Episode (not just a Draft)");
   }
   if (issues.length > 0) {
     return { error: `Before publishing, add: ${issues.join(", ")}.` };

@@ -6,8 +6,10 @@ type EpisodeListItem = {
   title: string;
   caption: string | null;
   videoKey: string | null;
+  durationSec: number | null;
   occurredAt: Date;
   chapterId: string | null;
+  publishedAt: Date | null;
 };
 
 /** Lista trascinabile (solo la parte "sortable": il DndContext che la governa vive nel genitore,

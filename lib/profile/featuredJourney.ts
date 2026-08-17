@@ -23,7 +23,11 @@ export async function getFeaturedJourney(
   if (publishedJourneys.length === 1) return publishedJourneys[0];
 
   const latestEpisode = await prisma.episode.findFirst({
-    where: { journeyId: { in: publishedJourneys.map((journey) => journey.id) }, deletedAt: null },
+    where: {
+      journeyId: { in: publishedJourneys.map((journey) => journey.id) },
+      deletedAt: null,
+      publishedAt: { not: null },
+    },
     orderBy: { createdAt: "desc" },
     select: { journeyId: true },
   });

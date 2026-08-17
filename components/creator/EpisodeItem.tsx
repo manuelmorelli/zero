@@ -6,6 +6,7 @@ import { GripVertical, Pencil } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { deleteEpisode } from "@/lib/actions/episode";
+import { formatDuration } from "@/lib/format/duration";
 import { EpisodeForm } from "@/components/creator/EpisodeForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -20,8 +21,10 @@ type EpisodeItemProps = {
     title: string;
     caption: string | null;
     videoKey: string | null;
+    durationSec: number | null;
     occurredAt: Date;
     chapterId: string | null;
+    publishedAt: Date | null;
   };
 };
 
@@ -61,9 +64,21 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-ink">{episode.title}</p>
+        <p className="flex items-center gap-2 truncate text-sm font-semibold text-ink">
+          <span className="truncate">{episode.title}</span>
+          <span
+            className={`shrink-0 rounded-full border px-2 py-0.5 text-[0.58rem] font-semibold uppercase tracking-wider ${
+              episode.publishedAt
+                ? "border-white/15 bg-white/5 text-ink-muted"
+                : "border-ember/40 bg-ember/15 text-ember"
+            }`}
+          >
+            {episode.publishedAt ? "Published" : "Draft"}
+          </span>
+        </p>
         <p className="truncate text-xs text-ink-muted">
           {episode.occurredAt.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
+          {episode.durationSec ? ` · ${formatDuration(episode.durationSec)}` : ""}
           {episode.caption ? ` · ${episode.caption}` : ""}
         </p>
       </div>

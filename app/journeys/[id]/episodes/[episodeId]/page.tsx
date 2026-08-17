@@ -25,7 +25,7 @@ export default async function EpisodePlayerPage({
   if (!journey || journey.deletedAt || !isPubliclyReachableJourneyStatus(journey.status)) notFound();
 
   const episode = await prisma.episode.findFirst({
-    where: { id: episodeId, journeyId: journey.id, deletedAt: null },
+    where: { id: episodeId, journeyId: journey.id, deletedAt: null, publishedAt: { not: null } },
   });
   if (!episode) notFound();
 

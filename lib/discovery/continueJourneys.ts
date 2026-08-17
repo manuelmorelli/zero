@@ -33,7 +33,7 @@ export async function getContinueJourneys(
     .filter((id): id is string => id !== null);
 
   const episodes = await prisma.episode.findMany({
-    where: { id: { in: episodeIds }, deletedAt: null },
+    where: { id: { in: episodeIds }, deletedAt: null, publishedAt: { not: null } },
   });
   const episodeById = new Map(episodes.map((episode) => [episode.id, episode]));
 

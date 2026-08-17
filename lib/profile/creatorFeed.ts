@@ -44,6 +44,7 @@ export async function getCreatorFeed({
     prisma.episode.findMany({
       where: {
         deletedAt: null,
+        publishedAt: { not: null },
         OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
         journey: { creatorId, status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
       },

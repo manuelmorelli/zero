@@ -97,6 +97,7 @@ function findNewEpisodes(creatorIds: string[], excludeJourneyIds: string[], limi
   return prisma.episode.findMany({
     where: {
       deletedAt: null,
+      publishedAt: { not: null },
       OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
       journey: {
         creatorId: { in: creatorIds },

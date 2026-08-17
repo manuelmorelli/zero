@@ -31,8 +31,10 @@ type Episode = {
   title: string;
   caption: string | null;
   videoKey: string | null;
+  durationSec: number | null;
   occurredAt: Date;
   chapterId: string | null;
+  publishedAt: Date | null;
 };
 
 type Chapter = {
@@ -141,11 +143,6 @@ export function ChaptersAndEpisodesPanel({
               episodes={looseItems}
               coverUrl={coverUrl}
             />
-            {hasChapters && (
-              <div className="mt-2">
-                <AddEpisodeButton journeyId={journeyId} chapters={chaptersList} />
-              </div>
-            )}
           </div>
 
           <SortableContext items={chapterItems.map((item) => item.id)} strategy={verticalListSortingStrategy}>
@@ -212,9 +209,6 @@ function ChapterBlock({
           episodes={chapter.episodes}
           coverUrl={coverUrl}
         />
-      </div>
-      <div className="mt-2">
-        <AddEpisodeButton journeyId={journeyId} chapters={chaptersList} defaultChapterId={chapter.id} />
       </div>
     </div>
   );

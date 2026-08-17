@@ -28,7 +28,7 @@ export default async function JourneyManagePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { creator } = await requireCreator();
+  const { user, creator } = await requireCreator();
 
   const journey = await prisma.journey.findUnique({ where: { id } });
   if (!journey || journey.creatorId !== creator.id || journey.deletedAt) notFound();
@@ -82,6 +82,12 @@ export default async function JourneyManagePage({
                   View public page →
                 </Link>
               )}
+              <Link
+                href={`/profile/${user.id}`}
+                className="text-sm text-ink-muted transition-colors hover:text-ink"
+              >
+                View Public Profile →
+              </Link>
             </div>
           </div>
           {journey.status === "ARCHIVED" && (

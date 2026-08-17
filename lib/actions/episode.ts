@@ -16,6 +16,7 @@ const EpisodeSchema = z
     title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
     caption: z.string().trim().max(10000).optional(),
     videoKey: z.string().trim().max(500).optional().or(z.literal("")),
+    durationSec: z.coerce.number().int().positive().optional(),
     occurredAt: z
       .string()
       .trim()
@@ -105,7 +106,8 @@ async function assertVideoWithinLimit(videoKey: string | undefined): Promise<str
 async function insertEpisode(
   journey: Awaited<ReturnType<typeof requireOwnedJourney>>,
   chapterId: string | null,
-  data: z.infer<typeof EpisodeSchema>
+  data: z.infer<typeof EpisodeSchema>,
+  published: boolean
 ): Promise<{ error: string | null }> {
   const sizeError = await assertVideoWithinLimit(data.videoKey || undefined);
   if (sizeError) return { error: sizeError };
@@ -122,16 +124,19 @@ async function insertEpisode(
       title: data.title,
       caption: data.caption,
       videoKey: data.videoKey || undefined,
+      durationSec: data.durationSec,
       occurredAt: data.occurredAt,
       order: (lastEpisode?.order ?? 0) + 1,
+      publishedAt: published ? new Date() : null,
     },
   });
 
-  // Notifica i follower solo se l'episodio si aggiunge a un Journey già pubblicato: gli episodi
-  // caricati mentre il Journey è ancora in Bozza diventano visibili tutti insieme alla prima
-  // pubblicazione, già coperta da `notifyNewJourney` (vedi lib/actions/journey.ts). Stessa regola
-  // già usata dal Feed dei creator seguiti in Home (lib/discovery/feed.ts).
-  if (LIVE_JOURNEY_STATUSES.includes(journey.status) && journey.publishedAt) {
+  // Notifica i follower solo se l'episodio è pubblicato E il Journey che lo contiene è già
+  // pubblicato: gli episodi caricati mentre il Journey è ancora in Bozza diventano visibili tutti
+  // insieme alla prima pubblicazione, già coperta da `notifyNewJourney` (vedi
+  // lib/actions/journey.ts). Stessa regola già usata dal Feed dei creator seguiti in Home
+  // (lib/discovery/feed.ts).
+  if (published && LIVE_JOURNEY_STATUSES.includes(journey.status) && journey.publishedAt) {
     await notifyNewEpisode({
       creatorId: journey.creatorId,
       creatorName: journey.creator.displayName,
@@ -163,13 +168,17 @@ export async function createEpisode(
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
     videoKey: formData.get("videoKey") || undefined,
+    durationSec: formData.get("durationSec") || undefined,
     occurredAt: formData.get("occurredAt"),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
-  const result = await insertEpisode(journey, chapterId, parsed.data);
+  // Un episodio nasce in Bozza a meno che il creator non spunti esplicitamente "Published" nel
+  // form: passaggio esplicito voluto, mai una pubblicazione automatica silenziosa.
+  const published = formData.get("published") === "on";
+  const result = await insertEpisode(journey, chapterId, parsed.data, published);
   if (result.error) return result;
 
   // Il creator viene riportato alla pagina del Journey (hub di gestione di Capitoli ed
@@ -197,13 +206,17 @@ export async function quickCreateEpisode(
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
     videoKey: formData.get("videoKey") || undefined,
+    durationSec: formData.get("durationSec") || undefined,
     occurredAt: formData.get("occurredAt"),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid data.", done: false };
   }
 
-  const result = await insertEpisode(journey, chapterId, parsed.data);
+  // Questo flusso rapido ("+" globale, primo episodio) è di per sé un'azione di pubblicazione
+  // esplicita ("Publish Episode" / "Publish"): a differenza del form completo della Dashboard,
+  // qui non c'è un interruttore Bozza/Pubblicato separato.
+  const result = await insertEpisode(journey, chapterId, parsed.data, true);
   return { error: result.error, done: !result.error };
 }
 
@@ -222,6 +235,7 @@ export async function updateEpisode(
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
     videoKey: formData.get("videoKey") || undefined,
+    durationSec: formData.get("durationSec") || undefined,
     occurredAt: formData.get("occurredAt"),
   });
   if (!parsed.success) {
@@ -235,6 +249,8 @@ export async function updateEpisode(
     if (sizeError) return { error: sizeError };
   }
 
+  const published = formData.get("published") === "on";
+
   await prisma.episode.update({
     where: { id: episode.id },
     data: {
@@ -242,7 +258,9 @@ export async function updateEpisode(
       title: parsed.data.title,
       caption: parsed.data.caption,
       videoKey: newVideoKeyValue,
+      durationSec: replacesVideo ? parsed.data.durationSec : (parsed.data.durationSec ?? episode.durationSec),
       occurredAt: parsed.data.occurredAt,
+      publishedAt: published ? (episode.publishedAt ?? new Date()) : null,
     },
   });
 

@@ -17,7 +17,7 @@ export async function getJourneyPrivateStats(
   viewsCount: number
 ): Promise<JourneyPrivateStats> {
   const episodes = await prisma.episode.findMany({
-    where: { journeyId, deletedAt: null },
+    where: { journeyId, deletedAt: null, publishedAt: { not: null } },
     select: { id: true },
   });
   const episodeIds = episodes.map((episode) => episode.id);

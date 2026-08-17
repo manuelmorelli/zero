@@ -4,6 +4,8 @@ import { useActionState, useId, useState } from "react";
 import { createEpisode, createEpisodeVideoUploadUrl, updateEpisode } from "@/lib/actions/episode";
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { uploadFileWithProgress } from "@/lib/upload";
+import { readVideoDuration } from "@/lib/media/readVideoDuration";
+import { formatDuration } from "@/lib/format/duration";
 
 type EpisodeFormProps = {
   journeyId: string;
@@ -15,8 +17,10 @@ type EpisodeFormProps = {
     title: string;
     caption: string | null;
     videoKey: string | null;
+    durationSec: number | null;
     occurredAt: Date;
     chapterId: string | null;
+    publishedAt: Date | null;
   };
 };
 
@@ -36,8 +40,10 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
   );
 
   const [videoKey, setVideoKey] = useState<string | null>(episode?.videoKey ?? null);
+  const [durationSec, setDurationSec] = useState<number | null>(episode?.durationSec ?? null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [published, setPublished] = useState(Boolean(episode?.publishedAt));
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -57,11 +63,10 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
 
     setUploadProgress(0);
     try {
-      const result = await createEpisodeVideoUploadUrl(
-        episode ? episode.id : journeyId,
-        episode ? "episode" : "journey",
-        file.type
-      );
+      const [result, duration] = await Promise.all([
+        createEpisodeVideoUploadUrl(episode ? episode.id : journeyId, episode ? "episode" : "journey", file.type),
+        readVideoDuration(file),
+      ]);
       if ("error" in result) {
         setUploadError(result.error);
         setUploadProgress(null);
@@ -69,6 +74,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
       }
       await uploadFileWithProgress(result.uploadUrl, file, setUploadProgress);
       setVideoKey(result.key);
+      setDurationSec(duration);
     } catch {
       setUploadError("Upload failed. Please try again.");
     } finally {
@@ -80,6 +86,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
     <form action={formAction} className="space-y-2.5">
       <input type="hidden" name={episode ? "episodeId" : "journeyId"} value={episode ? episode.id : journeyId} />
       <input type="hidden" name="videoKey" value={videoKey ?? ""} />
+      <input type="hidden" name="durationSec" value={durationSec ?? ""} />
 
       <div>
         <label htmlFor={`${uid}-title`} className="text-xs font-medium text-ink-muted">
@@ -163,9 +170,27 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
         )}
         {uploadError && <p className="mt-1 text-xs text-danger">{uploadError}</p>}
         {uploadProgress === null && !uploadError && videoKey && (
-          <p className="mt-1 text-xs text-ink-muted">Video ready.</p>
+          <p className="mt-1 text-xs text-ink-muted">
+            Video ready{durationSec !== null ? ` · ${formatDuration(durationSec)}` : ""}.
+          </p>
         )}
       </div>
+
+      <label className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3.5 py-2">
+        <input
+          type="checkbox"
+          name="published"
+          checked={published}
+          onChange={(event) => setPublished(event.target.checked)}
+          className="h-4 w-4 accent-ink"
+        />
+        <span className="text-xs font-medium text-ink">
+          {published ? "Published" : "Draft"}
+          <span className="ml-1 font-normal text-ink-faint">
+            {published ? "— visible to everyone" : "— only visible to you"}
+          </span>
+        </span>
+      </label>
 
       {state.error && <p className="text-xs text-danger">{state.error}</p>}
 

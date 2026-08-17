@@ -6,6 +6,7 @@ import { quickStartJourney } from "@/lib/actions/journey";
 import { createEpisodeVideoUploadUrl, quickCreateEpisode } from "@/lib/actions/episode";
 import { createUpdateMediaUploadUrl, publishUpdate } from "@/lib/actions/update";
 import { uploadFileWithProgress } from "@/lib/upload";
+import { readVideoDuration } from "@/lib/media/readVideoDuration";
 import { ALLOWED_VIDEO_TYPES, MAX_UPDATE_VIDEO_DURATION_SEC, MAX_UPDATE_VIDEO_SIZE_BYTES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { POLL_MAX_OPTIONS, POLL_MIN_OPTIONS, POLL_OPTION_MAX_LENGTH, UPDATE_TEXT_MAX_LENGTH } from "@/lib/constants/updates";
@@ -119,6 +120,7 @@ function QuickUploadModal({
 }) {
   const router = useRouter();
   const [videoKey, setVideoKey] = useState<string | null>(null);
+  const [videoDurationSec, setVideoDurationSec] = useState<number | null>(null);
 
   return (
     <div
@@ -177,8 +179,9 @@ function QuickUploadModal({
           {step === "video" && journeyId && (
             <VideoStep
               journeyId={journeyId}
-              onUploaded={(key) => {
+              onUploaded={(key, durationSec) => {
                 setVideoKey(key);
+                setVideoDurationSec(durationSec);
                 setStep("details");
               }}
             />
@@ -187,6 +190,7 @@ function QuickUploadModal({
             <DetailsStep
               journeyId={journeyId}
               videoKey={videoKey}
+              durationSec={videoDurationSec}
               chapters={chapters}
               onDone={() => {
                 onClose();
@@ -345,7 +349,13 @@ function JourneyStep({ onCreated }: { onCreated: (journeyId: string) => void }) 
   );
 }
 
-function VideoStep({ journeyId, onUploaded }: { journeyId: string; onUploaded: (videoKey: string) => void }) {
+function VideoStep({
+  journeyId,
+  onUploaded,
+}: {
+  journeyId: string;
+  onUploaded: (videoKey: string, durationSec: number | null) => void;
+}) {
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -368,14 +378,17 @@ function VideoStep({ journeyId, onUploaded }: { journeyId: string; onUploaded: (
 
     setProgress(0);
     try {
-      const result = await createEpisodeVideoUploadUrl(journeyId, "journey", file.type);
+      const [result, durationSec] = await Promise.all([
+        createEpisodeVideoUploadUrl(journeyId, "journey", file.type),
+        readVideoDuration(file),
+      ]);
       if ("error" in result) {
         setError(result.error);
         setProgress(null);
         return;
       }
       await uploadFileWithProgress(result.uploadUrl, file, setProgress);
-      onUploaded(result.key);
+      onUploaded(result.key, durationSec);
     } catch {
       setError("Upload failed. Please try again.");
       setProgress(null);
@@ -418,11 +431,13 @@ function DetailsStep({
   journeyId,
   chapters,
   videoKey,
+  durationSec,
   onDone,
 }: {
   journeyId: string;
   chapters: Chapter[];
   videoKey: string;
+  durationSec: number | null;
   onDone: () => void;
 }) {
   const uid = useId();
@@ -441,6 +456,7 @@ function DetailsStep({
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="journeyId" value={journeyId} />
       <input type="hidden" name="videoKey" value={videoKey} />
+      <input type="hidden" name="durationSec" value={durationSec ?? ""} />
 
       <div>
         <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
@@ -568,24 +584,6 @@ function UpdateTypeStep({ onPick }: { onPick: (kind: UpdateKind) => void }) {
       ))}
     </div>
   );
-}
-
-/** Legge la durata di un video locale prima di caricarlo, per respingere clip troppo lunghe senza
- * dover elaborare il file lato server (non c'è un servizio di transcodifica in questo progetto). */
-function readVideoDuration(file: File): Promise<number | null> {
-  return new Promise((resolve) => {
-    const video = document.createElement("video");
-    video.preload = "metadata";
-    video.onloadedmetadata = () => {
-      URL.revokeObjectURL(video.src);
-      resolve(Number.isFinite(video.duration) ? video.duration : null);
-    };
-    video.onerror = () => {
-      URL.revokeObjectURL(video.src);
-      resolve(null);
-    };
-    video.src = URL.createObjectURL(file);
-  });
 }
 
 function UpdateFormStep({

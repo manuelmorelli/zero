@@ -28,6 +28,7 @@ export async function getLatestVideos({
     where: {
       videoKey: { not: null },
       deletedAt: null,
+      publishedAt: { not: null },
       OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
       journey: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
     },

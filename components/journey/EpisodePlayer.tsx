@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Maximize, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { saveEpisodeProgress } from "@/lib/actions/progress";
+import { formatDuration as formatTime } from "@/lib/format/duration";
 import { Avatar } from "@/components/common/Avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
 import { LikeButton } from "@/components/journey/LikeButton";
@@ -14,13 +15,6 @@ const RESUME_THRESHOLD_SEC = 5;
 // video esatto: evita che un buffering finale o un secondo mancante impediscano di segnarlo.
 const COMPLETION_FRACTION = 0.95;
 const SAVE_INTERVAL_MS = 15_000;
-
-function formatTime(seconds: number) {
-  if (!Number.isFinite(seconds)) return "0:00";
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
 
 type EpisodePlayerProps = {
   journeyId: string;

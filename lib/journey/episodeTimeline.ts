@@ -44,15 +44,20 @@ export async function getEpisodeTimeline(
   journeyId: string,
   { withPlaybackUrls = false, userId }: { withPlaybackUrls?: boolean; userId?: string } = {}
 ): Promise<EpisodeTimeline> {
+  // Solo episodi pubblicati: questa timeline alimenta esclusivamente pagine pubbliche (Pagina
+  // Journey e player episodio), mai la Dashboard del creator (che interroga Prisma direttamente
+  // per vedere anche le Bozze).
   const [looseEpisodes, chapters] = await Promise.all([
     prisma.episode.findMany({
-      where: { journeyId, chapterId: null, deletedAt: null },
+      where: { journeyId, chapterId: null, deletedAt: null, publishedAt: { not: null } },
       orderBy: { order: "asc" },
     }),
     prisma.chapter.findMany({
       where: { journeyId, deletedAt: null },
       orderBy: { order: "asc" },
-      include: { episodes: { where: { deletedAt: null }, orderBy: { order: "asc" } } },
+      include: {
+        episodes: { where: { deletedAt: null, publishedAt: { not: null } }, orderBy: { order: "asc" } },
+      },
     }),
   ]);
 

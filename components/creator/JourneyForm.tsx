@@ -37,11 +37,28 @@ function formatMB(bytes: number): string {
   return `${Math.round(bytes / (1024 * 1024))}MB`;
 }
 
+const INITIAL_DRAFT = { title: "", description: "", category: "", tags: "" };
+
 export function JourneyForm({ journey }: JourneyFormProps) {
   const [state, formAction, pending] = useActionState(
     journey ? updateJourney : createJourney,
     { error: null }
   );
+
+  const initialDraft = journey
+    ? {
+        title: journey.title,
+        description: journey.description ?? "",
+        category: journey.category ?? "",
+        tags: journey.tags.join(", "),
+      }
+    : INITIAL_DRAFT;
+  const [draft, setDraft] = useState(initialDraft);
+  const dirty =
+    draft.title !== initialDraft.title ||
+    draft.description !== initialDraft.description ||
+    draft.category !== initialDraft.category ||
+    draft.tags !== initialDraft.tags;
 
   const [coverKey, setCoverKey] = useState("");
   const [coverPreview, setCoverPreview] = useState(journey?.coverUrl ?? null);
@@ -142,7 +159,8 @@ export function JourneyForm({ journey }: JourneyFormProps) {
             required
             minLength={2}
             maxLength={100}
-            defaultValue={journey?.title}
+            value={draft.title}
+            onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))}
             className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
           />
         </div>
@@ -157,44 +175,51 @@ export function JourneyForm({ journey }: JourneyFormProps) {
             rows={4}
             maxLength={2000}
             placeholder="Goal, context, motivations, what followers can expect."
-            defaultValue={journey?.description ?? undefined}
+            value={draft.description}
+            onChange={(event) => setDraft((prev) => ({ ...prev, description: event.target.value }))}
             className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="category" className="text-sm font-medium text-ink-muted">
-              Category <span className="text-ink-faint">(optional)</span>
-            </label>
-            <select
-              id="category"
-              name="category"
-              defaultValue={journey?.category ?? ""}
-              className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-            >
-              <option value="">Select a category</option>
-              {JOURNEY_CATEGORIES.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+        <div>
+          <span className="text-sm font-medium text-ink-muted">
+            Category <span className="text-ink-faint">(optional)</span>
+          </span>
+          <input type="hidden" name="category" value={draft.category} />
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {JOURNEY_CATEGORIES.map((category) => (
+              <button
+                key={category}
+                type="button"
+                onClick={() =>
+                  setDraft((prev) => ({ ...prev, category: prev.category === category ? "" : category }))
+                }
+                className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                  draft.category === category
+                    ? "border-ember/50 bg-ember/15 text-ember"
+                    : "border-border text-ink-muted hover:border-ink-muted hover:text-ink"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
           </div>
-          <div>
-            <label htmlFor="tags" className="text-sm font-medium text-ink-muted">
-              Tags <span className="text-ink-faint">(comma-separated)</span>
-            </label>
-            <input
-              id="tags"
-              name="tags"
-              type="text"
-              maxLength={200}
-              placeholder="fitness, running"
-              defaultValue={journey?.tags.join(", ")}
-              className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-            />
-          </div>
+        </div>
+
+        <div>
+          <label htmlFor="tags" className="text-sm font-medium text-ink-muted">
+            Tags <span className="text-ink-faint">(comma-separated)</span>
+          </label>
+          <input
+            id="tags"
+            name="tags"
+            type="text"
+            maxLength={200}
+            placeholder="fitness, running"
+            value={draft.tags}
+            onChange={(event) => setDraft((prev) => ({ ...prev, tags: event.target.value }))}
+            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          />
         </div>
 
         {state.error && <p className="text-sm text-danger">{state.error}</p>}
@@ -212,13 +237,29 @@ export function JourneyForm({ journey }: JourneyFormProps) {
           ) : (
             <span />
           )}
-          <button
-            type="submit"
-            disabled={pending || coverProgress !== null}
-            className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-          >
-            {pending ? "Saving…" : journey ? "Save changes" : "Create Journey"}
-          </button>
+          <div className="flex flex-wrap items-center gap-2.5">
+            {journey && (
+              <span className="text-xs text-ink-muted">
+                {dirty ? "Unsaved changes" : "All changes saved"}
+              </span>
+            )}
+            {journey && dirty && (
+              <button
+                type="button"
+                onClick={() => setDraft(initialDraft)}
+                className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-ink-muted transition-colors hover:border-ink-muted"
+              >
+                Cancel
+              </button>
+            )}
+            <button
+              type="submit"
+              disabled={pending || coverProgress !== null || (journey ? !dirty : false)}
+              className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {pending ? "Saving…" : journey ? "Save changes" : "Create Journey"}
+            </button>
+          </div>
         </div>
       </form>
 

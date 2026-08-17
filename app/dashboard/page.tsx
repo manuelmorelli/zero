@@ -19,7 +19,7 @@ export default async function CreatorDashboardPage() {
   const activeJourneys = journeys.filter((journey) => journey.status !== "ARCHIVED");
   const archivedJourneys = journeys.filter((journey) => journey.status === "ARCHIVED");
 
-  const [chapterCounts, episodeCounts] = await Promise.all([
+  const [chapterCounts, episodeCounts, draftCounts] = await Promise.all([
     Promise.all(
       activeJourneys.map((journey) =>
         prisma.chapter.count({ where: { journeyId: journey.id, deletedAt: null } })
@@ -36,6 +36,18 @@ export default async function CreatorDashboardPage() {
         })
       )
     ),
+    Promise.all(
+      activeJourneys.map((journey) =>
+        prisma.episode.count({
+          where: {
+            deletedAt: null,
+            journeyId: journey.id,
+            publishedAt: null,
+            OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
+          },
+        })
+      )
+    ),
   ]);
 
   const gridJourneys: GridJourney[] = activeJourneys.map((journey, index) => ({
@@ -46,6 +58,7 @@ export default async function CreatorDashboardPage() {
     status: journey.status,
     chapterCount: chapterCounts[index] ?? 0,
     episodeCount: episodeCounts[index] ?? 0,
+    draftCount: draftCounts[index] ?? 0,
   }));
 
   return (

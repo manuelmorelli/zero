@@ -85,6 +85,7 @@ async function computeJourneyScores(inputs: ScoreInput[]): Promise<Map<string, n
     where: {
       journeyId: { in: journeyIds },
       deletedAt: null,
+      publishedAt: { not: null },
       OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
     },
     select: { id: true, journeyId: true, createdAt: true },

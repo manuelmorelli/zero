@@ -307,11 +307,18 @@ model Episode {
   chapter     Chapter? @relation(fields: [chapterId], references: [id])
   title       String
   videoKey    String?
+  // Durata del video in secondi, letta automaticamente dal browser al caricamento
+  // (vedi lib/media/readVideoDuration.ts) — non richiede transcodifica lato server.
+  durationSec Int?
   caption     String?
   // Data reale in cui l'evento è accaduto, separata dall'ordine narrativo
   // (vedi 05_Journey.md: ordine narrativo e cronologia reale sono informazioni distinte).
   occurredAt  DateTime @default(now())
   order       Int
+  // null = Bozza, visibile solo al creator. Sempre un passaggio esplicito del creator, mai
+  // valorizzato in automatico alla creazione (a differenza del vecchio comportamento in cui ogni
+  // episodio era pubblico da subito).
+  publishedAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
