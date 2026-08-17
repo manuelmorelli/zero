@@ -19,6 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { moveChapterToIndex } from "@/lib/actions/chapter";
+import { moveEpisodeToIndex } from "@/lib/actions/episode";
 import { DashboardPanel } from "@/components/creator/DashboardPanel";
 import { EpisodeList } from "@/components/creator/EpisodeList";
 import { AddEpisodeButton } from "@/components/creator/AddEpisodeButton";
@@ -41,9 +42,10 @@ type Chapter = {
   episodes: Episode[];
 };
 
-/** Capitoli ed Episodi in un'unica vista, con trascinamento reale per riordinare sia i Capitoli
- * (questo componente) sia gli Episodi al loro interno (vedi EpisodeList). Non più due pagine
- * separate (Journey + ogni Capitolo): tutto vive nella pagina del Journey. */
+/** Capitoli ed Episodi in un'unica vista, con un solo DndContext per tutta la pagina (Capitoli e
+ * Episodi di ogni Capitolo hanno ciascuno la propria zona di trascinamento — SortableContext — ma
+ * tutte vivono sotto lo stesso DndContext: annidarne due, come prima, rompeva il trascinamento
+ * degli Episodi dentro un Capitolo). */
 export function ChaptersAndEpisodesPanel({
   journeyId,
   chapters,
@@ -55,13 +57,15 @@ export function ChaptersAndEpisodesPanel({
   looseEpisodes: Episode[];
   coverUrl: string | null;
 }) {
-  const [items, setItems] = useState(chapters);
-  const [prevChapters, setPrevChapters] = useState(chapters);
+  const [chapterItems, setChapterItems] = useState(chapters);
+  const [looseItems, setLooseItems] = useState(looseEpisodes);
+  const [prevProps, setPrevProps] = useState({ chapters, looseEpisodes });
   const [, startTransition] = useTransition();
 
-  if (chapters !== prevChapters) {
-    setPrevChapters(chapters);
-    setItems(chapters);
+  if (prevProps.chapters !== chapters || prevProps.looseEpisodes !== looseEpisodes) {
+    setPrevProps({ chapters, looseEpisodes });
+    setChapterItems(chapters);
+    setLooseItems(looseEpisodes);
   }
 
   const sensors = useSensors(
@@ -72,19 +76,47 @@ export function ChaptersAndEpisodesPanel({
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
+    const activeId = String(active.id);
+    const overId = String(over.id);
 
-    const oldIndex = items.findIndex((item) => item.id === active.id);
-    const newIndex = items.findIndex((item) => item.id === over.id);
-    if (oldIndex === -1 || newIndex === -1) return;
+    const chapterIndex = chapterItems.findIndex((chapter) => chapter.id === activeId);
+    if (chapterIndex !== -1) {
+      const overIndex = chapterItems.findIndex((chapter) => chapter.id === overId);
+      if (overIndex === -1) return;
+      setChapterItems((prev) => arrayMove(prev, chapterIndex, overIndex));
+      startTransition(() => moveChapterToIndex(activeId, overIndex));
+      return;
+    }
 
-    setItems(arrayMove(items, oldIndex, newIndex));
-    startTransition(() => {
-      moveChapterToIndex(String(active.id), newIndex);
+    const looseIndex = looseItems.findIndex((episode) => episode.id === activeId);
+    if (looseIndex !== -1) {
+      const overIndex = looseItems.findIndex((episode) => episode.id === overId);
+      if (overIndex === -1) return;
+      setLooseItems((prev) => arrayMove(prev, looseIndex, overIndex));
+      startTransition(() => moveEpisodeToIndex(activeId, overIndex));
+      return;
+    }
+
+    const ownerChapterIndex = chapterItems.findIndex((chapter) =>
+      chapter.episodes.some((episode) => episode.id === activeId)
+    );
+    if (ownerChapterIndex === -1) return;
+    const chapter = chapterItems[ownerChapterIndex]!;
+    const epIndex = chapter.episodes.findIndex((episode) => episode.id === activeId);
+    const overIndex = chapter.episodes.findIndex((episode) => episode.id === overId);
+    if (overIndex === -1) return;
+
+    const nextEpisodes = arrayMove(chapter.episodes, epIndex, overIndex);
+    setChapterItems((prev) => {
+      const next = [...prev];
+      next[ownerChapterIndex] = { ...chapter, episodes: nextEpisodes };
+      return next;
     });
+    startTransition(() => moveEpisodeToIndex(activeId, overIndex));
   }
 
-  const chaptersList = items.map((chapter) => ({ id: chapter.id, title: chapter.title }));
-  const hasChapters = items.length > 0;
+  const chaptersList = chapterItems.map((chapter) => ({ id: chapter.id, title: chapter.title }));
+  const hasChapters = chapterItems.length > 0;
 
   return (
     <DashboardPanel
@@ -97,28 +129,27 @@ export function ChaptersAndEpisodesPanel({
         </div>
       }
     >
-      <div className="space-y-4">
-        <div>
-          {hasChapters && (
-            <h3 className="mb-2 text-[0.72rem] uppercase tracking-wider text-ink-muted">No Chapter</h3>
-          )}
-          <EpisodeList
-            dndId={`episodes-${journeyId}-loose`}
-            journeyId={journeyId}
-            chapters={chaptersList}
-            episodes={looseEpisodes}
-            coverUrl={coverUrl}
-          />
-          {hasChapters && (
-            <div className="mt-2">
-              <AddEpisodeButton journeyId={journeyId} chapters={chaptersList} />
-            </div>
-          )}
-        </div>
+      <DndContext id={`journey-${journeyId}`} sensors={sensors} onDragEnd={handleDragEnd}>
+        <div className="space-y-4">
+          <div>
+            {hasChapters && (
+              <h3 className="mb-2 text-[0.72rem] uppercase tracking-wider text-ink-muted">No Chapter</h3>
+            )}
+            <EpisodeList
+              journeyId={journeyId}
+              chapters={chaptersList}
+              episodes={looseItems}
+              coverUrl={coverUrl}
+            />
+            {hasChapters && (
+              <div className="mt-2">
+                <AddEpisodeButton journeyId={journeyId} chapters={chaptersList} />
+              </div>
+            )}
+          </div>
 
-        <DndContext id={`chapters-${journeyId}`} sensors={sensors} onDragEnd={handleDragEnd}>
-          <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
-            {items.map((chapter) => (
+          <SortableContext items={chapterItems.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+            {chapterItems.map((chapter) => (
               <ChapterBlock
                 key={chapter.id}
                 journeyId={journeyId}
@@ -128,8 +159,8 @@ export function ChaptersAndEpisodesPanel({
               />
             ))}
           </SortableContext>
-        </DndContext>
-      </div>
+        </div>
+      </DndContext>
     </DashboardPanel>
   );
 }
@@ -176,7 +207,6 @@ function ChapterBlock({
 
       <div className="mt-2.5">
         <EpisodeList
-          dndId={`episodes-${journeyId}-${chapter.id}`}
           journeyId={journeyId}
           chapters={chaptersList}
           episodes={chapter.episodes}

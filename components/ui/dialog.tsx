@@ -44,7 +44,7 @@ function DialogContent({
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("flex flex-col gap-1 border-b border-border px-5 py-4", className)}
+      className={cn("flex flex-col gap-1 border-b border-border px-4 py-3", className)}
       {...props}
     />
   );
@@ -53,7 +53,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
 function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("flex items-center justify-end gap-2.5 border-t border-border px-5 py-4", className)}
+      className={cn("flex items-center justify-end gap-2.5 border-t border-border px-4 py-3", className)}
       {...props}
     />
   );

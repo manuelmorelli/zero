@@ -85,11 +85,11 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
       </form>
 
       <Dialog open={editing} onOpenChange={setEditing}>
-        <DialogContent>
+        <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Edit episode</DialogTitle>
           </DialogHeader>
-          <div className="p-5 pt-4">
+          <div className="p-4">
             <EpisodeForm journeyId={journeyId} chapters={chapters} episode={episode} />
           </div>
         </DialogContent>

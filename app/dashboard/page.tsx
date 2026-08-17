@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
-import { getOwnUpdatesForDashboard } from "@/lib/updates";
-import { UpdateForm } from "@/components/creator/UpdateForm";
-import { UpdateItem } from "@/components/creator/UpdateItem";
 import { DashboardPanel } from "@/components/creator/DashboardPanel";
 import { JourneyGrid, type GridJourney } from "@/components/creator/JourneyGrid";
 import { Header } from "@/components/layout/Header";
@@ -50,8 +47,6 @@ export default async function CreatorDashboardPage() {
     chapterCount: chapterCounts[index] ?? 0,
     episodeCount: episodeCounts[index] ?? 0,
   }));
-
-  const updates = await getOwnUpdatesForDashboard(creator.id);
 
   return (
     <main>
@@ -118,30 +113,6 @@ export default async function CreatorDashboardPage() {
             </DashboardPanel>
           </Reveal>
         )}
-
-        <Reveal delayMs={120}>
-          <DashboardPanel title="Updates">
-            <p className="mb-4 text-xs text-ink-muted">
-              Short, temporary posts for your followers. Each one disappears after 24 hours.
-            </p>
-
-            <UpdateForm />
-
-            <div className="mt-6 space-y-3">
-              {updates.length === 0 ? (
-                <p className="rounded-xl border border-border bg-surface-2 p-6 text-sm text-ink-muted">
-                  You don&apos;t have any active Updates right now.
-                </p>
-              ) : (
-                updates.map((update, index) => (
-                  <Reveal key={update.id} delayMs={index * 60}>
-                    <UpdateItem update={update} />
-                  </Reveal>
-                ))
-              )}
-            </div>
-          </DashboardPanel>
-        </Reveal>
       </div>
     </main>
   );

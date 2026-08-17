@@ -77,12 +77,12 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
   }
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-2.5">
       <input type="hidden" name={episode ? "episodeId" : "journeyId"} value={episode ? episode.id : journeyId} />
       <input type="hidden" name="videoKey" value={videoKey ?? ""} />
 
       <div>
-        <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
+        <label htmlFor={`${uid}-title`} className="text-xs font-medium text-ink-muted">
           Episode title
         </label>
         <input
@@ -93,49 +93,62 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
           minLength={2}
           maxLength={100}
           defaultValue={episode?.title}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
       </div>
 
       <div>
-        <label htmlFor={`${uid}-caption`} className="text-sm font-medium text-ink-muted">
+        <label htmlFor={`${uid}-caption`} className="text-xs font-medium text-ink-muted">
           Caption <span className="text-ink-faint">(optional)</span>
         </label>
         <textarea
           id={`${uid}-caption`}
           name="caption"
-          rows={5}
+          rows={2}
           maxLength={10000}
           placeholder="Tell what happened in this episode."
           defaultValue={episode?.caption ?? undefined}
-          className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className="mt-1 w-full resize-none rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
       </div>
 
-      <div>
-        <label htmlFor={`${uid}-chapter`} className="text-sm font-medium text-ink-muted">
-          Chapter
-        </label>
-        <select
-          id={`${uid}-chapter`}
-          name="chapterId"
-          defaultValue={episode?.chapterId ?? defaultChapterId ?? ""}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-        >
-          <option value="">No chapter</option>
-          {chapters.map((chapter) => (
-            <option key={chapter.id} value={chapter.id}>
-              {chapter.title}
-            </option>
-          ))}
-        </select>
-        <p className="mt-1.5 text-xs text-ink-faint">
-          Use chapters only if you want to group related episodes — not required.
-        </p>
+      <div className="grid grid-cols-2 gap-2.5">
+        <div>
+          <label htmlFor={`${uid}-chapter`} className="text-xs font-medium text-ink-muted">
+            Chapter
+          </label>
+          <select
+            id={`${uid}-chapter`}
+            name="chapterId"
+            defaultValue={episode?.chapterId ?? defaultChapterId ?? ""}
+            className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          >
+            <option value="">No chapter</option>
+            {chapters.map((chapter) => (
+              <option key={chapter.id} value={chapter.id}>
+                {chapter.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor={`${uid}-occurredAt`} className="text-xs font-medium text-ink-muted">
+            When it happened
+          </label>
+          <input
+            id={`${uid}-occurredAt`}
+            name="occurredAt"
+            type="date"
+            required
+            defaultValue={toDateInputValue(episode?.occurredAt ?? new Date())}
+            className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          />
+        </div>
       </div>
 
       <div>
-        <label htmlFor={`${uid}-video`} className="text-sm font-medium text-ink-muted">
+        <label htmlFor={`${uid}-video`} className="text-xs font-medium text-ink-muted">
           Video <span className="text-ink-faint">(optional, max {formatMB(MAX_VIDEO_SIZE_BYTES)})</span>
         </label>
         <input
@@ -143,37 +156,23 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
           type="file"
           accept="video/*"
           onChange={handleFileChange}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-1.5 file:text-sm file:font-semibold file:text-bg"
+          className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-3.5 file:py-1 file:text-xs file:font-semibold file:text-bg"
         />
         {uploadProgress !== null && (
-          <p className="mt-1.5 text-sm text-ink-muted">Uploading… {uploadProgress}%</p>
+          <p className="mt-1 text-xs text-ink-muted">Uploading… {uploadProgress}%</p>
         )}
-        {uploadError && <p className="mt-1.5 text-sm text-danger">{uploadError}</p>}
+        {uploadError && <p className="mt-1 text-xs text-danger">{uploadError}</p>}
         {uploadProgress === null && !uploadError && videoKey && (
-          <p className="mt-1.5 text-sm text-ink-muted">Video ready.</p>
+          <p className="mt-1 text-xs text-ink-muted">Video ready.</p>
         )}
       </div>
 
-      <div>
-        <label htmlFor={`${uid}-occurredAt`} className="text-sm font-medium text-ink-muted">
-          When it actually happened
-        </label>
-        <input
-          id={`${uid}-occurredAt`}
-          name="occurredAt"
-          type="date"
-          required
-          defaultValue={toDateInputValue(episode?.occurredAt ?? new Date())}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-        />
-      </div>
-
-      {state.error && <p className="text-sm text-danger">{state.error}</p>}
+      {state.error && <p className="text-xs text-danger">{state.error}</p>}
 
       <button
         type="submit"
         disabled={pending || uploadProgress !== null}
-        className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
+        className="w-full rounded-full bg-ink px-5 py-2 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
       >
         {pending ? "Saving…" : episode ? "Save changes" : "Add episode"}
       </button>

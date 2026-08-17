@@ -30,11 +30,11 @@ export function AddEpisodeButton({
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Add episode</DialogTitle>
           </DialogHeader>
-          <div className="p-5 pt-4">
+          <div className="p-4">
             <EpisodeForm journeyId={journeyId} chapters={chapters} defaultChapterId={defaultChapterId} />
           </div>
         </DialogContent>
