@@ -320,6 +320,9 @@ export async function markUpdateViewed(updateId: string): Promise<void> {
   const session = await getCurrentSession();
   if (!session) return;
 
+  const update = await prisma.update.findUnique({ where: { id: updateId }, select: { id: true } });
+  if (!update) return;
+
   await prisma.updateView.upsert({
     where: { updateId_userId: { updateId, userId: session.user.id } },
     update: {},
