@@ -1,7 +1,7 @@
 ---
 title: Lovable Redesign Checklist
 doc_id: 97-lovable-redesign-checklist
-version: "1.2"
+version: "1.3"
 status: in-progress
 related_docs:
   - 14_UI_Pages
@@ -87,6 +87,18 @@ Ogni volta che un punto viene completato: spuntarlo qui (`- [x]`), aggiungere un
   - **Pannello "Journey details"**: due colonne affiancate in una larghezza contenuta (`max-w-3xl`, non più piena pagina) — sinistra Titolo/Caption/Categoria/Tag, destra Copertina — copiato dalla struttura grid del sorgente Lovable
   - Etichetta "Presentation" → "Caption"; rimosso il link duplicato "View Public Profile" dalla pagina di modifica del Journey (resta solo su `/dashboard`)
   - Ogni correzione verificata dal vivo con Playwright prima di essere considerata risolta (screenshot + test funzionali), non solo `tsc`/lint
+- [x] Fase 5 — Quarto giro, Categoria a comparsa nel form "Journey details" — 2026-08-18:
+  - La lista di 25 categorie era sempre visibile per intero, allungando lo scroll della pagina senza motivo (non è un punto del sorgente Lovable, richiesta di Manuel a sé). Trasformata in accordion: chiusa di default mostra solo una riga compatta (la categoria già selezionata, o "No category selected") con una freccia; al click si espande con animazione morbida (`grid-template-rows` 0fr→1fr) mostrando tutte le pillole cliccabili come prima
+  - Verificato dal vivo con Playwright: stato chiuso/aperto, `aria-expanded` corretto, selezione di una categoria e richiusura mostrano la pillola scelta nella riga compatta, screenshot di entrambi gli stati
+
+### Profilo pubblico — foto di copertina (`ProfileHero`)
+- [x] Rimosso l'oscuramento di default sulla copertina del Profilo pubblico (`components/profile/ProfileHero.tsx`) — 2026-08-18, più giri di correzione con Manuel:
+  - Tolti i due overlay colorati fissi (scurimento uniforme 40% + sfumatura verso il nero in basso): su richiesta di Manuel, l'immagine doveva restare nitida senza filtri di default
+  - Sostituiti con una vera vignetta via `mask-image`/`-webkit-mask-image` (due gradienti lineari, verticale + orizzontale, combinati con `mask-composite: intersect`) applicata alla foto stessa: i bordi sfumano nel trasparente rivelando lo sfondo scuro della pagina sotto, invece di un blocco di colore sopra
+  - **Bug trovato e corretto durante la verifica**: la prima versione impostava sia `mask-composite` (standard) sia `-webkit-mask-composite` (legacy) — in Chromium sono alias della stessa proprietà, vinceva l'ultima scritta (quella legacy, con valori sbagliati), annullando di fatto la sfumatura verticale in tutta la fascia centrale dell'immagine. Rimossa la proprietà legacy in conflitto, verificato nel DOM che il valore calcolato sia correttamente `intersect`
+  - Intensità finale della sfumatura molto leggera (transizione ~4% in alto, ~13% in basso, ~3% ai lati): solo un accenno ammorbidito sul perimetro, non una zona ampia
+  - Ridotto anche lo spazio vuoto a sfondo pieno tra la foto e le sezioni sottostanti (padding-top del blocco nome/avatar e margini della riga statistiche ridotti), su richiesta di Manuel di portare "più in alto" tutta la pagina
+  - Verificato dal vivo con Playwright a ogni passaggio (screenshot interi e ravvicinati sui bordi), non solo a occhio
 
 ## Note aperte (non legate a una fase specifica)
 

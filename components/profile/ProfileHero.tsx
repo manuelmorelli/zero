@@ -1,6 +1,16 @@
 import Image from "next/image";
 import { formatCompactNumber } from "@/lib/utils";
 
+/** Vignetta: la foto stessa sfuma nel trasparente su tutti i lati (più generosa in basso), via
+ * mask-image — nessun overlay colorato sopra, sotto la foto si vede semplicemente lo sfondo. */
+const COVER_FADE_MASK = {
+  maskImage:
+    "linear-gradient(to bottom, transparent 0%, black 4%, black 87%, transparent 100%), linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%)",
+  WebkitMaskImage:
+    "linear-gradient(to bottom, transparent 0%, black 4%, black 87%, transparent 100%), linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%)",
+  maskComposite: "intersect",
+} as const;
+
 type ProfileHeroProps = {
   coverUrl: string | null;
   avatarUrl: string | null;
@@ -32,18 +42,19 @@ export function ProfileHero({
 
   return (
     <section className="relative isolate w-full">
-      <div className="absolute inset-x-0 top-0 -z-10 h-56 overflow-hidden sm:h-72 md:h-80">
+      <div
+        className="absolute inset-x-0 top-0 -z-10 h-56 overflow-hidden sm:h-72 md:h-80"
+        style={COVER_FADE_MASK}
+      >
         {coverUrl ? (
           <Image src={coverUrl} alt="" fill sizes="100vw" className="object-cover" preload />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
         )}
-        <div className="absolute inset-0 bg-bg/40" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-bg to-transparent" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-[1400px] px-5 md:px-8">
-        <div className="pt-[10.5rem] sm:pt-[14.5rem] md:pt-[16rem]">
+        <div className="pt-[7.5rem] sm:pt-[11rem] md:pt-[12rem]">
           <div className="flex items-end gap-4">
             <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-full md:h-32 md:w-32">
               {avatarUrl ? (
@@ -83,7 +94,7 @@ export function ProfileHero({
           </div>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 pb-6">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 pb-4">
           <ul className="grid shrink-0 grid-cols-4 gap-2 rounded-xl border border-border bg-white/[0.02] px-3 py-2">
             <Stat label="Trust Score" value={trustScore.toString()} ember />
             <Stat label="Journeys" value={formatCompactNumber(journeysCount)} />
