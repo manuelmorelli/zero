@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useActionState, useRef, useState } from "react";
-import { ImagePlus, Trash2 } from "lucide-react";
+import { ChevronDown, ImagePlus, Trash2 } from "lucide-react";
 import {
   createJourney,
   createJourneyCoverUploadUrl,
@@ -59,6 +59,8 @@ export function JourneyForm({ journey }: JourneyFormProps) {
     draft.description !== initialDraft.description ||
     draft.category !== initialDraft.category ||
     draft.tags !== initialDraft.tags;
+
+  const [categoryOpen, setCategoryOpen] = useState(false);
 
   const [coverKey, setCoverKey] = useState("");
   const [coverPreview, setCoverPreview] = useState(journey?.coverUrl ?? null);
@@ -154,27 +156,59 @@ export function JourneyForm({ journey }: JourneyFormProps) {
             </div>
 
             <div>
-              <span className="text-sm font-medium text-ink-muted">
-                Category <span className="text-ink-faint">(optional)</span>
-              </span>
               <input type="hidden" name="category" value={draft.category} />
-              <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {JOURNEY_CATEGORIES.map((category) => (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() =>
-                      setDraft((prev) => ({ ...prev, category: prev.category === category ? "" : category }))
-                    }
-                    className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
-                      draft.category === category
-                        ? "border-ember/50 bg-ember/15 text-ember"
-                        : "border-border text-ink-muted hover:border-ink-muted hover:text-ink"
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
+              <button
+                type="button"
+                onClick={() => setCategoryOpen((value) => !value)}
+                aria-expanded={categoryOpen}
+                className="flex w-full items-center justify-between text-left"
+              >
+                <span className="text-sm font-medium text-ink-muted">
+                  Category <span className="text-ink-faint">(optional)</span>
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 text-ink-muted transition-transform ${categoryOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                />
+              </button>
+
+              {!categoryOpen && (
+                <div className="mt-1.5">
+                  {draft.category ? (
+                    <span className="inline-flex rounded-full border border-ember/50 bg-ember/15 px-2.5 py-1 text-xs text-ember">
+                      {draft.category}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-ink-faint">No category selected</span>
+                  )}
+                </div>
+              )}
+
+              <div
+                className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+                  categoryOpen ? "mt-1.5 grid-rows-[1fr]" : "grid-rows-[0fr]"
+                }`}
+              >
+                <div className="min-h-0 overflow-hidden">
+                  <div className="flex flex-wrap gap-1.5 pb-0.5">
+                    {JOURNEY_CATEGORIES.map((category) => (
+                      <button
+                        key={category}
+                        type="button"
+                        onClick={() =>
+                          setDraft((prev) => ({ ...prev, category: prev.category === category ? "" : category }))
+                        }
+                        className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                          draft.category === category
+                            ? "border-ember/50 bg-ember/15 text-ember"
+                            : "border-border text-ink-muted hover:border-ink-muted hover:text-ink"
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
