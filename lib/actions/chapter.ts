@@ -65,6 +65,50 @@ export async function createChapter(
   redirect(`/dashboard/journeys/${journey.id}`);
 }
 
+const TitleOnlySchema = z.object({
+  title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
+});
+
+// Trasforma il gruppo "No Chapter" (episodi senza capitolo) in un capitolo vero: crea il
+// Capitolo e ci sposta dentro tutti gli episodi che oggi non ne hanno uno. Compare per primo
+// nell'elenco (stessa posizione visiva del gruppo "No Chapter" che sostituisce).
+export async function createChapterFromLooseEpisodes(
+  _prevState: { error: string | null },
+  formData: FormData
+): Promise<{ error: string | null }> {
+  const journeyId = formData.get("journeyId");
+  if (typeof journeyId !== "string" || !journeyId) {
+    return { error: "Invalid journey." };
+  }
+  const journey = await requireOwnedJourney(journeyId);
+
+  const parsed = TitleOnlySchema.safeParse({ title: formData.get("title") });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
+  }
+
+  const firstChapter = await prisma.chapter.findFirst({
+    where: { journeyId: journey.id, deletedAt: null },
+    orderBy: { order: "asc" },
+  });
+
+  const chapter = await prisma.chapter.create({
+    data: {
+      journeyId: journey.id,
+      title: parsed.data.title,
+      order: (firstChapter?.order ?? 0) - 1,
+    },
+  });
+
+  await prisma.episode.updateMany({
+    where: { journeyId: journey.id, chapterId: null, deletedAt: null },
+    data: { chapterId: chapter.id },
+  });
+
+  revalidatePath(`/dashboard/journeys/${journey.id}`);
+  redirect(`/dashboard/journeys/${journey.id}`);
+}
+
 export async function updateChapter(
   _prevState: { error: string | null },
   formData: FormData

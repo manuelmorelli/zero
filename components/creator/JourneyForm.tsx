@@ -241,11 +241,15 @@ export function JourneyForm({ journey }: JourneyFormProps) {
                 <button
                   type="button"
                   onClick={() => coverInputRef.current?.click()}
+                  aria-label="Change cover photo"
                   className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-black/0 text-[0.65rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
                 >
                   <ImagePlus className="h-4 w-4" aria-hidden="true" />
                   {coverProgress !== null ? `${coverProgress}%` : "Change"}
                 </button>
+                <span className="pointer-events-none absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white">
+                  <ImagePlus className="h-3.5 w-3.5" aria-hidden="true" />
+                </span>
                 <input
                   ref={coverInputRef}
                   type="file"

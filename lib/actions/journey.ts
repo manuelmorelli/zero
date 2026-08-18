@@ -153,6 +153,7 @@ export async function updateJourney(
     description: formData.get("description") || undefined,
     category: formData.get("category") || undefined,
     tags: formData.get("tags") || undefined,
+    coverKey: formData.get("coverKey") || undefined,
   });
 
   if (!parsed.success) {

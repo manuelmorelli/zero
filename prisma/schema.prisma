@@ -307,6 +307,9 @@ model Episode {
   chapter     Chapter? @relation(fields: [chapterId], references: [id])
   title       String
   videoKey    String?
+  // Copertina propria dell'Episodio (chiave R2): se assente, l'interfaccia usa la copertina del
+  // Journey come riserva (vedi lib/media/resolveCoverUrl.ts).
+  posterKey   String?
   // Durata del video in secondi, letta automaticamente dal browser al caricamento
   // (vedi lib/media/readVideoDuration.ts) — non richiede transcodifica lato server.
   durationSec Int?

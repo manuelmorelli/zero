@@ -11,7 +11,7 @@ export default async function CreatorDashboardPage() {
   const { user, creator } = await requireCreator();
   const rawJourneys = await prisma.journey.findMany({
     where: { creatorId: creator.id, deletedAt: null },
-    orderBy: { createdAt: "desc" },
+    orderBy: { order: "asc" },
   });
   const journeys = await withResolvedCoverUrls(rawJourneys);
   // Un creator può avere più Journey attivi (non archiviati) in parallelo — vedi

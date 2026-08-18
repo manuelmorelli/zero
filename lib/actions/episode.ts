@@ -6,8 +6,17 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
-import { deleteVideo, getVideoSize, getVideoUploadUrl, newVideoKey } from "@/lib/r2";
+import {
+  deleteImage,
+  deleteVideo,
+  getImageUploadUrl,
+  getVideoSize,
+  getVideoUploadUrl,
+  newImageKey,
+  newVideoKey,
+} from "@/lib/r2";
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
+import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewEpisode } from "@/lib/notifications";
 
@@ -16,6 +25,7 @@ const EpisodeSchema = z
     title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
     caption: z.string().trim().max(10000).optional(),
     videoKey: z.string().trim().max(500).optional().or(z.literal("")),
+    posterKey: z.string().trim().optional(),
     durationSec: z.coerce.number().int().positive().optional(),
     occurredAt: z
       .string()
@@ -86,6 +96,28 @@ export async function createEpisodeVideoUploadUrl(
   return { uploadUrl, key };
 }
 
+// Copertina propria dell'Episodio, stesso meccanismo del video sopra: URL temporaneo per
+// caricare l'immagine direttamente dal browser a R2.
+export async function createEpisodePosterUploadUrl(
+  ownerId: string,
+  ownerType: "journey" | "episode",
+  contentType: string
+): Promise<{ uploadUrl: string; key: string } | { error: string }> {
+  if (ownerType === "journey") {
+    await requireOwnedJourney(ownerId);
+  } else {
+    await requireOwnedEpisode(ownerId);
+  }
+
+  if (!ALLOWED_IMAGE_TYPES.has(contentType)) {
+    return { error: "Unsupported image format." };
+  }
+
+  const key = newImageKey("episode-covers", contentType);
+  const uploadUrl = await getImageUploadUrl(key, contentType);
+  return { uploadUrl, key };
+}
+
 // La dimensione dichiarata dal browser non è affidabile: il limite va verificato sul
 // file effettivamente arrivato su R2, non sull'URL di upload (che non lo impone).
 async function assertVideoWithinLimit(videoKey: string | undefined): Promise<string | null> {
@@ -130,6 +162,7 @@ async function insertEpisode(
       title: data.title,
       caption: data.caption,
       videoKey: data.videoKey || undefined,
+      posterKey: data.posterKey || undefined,
       durationSec: data.durationSec,
       occurredAt: data.occurredAt,
       order: (lastEpisode?.order ?? 0) + 1,
@@ -174,6 +207,7 @@ export async function createEpisode(
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
     videoKey: formData.get("videoKey") || undefined,
+    posterKey: formData.get("posterKey") || undefined,
     durationSec: formData.get("durationSec") || undefined,
     occurredAt: formData.get("occurredAt"),
   });
@@ -212,6 +246,7 @@ export async function quickCreateEpisode(
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
     videoKey: formData.get("videoKey") || undefined,
+    posterKey: formData.get("posterKey") || undefined,
     durationSec: formData.get("durationSec") || undefined,
     occurredAt: formData.get("occurredAt"),
   });
@@ -241,6 +276,7 @@ export async function updateEpisode(
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
     videoKey: formData.get("videoKey") || undefined,
+    posterKey: formData.get("posterKey") || undefined,
     durationSec: formData.get("durationSec") || undefined,
     occurredAt: formData.get("occurredAt"),
   });
@@ -255,6 +291,9 @@ export async function updateEpisode(
     if (sizeError) return { error: sizeError };
   }
 
+  const newPosterKeyValue = parsed.data.posterKey || null;
+  const replacesPoster = newPosterKeyValue !== null && newPosterKeyValue !== episode.posterKey;
+
   const published = formData.get("published") === "on";
   // Stessa regola di insertEpisode: niente Published senza un video reale.
   if (published && !newVideoKeyValue) {
@@ -268,6 +307,7 @@ export async function updateEpisode(
       title: parsed.data.title,
       caption: parsed.data.caption,
       videoKey: newVideoKeyValue,
+      ...(replacesPoster ? { posterKey: newPosterKeyValue } : {}),
       durationSec: replacesVideo ? parsed.data.durationSec : (parsed.data.durationSec ?? episode.durationSec),
       occurredAt: parsed.data.occurredAt,
       publishedAt: published ? (episode.publishedAt ?? new Date()) : null,
@@ -277,6 +317,9 @@ export async function updateEpisode(
   // Il vecchio file resta orfano su R2 se non viene ripulito qui: nessun'altra riga lo referenzia più.
   if (replacesVideo && episode.videoKey) {
     await deleteVideo(episode.videoKey);
+  }
+  if (replacesPoster && episode.posterKey) {
+    await deleteImage(episode.posterKey);
   }
 
   revalidatePath(`/dashboard/journeys/${episode.journeyId}`);

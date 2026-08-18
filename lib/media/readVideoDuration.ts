@@ -6,7 +6,7 @@ export function readVideoDuration(file: File): Promise<number | null> {
     video.preload = "metadata";
     video.onloadedmetadata = () => {
       URL.revokeObjectURL(video.src);
-      resolve(Number.isFinite(video.duration) ? video.duration : null);
+      resolve(Number.isFinite(video.duration) ? Math.round(video.duration) : null);
     };
     video.onerror = () => {
       URL.revokeObjectURL(video.src);

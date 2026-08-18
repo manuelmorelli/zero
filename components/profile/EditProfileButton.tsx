@@ -174,26 +174,32 @@ function EditProfileModal({
           }}
           className="flex-1 overflow-y-auto"
         >
-          <div className="relative aspect-[3/1] w-full overflow-hidden bg-surface-2">
-            {coverPreview ? (
-              <Image src={coverPreview} alt="" fill sizes="512px" className="object-cover" />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
-            )}
-            <button
-              type="button"
-              onClick={() => coverInputRef.current?.click()}
-              className="absolute inset-0 flex items-center justify-center bg-black/0 text-sm font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
-            >
-              {coverProgress !== null ? `Uploading… ${coverProgress}%` : "Change cover photo"}
-            </button>
-            <input
-              ref={coverInputRef}
-              type="file"
-              accept="image/*"
-              onChange={(event) => handleFileChosen("cover", event)}
-              className="hidden"
-            />
+          <div className="relative">
+            <div className="relative aspect-[3/1] w-full overflow-hidden bg-surface-2">
+              {coverPreview ? (
+                <Image src={coverPreview} alt="" fill sizes="512px" className="object-cover" />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+              )}
+              <button
+                type="button"
+                onClick={() => coverInputRef.current?.click()}
+                aria-label="Change cover photo"
+                className="absolute inset-0 flex items-center justify-center bg-black/0 text-sm font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
+              >
+                {coverProgress !== null ? `Uploading… ${coverProgress}%` : "Change cover photo"}
+              </button>
+              <span className="pointer-events-none absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white">
+                <CameraIcon className="h-4 w-4" />
+              </span>
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="image/*"
+                onChange={(event) => handleFileChosen("cover", event)}
+                className="hidden"
+              />
+            </div>
 
             <div className="group absolute -bottom-10 left-5 h-20 w-20 overflow-hidden rounded-full border-4 border-surface bg-surface-2">
               {avatarPreview ? (
@@ -212,6 +218,9 @@ function EditProfileModal({
                 <CameraIcon className="h-4 w-4" />
                 {avatarProgress !== null && <span className="ml-1 text-[10px] font-semibold">{avatarProgress}%</span>}
               </button>
+              <span className="pointer-events-none absolute bottom-0.5 right-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white">
+                <CameraIcon className="h-3 w-3" />
+              </span>
               <input
                 ref={avatarInputRef}
                 type="file"

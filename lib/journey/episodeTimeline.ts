@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getVideoPlaybackUrl } from "@/lib/r2";
+import { getImagePlaybackUrl, getVideoPlaybackUrl } from "@/lib/r2";
 
 export type TimelineEpisode = {
   id: string;
@@ -8,6 +8,9 @@ export type TimelineEpisode = {
   occurredAt: Date;
   videoKey: string | null;
   videoSrc?: string;
+  /** Link temporaneo della copertina propria dell'Episodio, se impostata (altrimenti null: chi
+   * mostra la miniatura usa la copertina del Journey come riserva). */
+  posterUrl: string | null;
   /** Posizione 1-based nell'intero Journey (loose episodes + tutti i Capitoli insieme). */
   number: number;
   /** Avanzamento dell'utente corrente su questo episodio; null se non loggato o mai iniziato. */
@@ -26,7 +29,15 @@ export type EpisodeTimeline = {
   flatEpisodes: TimelineEpisode[];
 };
 
-type EpisodeRow = { id: string; title: string; caption: string | null; occurredAt: Date; videoKey: string | null; createdAt: Date };
+type EpisodeRow = {
+  id: string;
+  title: string;
+  caption: string | null;
+  occurredAt: Date;
+  videoKey: string | null;
+  posterKey: string | null;
+  createdAt: Date;
+};
 
 function earliestCreatedAt(episodes: EpisodeRow[]): Date {
   return episodes.reduce((min, episode) => (episode.createdAt < min ? episode.createdAt : min), episodes[0].createdAt);
@@ -96,6 +107,7 @@ export async function getEpisodeTimeline(
         caption: episode.caption,
         occurredAt: episode.occurredAt,
         videoKey: episode.videoKey,
+        posterUrl: null,
         number: counter,
         progress: null,
       };
@@ -114,6 +126,19 @@ export async function getEpisodeTimeline(
         })
     );
   }
+
+  // Copertine proprie degli Episodi (miniature liste/"Up next"): risolte sempre, costo trascurabile
+  // rispetto al video e servono anche quando withPlaybackUrls è false.
+  const posterKeyByEpisodeId = new Map(
+    rawGroups.flatMap((group) => group.episodes.map((episode) => [episode.id, episode.posterKey] as const))
+  );
+  await Promise.all(
+    flatEpisodes
+      .filter((episode) => posterKeyByEpisodeId.get(episode.id))
+      .map(async (episode) => {
+        episode.posterUrl = await getImagePlaybackUrl(posterKeyByEpisodeId.get(episode.id)!);
+      })
+  );
 
   if (userId && flatEpisodes.length > 0) {
     const progresses = await prisma.episodeProgress.findMany({

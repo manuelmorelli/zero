@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
-import { getVideoPlaybackUrl } from "@/lib/r2";
+import { getImagePlaybackUrl, getVideoPlaybackUrl } from "@/lib/r2";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
@@ -45,7 +45,10 @@ export default async function EpisodePlayerPage({
   const trustScore = computeTrustScore(await getCreatorTrustInputs(journey.creator.id, followersCount));
   const currentNumber = flatEpisodes.find((item) => item.id === episodeId)?.number ?? 1;
   const videoSrc = episode.videoKey ? await getVideoPlaybackUrl(episode.videoKey) : null;
-  const journeyCoverUrl = await resolveCoverUrl(journey.coverUrl);
+  const [journeyCoverUrl, episodePosterUrl] = await Promise.all([
+    resolveCoverUrl(journey.coverUrl),
+    episode.posterKey ? getImagePlaybackUrl(episode.posterKey) : Promise.resolve(null),
+  ]);
 
   return (
     <main>
@@ -64,7 +67,7 @@ export default async function EpisodePlayerPage({
             caption: episode.caption,
             number: currentNumber,
             videoSrc,
-            posterUrl: journeyCoverUrl,
+            posterUrl: episodePosterUrl ?? journeyCoverUrl,
           }}
           initialPositionSec={progress?.positionSec ?? 0}
           initialCompleted={Boolean(progress?.completedAt)}

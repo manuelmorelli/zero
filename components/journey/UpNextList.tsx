@@ -30,8 +30,8 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                 }`}
               >
                 <span className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
-                  {coverUrl ? (
-                    <Image src={coverUrl} alt="" fill sizes="96px" className="object-cover" />
+                  {episode.posterUrl || coverUrl ? (
+                    <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="96px" className="object-cover" />
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
                   )}

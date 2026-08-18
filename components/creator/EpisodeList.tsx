@@ -6,6 +6,7 @@ type EpisodeListItem = {
   title: string;
   caption: string | null;
   videoKey: string | null;
+  posterUrl?: string | null;
   durationSec: number | null;
   occurredAt: Date;
   chapterId: string | null;

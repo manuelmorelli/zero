@@ -190,8 +190,8 @@ function EpisodeRow({
         className="group flex w-full scroll-mt-24 items-center gap-3 rounded-xl border border-border bg-white/[0.02] p-2.5 text-left transition-colors hover:border-white/25 hover:bg-white/[0.05]"
       >
         <span className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:w-36">
-          {coverUrl ? (
-            <Image src={coverUrl} alt="" fill sizes="144px" className="object-cover" />
+          {episode.posterUrl || coverUrl ? (
+            <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="144px" className="object-cover" />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
           )}

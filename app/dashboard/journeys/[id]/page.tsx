@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
+import { getImagePlaybackUrl } from "@/lib/r2";
 import { getJourneyPrivateStats } from "@/lib/dashboard/journeyStats";
 import { JourneyForm } from "@/components/creator/JourneyForm";
 import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
@@ -31,16 +32,32 @@ export default async function JourneyManagePage({
   const journey = await prisma.journey.findUnique({ where: { id } });
   if (!journey || journey.creatorId !== creator.id || journey.deletedAt) notFound();
 
-  const chapters = await prisma.chapter.findMany({
+  const rawChapters = await prisma.chapter.findMany({
     where: { journeyId: journey.id, deletedAt: null },
     orderBy: { order: "asc" },
     include: { episodes: { where: { deletedAt: null }, orderBy: { order: "asc" } } },
   });
 
-  const looseEpisodes = await prisma.episode.findMany({
+  const rawLooseEpisodes = await prisma.episode.findMany({
     where: { journeyId: journey.id, chapterId: null, deletedAt: null },
     orderBy: { order: "asc" },
   });
+
+  // posterKey -> link temporaneo di sola lettura, stesso principio di resolveCoverUrl ma per la
+  // copertina propria dell'Episodio (vedi lib/actions/episode.ts).
+  async function withPosterUrl<T extends { posterKey: string | null }>(episode: T) {
+    return { ...episode, posterUrl: episode.posterKey ? await getImagePlaybackUrl(episode.posterKey) : null };
+  }
+
+  const [chapters, looseEpisodes] = await Promise.all([
+    Promise.all(
+      rawChapters.map(async (chapter) => ({
+        ...chapter,
+        episodes: await Promise.all(chapter.episodes.map(withPosterUrl)),
+      }))
+    ),
+    Promise.all(rawLooseEpisodes.map(withPosterUrl)),
+  ]);
 
   const [coverUrl, stats] = await Promise.all([
     resolveCoverUrl(journey.coverUrl),

@@ -102,10 +102,13 @@ export function EpisodePlayer({
 
   return (
     <div className="min-w-0">
-      <div
-        ref={shellRef}
-        className="group relative aspect-video overflow-hidden rounded-2xl border border-border bg-black"
-      >
+      <div className={episode.videoSrc ? "flex justify-center" : ""}>
+        <div
+          ref={shellRef}
+          className={`group relative overflow-hidden rounded-2xl border border-border bg-black ${
+            episode.videoSrc ? "inline-block leading-[0]" : "aspect-video w-full"
+          }`}
+        >
         {episode.videoSrc ? (
           <video
             ref={videoRef}
@@ -113,7 +116,7 @@ export function EpisodePlayer({
             poster={episode.posterUrl ?? undefined}
             playsInline
             preload="metadata"
-            className="h-full w-full object-cover"
+            className="block h-auto max-h-[70vh] w-auto max-w-full"
             onClick={toggle}
             onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
             onLoadedMetadata={(event) => {
@@ -241,6 +244,7 @@ export function EpisodePlayer({
             </div>
           </div>
         )}
+        </div>
       </div>
 
       <div className="mt-4">

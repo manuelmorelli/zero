@@ -1,8 +1,16 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
-import { createEpisode, createEpisodeVideoUploadUrl, updateEpisode } from "@/lib/actions/episode";
+import Image from "next/image";
+import { useActionState, useId, useRef, useState } from "react";
+import { ImagePlus } from "lucide-react";
+import {
+  createEpisode,
+  createEpisodePosterUploadUrl,
+  createEpisodeVideoUploadUrl,
+  updateEpisode,
+} from "@/lib/actions/episode";
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { readVideoDuration } from "@/lib/media/readVideoDuration";
 import { formatDuration } from "@/lib/format/duration";
@@ -17,6 +25,8 @@ type EpisodeFormProps = {
     title: string;
     caption: string | null;
     videoKey: string | null;
+    /** Link temporaneo già risolto della copertina propria dell'Episodio (se impostata). */
+    posterUrl?: string | null;
     durationSec: number | null;
     occurredAt: Date;
     chapterId: string | null;
@@ -44,6 +54,50 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [published, setPublished] = useState(Boolean(episode?.publishedAt));
+
+  const [posterKey, setPosterKey] = useState("");
+  const [posterPreview, setPosterPreview] = useState<string | null>(episode?.posterUrl ?? null);
+  const [posterError, setPosterError] = useState<string | null>(null);
+  const [posterProgress, setPosterProgress] = useState<number | null>(null);
+  const posterInputRef = useRef<HTMLInputElement>(null);
+
+  async function handlePosterChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setPosterError(null);
+
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      setPosterError("Unsupported image format.");
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setPosterError(`Image is too large (max ${formatMB(MAX_IMAGE_SIZE_BYTES)}).`);
+      return;
+    }
+
+    setPosterProgress(0);
+    try {
+      const result = await createEpisodePosterUploadUrl(
+        episode ? episode.id : journeyId,
+        episode ? "episode" : "journey",
+        file.type
+      );
+      if ("error" in result) {
+        setPosterError(result.error);
+        setPosterProgress(null);
+        return;
+      }
+      await uploadFileWithProgress(result.uploadUrl, file, setPosterProgress);
+      setPosterKey(result.key);
+      setPosterPreview(URL.createObjectURL(file));
+    } catch {
+      setPosterError("Upload failed. Please try again.");
+    } finally {
+      setPosterProgress(null);
+    }
+  }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -87,21 +141,52 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
       <input type="hidden" name={episode ? "episodeId" : "journeyId"} value={episode ? episode.id : journeyId} />
       <input type="hidden" name="videoKey" value={videoKey ?? ""} />
       <input type="hidden" name="durationSec" value={durationSec ?? ""} />
+      <input type="hidden" name="posterKey" value={posterKey} />
 
-      <div>
-        <label htmlFor={`${uid}-title`} className="text-xs font-medium text-ink-muted">
-          Episode title
-        </label>
-        <input
-          id={`${uid}-title`}
-          name="title"
-          type="text"
-          required
-          minLength={2}
-          maxLength={100}
-          defaultValue={episode?.title}
-          className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-        />
+      <div className="flex gap-3">
+        <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
+          {posterPreview ? (
+            <Image src={posterPreview} alt="" fill sizes="96px" className="object-cover" />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+          )}
+          <button
+            type="button"
+            onClick={() => posterInputRef.current?.click()}
+            aria-label="Change episode cover"
+            className="absolute inset-0 flex items-center justify-center bg-black/0 text-[0.6rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
+          >
+            {posterProgress !== null ? `${posterProgress}%` : "Change"}
+          </button>
+          <span className="pointer-events-none absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-white">
+            <ImagePlus className="h-3 w-3" aria-hidden="true" />
+          </span>
+          <input
+            ref={posterInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handlePosterChange}
+            className="hidden"
+          />
+        </div>
+
+        <div className="flex-1">
+          <label htmlFor={`${uid}-title`} className="text-xs font-medium text-ink-muted">
+            Episode title
+          </label>
+          <input
+            id={`${uid}-title`}
+            name="title"
+            type="text"
+            required
+            minLength={2}
+            maxLength={100}
+            defaultValue={episode?.title}
+            className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          />
+          {posterError && <p className="mt-1 text-xs text-danger">{posterError}</p>}
+          {!posterPreview && <p className="mt-1 text-[0.65rem] text-ink-faint">Cover optional — uses the Journey cover if not set.</p>}
+        </div>
       </div>
 
       <div>

@@ -21,6 +21,7 @@ type EpisodeItemProps = {
     title: string;
     caption: string | null;
     videoKey: string | null;
+    posterUrl?: string | null;
     durationSec: number | null;
     occurredAt: Date;
     chapterId: string | null;
@@ -41,20 +42,23 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      {...attributes}
-      {...listeners}
-      aria-label={`Drag to reorder ${episode.title}`}
-      className={`flex items-center gap-3 rounded-xl border border-border bg-surface p-3 transition-colors hover:border-ink-muted cursor-grab touch-none active:cursor-grabbing ${
+      className={`flex items-center gap-3 rounded-xl border border-border bg-surface p-3 transition-colors hover:border-ink-muted ${
         isDragging ? "opacity-50" : ""
       }`}
     >
-      <span className="shrink-0 text-ink-muted" aria-hidden="true">
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        aria-label={`Drag to reorder ${episode.title}`}
+        className="shrink-0 cursor-grab touch-none text-ink-muted hover:text-ink active:cursor-grabbing"
+      >
         <GripVertical className="h-4 w-4" />
-      </span>
+      </button>
 
       <div className="relative h-9 w-14 shrink-0 overflow-hidden rounded-md border border-border bg-surface-2">
-        {coverUrl ? (
-          <Image src={coverUrl} alt="" fill sizes="56px" draggable={false} className="object-cover" />
+        {episode.posterUrl || coverUrl ? (
+          <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="56px" draggable={false} className="object-cover" />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
         )}

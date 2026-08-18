@@ -25,12 +25,14 @@ import { EpisodeList } from "@/components/creator/EpisodeList";
 import { AddEpisodeButton } from "@/components/creator/AddEpisodeButton";
 import { AddChapterButton } from "@/components/creator/AddChapterButton";
 import { ChapterEditButton } from "@/components/creator/ChapterEditButton";
+import { NameLooseEpisodesButton } from "@/components/creator/NameLooseEpisodesButton";
 
 type Episode = {
   id: string;
   title: string;
   caption: string | null;
   videoKey: string | null;
+  posterUrl?: string | null;
   durationSec: number | null;
   occurredAt: Date;
   chapterId: string | null;
@@ -135,7 +137,10 @@ export function ChaptersAndEpisodesPanel({
         <div className="space-y-4">
           <div>
             {hasChapters && (
-              <h3 className="mb-2 text-[0.72rem] uppercase tracking-wider text-ink-muted">No Chapter</h3>
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <h3 className="text-[0.72rem] uppercase tracking-wider text-ink-muted">No Chapter</h3>
+                {looseItems.length > 0 && <NameLooseEpisodesButton journeyId={journeyId} />}
+              </div>
             )}
             <EpisodeList
               journeyId={journeyId}
