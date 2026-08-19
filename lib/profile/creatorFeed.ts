@@ -82,7 +82,7 @@ export async function getCreatorFeed({
       title: episode.title,
       caption: episode.caption,
       category: episode.journey.category,
-      coverUrl: episode.journey.coverUrl,
+      coverUrl: episode.posterKey ?? episode.journey.coverUrl,
       likeCount: countByTarget.get(`EPISODE:${episode.id}`) ?? 0,
       isLiked: likedByViewer.has(`EPISODE:${episode.id}`),
     })),

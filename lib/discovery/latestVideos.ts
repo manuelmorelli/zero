@@ -52,7 +52,7 @@ export async function getLatestVideos({
     episodeId: episode.id,
     journeyId: episode.journey.id,
     title: episode.title,
-    coverUrl: episode.journey.coverUrl,
+    coverUrl: episode.posterKey ?? episode.journey.coverUrl,
     category: episode.journey.category,
     creatorName: episode.journey.creator.displayName,
     createdAt: episode.createdAt,

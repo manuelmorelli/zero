@@ -42,7 +42,7 @@ export async function getContinueJourneys(
     return {
       journeyId: progress.journeyId,
       title: progress.journey.title,
-      coverUrl: progress.journey.coverUrl,
+      coverUrl: episode?.posterKey ?? progress.journey.coverUrl,
       creatorName: progress.journey.creator.displayName,
       episodeId: episode?.id ?? null,
       episodeTitle: episode?.title ?? null,

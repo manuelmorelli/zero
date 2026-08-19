@@ -60,6 +60,15 @@ export function EpisodePlayer({
   const [volume, setVolume] = useState(1);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    function handleFullscreenChange() {
+      setIsFullscreen(document.fullscreenElement === shellRef.current);
+    }
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
 
   const save = () => {
     const video = videoRef.current;
@@ -102,11 +111,15 @@ export function EpisodePlayer({
 
   return (
     <div className="min-w-0">
-      <div className={episode.videoSrc ? "flex justify-center" : ""}>
+      <div className={episode.videoSrc && !isFullscreen ? "flex justify-center" : ""}>
         <div
           ref={shellRef}
-          className={`group relative overflow-hidden rounded-2xl border border-border bg-black ${
-            episode.videoSrc ? "inline-block leading-[0]" : "aspect-video w-full"
+          className={`group relative overflow-hidden border-border bg-black ${
+            isFullscreen
+              ? "flex h-full w-full items-center justify-center border-0"
+              : episode.videoSrc
+                ? "inline-block rounded-2xl border leading-[0]"
+                : "aspect-video w-full rounded-2xl border"
           }`}
         >
         {episode.videoSrc ? (
@@ -116,7 +129,11 @@ export function EpisodePlayer({
             poster={episode.posterUrl ?? undefined}
             playsInline
             preload="metadata"
-            className="block h-auto max-h-[70vh] w-auto max-w-full"
+            className={
+              isFullscreen
+                ? "block h-full w-full object-contain"
+                : "block h-auto max-h-[70vh] w-auto max-w-full"
+            }
             onClick={toggle}
             onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
             onLoadedMetadata={(event) => {
