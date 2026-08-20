@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { formatCompactNumber } from "@/lib/utils";
+import { ProfileAvatarStory } from "@/components/profile/ProfileAvatarStory";
+import type { CreatorStory } from "@/lib/discovery/stories";
 
 /** Vignetta: la foto stessa sfuma nel trasparente su tutti i lati (più generosa in basso), via
  * mask-image — nessun overlay colorato sopra, sotto la foto si vede semplicemente lo sfondo. */
@@ -22,6 +24,9 @@ type ProfileHeroProps = {
   journeysCount: number;
   followersCount: number;
   followingCount: number;
+  isOwnProfile: boolean;
+  /** null se questo profilo non ha un Creator (mai avuto un Update possibile). */
+  activeStory: CreatorStory | null;
   actions?: React.ReactNode;
 };
 
@@ -36,6 +41,8 @@ export function ProfileHero({
   journeysCount,
   followersCount,
   followingCount,
+  isOwnProfile,
+  activeStory,
   actions,
 }: ProfileHeroProps) {
   const joinedLabel = joinedAt.toLocaleDateString("en-US", { month: "long", year: "numeric" });
@@ -56,22 +63,12 @@ export function ProfileHero({
       <div className="relative z-10 mx-auto max-w-[1400px] px-5 md:px-8">
         <div className="pt-[7.5rem] sm:pt-[11rem] md:pt-[12rem]">
           <div className="flex items-end gap-4">
-            <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-full md:h-32 md:w-32">
-              {avatarUrl ? (
-                <Image src={avatarUrl} alt={name} fill sizes="128px" className="object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center rounded-full bg-surface-2 text-2xl font-bold text-ink-muted">
-                  {name.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <Image
-                src="/images/zero-o-ring.png"
-                alt=""
-                fill
-                sizes="154px"
-                className="pointer-events-none absolute inset-0 z-10 scale-[1.2] object-cover"
-              />
-            </div>
+            <ProfileAvatarStory
+              avatarUrl={avatarUrl}
+              name={name}
+              isOwnProfile={isOwnProfile}
+              activeStory={activeStory}
+            />
 
             <div className="min-w-0 pb-1">
               <h1 className="truncate text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">

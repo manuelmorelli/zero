@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useId, useRef, useState } from "react";
+import { createContext, useActionState, useContext, useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { quickStartJourney } from "@/lib/actions/journey";
 import { createEpisodeVideoUploadUrl, quickCreateEpisode } from "@/lib/actions/episode";
@@ -16,7 +16,7 @@ type Journey = { id: string; title: string; chapters: Chapter[] };
 type LinkableJourney = { id: string; title: string; episodes: { id: string; title: string }[] };
 type UpdateKind = "TEXT" | "IMAGE" | "VIDEO" | "POLL" | "QUESTION";
 
-type QuickUploadButtonProps = {
+type QuickUploadProviderProps = {
   /** Journey attivi (non archiviati) del creator. Un creator può averne più di uno in parallelo
    * (vedi 00-project-context.md, sezione "Archiviazione del Journey"): con zero se ne crea uno al
    * volo, con uno solo si salta dritti al video (nessuna frizione in più), con due o più si chiede
@@ -26,6 +26,7 @@ type QuickUploadButtonProps = {
    * "Link to…" facoltativo di un Update — un Journey ancora in Bozza non ha una pagina pubblica a
    * cui puntare. */
   linkableJourneys: LinkableJourney[];
+  children: React.ReactNode;
 };
 
 type Step = "choice" | "journey" | "picker" | "video" | "details" | "updateType" | "updateForm";
@@ -44,15 +45,42 @@ function formatMB(bytes: number): string {
   return `${Math.round(bytes / (1024 * 1024))}MB`;
 }
 
-export function QuickUploadButton({ journeys, linkableJourneys }: QuickUploadButtonProps) {
+/** Apre la finestra di pubblicazione: `openChoice` parte dalla domanda "Journey o Update?" (il
+ * pulsante "+" flottante), `openPostUpdate` salta dritto alla scelta del tipo di Update — usato
+ * dal "+" sulla foto profilo, dove l'intento è già inequivocabile. */
+type QuickUploadContextValue = {
+  openChoice: () => void;
+  openPostUpdate: () => void;
+};
+
+const QuickUploadContext = createContext<QuickUploadContextValue | null>(null);
+
+/** `null` per chi non è loggato (QuickUpload.tsx non monta il Provider per gli ospiti): i
+ * consumatori fuori dal pulsante "+" flottante — es. il "+" sulla foto profilo, mostrato solo al
+ * proprietario e quindi sempre dentro il Provider — possono ignorare questo caso, ma il tipo
+ * resta nullable per non nascondere l'assunzione. */
+export function useQuickUpload(): QuickUploadContextValue | null {
+  return useContext(QuickUploadContext);
+}
+
+/** Stato condiviso della finestra di pubblicazione (Journey o Update), così più punti
+ * dell'interfaccia — il "+" flottante globale, il "+" sulla foto profilo — possono aprire la
+ * stessa finestra invece di duplicarne una copia ciascuno. */
+export function QuickUploadProvider({ journeys, linkableJourneys, children }: QuickUploadProviderProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("choice");
   const [journeyId, setJourneyId] = useState<string | null>(journeys.length === 1 ? journeys[0].id : null);
   const [updateKind, setUpdateKind] = useState<UpdateKind | null>(null);
 
-  function openFlow() {
+  function openChoice() {
     setStep("choice");
     setJourneyId(journeys.length === 1 ? journeys[0].id : null);
+    setUpdateKind(null);
+    setOpen(true);
+  }
+
+  function openPostUpdate() {
+    setStep("updateType");
     setUpdateKind(null);
     setOpen(true);
   }
@@ -66,16 +94,8 @@ export function QuickUploadButton({ journeys, linkableJourneys }: QuickUploadBut
   const chapters = journeys.find((journey) => journey.id === journeyId)?.chapters ?? [];
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={openFlow}
-        aria-label="Add to your Journey or post an Update"
-        style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
-        className="fixed right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-ink text-bg shadow-2xl shadow-black/40 transition-transform hover:scale-105 active:scale-95"
-      >
-        <PlusIcon className="h-6 w-6" />
-      </button>
+    <QuickUploadContext.Provider value={{ openChoice, openPostUpdate }}>
+      {children}
 
       {open && (
         <QuickUploadModal
@@ -91,7 +111,24 @@ export function QuickUploadButton({ journeys, linkableJourneys }: QuickUploadBut
           onClose={close}
         />
       )}
-    </>
+    </QuickUploadContext.Provider>
+  );
+}
+
+/** Pulsante "+" flottante globale, visibile su tutto il sito per chi è loggato. */
+export function QuickUploadFab() {
+  const quickUpload = useQuickUpload();
+
+  return (
+    <button
+      type="button"
+      onClick={() => quickUpload?.openChoice()}
+      aria-label="Add to your Journey or post an Update"
+      style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
+      className="fixed right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-ink text-bg shadow-2xl shadow-black/40 transition-transform hover:scale-105 active:scale-95"
+    >
+      <PlusIcon className="h-6 w-6" />
+    </button>
   );
 }
 

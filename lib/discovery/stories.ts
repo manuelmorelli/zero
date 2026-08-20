@@ -52,7 +52,7 @@ type RawStoryUpdate = Prisma.UpdateGetPayload<{ include: typeof storyUpdateInclu
  * il visualizzatore Stories, dal punto di vista di `viewerId` (voto, risposta, reazione, "visto"
  * sono tutti personali). Condiviso tra i creator seguiti e il proprio Update, per non duplicare
  * la stessa logica di mappatura due volte. */
-async function buildStoryUpdate(update: RawStoryUpdate, viewerId: string): Promise<StoryUpdate> {
+async function buildStoryUpdate(update: RawStoryUpdate, viewerId: string | null): Promise<StoryUpdate> {
   const mediaUrl = update.mediaKey
     ? await (update.type === "VIDEO" ? getVideoPlaybackUrl(update.mediaKey) : getImagePlaybackUrl(update.mediaKey))
     : null;
@@ -158,37 +158,52 @@ export async function getFollowedCreatorsStories({
 }
 
 /**
- * I propri Update ancora attivi, per il cerchio dedicato "tuo" davanti alla riga Stories in Home
- * (components/landing/Hero.tsx): a differenza di `getFollowedCreatorsStories`, un utente non
- * segue mai se stesso, quindi senza questa funzione i propri Update non comparirebbero mai nella
- * propria Home. Restituisce `null` per chi non ha (ancora) un profilo Creator; un profilo Creator
- * senza Update attivi restituisce comunque un `CreatorStory` con `updates: []` e `hasUnseen:
- * false`, per mostrare il cerchio spento invece di nasconderlo del tutto.
+ * Gli Update ancora attivi di un creator qualsiasi, dal punto di vista di `viewerId` (chi vota,
+ * risponde, reagisce — `null` per un visitatore non loggato, che può comunque vedere l'anello e
+ * aprire l'Update, non votare/rispondere/reagire). Usata sia per il proprio Update (`getOwnStory`
+ * sotto) sia per l'anello arancione sulla foto profilo di un creator qualsiasi
+ * (components/profile/ProfileAvatarStory.tsx): un profilo Creator senza Update attivi restituisce
+ * comunque un `CreatorStory` con `updates: []` e `hasUnseen: false`, per distinguere "nessun
+ * Update attivo" da "creator inesistente" (quest'ultimo va gestito dal chiamante).
  */
-export async function getOwnStory({ userId }: { userId: string | null }): Promise<CreatorStory | null> {
-  if (!userId) return null;
-
-  const [creatorId, user] = await Promise.all([
-    getOwnCreatorId(userId),
-    prisma.user.findUnique({ where: { id: userId }, select: { name: true, avatarUrl: true } }),
-  ]);
-  if (!creatorId || !user) return null;
-
+export async function getCreatorActiveStory({
+  creatorId,
+  viewerId,
+}: {
+  creatorId: string;
+  viewerId: string | null;
+}): Promise<CreatorStory> {
   await deleteExpiredUpdates();
 
-  const updates = await prisma.update.findMany({
-    where: { creatorId, archivedAt: { gt: new Date() } },
-    orderBy: { publishedAt: "asc" },
-    include: storyUpdateInclude,
-  });
+  const [creator, updates] = await Promise.all([
+    prisma.creator.findUniqueOrThrow({ where: { id: creatorId }, include: { user: true } }),
+    prisma.update.findMany({
+      where: { creatorId, archivedAt: { gt: new Date() } },
+      orderBy: { publishedAt: "asc" },
+      include: storyUpdateInclude,
+    }),
+  ]);
 
-  const avatarUrl = user.avatarUrl ? await getImagePlaybackUrl(user.avatarUrl) : null;
+  const avatarUrl = creator.user.avatarUrl ? await getImagePlaybackUrl(creator.user.avatarUrl) : null;
 
   return {
     creatorId,
-    creatorName: user.name,
+    creatorName: creator.displayName,
     creatorAvatarUrl: avatarUrl,
     hasUnseen: updates.length > 0,
-    updates: await Promise.all(updates.map((update) => buildStoryUpdate(update, userId))),
+    updates: await Promise.all(updates.map((update) => buildStoryUpdate(update, viewerId))),
   };
+}
+
+/**
+ * I propri Update ancora attivi, per il cerchio dedicato "tuo" davanti alla riga Stories in Home
+ * (components/landing/Hero.tsx): a differenza di `getFollowedCreatorsStories`, un utente non
+ * segue mai se stesso, quindi senza questa funzione i propri Update non comparirebbero mai nella
+ * propria Home. Restituisce `null` per chi non ha (ancora) un profilo Creator.
+ */
+export async function getOwnStory({ userId }: { userId: string | null }): Promise<CreatorStory | null> {
+  if (!userId) return null;
+  const creatorId = await getOwnCreatorId(userId);
+  if (!creatorId) return null;
+  return getCreatorActiveStory({ creatorId, viewerId: userId });
 }

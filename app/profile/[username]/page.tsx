@@ -18,6 +18,7 @@ import { MessageButton } from "@/components/profile/MessageButton";
 import { EditProfileButton } from "@/components/profile/EditProfileButton";
 import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
 import { getCreatorFeed } from "@/lib/profile/creatorFeed";
+import { getCreatorActiveStory } from "@/lib/discovery/stories";
 import { canMessage } from "@/lib/messaging";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
 import { getFeaturedJourney } from "@/lib/profile/featuredJourney";
@@ -106,6 +107,12 @@ export default async function PublicProfilePage({
   // 00-project-context.md, sezione "Follow universale"), non serve il follow reciproco.
   const canMessageUser = session && !isOwnProfile ? await canMessage(session.user.id, user.id) : false;
 
+  // Anello arancione sulla foto profilo quando questo creator ha un Update attivo, visibile a
+  // chiunque visiti la pagina (non solo al proprietario) — vedi components/profile/ProfileAvatarStory.tsx.
+  const activeStory = creator
+    ? await getCreatorActiveStory({ creatorId: creator.id, viewerId: session?.user.id ?? null })
+    : null;
+
   const trustScore = computeTrustScore(
     creator ? await getCreatorTrustInputs(creator.id, followersCount) : {
       followersCount,
@@ -141,6 +148,8 @@ export default async function PublicProfilePage({
         journeysCount={journeys.length}
         followersCount={followersCount}
         followingCount={followingCount}
+        isOwnProfile={isOwnProfile}
+        activeStory={activeStory}
         actions={
           isOwnProfile ? (
             <>

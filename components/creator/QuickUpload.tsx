@@ -1,19 +1,21 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
-import { QuickUploadButton } from "@/components/creator/QuickUploadButton";
+import { QuickUploadProvider, QuickUploadFab } from "@/components/creator/QuickUploadButton";
 
 /**
- * Pulsante "+" globale (montato una sola volta in app/layout.tsx, visibile su tutto il sito
- * per chi è loggato): recupera qui, lato server, i Journey attivi (non archiviati) e i loro
- * Capitoli, così il componente client non deve andarli a cercare lui stesso al momento
- * dell'apertura. Un creator può avere più Journey attivi in parallelo (vedi
- * 00-project-context.md, sezione "Archiviazione del Journey"), quindi il componente client
- * decide da sé se serve uno step di scelta oppure no.
+ * Avvolge tutto il sito (montato una sola volta in app/layout.tsx): recupera qui, lato server,
+ * i Journey attivi (non archiviati) e i loro Capitoli, così il componente client non deve
+ * andarli a cercare lui stesso al momento dell'apertura, e li mette a disposizione — via
+ * QuickUploadProvider — sia del pulsante "+" flottante globale sia di altri punti
+ * dell'interfaccia che aprono la stessa finestra di pubblicazione (es. il "+" sulla foto
+ * profilo). Un creator può avere più Journey attivi in parallelo (vedi 00-project-context.md,
+ * sezione "Archiviazione del Journey"), quindi il componente client decide da sé se serve uno
+ * step di scelta oppure no.
  */
-export async function QuickUpload() {
+export async function QuickUpload({ children }: { children: React.ReactNode }) {
   const session = await getCurrentSession();
-  if (!session) return null;
+  if (!session) return <>{children}</>;
 
   const creator = await prisma.creator.findUnique({ where: { userId: session.user.id } });
   const activeJourneys = creator
@@ -47,7 +49,7 @@ export async function QuickUpload() {
     : [];
 
   return (
-    <QuickUploadButton
+    <QuickUploadProvider
       journeys={activeJourneys.map((journey) => ({
         id: journey.id,
         title: journey.title,
@@ -58,6 +60,9 @@ export async function QuickUpload() {
         title: journey.title,
         episodes: journey.episodes,
       }))}
-    />
+    >
+      {children}
+      <QuickUploadFab />
+    </QuickUploadProvider>
   );
 }

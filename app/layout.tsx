@@ -28,10 +28,11 @@ export default function RootLayout({
       <body
         className={`${inter.variable} font-sans bg-bg text-ink antialiased`}
       >
-        {children}
-        <NotificationBell />
-        <MessagesWidget />
-        <QuickUpload />
+        <QuickUpload>
+          {children}
+          <NotificationBell />
+          <MessagesWidget />
+        </QuickUpload>
         <Toaster
           theme="dark"
           position="bottom-right"
