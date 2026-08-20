@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { formatRelativeDate } from "@/lib/utils";
 import { markUpdateViewed, reactToUpdate, submitAnswer, voteOnPoll } from "@/lib/actions/update";
@@ -61,7 +62,11 @@ export function StoryViewer({ stories, initialCreatorIndex, onClose }: StoryView
 
   if (!story || !update) return null;
 
-  return (
+  // Portale su document.body: un antenato con `isolation: isolate` (es. la sezione della foto
+  // profilo, components/profile/ProfileHero.tsx) intrappolerebbe altrimenti questo overlay dentro
+  // il proprio contesto di stacking, facendolo comparire sotto ad Header e altri elementi della
+  // pagina invece che sopra a tutto — indipendente da dove viene aperto il visualizzatore.
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
       <div className="relative flex h-full w-full max-w-md flex-col overflow-hidden bg-black sm:h-[92vh] sm:rounded-2xl">
         {/* `key={update.id}`: ogni Update riparte con stato proprio (progresso, voto, risposta,
@@ -77,7 +82,8 @@ export function StoryViewer({ stories, initialCreatorIndex, onClose }: StoryView
           onClose={onClose}
         />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
