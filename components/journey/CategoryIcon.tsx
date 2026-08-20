@@ -1,6 +1,5 @@
 import {
   Baby,
-  Bike,
   BookOpen,
   Brain,
   Briefcase,
@@ -9,6 +8,7 @@ import {
   Dumbbell,
   Film,
   Footprints,
+  Globe,
   Guitar,
   Hammer,
   HandHeart,
@@ -53,7 +53,7 @@ const CATEGORY_ICONS: Record<JourneyCategory, LucideIcon> = {
   Sports: Mountain,
   Travel: Footprints,
   Lifestyle: Camera,
-  "Sustainability & Environment": Bike,
+  "Sustainability & Environment": Globe,
   "Gardening & Plants": Sprout,
   "Minimalism & Slow Living": Leaf,
   "Digital Wellbeing": Smartphone,
