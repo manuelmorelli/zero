@@ -379,6 +379,11 @@ model Update {
   // Chiave del file su Cloudflare R2 (foto o video, a seconda di `type`), stesso pattern già in
   // uso per Episode.videoKey e User.avatarUrl/coverUrl — mai il file stesso nel database.
   mediaKey    String?
+  // Un Update di tipo IMAGE/VIDEO può facoltativamente comportarsi anche da Domanda (risposta
+  // privata, come il tipo QUESTION puro) invece che da semplice foto/video con didascalia — non
+  // esclusivo con `type`, un aggiunta in più. Per gli Update di tipo QUESTION puro resta false:
+  // il controllo "è una domanda?" guarda `type === QUESTION || isQuestion`, mai solo questo campo.
+  isQuestion  Boolean    @default(false)
   // Un Update può facoltativamente puntare a un Episodio o Journey del creator (es. "è uscito il
   // nuovo episodio"), indipendentemente dal suo `type` — non sono a vicenda esclusivi con testo/
   // foto/video/sondaggio/domanda, sono un aggancio in più.

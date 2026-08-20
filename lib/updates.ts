@@ -57,6 +57,7 @@ export type DashboardUpdate = {
   mediaUrl: string | null;
   publishedAt: Date;
   poll: { options: { id: string; label: string; votes: number }[]; totalVotes: number } | null;
+  isQuestion: boolean;
   answers: { id: string; content: string; createdAt: Date }[];
   reactions: { emoji: string; count: number }[];
 };
@@ -106,6 +107,7 @@ export async function getOwnUpdatesForDashboard(creatorId: string): Promise<Dash
               totalVotes: update.pollOptions.reduce((sum, option) => sum + option._count.votes, 0),
             }
           : null,
+      isQuestion: update.isQuestion || update.type === "QUESTION",
       answers: update.answers,
       reactions: summarizeReactions(update.reactions.map((reaction) => reaction.emoji)),
     }))

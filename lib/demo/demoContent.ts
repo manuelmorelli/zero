@@ -1,6 +1,5 @@
 import type { FollowedUpdate } from "@/lib/discovery/updates";
 import type { CreatorStory } from "@/lib/discovery/stories";
-import type { FeedItem } from "@/lib/discovery/feed";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 import type { LatestVideoItem } from "@/lib/discovery/latestVideos";
 import type { TopJourneyItem } from "@/lib/discovery/topJourneys";
@@ -56,6 +55,7 @@ export const DEMO_STORIES: CreatorStory[] = [
         viewedByMe: false,
         myReaction: null,
         poll: null,
+        isQuestion: false,
         answeredByMe: false,
         link: null,
       },
@@ -76,6 +76,7 @@ export const DEMO_STORIES: CreatorStory[] = [
         viewedByMe: false,
         myReaction: null,
         poll: null,
+        isQuestion: false,
         answeredByMe: false,
         link: null,
       },
@@ -103,37 +104,11 @@ export const DEMO_STORIES: CreatorStory[] = [
           totalVotes: 20,
           myOptionId: null,
         },
+        isQuestion: false,
         answeredByMe: false,
         link: null,
       },
     ],
-  },
-];
-
-export const DEMO_FEED: FeedItem[] = [
-  {
-    type: "journey",
-    date: hoursAgo(5),
-    journeyId: "demo-1",
-    title: "From burnout to balance",
-    coverUrl: null,
-    creatorName: "Marco R.",
-  },
-  {
-    type: "journey",
-    date: hoursAgo(30),
-    journeyId: "demo-2",
-    title: "Stronger every day",
-    coverUrl: null,
-    creatorName: "Sara J.",
-  },
-  {
-    type: "journey",
-    date: hoursAgo(50),
-    journeyId: "demo-4",
-    title: "See the world differently",
-    coverUrl: null,
-    creatorName: "Emma W.",
   },
 ];
 

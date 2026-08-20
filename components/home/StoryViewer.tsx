@@ -115,9 +115,10 @@ function StorySlide({
   }, []);
 
   // Avanzamento automatico a tempo fisso: mai per Video (avanza all'evento "ended", gestito da
-  // StoryContent) né per Domande (restano finché non si risponde o non si scorre via a mano).
+  // StoryContent) né per Domande (restano finché non si risponde o non si scorre via a mano) —
+  // "Domanda" include qui sia il tipo QUESTION puro sia un Update foto/video con isQuestion.
   useEffect(() => {
-    if (update.type === "VIDEO" || update.type === "QUESTION" || paused) return;
+    if (update.type === "VIDEO" || update.isQuestion || paused) return;
 
     const start = Date.now() - (segmentProgress / 100) * STORY_DURATION_MS;
     const interval = setInterval(() => {
@@ -210,7 +211,16 @@ function StorySlide({
       </div>
 
       <div className="absolute inset-x-0 bottom-0 z-30 flex flex-col gap-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pb-5 pt-10">
-        {update.type === "POLL" && update.poll && (
+        {/* Prompt del sondaggio/domanda quando abbinati a una foto/video: qui, appena sopra i
+            pulsanti/il campo risposta, invece che come didascalia sovrapposta più in alto (dove
+            entrerebbe in collisione con un pannello alto come quello del sondaggio). Per un
+            Update di tipo POLL/QUESTION puro (senza media) resta come testo centrale grande,
+            gestito da StoryContent. */}
+        {(update.poll || update.isQuestion) &&
+          (update.type === "IMAGE" || update.type === "VIDEO") &&
+          update.content && <p className="text-sm font-medium text-white">{update.content}</p>}
+
+        {update.poll && (
           <div className="space-y-2" onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
             {update.poll.options.map((option) => {
               const votes = pollVotes ? (pollVotes[option.id] ?? option.votes) : option.votes;
@@ -251,7 +261,7 @@ function StorySlide({
           </Link>
         )}
 
-        {update.type === "QUESTION" &&
+        {update.isQuestion &&
           (answered ? (
             <p className="text-sm font-medium text-white/80">
               Answer sent — only {story.creatorName} can see it.
@@ -326,7 +336,7 @@ function StoryContent({
         {/* Foto già firmata (foto reale) o URL demo: mai un file locale, next/image non serve qui. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={update.mediaUrl} alt="" className="h-full w-full object-cover" />
-        {update.content && (
+        {update.content && !update.poll && !update.isQuestion && (
           <p className="absolute bottom-32 left-4 right-4 text-sm font-medium text-white drop-shadow-lg">
             {update.content}
           </p>
@@ -355,7 +365,7 @@ function StoryContent({
         >
           {muted ? <MuteIcon className="h-4 w-4" /> : <VolumeIcon className="h-4 w-4" />}
         </button>
-        {update.content && (
+        {update.content && !update.poll && !update.isQuestion && (
           <p className="absolute bottom-32 left-4 right-4 text-sm font-medium text-white drop-shadow-lg">
             {update.content}
           </p>

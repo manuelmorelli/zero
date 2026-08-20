@@ -14,11 +14,16 @@ const creators = ["Alex R.", "Sarah J.", "David L.", "Emma W.", "James T."];
 type HeroProps = {
   /** Updates dei creator seguiti: solo per chi ha fatto il sign in (vuoto per gli ospiti). */
   stories: CreatorStory[];
+  /** Il proprio Update attivo, se si ha un profilo Creator: null per chi non ne ha uno (mai
+   * mostrato) o per gli ospiti. A differenza di `stories`, non si segue mai se stessi, quindi
+   * senza questo prop il proprio Update non comparirebbe mai nella propria Home. */
+  ownStory: CreatorStory | null;
 };
 
-export function Hero({ stories }: HeroProps) {
+export function Hero({ stories, ownStory }: HeroProps) {
   const [active, setActive] = useState(0);
   const [openStoryIndex, setOpenStoryIndex] = useState<number | null>(null);
+  const [ownStoryOpen, setOwnStoryOpen] = useState(false);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -85,8 +90,31 @@ export function Hero({ stories }: HeroProps) {
             <ButtonSecondary href="/register">Create Your Journey</ButtonSecondary>
           </div>
 
-          {stories.length > 0 ? (
+          {ownStory || stories.length > 0 ? (
             <div className="mt-4 flex gap-1.5 overflow-x-auto pb-1">
+              {ownStory && (
+                <button
+                  type="button"
+                  onClick={() => ownStory.updates.length > 0 && setOwnStoryOpen(true)}
+                  className="flex shrink-0 flex-col items-center gap-1.5"
+                >
+                  <span
+                    className={`flex h-11 w-11 items-center justify-center rounded-full p-[2px] ${
+                      ownStory.hasUnseen ? "bg-gradient-to-br from-ember to-danger" : "bg-border"
+                    }`}
+                  >
+                    <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-bg bg-surface-2 text-xs font-semibold text-ink-muted">
+                      {ownStory.creatorAvatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={ownStory.creatorAvatarUrl} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        ownStory.creatorName.charAt(0).toUpperCase()
+                      )}
+                    </span>
+                  </span>
+                  <span className="max-w-11 truncate text-[0.65rem] text-ink-muted">You</span>
+                </button>
+              )}
               {stories.slice(0, 6).map((story, index) => (
                 <button
                   key={story.creatorId}
@@ -113,16 +141,18 @@ export function Hero({ stories }: HeroProps) {
                   </span>
                 </button>
               ))}
-              <button
-                type="button"
-                onClick={() => setOpenStoryIndex(0)}
-                className="flex shrink-0 flex-col items-center gap-1.5"
-              >
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-2 text-ink-muted transition-colors hover:text-ember">
-                  &rarr;
-                </span>
-                <span className="text-[0.65rem] text-ink-muted">View all</span>
-              </button>
+              {stories.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setOpenStoryIndex(0)}
+                  className="flex shrink-0 flex-col items-center gap-1.5"
+                >
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-2 text-ink-muted transition-colors hover:text-ember">
+                    &rarr;
+                  </span>
+                  <span className="text-[0.65rem] text-ink-muted">View all</span>
+                </button>
+              )}
             </div>
           ) : (
             <div className="mt-4 flex items-center gap-4">
@@ -175,6 +205,10 @@ export function Hero({ stories }: HeroProps) {
           initialCreatorIndex={openStoryIndex}
           onClose={() => setOpenStoryIndex(null)}
         />
+      )}
+
+      {ownStoryOpen && ownStory && (
+        <StoryViewer stories={[ownStory]} initialCreatorIndex={0} onClose={() => setOwnStoryOpen(false)} />
       )}
     </section>
   );

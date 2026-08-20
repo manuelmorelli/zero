@@ -35,36 +35,38 @@ export function UpdateItem({ update }: UpdateItemProps) {
         )}
       </div>
 
-      {update.type === "QUESTION" && <AnswersPanel answers={update.answers} />}
+      {update.isQuestion && <AnswersPanel answers={update.answers} />}
     </div>
   );
 }
 
+// Media (se presente, in base a `type`), poi il testo (didascalia, o prompt del sondaggio/della
+// domanda se è quello il suo ruolo qui), poi i risultati del sondaggio (se presente): le tre
+// parti sono indipendenti, non a vicenda esclusive — un Update foto/video può avere anche un
+// sondaggio o una domanda abbinati (vedi Update.isQuestion nello schema).
 function UpdateBody({ update }: { update: DashboardUpdate }) {
-  if (update.type === "IMAGE" && update.mediaUrl) {
-    return (
-      <>
+  return (
+    <div>
+      {update.type === "IMAGE" && update.mediaUrl && (
         <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-surface-2">
           <Image src={update.mediaUrl} alt="" fill sizes="400px" className="object-cover" />
         </div>
-        {update.content && <p className="mt-2 whitespace-pre-wrap text-sm text-ink">{update.content}</p>}
-      </>
-    );
-  }
-
-  if (update.type === "VIDEO" && update.mediaUrl) {
-    return (
-      <>
+      )}
+      {update.type === "VIDEO" && update.mediaUrl && (
         <video src={update.mediaUrl} controls playsInline className="w-full rounded-lg bg-black" />
-        {update.content && <p className="mt-2 whitespace-pre-wrap text-sm text-ink">{update.content}</p>}
-      </>
-    );
-  }
+      )}
 
-  if (update.type === "POLL" && update.poll) {
-    return (
-      <div>
-        <p className="text-sm font-semibold text-ink">{update.content}</p>
+      {update.content && (
+        <p
+          className={`whitespace-pre-wrap text-sm text-ink ${update.poll ? "font-semibold" : ""} ${
+            update.type === "IMAGE" || update.type === "VIDEO" ? "mt-2" : ""
+          }`}
+        >
+          {update.content}
+        </p>
+      )}
+
+      {update.poll && (
         <div className="mt-3 space-y-2">
           {update.poll.options.map((option) => {
             const percent =
@@ -82,12 +84,9 @@ function UpdateBody({ update }: { update: DashboardUpdate }) {
             );
           })}
         </div>
-      </div>
-    );
-  }
-
-  // TEXT e QUESTION: solo testo (per QUESTION, `content` è la domanda posta).
-  return <p className="whitespace-pre-wrap text-sm text-ink">{update.content}</p>;
+      )}
+    </div>
+  );
 }
 
 function AnswersPanel({ answers }: { answers: DashboardUpdate["answers"] }) {

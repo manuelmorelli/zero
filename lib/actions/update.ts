@@ -141,18 +141,27 @@ export async function publishUpdate(
   }
   const type = rawType as UpdateType;
 
+  // Un Update foto/video può facoltativamente comportarsi anche da Sondaggio o da Domanda,
+  // oltre al proprio tipo di base — scelta fatta con Manuel per non forzare la scelta tra
+  // "foto" e "sondaggio/domanda". Non ha senso per TEXT/POLL/QUESTION: già coincidono con quello
+  // che l'aggiunta rappresenterebbe.
+  const rawExtra = formData.get("extra");
+  const extra = rawExtra === "POLL" || rawExtra === "QUESTION" ? rawExtra : null;
+  const isMedia = type === "IMAGE" || type === "VIDEO";
+  const hasPoll = type === "POLL" || (isMedia && extra === "POLL");
+  const isQuestion = type === "QUESTION" || (isMedia && extra === "QUESTION");
+
   const content = (formData.get("content") ?? "").toString().trim();
   let mediaKey: string | null = null;
   let pollOptionLabels: string[] = [];
 
-  if (type === "TEXT") {
-    if (!content) return { error: "Write something first.", done: false };
-    if (content.length > UPDATE_TEXT_MAX_LENGTH) return { error: "Keep it under 500 characters.", done: false };
+  // Testo obbligatorio quando è l'unico contenuto (TEXT) oppure quando serve da prompt per un
+  // Sondaggio/Domanda (puro o abbinato a una foto/video); facoltativo (didascalia) altrimenti.
+  if (type === "TEXT" || isQuestion || hasPoll) {
+    if (!content) return { error: hasPoll ? "Write a question first." : "Write something first.", done: false };
   }
-
-  if (type === "QUESTION") {
-    if (!content) return { error: "Write a question first.", done: false };
-    if (content.length > UPDATE_TEXT_MAX_LENGTH) return { error: "Keep it under 500 characters.", done: false };
+  if (content.length > UPDATE_TEXT_MAX_LENGTH) {
+    return { error: "Keep it under 500 characters.", done: false };
   }
 
   if (type === "IMAGE" || type === "VIDEO") {
@@ -161,9 +170,6 @@ export async function publishUpdate(
       return { error: type === "IMAGE" ? "Upload a photo first." : "Upload a video first.", done: false };
     }
     mediaKey = rawMediaKey;
-    if (content.length > UPDATE_TEXT_MAX_LENGTH) {
-      return { error: "Keep the caption under 500 characters.", done: false };
-    }
     if (type === "VIDEO") {
       // Non ci si fida della dimensione dichiarata dal browser (stesso principio già in uso per
       // gli episodi): si verifica il file effettivamente arrivato su R2.
@@ -178,10 +184,7 @@ export async function publishUpdate(
     }
   }
 
-  if (type === "POLL") {
-    if (!content) return { error: "Write a question first.", done: false };
-    if (content.length > UPDATE_TEXT_MAX_LENGTH) return { error: "Keep it under 500 characters.", done: false };
-
+  if (hasPoll) {
     pollOptionLabels = formData
       .getAll("pollOption")
       .map((value) => value.toString().trim())
@@ -212,6 +215,7 @@ export async function publishUpdate(
       type,
       content,
       mediaKey,
+      isQuestion,
       linkedJourneyId,
       linkedEpisodeId,
       publishedAt,
@@ -239,9 +243,11 @@ export async function voteOnPoll(
   if (!session) return { error: "You need to sign in to vote." };
 
   const update = await prisma.update.findUnique({ where: { id: updateId } });
-  if (!update || update.type !== "POLL") return { error: "Poll not found." };
+  if (!update) return { error: "Poll not found." };
   if (update.archivedAt && update.archivedAt <= new Date()) return { error: "This poll has expired." };
 
+  // Il sondaggio può essere il tipo di base (POLL) o un'aggiunta a un Update foto/video: in
+  // entrambi i casi l'esistenza stessa dell'opzione, legata a questo Update, basta a confermarlo.
   const option = await prisma.pollOption.findUnique({ where: { id: optionId } });
   if (!option || option.updateId !== updateId) return { error: "Option not found." };
 
@@ -268,7 +274,7 @@ export async function submitAnswer(
   if (trimmed.length > UPDATE_ANSWER_MAX_LENGTH) return { error: "Keep it under 500 characters." };
 
   const update = await prisma.update.findUnique({ where: { id: updateId } });
-  if (!update || update.type !== "QUESTION") return { error: "Question not found." };
+  if (!update || !(update.isQuestion || update.type === "QUESTION")) return { error: "Question not found." };
 
   const existing = await prisma.updateAnswer.findUnique({
     where: { updateId_userId: { updateId, userId: session.user.id } },

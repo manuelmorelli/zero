@@ -603,6 +603,9 @@ function UpdateFormStep({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
   const [linkChoice, setLinkChoice] = useState("");
+  // Solo per Foto/Video: si può abbinare al massimo un extra interattivo, non un tipo a parte
+  // (scelta fatta con Manuel per non forzare a scegliere tra "foto" e "sondaggio/domanda").
+  const [extra, setExtra] = useState<"" | "POLL" | "QUESTION">("");
 
   useEffect(() => {
     if (state.done) onDone();
@@ -668,6 +671,7 @@ function UpdateFormStep({
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="type" value={kind} />
       {mediaKey && <input type="hidden" name="mediaKey" value={mediaKey} />}
+      {needsMedia && extra && <input type="hidden" name="extra" value={extra} />}
       {linkType === "journey" && <input type="hidden" name="linkedJourneyId" value={linkTargetId} />}
       {linkType === "episode" && <input type="hidden" name="linkedEpisodeId" value={linkTargetId} />}
 
@@ -708,20 +712,31 @@ function UpdateFormStep({
       {needsMedia && (
         <div>
           <label htmlFor={`${uid}-caption`} className="sr-only">
-            Caption
+            {extra === "POLL" ? "Question" : extra === "QUESTION" ? "Your question" : "Caption"}
           </label>
           <textarea
             id={`${uid}-caption`}
             name="content"
             rows={2}
+            required={extra !== ""}
             maxLength={UPDATE_TEXT_MAX_LENGTH}
-            placeholder="Add a caption (optional)"
+            placeholder={
+              extra === "POLL"
+                ? "Ask a question…"
+                : extra === "QUESTION"
+                  ? "What do you want to ask your followers?"
+                  : "Add a caption (optional)"
+            }
             className="w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
           />
         </div>
       )}
 
-      {kind === "POLL" && <PollOptionsField options={pollOptions} setOptions={setPollOptions} />}
+      {needsMedia && <UpdateExtraField value={extra} onChange={setExtra} />}
+
+      {(kind === "POLL" || (needsMedia && extra === "POLL")) && (
+        <PollOptionsField options={pollOptions} setOptions={setPollOptions} />
+      )}
 
       {linkableJourneys.length > 0 && (
         <LinkPickerField journeys={linkableJourneys} value={linkChoice} onChange={setLinkChoice} />
@@ -809,6 +824,39 @@ function MediaPickerField({
           Choose a different file
         </button>
       )}
+    </div>
+  );
+}
+
+const EXTRA_CHOICES: { key: "" | "POLL" | "QUESTION"; label: string }[] = [
+  { key: "", label: "Just the photo/video" },
+  { key: "POLL", label: "Add a poll" },
+  { key: "QUESTION", label: "Add a question" },
+];
+
+function UpdateExtraField({
+  value,
+  onChange,
+}: {
+  value: "" | "POLL" | "QUESTION";
+  onChange: (value: "" | "POLL" | "QUESTION") => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {EXTRA_CHOICES.map((choice) => (
+        <button
+          key={choice.key || "none"}
+          type="button"
+          onClick={() => onChange(choice.key)}
+          className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+            value === choice.key
+              ? "border-ink bg-ink text-bg"
+              : "border-border text-ink-muted hover:border-ink-muted"
+          }`}
+        >
+          {choice.label}
+        </button>
+      ))}
     </div>
   );
 }

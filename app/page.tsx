@@ -24,7 +24,7 @@ import {
 } from "@/lib/demo/demoContent";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
-import { getFollowedCreatorsStories } from "@/lib/discovery/stories";
+import { getFollowedCreatorsStories, getOwnStory } from "@/lib/discovery/stories";
 import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
 import { getDiscoveringNowJourneys, type DiscoveringNowItem } from "@/lib/discovery/discoveringNow";
@@ -61,6 +61,7 @@ export default async function Home() {
 
   const [
     creatorStories,
+    ownStory,
     recommendedJourneys,
     recommendedCreators,
     categoryCounts,
@@ -70,6 +71,7 @@ export default async function Home() {
     discoveringNow,
   ] = await Promise.all([
     getFollowedCreatorsStories({ userId }),
+    getOwnStory({ userId }),
     getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, interests: userInterests }),
     getRecommendedCreators({ userId, interests: userInterests }),
     getJourneyCountsByCategory(),
@@ -97,7 +99,7 @@ export default async function Home() {
     <main>
       <Header />
       {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
-      <Hero stories={userId ? displayedStories : []} />
+      <Hero stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
 
       <div id="discover">
         <DiscoveringNow journeys={displayedDiscoveringNow} />

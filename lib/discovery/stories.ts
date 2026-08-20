@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { getFollowedCreatorIds } from "@/lib/discovery/follows";
+import { getFollowedCreatorIds, getOwnCreatorId } from "@/lib/discovery/follows";
 import { deleteExpiredUpdates } from "@/lib/updates";
 import { getImagePlaybackUrl, getVideoPlaybackUrl } from "@/lib/r2";
-import type { UpdateType } from "@/generated/prisma/client";
+import type { Prisma, UpdateType } from "@/generated/prisma/client";
 
 export type StoryPoll = {
   options: { id: string; label: string; votes: number }[];
@@ -21,6 +21,7 @@ export type StoryUpdate = {
   viewedByMe: boolean;
   myReaction: string | null;
   poll: StoryPoll | null;
+  isQuestion: boolean;
   answeredByMe: boolean;
   link: StoryLink | null;
 };
@@ -32,6 +33,67 @@ export type CreatorStory = {
   hasUnseen: boolean;
   updates: StoryUpdate[];
 };
+
+const storyUpdateInclude = {
+  pollOptions: {
+    orderBy: { order: "asc" },
+    include: { votes: { select: { userId: true, optionId: true } } },
+  },
+  views: { select: { id: true, userId: true } },
+  reactions: { select: { emoji: true, userId: true } },
+  answers: { select: { id: true, userId: true } },
+  linkedJourney: { select: { id: true, title: true } },
+  linkedEpisode: { select: { id: true, title: true, journeyId: true } },
+} satisfies Prisma.UpdateInclude;
+
+type RawStoryUpdate = Prisma.UpdateGetPayload<{ include: typeof storyUpdateInclude }>;
+
+/** Trasforma un Update grezzo (con le relazioni di `storyUpdateInclude`) nella forma pronta per
+ * il visualizzatore Stories, dal punto di vista di `viewerId` (voto, risposta, reazione, "visto"
+ * sono tutti personali). Condiviso tra i creator seguiti e il proprio Update, per non duplicare
+ * la stessa logica di mappatura due volte. */
+async function buildStoryUpdate(update: RawStoryUpdate, viewerId: string): Promise<StoryUpdate> {
+  const mediaUrl = update.mediaKey
+    ? await (update.type === "VIDEO" ? getVideoPlaybackUrl(update.mediaKey) : getImagePlaybackUrl(update.mediaKey))
+    : null;
+
+  const poll =
+    update.pollOptions.length > 0
+      ? {
+          options: update.pollOptions.map((option) => ({
+            id: option.id,
+            label: option.label,
+            votes: option.votes.length,
+          })),
+          totalVotes: update.pollOptions.reduce((sum, option) => sum + option.votes.length, 0),
+          myOptionId:
+            update.pollOptions.find((option) => option.votes.some((vote) => vote.userId === viewerId))?.id ?? null,
+        }
+      : null;
+
+  const link = update.linkedEpisode
+    ? {
+        href: `/journeys/${update.linkedEpisode.journeyId}#${update.linkedEpisode.id}`,
+        label: `Watch: ${update.linkedEpisode.title}`,
+      }
+    : update.linkedJourney
+      ? { href: `/journeys/${update.linkedJourney.id}`, label: `View: ${update.linkedJourney.title}` }
+      : null;
+
+  return {
+    id: update.id,
+    type: update.type,
+    content: update.content,
+    mediaUrl,
+    publishedAt: update.publishedAt,
+    viewedByMe: update.views.some((view) => view.userId === viewerId),
+    myReaction: update.reactions.find((reaction) => reaction.userId === viewerId)?.emoji ?? null,
+    poll,
+    isQuestion: update.isQuestion || update.type === "QUESTION",
+    answeredByMe: update.answers.some((answer) => answer.userId === viewerId),
+    link,
+  };
+}
 
 /**
  * Update ancora attivi dei creator seguiti, raggruppati per creator per la riga di cerchi in
@@ -57,64 +119,13 @@ export async function getFollowedCreatorsStories({
     // Il più vecchio per primo: dentro il visualizzatore di un creator si scorre in ordine
     // cronologico, come le Stories di Instagram.
     orderBy: { publishedAt: "asc" },
-    include: {
-      creator: { include: { user: true } },
-      pollOptions: {
-        orderBy: { order: "asc" },
-        include: { votes: { select: { userId: true, optionId: true } } },
-      },
-      views: { where: { userId }, select: { id: true } },
-      reactions: { where: { userId }, select: { emoji: true } },
-      answers: { where: { userId }, select: { id: true } },
-      linkedJourney: { select: { id: true, title: true } },
-      linkedEpisode: { select: { id: true, title: true, journeyId: true } },
-    },
+    include: { creator: { include: { user: true } }, ...storyUpdateInclude },
   });
 
   const storiesByCreator = new Map<string, CreatorStory>();
 
   for (const update of updates) {
-    const mediaUrl = update.mediaKey
-      ? await (update.type === "VIDEO"
-          ? getVideoPlaybackUrl(update.mediaKey)
-          : getImagePlaybackUrl(update.mediaKey))
-      : null;
-
-    const poll =
-      update.pollOptions.length > 0
-        ? {
-            options: update.pollOptions.map((option) => ({
-              id: option.id,
-              label: option.label,
-              votes: option.votes.length,
-            })),
-            totalVotes: update.pollOptions.reduce((sum, option) => sum + option.votes.length, 0),
-            myOptionId:
-              update.pollOptions.find((option) => option.votes.some((vote) => vote.userId === userId))?.id ?? null,
-          }
-        : null;
-
-    const link = update.linkedEpisode
-      ? {
-          href: `/journeys/${update.linkedEpisode.journeyId}#${update.linkedEpisode.id}`,
-          label: `Watch: ${update.linkedEpisode.title}`,
-        }
-      : update.linkedJourney
-        ? { href: `/journeys/${update.linkedJourney.id}`, label: `View: ${update.linkedJourney.title}` }
-        : null;
-
-    const storyUpdate: StoryUpdate = {
-      id: update.id,
-      type: update.type,
-      content: update.content,
-      mediaUrl,
-      publishedAt: update.publishedAt,
-      viewedByMe: update.views.length > 0,
-      myReaction: update.reactions[0]?.emoji ?? null,
-      poll,
-      answeredByMe: update.answers.length > 0,
-      link,
-    };
+    const storyUpdate = await buildStoryUpdate(update, userId);
 
     const existing = storiesByCreator.get(update.creatorId);
     if (existing) {
@@ -144,4 +155,40 @@ export async function getFollowedCreatorsStories({
     const bLatest = b.updates[b.updates.length - 1].publishedAt.getTime();
     return bLatest - aLatest;
   });
+}
+
+/**
+ * I propri Update ancora attivi, per il cerchio dedicato "tuo" davanti alla riga Stories in Home
+ * (components/landing/Hero.tsx): a differenza di `getFollowedCreatorsStories`, un utente non
+ * segue mai se stesso, quindi senza questa funzione i propri Update non comparirebbero mai nella
+ * propria Home. Restituisce `null` per chi non ha (ancora) un profilo Creator; un profilo Creator
+ * senza Update attivi restituisce comunque un `CreatorStory` con `updates: []` e `hasUnseen:
+ * false`, per mostrare il cerchio spento invece di nasconderlo del tutto.
+ */
+export async function getOwnStory({ userId }: { userId: string | null }): Promise<CreatorStory | null> {
+  if (!userId) return null;
+
+  const [creatorId, user] = await Promise.all([
+    getOwnCreatorId(userId),
+    prisma.user.findUnique({ where: { id: userId }, select: { name: true, avatarUrl: true } }),
+  ]);
+  if (!creatorId || !user) return null;
+
+  await deleteExpiredUpdates();
+
+  const updates = await prisma.update.findMany({
+    where: { creatorId, archivedAt: { gt: new Date() } },
+    orderBy: { publishedAt: "asc" },
+    include: storyUpdateInclude,
+  });
+
+  const avatarUrl = user.avatarUrl ? await getImagePlaybackUrl(user.avatarUrl) : null;
+
+  return {
+    creatorId,
+    creatorName: user.name,
+    creatorAvatarUrl: avatarUrl,
+    hasUnseen: updates.length > 0,
+    updates: await Promise.all(updates.map((update) => buildStoryUpdate(update, userId))),
+  };
 }
