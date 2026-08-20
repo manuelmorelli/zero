@@ -165,10 +165,10 @@ export default async function PublicProfilePage({
                 coverUrl={coverUrl}
               />
               <Link
-                href={creator ? "/dashboard" : "/dashboard/new"}
+                href="/dashboard"
                 className="rounded-full border border-ember/50 bg-ember/15 px-5 py-2.5 text-sm font-semibold text-ember transition-colors hover:bg-ember/25"
               >
-                {creator ? "Dashboard" : "Become a creator"}
+                Dashboard
               </Link>
               <ShareProfileButton />
             </>
