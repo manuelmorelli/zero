@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
+import { getFollowersList, getFollowingList, type FollowListPerson } from "@/lib/profile/followList";
 
 export async function toggleFollow(
   targetUserId: string
@@ -26,4 +27,17 @@ export async function toggleFollow(
   }
 
   return { error: null, isFollowing: !existing };
+}
+
+/** Caricata solo quando si apre l'elenco (components/profile/ProfileFollowStats.tsx), non insieme
+ * al resto della pagina Profilo: la maggior parte delle visite non apre mai Followers/Following. */
+export async function loadFollowList(
+  kind: "followers" | "following",
+  userId: string
+): Promise<FollowListPerson[]> {
+  const session = await getCurrentSession();
+  const viewerId = session?.user.id ?? null;
+  return kind === "followers"
+    ? getFollowersList({ userId, viewerId })
+    : getFollowingList({ userId, viewerId });
 }

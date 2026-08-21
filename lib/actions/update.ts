@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { getCurrentSession } from "@/lib/session";
 import { deleteExpiredUpdates, UPDATE_LIFETIME_MS } from "@/lib/updates";
+import { notifyQuestionAnswered } from "@/lib/notifications";
 import {
   deleteImage,
   deleteVideo,
@@ -273,7 +274,10 @@ export async function submitAnswer(
   if (!trimmed) return { error: "Write an answer first." };
   if (trimmed.length > UPDATE_ANSWER_MAX_LENGTH) return { error: "Keep it under 500 characters." };
 
-  const update = await prisma.update.findUnique({ where: { id: updateId } });
+  const update = await prisma.update.findUnique({
+    where: { id: updateId },
+    include: { creator: { select: { userId: true } } },
+  });
   if (!update || !(update.isQuestion || update.type === "QUESTION")) return { error: "Question not found." };
 
   const existing = await prisma.updateAnswer.findUnique({
@@ -284,6 +288,7 @@ export async function submitAnswer(
   if (existing) return { error: "You already answered this." };
 
   await prisma.updateAnswer.create({ data: { updateId, userId: session.user.id, content: trimmed } });
+  await notifyQuestionAnswered({ creatorUserId: update.creator.userId });
   return { error: null };
 }
 

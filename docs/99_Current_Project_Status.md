@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.40"
+version: "1.41"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -145,7 +145,16 @@ Nessuna funzionalità in corso di implementazione al momento.
 
 ### Ultimo task completato
 
-**Update: propria visibilità, foto profilo con Stories, creator automatico (2026-08-20)**. Tre interventi collegati, tutti verificati dal vivo con Playwright (utente reale, non solo `tsc`):
+**Risposte alle Domande leggibili, liste Followers/Following, ricerca estesa a tutte le persone (2026-08-21)**. Tre funzionalità nuove, richieste da Manuel dopo aver notato i buchi usando il prodotto, tutte verificate dal vivo con due account reali via Playwright:
+
+- **Pannello "Your Updates" ricollegato alla Dashboard** (`app/dashboard/page.tsx`): era stato scollegato in una sessione precedente (componenti `UpdateForm`/`UpdateItem` rimasti orfani). Ora mostra la casella di pubblicazione rapida e la lista dei propri Update attivi con sondaggi/risposte/reazioni — senza questo, una notifica di risposta non avrebbe avuto nessun posto dove portare.
+- **Notifica quando qualcuno risponde a una Domanda** (`notifyQuestionAnswered`, `lib/notifications.ts`): va al solo creator (non ai suoi follower, chi risponde non è detto che lo segua), link a `/dashboard`. Riusa il valore enum `UPDATE` già esistente ma mai popolato.
+- **Liste Followers/Following** (`lib/profile/followList.ts`, `components/profile/FollowListModal.tsx`): i numeri sul Profilo diventano cliccabili, aprono un elenco (foto, nome, pulsante Segui/Segui già) caricato solo al click via una nuova Server Action (`loadFollowList`), non insieme al resto della pagina.
+- **Ricerca estesa a qualunque persona registrata**, non solo a chi ha pubblicato un Journey (`lib/search/searchPeople.ts`, nuova sezione "People" in `/search`) — coerente con "Follow universale" (00-project-context.md): si può seguire chiunque, quindi si deve poter trovare chiunque.
+
+Segnalato ma rimandato a una sessione dedicata (aggiunto a `98_Product_Review.md`): la "X" per chiudere il visualizzatore di un Update non funziona per Manuel in certe condizioni non ancora riprodotte — un test automatico con voto su sondaggio a due account non ha trovato il problema.
+
+Task precedente: **Update: propria visibilità, foto profilo con Stories, creator automatico (2026-08-20)**. Tre interventi collegati, tutti verificati dal vivo con Playwright (utente reale, non solo `tsc`):
 
 - **Bug corretto**: il proprio Update non compariva mai nella propria Home (la riga Stories mostra solo i creator seguiti, e non si può seguire se stessi). Aggiunta `getOwnStory` (poi generalizzata in `getCreatorActiveStory`, `lib/discovery/stories.ts`) e un cerchio dedicato "You" davanti alla riga Stories in Hero, arancione quando si ha un Update attivo.
 - **Foto/Video + sondaggio o domanda abbinati**: prima erano tipi a scelta esclusiva. Nuovo campo `Update.isQuestion`; `voteOnPoll`/`submitAnswer` non dipendono più solo da `type`. Form "+" con selettore extra (nessuno/sondaggio/domanda) quando si sceglie Foto o Video.

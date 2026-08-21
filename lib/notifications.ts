@@ -92,6 +92,22 @@ export async function notifyNewJourney(params: {
   });
 }
 
+/** A differenza di `notifyFollowers`, questa notifica va a una sola persona (il creator che ha
+ * pubblicato la Domanda), non a chi lo segue — chi risponde non è detto che lo segua nemmeno.
+ * Le risposte sono private (mai pubbliche, vedi 00-project-context.md): il link porta alla
+ * Dashboard, dove il creator le legge nel pannello "Your Updates", non a una pagina pubblica. */
+export async function notifyQuestionAnswered(params: { creatorUserId: string }): Promise<void> {
+  await prisma.notification.create({
+    data: {
+      userId: params.creatorUserId,
+      type: "UPDATE",
+      content: "Someone answered your question.",
+      link: "/dashboard",
+    },
+  });
+  await pruneOldNotifications(params.creatorUserId);
+}
+
 export async function getUnreadNotificationCount(userId: string): Promise<number> {
   return prisma.notification.count({ where: { userId, read: false } });
 }

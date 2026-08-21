@@ -48,6 +48,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ## Updates
 
+☐ [High] Manuel reported (2026-08-21) that the "X" close button on the Update viewer (StoryViewer) doesn't close it for him — size was fine, so not a hit-target issue. Not reproduced yet with an automated two-account test (voted on a poll, X worked every time in that test). Root cause still unknown; investigate further in a dedicated session before attempting a fix blind.
 ☐ [Medium] Group or visually distinguish multiple simultaneous Updates from the same creator in the Home feed, instead of showing them as unrelated separate cards.
 ☐ [Medium] Add a live character counter to the Update composer (500-character limit) so creators can see remaining space while typing.
 ☐ [Medium] Ask for confirmation before deleting an Update from the Dashboard (currently deletes immediately, no confirmation — same gap already tracked for Journeys/Chapters/Episodes above).

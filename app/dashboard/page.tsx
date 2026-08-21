@@ -3,12 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { DashboardPanel } from "@/components/creator/DashboardPanel";
 import { JourneyGrid, type GridJourney } from "@/components/creator/JourneyGrid";
+import { UpdateForm } from "@/components/creator/UpdateForm";
+import { UpdateItem } from "@/components/creator/UpdateItem";
 import { Header } from "@/components/layout/Header";
 import { Reveal } from "@/components/common/Reveal";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { getOwnUpdatesForDashboard } from "@/lib/updates";
 
 export default async function CreatorDashboardPage() {
   const { user, creator } = await requireCreator();
+  const ownUpdates = await getOwnUpdatesForDashboard(creator.id);
   const rawJourneys = await prisma.journey.findMany({
     where: { creatorId: creator.id, deletedAt: null },
     orderBy: { order: "asc" },
@@ -99,6 +103,19 @@ export default async function CreatorDashboardPage() {
               </p>
             ) : (
               <JourneyGrid journeys={gridJourneys} />
+            )}
+          </DashboardPanel>
+        </Reveal>
+
+        <Reveal delayMs={80}>
+          <DashboardPanel title="Your Updates">
+            <UpdateForm />
+            {ownUpdates.length > 0 && (
+              <div className="mt-4 space-y-3">
+                {ownUpdates.map((update) => (
+                  <UpdateItem key={update.id} update={update} />
+                ))}
+              </div>
             )}
           </DashboardPanel>
         </Reveal>

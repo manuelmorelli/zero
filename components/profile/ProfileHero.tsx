@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { formatCompactNumber } from "@/lib/utils";
 import { ProfileAvatarStory } from "@/components/profile/ProfileAvatarStory";
+import { ProfileFollowStats } from "@/components/profile/ProfileFollowStats";
+import { Stat } from "@/components/profile/ProfileStat";
 import type { CreatorStory } from "@/lib/discovery/stories";
 
 /** Vignetta: la foto stessa sfuma nel trasparente su tutti i lati (più generosa in basso), via
@@ -14,6 +16,9 @@ const COVER_FADE_MASK = {
 } as const;
 
 type ProfileHeroProps = {
+  /** Id dell'utente di cui si sta guardando il profilo (non del visitatore) — serve a
+   * ProfileFollowStats per caricare gli elenchi Followers/Following di questa persona. */
+  profileUserId: string;
   coverUrl: string | null;
   avatarUrl: string | null;
   name: string;
@@ -27,10 +32,14 @@ type ProfileHeroProps = {
   isOwnProfile: boolean;
   /** null se questo profilo non ha un Creator (mai avuto un Update possibile). */
   activeStory: CreatorStory | null;
+  /** Id di chi guarda la pagina, null per un ospite non loggato. */
+  viewerId: string | null;
+  isLoggedIn: boolean;
   actions?: React.ReactNode;
 };
 
 export function ProfileHero({
+  profileUserId,
   coverUrl,
   avatarUrl,
   name,
@@ -43,6 +52,8 @@ export function ProfileHero({
   followingCount,
   isOwnProfile,
   activeStory,
+  viewerId,
+  isLoggedIn,
   actions,
 }: ProfileHeroProps) {
   const joinedLabel = joinedAt.toLocaleDateString("en-US", { month: "long", year: "numeric" });
@@ -95,25 +106,19 @@ export function ProfileHero({
           <ul className="grid shrink-0 grid-cols-4 gap-2 rounded-xl border border-border bg-white/[0.02] px-3 py-2">
             <Stat label="Trust Score" value={trustScore.toString()} ember />
             <Stat label="Journeys" value={formatCompactNumber(journeysCount)} />
-            <Stat label="Followers" value={formatCompactNumber(followersCount)} />
-            <Stat label="Following" value={formatCompactNumber(followingCount)} />
+            <ProfileFollowStats
+              profileUserId={profileUserId}
+              followersCount={followersCount}
+              followingCount={followingCount}
+              viewerId={viewerId}
+              isLoggedIn={isLoggedIn}
+            />
           </ul>
 
           {actions && <div className="flex shrink-0 items-center gap-2.5">{actions}</div>}
         </div>
       </div>
     </section>
-  );
-}
-
-function Stat({ label, value, ember }: { label: string; value: string; ember?: boolean }) {
-  return (
-    <li className="text-center">
-      <p className={`text-sm font-bold tracking-tight md:text-base ${ember ? "text-ember" : "text-ink"}`}>
-        {value}
-      </p>
-      <p className="text-[0.6rem] font-medium uppercase tracking-wider text-ink-faint">{label}</p>
-    </li>
   );
 }
 

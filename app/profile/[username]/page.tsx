@@ -138,6 +138,7 @@ export default async function PublicProfilePage({
       <Header />
 
       <ProfileHero
+        profileUserId={user.id}
         coverUrl={coverUrl}
         avatarUrl={avatarUrl}
         name={user.name}
@@ -146,6 +147,8 @@ export default async function PublicProfilePage({
         joinedAt={user.createdAt}
         trustScore={trustScore}
         journeysCount={journeys.length}
+        viewerId={session?.user.id ?? null}
+        isLoggedIn={isLoggedIn}
         followersCount={followersCount}
         followingCount={followingCount}
         isOwnProfile={isOwnProfile}
