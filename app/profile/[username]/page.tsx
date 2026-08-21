@@ -6,7 +6,7 @@ import { getImagePlaybackUrl } from "@/lib/r2";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { LikeButton } from "@/components/journey/LikeButton";
 import { ContentCard } from "@/components/profile/ContentCard";
-import { ShareIconButton } from "@/components/profile/ShareIconButton";
+import { ShareButton } from "@/components/common/ShareButton";
 import { JourneyCardMenu } from "@/components/profile/JourneyCardMenu";
 import { Header } from "@/components/layout/Header";
 import { Reveal } from "@/components/common/Reveal";
@@ -233,10 +233,16 @@ export default async function PublicProfilePage({
                             />
                           }
                           menu={
-                            isOwnProfile && !isDemoFeed ? (
-                              <ShareIconButton
+                            !isDemoFeed ? (
+                              <ShareButton
                                 path={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
                                 label={item.title}
+                                updateCaption={
+                                  isOwnProfile
+                                    ? `New episode: ${item.title}`
+                                    : `Check out this episode by ${user.name}: ${item.title}`
+                                }
+                                linkedEpisodeId={item.episodeId}
                               />
                             ) : undefined
                           }

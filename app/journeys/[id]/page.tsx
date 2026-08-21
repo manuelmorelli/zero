@@ -9,6 +9,7 @@ import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } fro
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { FollowButton } from "@/components/profile/FollowButton";
+import { ShareButton } from "@/components/common/ShareButton";
 import { Avatar } from "@/components/common/Avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
 import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
@@ -138,6 +139,17 @@ export default async function PublicJourneyPage({
                     Episode 1
                   </ButtonSecondary>
                 )}
+                <ShareButton
+                  path={`/journeys/${journey.id}`}
+                  label={journey.title}
+                  updateCaption={
+                    isOwnJourney
+                      ? `New Journey: ${journey.title}`
+                      : `Check out this Journey by ${journey.creator.displayName}: ${journey.title}`
+                  }
+                  linkedJourneyId={journey.id}
+                  className="grid h-9 w-9 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ink-muted hover:text-ember"
+                />
               </div>
             </div>
           </div>

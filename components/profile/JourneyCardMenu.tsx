@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Archive, ArrowLeft, ArrowRight, MoreHorizontal, Pencil, Share2, Trash2 } from "lucide-react";
+import { Archive, ArrowLeft, ArrowRight, MoreHorizontal, Pencil, Send, Share2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { archiveJourney, deleteJourney, moveJourney } from "@/lib/actions/journey";
+import { shareToUpdate } from "@/lib/actions/update";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,6 +62,12 @@ export function JourneyCardMenu({
     }
   }
 
+  async function handleAddToUpdate() {
+    const result = await shareToUpdate({ linkedJourneyId: journeyId, content: `New Journey: ${title}` });
+    if (result.error) toast.error(result.error);
+    else toast.success("Added to your Update");
+  }
+
   async function handleMove(direction: "up" | "down") {
     try {
       await moveJourney(journeyId, direction);
@@ -97,6 +104,10 @@ export function JourneyCardMenu({
           <DropdownMenuItem onSelect={handleShare}>
             <Share2 className="h-4 w-4" aria-hidden="true" />
             Share
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={handleAddToUpdate}>
+            <Send className="h-4 w-4" aria-hidden="true" />
+            Add to your Update
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           {!alreadyArchived && (

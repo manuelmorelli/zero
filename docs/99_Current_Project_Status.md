@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.41"
+version: "1.42"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -145,7 +145,16 @@ Nessuna funzionalità in corso di implementazione al momento.
 
 ### Ultimo task completato
 
-**Risposte alle Domande leggibili, liste Followers/Following, ricerca estesa a tutte le persone (2026-08-21)**. Tre funzionalità nuove, richieste da Manuel dopo aver notato i buchi usando il prodotto, tutte verificate dal vivo con due account reali via Playwright:
+**Risposte/sondaggi stile Instagram nel visualizzatore, pulsante di condivisione universale (2026-08-22)**. Manuel ha bocciato il pannello "Your Updates" appena aggiunto in Dashboard (design sproporzionato, metodo poco intuitivo) e ha chiesto qualcosa "stile Instagram" — risultato:
+
+- **Tolto di nuovo** il pannello "Your Updates" dalla Dashboard (casella di testo + lista): non era la soluzione giusta.
+- **Il visualizzatore stesso** (`components/home/StoryViewer.tsx`) ora ha una vista da proprietario: un sondaggio proprio mostra subito le percentuali (niente voto finto su se stessi), una Domanda propria mostra subito l'elenco delle risposte ricevute — card arrotondate, i nostri colori (ember), non l'arcobaleno del mockup di riferimento. Aggiunto anche un cestino per cancellare l'Update direttamente da lì. Nuovo prop `isOwner` su `StoryViewer`/nuovo campo `answers` su `StoryUpdate` (`lib/discovery/stories.ts`) — le risposte vere arrivano al browser solo quando chi guarda è davvero il proprietario, mai altrimenti (restano private).
+- **Nuovo pulsante di condivisione universale** (`components/common/ShareButton.tsx`, sostituisce il vecchio `ShareIconButton`): un aereoplanino arancione che apre "Add to your Update" / "Copy link" / "Share via…" (condivisione nativa del sistema). "Add to your Update" funziona come un repost delle Instagram Stories — anche su un Journey o un episodio di un altro creator, non solo i propri (nuova `shareToUpdate` in `lib/actions/update.ts`, verifica solo che il contenuto sia pubblicamente visibile, non che appartenga a chi condivide). Presente sotto il video della pagina Episodio, sulla pagina Journey, e come voce nel menu a tre puntini dei Journey in Dashboard/Profilo.
+- Notifica di risposta ora punta al proprio profilo (non più a un pannello Dashboard ormai inesistente).
+
+Verificato dal vivo con due account reali via Playwright (Journey pubblicato con episodio finto ma valido lato validazione, condivisione incrociata, sondaggio/domanda visti da proprietario, risposta di un altro account vista subito senza passare dalla Dashboard).
+
+Task precedente: **Risposte alle Domande leggibili, liste Followers/Following, ricerca estesa a tutte le persone (2026-08-21)**. Tre funzionalità nuove, richieste da Manuel dopo aver notato i buchi usando il prodotto, tutte verificate dal vivo con due account reali via Playwright:
 
 - **Pannello "Your Updates" ricollegato alla Dashboard** (`app/dashboard/page.tsx`): era stato scollegato in una sessione precedente (componenti `UpdateForm`/`UpdateItem` rimasti orfani). Ora mostra la casella di pubblicazione rapida e la lista dei propri Update attivi con sondaggi/risposte/reazioni — senza questo, una notifica di risposta non avrebbe avuto nessun posto dove portare.
 - **Notifica quando qualcuno risponde a una Domanda** (`notifyQuestionAnswered`, `lib/notifications.ts`): va al solo creator (non ai suoi follower, chi risponde non è detto che lo segua), link a `/dashboard`. Riusa il valore enum `UPDATE` già esistente ma mai popolato.
@@ -222,7 +231,7 @@ Il redesign secondo il prototipo grafico Lovable è **in corso**, non concluso �
 - 🟡 **Creator Dashboard** — hub centrale del Journey (statistiche, Manage, Publish/Unpublish, Archive, storico Journey archiviati) e gestione Updates fatti; il restyling preciso secondo il riferimento Lovable (selettore Journey a griglia, drag & drop capitoli/episodi, pannello statistiche esatto) è la Fase 5 di `97_Lovable_Redesign_Checklist.md`, non ancora iniziata; i numeri reali di Analytics restano da fare, vedi Fase 4 di questa roadmap.
 - 🟡 **Profile Page** — funzionalità fatta; l'allineamento preciso al riferimento Lovable (anello decorativo sull'avatar, card poster, popup di modifica reali) è la Fase 3 di `97_Lovable_Redesign_Checklist.md`, non ancora iniziata.
 - 🟡 **Journey Page** — unificata in un'unica pagina (hero + episodi); l'allineamento preciso al riferimento Lovable (pannello vetro nell'header) è la Fase 2 di `97_Lovable_Redesign_Checklist.md`, non ancora iniziata.
-- 🟡 **Updates Page** — sistema completo (tutti i formati) fatto in Fase 1; la riga di cerchi ora vive dentro la Hero della Home, non più come sezione a sé; contatore caratteri e conferma prima di eliminare non ancora fatti.
+- 🟡 **Updates Page** — sistema completo (tutti i formati) fatto in Fase 1; la riga di cerchi ora vive dentro la Hero della Home, non più come sezione a sé; cancellazione con conferma nativa aggiunta (2026-08-22, dal visualizzatore stesso); contatore caratteri ancora non fatto.
 - 🟡 **Account / Settings** — nome, username, bio e interessi modificabili da `/account`; foto profilo ancora da fare (in attesa di Cloudflare R2).
 - 🟡 **Responsive Design** — approccio mobile-first già applicato per convenzione in tutto il progetto, nessuna verifica/audit dedicata.
 - ⬜ **UX Improvements** — non iniziato.

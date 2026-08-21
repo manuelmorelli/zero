@@ -74,6 +74,7 @@ export default async function EpisodePlayerPage({
           initialLikeCount={likeCount}
           initialIsLiked={Boolean(viewerLike)}
           isLoggedIn={Boolean(session)}
+          isOwnContent={session?.user.id === journey.creator.userId}
         />
 
         <UpNextList

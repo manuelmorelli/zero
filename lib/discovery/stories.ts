@@ -12,6 +12,8 @@ export type StoryPoll = {
 
 export type StoryLink = { href: string; label: string };
 
+export type StoryAnswer = { id: string; content: string; createdAt: Date };
+
 export type StoryUpdate = {
   id: string;
   type: UpdateType;
@@ -23,6 +25,10 @@ export type StoryUpdate = {
   poll: StoryPoll | null;
   isQuestion: boolean;
   answeredByMe: boolean;
+  /** Le risposte vere e proprie, mai inviate al browser a meno che `isOwner` non fosse true nel
+   * momento della richiesta (sono private, solo il creator può leggerle) — vuoto altrimenti,
+   * anche se ne esistono. */
+  answers: StoryAnswer[];
   link: StoryLink | null;
 };
 
@@ -41,7 +47,7 @@ const storyUpdateInclude = {
   },
   views: { select: { id: true, userId: true } },
   reactions: { select: { emoji: true, userId: true } },
-  answers: { select: { id: true, userId: true } },
+  answers: { orderBy: { createdAt: "desc" }, select: { id: true, userId: true, content: true, createdAt: true } },
   linkedJourney: { select: { id: true, title: true } },
   linkedEpisode: { select: { id: true, title: true, journeyId: true } },
 } satisfies Prisma.UpdateInclude;
@@ -52,7 +58,11 @@ type RawStoryUpdate = Prisma.UpdateGetPayload<{ include: typeof storyUpdateInclu
  * il visualizzatore Stories, dal punto di vista di `viewerId` (voto, risposta, reazione, "visto"
  * sono tutti personali). Condiviso tra i creator seguiti e il proprio Update, per non duplicare
  * la stessa logica di mappatura due volte. */
-async function buildStoryUpdate(update: RawStoryUpdate, viewerId: string | null): Promise<StoryUpdate> {
+async function buildStoryUpdate(
+  update: RawStoryUpdate,
+  viewerId: string | null,
+  isOwner: boolean
+): Promise<StoryUpdate> {
   const mediaUrl = update.mediaKey
     ? await (update.type === "VIDEO" ? getVideoPlaybackUrl(update.mediaKey) : getImagePlaybackUrl(update.mediaKey))
     : null;
@@ -91,6 +101,9 @@ async function buildStoryUpdate(update: RawStoryUpdate, viewerId: string | null)
     poll,
     isQuestion: update.isQuestion || update.type === "QUESTION",
     answeredByMe: update.answers.some((answer) => answer.userId === viewerId),
+    answers: isOwner
+      ? update.answers.map((answer) => ({ id: answer.id, content: answer.content, createdAt: answer.createdAt }))
+      : [],
     link,
   };
 }
@@ -125,7 +138,8 @@ export async function getFollowedCreatorsStories({
   const storiesByCreator = new Map<string, CreatorStory>();
 
   for (const update of updates) {
-    const storyUpdate = await buildStoryUpdate(update, userId);
+    // Non si segue mai se stessi (getFollowedCreatorIds), quindi qui non si è mai il proprietario.
+    const storyUpdate = await buildStoryUpdate(update, userId, false);
 
     const existing = storiesByCreator.get(update.creatorId);
     if (existing) {
@@ -185,13 +199,14 @@ export async function getCreatorActiveStory({
   ]);
 
   const avatarUrl = creator.user.avatarUrl ? await getImagePlaybackUrl(creator.user.avatarUrl) : null;
+  const isOwner = creator.userId === viewerId;
 
   return {
     creatorId,
     creatorName: creator.displayName,
     creatorAvatarUrl: avatarUrl,
     hasUnseen: updates.length > 0,
-    updates: await Promise.all(updates.map((update) => buildStoryUpdate(update, viewerId))),
+    updates: await Promise.all(updates.map((update) => buildStoryUpdate(update, viewerId, isOwner))),
   };
 }
 

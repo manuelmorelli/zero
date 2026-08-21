@@ -94,15 +94,16 @@ export async function notifyNewJourney(params: {
 
 /** A differenza di `notifyFollowers`, questa notifica va a una sola persona (il creator che ha
  * pubblicato la Domanda), non a chi lo segue — chi risponde non è detto che lo segua nemmeno.
- * Le risposte sono private (mai pubbliche, vedi 00-project-context.md): il link porta alla
- * Dashboard, dove il creator le legge nel pannello "Your Updates", non a una pagina pubblica. */
+ * Le risposte sono private (mai pubbliche, vedi 00-project-context.md): il link porta al proprio
+ * profilo, dove si apre il proprio Update dal cerchio sulla foto (ProfileAvatarStory.tsx) per
+ * leggerle — non più a un pannello nella Dashboard, che non esiste più. */
 export async function notifyQuestionAnswered(params: { creatorUserId: string }): Promise<void> {
   await prisma.notification.create({
     data: {
       userId: params.creatorUserId,
       type: "UPDATE",
       content: "Someone answered your question.",
-      link: "/dashboard",
+      link: `/profile/${params.creatorUserId}`,
     },
   });
   await pruneOldNotifications(params.creatorUserId);

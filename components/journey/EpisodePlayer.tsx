@@ -8,6 +8,7 @@ import { formatDuration as formatTime } from "@/lib/format/duration";
 import { Avatar } from "@/components/common/Avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
 import { LikeButton } from "@/components/journey/LikeButton";
+import { ShareButton } from "@/components/common/ShareButton";
 
 // Sotto questa quota non vale la pena riprendere da dove si era arrivati (praticamente l'inizio).
 const RESUME_THRESHOLD_SEC = 5;
@@ -35,6 +36,7 @@ type EpisodePlayerProps = {
   initialLikeCount: number;
   initialIsLiked: boolean;
   isLoggedIn: boolean;
+  isOwnContent: boolean;
 };
 
 export function EpisodePlayer({
@@ -49,6 +51,7 @@ export function EpisodePlayer({
   initialLikeCount,
   initialIsLiked,
   isLoggedIn,
+  isOwnContent,
 }: EpisodePlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
@@ -285,13 +288,24 @@ export function EpisodePlayer({
             <span className="truncate">{creator.displayName}</span>
           </Link>
           <TrustScoreBadge score={trustScore} />
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-4">
             <LikeButton
               targetType="EPISODE"
               targetId={episode.id}
               initialLikeCount={initialLikeCount}
               initialIsLiked={initialIsLiked}
               isLoggedIn={isLoggedIn}
+            />
+            <ShareButton
+              path={`/journeys/${journeyId}/episodes/${episode.id}`}
+              label={episode.title}
+              updateCaption={
+                isOwnContent
+                  ? `New episode: ${episode.title}`
+                  : `Check out this episode by ${creator.displayName}: ${episode.title}`
+              }
+              linkedEpisodeId={episode.id}
+              className="text-ink-muted transition-colors hover:text-ember"
             />
           </div>
         </div>

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { formatRelativeDate } from "@/lib/utils";
-import { markUpdateViewed, reactToUpdate, submitAnswer, voteOnPoll } from "@/lib/actions/update";
+import { archiveUpdate, markUpdateViewed, reactToUpdate, submitAnswer, voteOnPoll } from "@/lib/actions/update";
 import { REACTION_EMOJIS } from "@/lib/constants/updates";
 import type { CreatorStory, StoryUpdate } from "@/lib/discovery/stories";
 
@@ -13,10 +13,14 @@ const STORY_DURATION_MS = 5000;
 type StoryViewerProps = {
   stories: CreatorStory[];
   initialCreatorIndex: number;
+  /** true quando chi guarda è il proprietario di questi Update (StoryViewer usato per la propria
+   * Home o il proprio profilo): mostra i risultati di sondaggi/domande invece di poter votare o
+   * rispondere, più un modo per cancellare — mai true per i creator seguiti. */
+  isOwner: boolean;
   onClose: () => void;
 };
 
-export function StoryViewer({ stories, initialCreatorIndex, onClose }: StoryViewerProps) {
+export function StoryViewer({ stories, initialCreatorIndex, isOwner, onClose }: StoryViewerProps) {
   const [creatorIndex, setCreatorIndex] = useState(initialCreatorIndex);
   const [updateIndex, setUpdateIndex] = useState(0);
 
@@ -77,6 +81,7 @@ export function StoryViewer({ stories, initialCreatorIndex, onClose }: StoryView
           story={story}
           update={update}
           updateIndex={updateIndex}
+          isOwner={isOwner}
           onNext={goNext}
           onPrev={goPrev}
           onClose={onClose}
@@ -91,6 +96,7 @@ function StorySlide({
   story,
   update,
   updateIndex,
+  isOwner,
   onNext,
   onPrev,
   onClose,
@@ -98,6 +104,7 @@ function StorySlide({
   story: CreatorStory;
   update: StoryUpdate;
   updateIndex: number;
+  isOwner: boolean;
   onNext: () => void;
   onPrev: () => void;
   onClose: () => void;
@@ -111,7 +118,19 @@ function StorySlide({
   const [reaction, setReaction] = useState<string | null>(update.myReaction);
   const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  async function handleDelete() {
+    if (deleting || !window.confirm("Delete this Update? This can't be undone.")) return;
+    setDeleting(true);
+    const result = await archiveUpdate(update.id);
+    if (result.error) {
+      setDeleting(false);
+      return;
+    }
+    onClose();
+  }
 
   useEffect(() => {
     // "Al mount" equivale qui a "quando appare questo Update": il componente rimonta a ogni
@@ -141,7 +160,7 @@ function StorySlide({
   }, [paused]);
 
   async function handleVote(optionId: string) {
-    if (myVoteOptionId || !update.poll) return;
+    if (isOwner || myVoteOptionId || !update.poll) return;
     const poll = update.poll;
     setMyVoteOptionId(optionId);
     setPollVotes({
@@ -197,9 +216,22 @@ function StorySlide({
             <p className="text-[11px] text-white/70">{formatRelativeDate(update.publishedAt)}</p>
           </div>
         </div>
-        <button type="button" onClick={onClose} aria-label="Close" className="text-white/80 hover:text-white">
-          <CloseIcon className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-3">
+          {isOwner && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              aria-label="Delete this Update"
+              className="text-white/80 hover:text-white disabled:opacity-50"
+            >
+              <TrashIcon className="h-[18px] w-[18px]" />
+            </button>
+          )}
+          <button type="button" onClick={onClose} aria-label="Close" className="text-white/80 hover:text-white">
+            <CloseIcon className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       <button type="button" aria-label="Previous update" onClick={onPrev} className="absolute inset-y-0 left-0 z-20 w-1/3" />
@@ -233,20 +265,28 @@ function StorySlide({
               const total = pollVotes
                 ? Object.values(pollVotes).reduce((sum, value) => sum + value, 0)
                 : update.poll!.totalVotes;
-              const showResults = myVoteOptionId !== null;
+              // Il proprietario vede subito i risultati del proprio sondaggio, senza dover votare
+              // (non avrebbe senso) — stile Instagram: la card diventa una barra di riempimento
+              // invece di un pulsante da premere.
+              const showResults = isOwner || myVoteOptionId !== null;
               const percent = showResults && total > 0 ? Math.round((votes / total) * 100) : 0;
+              const isMine = option.id === myVoteOptionId;
+
               return (
                 <button
                   key={option.id}
                   type="button"
                   onClick={() => handleVote(option.id)}
-                  disabled={myVoteOptionId !== null}
-                  className={`relative w-full overflow-hidden rounded-full border px-4 py-2.5 text-left text-sm font-semibold text-white transition-colors ${
-                    option.id === myVoteOptionId ? "border-ember" : "border-white/30"
-                  }`}
+                  disabled={isOwner || myVoteOptionId !== null}
+                  className={`relative w-full overflow-hidden rounded-2xl border px-4 py-3 text-left text-sm font-semibold text-white transition-colors ${
+                    isMine ? "border-ember" : "border-white/15"
+                  } ${isOwner ? "cursor-default" : ""}`}
                 >
                   {showResults && (
-                    <div className="absolute inset-y-0 left-0 bg-white/20" style={{ width: `${percent}%` }} />
+                    <div
+                      className={`absolute inset-y-0 left-0 ${isMine ? "bg-ember/35" : "bg-white/10"}`}
+                      style={{ width: `${percent}%` }}
+                    />
                   )}
                   <span className="relative flex items-center justify-between">
                     <span>{option.label}</span>
@@ -255,6 +295,11 @@ function StorySlide({
                 </button>
               );
             })}
+            {isOwner && (
+              <p className="text-center text-[11px] text-white/50">
+                {update.poll.totalVotes} {update.poll.totalVotes === 1 ? "vote" : "votes"}
+              </p>
+            )}
           </div>
         )}
 
@@ -267,7 +312,36 @@ function StorySlide({
           </Link>
         )}
 
+        {/* Il proprietario legge subito le risposte ricevute, stile Instagram (swipe-up sulla
+            propria storia) — chiunque altro vede il campo per rispondere, mai le une le altre. */}
+        {update.isQuestion && isOwner && (
+          <div>
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/50">
+              {update.answers.length === 0
+                ? "No answers yet"
+                : `${update.answers.length} ${update.answers.length === 1 ? "answer" : "answers"}`}
+            </p>
+            {update.answers.length > 0 && (
+              <div
+                className="max-h-40 space-y-1.5 overflow-y-auto"
+                onFocus={() => setPaused(true)}
+                onBlur={() => setPaused(false)}
+                onMouseEnter={() => setPaused(true)}
+                onMouseLeave={() => setPaused(false)}
+              >
+                {update.answers.map((answer) => (
+                  <div key={answer.id} className="rounded-2xl bg-white/10 px-3.5 py-2">
+                    <p className="text-sm text-white">{answer.content}</p>
+                    <p className="mt-0.5 text-[10px] text-white/50">{formatRelativeDate(answer.createdAt)}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {update.isQuestion &&
+          !isOwner &&
           (answered ? (
             <p className="text-sm font-medium text-white/80">
               Answer sent — only {story.creatorName} can see it.
@@ -287,7 +361,7 @@ function StorySlide({
               <button
                 type="submit"
                 disabled={answerPending || !answerText.trim()}
-                className="rounded-full bg-white px-4 py-2.5 text-xs font-semibold text-black disabled:opacity-50"
+                className="rounded-full bg-ember px-4 py-2.5 text-xs font-semibold text-bg disabled:opacity-50"
               >
                 Send
               </button>
@@ -391,6 +465,16 @@ function CloseIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.8} className={className} aria-hidden="true">
       <path d="M5 5l10 10M15 5 5 15" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function TrashIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6} className={className} aria-hidden="true">
+      <path d="M4 6h12M8 6V4.5A1.5 1.5 0 0 1 9.5 3h1A1.5 1.5 0 0 1 12 4.5V6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5.5 6 6 16a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l.5-10" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8.5 9v5M11.5 9v5" strokeLinecap="round" />
     </svg>
   );
 }

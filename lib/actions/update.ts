@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { getCurrentSession } from "@/lib/session";
@@ -19,6 +18,7 @@ import {
 } from "@/lib/r2";
 import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
 import { ALLOWED_VIDEO_TYPES, MAX_UPDATE_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import {
   POLL_MAX_OPTIONS,
   POLL_MIN_OPTIONS,
@@ -29,53 +29,14 @@ import {
 } from "@/lib/constants/updates";
 import type { UpdateType } from "@/generated/prisma/client";
 
-const UpdateSchema = z.object({
-  content: z
-    .string()
-    .trim()
-    .min(1, "Write something first.")
-    .max(UPDATE_TEXT_MAX_LENGTH, "Keep it under 500 characters."),
-});
-
-// Testo semplice pubblicato dalla Dashboard (casella rapida): resta com'era, il percorso più
-// ricco (foto/video/sondaggio/domanda/link) vive solo nel pulsante "+" globale (publishUpdate qui sotto).
-export async function createUpdate(
-  _prevState: { error: string | null },
-  formData: FormData
-): Promise<{ error: string | null }> {
-  const { creator } = await requireCreator();
-
-  const parsed = UpdateSchema.safeParse({ content: formData.get("content") });
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid content." };
-  }
-
-  await deleteExpiredUpdates();
-
-  const publishedAt = new Date();
-  await prisma.update.create({
-    data: {
-      creatorId: creator.id,
-      type: "TEXT",
-      content: parsed.data.content,
-      publishedAt,
-      archivedAt: new Date(publishedAt.getTime() + UPDATE_LIFETIME_MS),
-    },
-  });
-
-  revalidatePath("/dashboard");
-  return { error: null };
-}
-
-// Rimozione anticipata da parte del creator: elimina subito la riga invece di aspettare
-// che la pulizia lazy la trovi scaduta, stessa tabella "updates", nessun campo aggiuntivo.
-export async function archiveUpdate(formData: FormData): Promise<void> {
-  const updateId = formData.get("updateId");
-  if (typeof updateId !== "string" || !updateId) notFound();
-
+// Rimozione anticipata da parte del creator: elimina subito la riga invece di aspettare che la
+// pulizia lazy la trovi scaduta, stessa tabella "updates", nessun campo aggiuntivo. Chiamata dal
+// visualizzatore stesso (components/home/StoryViewer.tsx, solo per il proprietario), non più da
+// un elenco a parte nella Dashboard.
+export async function archiveUpdate(updateId: string): Promise<{ error: string | null }> {
   const { creator } = await requireCreator();
   const update = await prisma.update.findUnique({ where: { id: updateId } });
-  if (!update || update.creatorId !== creator.id) notFound();
+  if (!update || update.creatorId !== creator.id) return { error: "Update not found." };
 
   await prisma.update.delete({ where: { id: update.id } });
   // Nessuna riga referenzia più il file: va ripulito qui, non lo fa il cascade del database.
@@ -83,7 +44,9 @@ export async function archiveUpdate(formData: FormData): Promise<void> {
     await (update.type === "VIDEO" ? deleteVideo(update.mediaKey) : deleteImage(update.mediaKey));
   }
 
-  revalidatePath("/dashboard");
+  revalidatePath("/");
+  revalidatePath("/profile", "layout");
+  return { error: null };
 }
 
 /* ------------------------------------------------------------------ */
@@ -119,6 +82,65 @@ async function assertOwnedJourney(creatorId: string, journeyId: string): Promise
 async function assertOwnedEpisode(creatorId: string, episodeId: string): Promise<void> {
   const episode = await prisma.episode.findUnique({ where: { id: episodeId }, include: { journey: true } });
   if (!episode || episode.journey.creatorId !== creatorId) notFound();
+}
+
+async function assertPubliclyVisibleJourney(journeyId: string): Promise<void> {
+  const journey = await prisma.journey.findUnique({ where: { id: journeyId } });
+  if (!journey || journey.deletedAt || !LIVE_JOURNEY_STATUSES.includes(journey.status)) notFound();
+}
+
+async function assertPubliclyVisibleEpisode(episodeId: string): Promise<void> {
+  const episode = await prisma.episode.findUnique({ where: { id: episodeId }, include: { journey: true } });
+  if (
+    !episode ||
+    episode.deletedAt ||
+    !episode.publishedAt ||
+    episode.journey.deletedAt ||
+    !LIVE_JOURNEY_STATUSES.includes(episode.journey.status)
+  ) {
+    notFound();
+  }
+}
+
+/**
+ * "Add to your Update" (nuovo pulsante di condivisione, components/common/ShareButton.tsx):
+ * un tocco per ricondividere nel proprio Update un Journey o Episodio — il proprio o quello di
+ * un altro creator, come un repost delle Instagram Stories — senza passare dal modulo completo
+ * del pulsante "+". A differenza di `publishUpdate`, qui il link non deve appartenere a chi
+ * pubblica: basta che sia pubblicamente visibile (mai una Bozza), altrimenti si esporrebbe
+ * contenuto non ancora pubblico attraverso il link.
+ */
+export async function shareToUpdate(params: {
+  linkedJourneyId?: string;
+  linkedEpisodeId?: string;
+  content: string;
+}): Promise<{ error: string | null }> {
+  const { creator } = await requireCreator();
+
+  const content = params.content.trim();
+  if (!content) return { error: "Nothing to share." };
+  if (content.length > UPDATE_TEXT_MAX_LENGTH) return { error: "Keep it under 500 characters." };
+
+  if (params.linkedJourneyId) await assertPubliclyVisibleJourney(params.linkedJourneyId);
+  if (params.linkedEpisodeId) await assertPubliclyVisibleEpisode(params.linkedEpisodeId);
+
+  await deleteExpiredUpdates();
+
+  const publishedAt = new Date();
+  await prisma.update.create({
+    data: {
+      creatorId: creator.id,
+      type: "TEXT",
+      content,
+      linkedJourneyId: params.linkedJourneyId ?? null,
+      linkedEpisodeId: params.linkedEpisodeId ?? null,
+      publishedAt,
+      archivedAt: new Date(publishedAt.getTime() + UPDATE_LIFETIME_MS),
+    },
+  });
+
+  revalidatePath("/");
+  return { error: null };
 }
 
 function optionalField(value: FormDataEntryValue | null): string | null {

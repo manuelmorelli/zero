@@ -203,12 +203,18 @@ export function Hero({ stories, ownStory }: HeroProps) {
         <StoryViewer
           stories={stories}
           initialCreatorIndex={openStoryIndex}
+          isOwner={false}
           onClose={() => setOpenStoryIndex(null)}
         />
       )}
 
       {ownStoryOpen && ownStory && (
-        <StoryViewer stories={[ownStory]} initialCreatorIndex={0} onClose={() => setOwnStoryOpen(false)} />
+        <StoryViewer
+          stories={[ownStory]}
+          initialCreatorIndex={0}
+          isOwner
+          onClose={() => setOwnStoryOpen(false)}
+        />
       )}
     </section>
   );

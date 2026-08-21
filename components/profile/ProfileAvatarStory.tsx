@@ -50,7 +50,12 @@ export function ProfileAvatarStory({ avatarUrl, name, isOwnProfile, activeStory 
       )}
 
       {storyOpen && activeStory && (
-        <StoryViewer stories={[activeStory]} initialCreatorIndex={0} onClose={() => setStoryOpen(false)} />
+        <StoryViewer
+          stories={[activeStory]}
+          initialCreatorIndex={0}
+          isOwner={isOwnProfile}
+          onClose={() => setStoryOpen(false)}
+        />
       )}
     </div>
   );
