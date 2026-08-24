@@ -83,7 +83,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ## Documentation
 
-☐ [Medium] `99_Current_Project_Status.md` and `97_Lovable_Redesign_Checklist.md` still list profile-photo upload and the Journey Page redesign ("Fase 2") as not-yet-done — both are already shipped. Correct both files instead of repeating the stale claim.
+☑ [Medium] `99_Current_Project_Status.md` listed profile-photo upload, Journey Page ("Fase 2"), Profile Page ("Fase 3") and Dashboard ("Fase 5") redesign as not-yet-done — all four were already shipped. Corrected 2026-08-24 (`97_Lovable_Redesign_Checklist.md` itself had no such stale claims, only `99` did).
 
 ## Nota
 
