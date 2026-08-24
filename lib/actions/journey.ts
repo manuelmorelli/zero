@@ -201,7 +201,7 @@ export async function publishJourney(
 
   const issues: string[] = [];
   if (!journey.description || journey.description.trim().length === 0) {
-    issues.push("a Presentation");
+    issues.push("your story, in a few words");
   }
   const episodeCount = await prisma.episode.count({
     where: {

@@ -141,18 +141,21 @@ export function JourneyForm({ journey }: JourneyFormProps) {
 
             <div>
               <label htmlFor="description" className="text-sm font-medium text-ink-muted">
-                Caption <span className="text-ink-faint">(optional)</span>
+                Your story, in a few words <span className="text-ink-faint">(optional)</span>
               </label>
               <textarea
                 id="description"
                 name="description"
                 rows={4}
                 maxLength={2000}
-                placeholder="Goal, context, motivations, what followers can expect."
+                placeholder="Tell the story behind this journey — what it's really about, and why it matters to you."
                 value={draft.description}
                 onChange={(event) => setDraft((prev) => ({ ...prev, description: event.target.value }))}
                 className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
               />
+              <p className="mt-1.5 text-xs text-ink-faint">
+                This is the line people will see first if your journey gets featured on Zero's homepage.
+              </p>
             </div>
 
             <div>
