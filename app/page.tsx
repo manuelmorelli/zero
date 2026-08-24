@@ -8,6 +8,7 @@ import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
 import { Logo } from "@/components/layout/Logo";
 import { Header } from "@/components/layout/Header";
 import { OnboardingBanner } from "@/components/layout/OnboardingBanner";
+import { WelcomeBanner } from "@/components/layout/WelcomeBanner";
 import { Hero } from "@/components/landing/Hero";
 import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
@@ -38,6 +39,7 @@ export default async function Home() {
   await promoteExpiredDiscoveryJourneys();
   const session = await getCurrentSession();
   const userId = session?.user.id ?? null;
+  const userName = session?.user.name ?? null;
 
   // L'Onboarding (selezione interessi) non blocca più l'accesso alla Home (vedi
   // 00-project-context.md, sezione "Onboarding"): resta un invito non invasivo,
@@ -98,6 +100,7 @@ export default async function Home() {
   return (
     <main>
       <Header />
+      {userId && userName && <WelcomeBanner userId={userId} name={userName} />}
       {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
       <Hero stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
 
