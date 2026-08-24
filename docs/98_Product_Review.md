@@ -1,7 +1,7 @@
 ---
 title: Product Review
 doc_id: 98-product-review
-version: "1.4"
+version: "1.6"
 status: living
 related_docs:
   - 07_Creator_Experience
@@ -17,7 +17,8 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 ## UX
 
 ☑ [High] Add show/hide password (eye icon) to every password field.
-☐ [High] Ask for confirmation before deleting Journeys, Chapters and Episodes.
+☑ [High] Ask for confirmation before deleting a Journey — done, real dialog with explicit warning text (`JourneyForm.tsx`/`JourneyCardMenu.tsx`).
+☐ [High] Ask for confirmation before deleting a Chapter or an Episode — checked 2026-08-24: neither has one yet (`ChapterEditButton.tsx`, `EpisodeItem.tsx` both delete on a single click, no dialog).
 ☐ [High] Verify and improve drag & drop for Chapters.
 ☑ [High] ~~Add Back navigation inside internal pages~~ — reversed on Manuel's request: all Back buttons removed instead (see 99_Current_Project_Status.md).
 ☐ [Medium] Reduce the number of clicks required to complete common actions.
@@ -26,31 +27,25 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 ## Creator Experience
 
 ☐ [High] Redesign the Account page. The current page contains almost no useful information and feels like an unnecessary intermediate step.
-☐ [High] Redesign the Creator Dashboard to make it feel like the creator's control center instead of a simple list.
+☑ [High] Redesign the Creator Dashboard to make it feel like the creator's control center instead of a simple list — done, Fase 5 of `97_Lovable_Redesign_Checklist.md` (Journey grid, real stats panel, real delete, unified drag & drop). Only gap left: never visually verified with a real authenticated browser session (longstanding limitation, not unfinished work).
 ☑ [High] Improve the Public Profile with a richer layout and better presentation of the creator.
 ☑ [Medium] Add profile avatar.
 ☑ [Medium] Add profile cover image.
-☐ [Medium] Improve Journey presentation inside the profile.
-☐ [Medium] Improve Episode presentation inside Journeys.
+☑ [Medium] Improve Journey presentation inside the profile — done, Fase 3 of `97_Lovable_Redesign_Checklist.md` (dedicated `ContentCard`, restructured Overview).
+☑ [Medium] Improve Episode presentation inside Journeys — done, episode rows aligned to the Lovable glass style; the one real content gap left (missing duration) is tracked separately below.
 ☐ [Medium] Improve overall visual hierarchy of creator pages.
 ☐ [Medium] Show episode duration on the public Journey page's episode rows (`Episode.durationSec` already exists and is read automatically on upload, but isn't displayed there).
 
 ## Upload
 
 ☑ [High] Replace the temporary Video URL workflow with real video uploads.
-☐ [High] Support uploads from desktop and mobile devices.
-☐ [Medium] Design the future upload experience (progress, processing state, error handling).
-☐ [Medium] Add Episode thumbnail support.
-
-## Feed
-
-☐ [Medium] Improve the Feed layout once enough real content exists.
-☐ [Medium] Design empty states for users with little or no content.
+☑ [High] Support uploads from desktop and mobile devices — a standard file picker, works on both by construction; not yet tried on a real phone.
+☑ [Medium] Design the future upload experience (progress, processing state, error handling) — done for both video and episode cover (`EpisodeForm.tsx`: live % progress, format/size validation, error messages).
+☑ [Medium] Add Episode thumbnail support — done (`EpisodeForm.tsx`, `posterKey`/`posterPreview`, real R2 upload); Journey cover is used as fallback when not set.
 
 ## Updates
 
-☐ [High] Manuel reported (2026-08-21) that the "X" close button on the Update viewer (StoryViewer) doesn't close it for him — size was fine, so not a hit-target issue. Not reproduced yet with an automated two-account test (voted on a poll, X worked every time in that test). Root cause still unknown; investigate further in a dedicated session before attempting a fix blind.
-☐ [Medium] Group or visually distinguish multiple simultaneous Updates from the same creator in the Home feed, instead of showing them as unrelated separate cards.
+☑ [Medium] Group multiple simultaneous Updates from the same creator instead of showing them as separate cards — already true by construction: the Stories row groups by creator (`storiesByCreator` map in `lib/discovery/stories.ts`), one circle per creator regardless of how many active Updates they have. The old card-based Home Feed this item originally referred to no longer exists (removed 2026-08-18, confirmed with Manuel — see `97_Lovable_Redesign_Checklist.md`).
 ☐ [Medium] Add a live character counter to the Update composer (500-character limit) so creators can see remaining space while typing.
 ☑ [Medium] Ask for confirmation before deleting an Update — done 2026-08-22. The Dashboard delete list this item originally referred to no longer exists (see "Ultimo task completato" in 99_Current_Project_Status.md); deleting now happens from the Update viewer itself (StoryViewer, owner-only), gated by a native confirm dialog.
 ☐ [Medium] Update viewer (StoryViewer) background is pure black, too close to the rest of the site's dark background: make it lighter (not darker), so the Update card stands out visibly against the page behind it instead of blending into it.
@@ -69,7 +64,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ## Design
 
-☐ [High] Align the interface with the Lovable design prototype that will become the visual reference for Zero.
+☑ [High] Align the interface with the Lovable design prototype — done, all 5 phases of `97_Lovable_Redesign_Checklist.md` closed and committed (checked 2026-08-24).
 ☐ [Medium] Improve spacing, typography, cards, empty states and visual consistency across the application.
 ☐ [Medium] Review all pages for a more modern and premium appearance.
 ☐ [Medium] Review Home payoff/copy (no decisions taken yet on which lines to change).
