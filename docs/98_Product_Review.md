@@ -1,7 +1,7 @@
 ---
 title: Product Review
 doc_id: 98-product-review
-version: "1.6"
+version: "1.7"
 status: living
 related_docs:
   - 07_Creator_Experience
@@ -26,14 +26,13 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ## Creator Experience
 
-☐ [High] Redesign the Account page. The current page contains almost no useful information and feels like an unnecessary intermediate step.
 ☑ [High] Redesign the Creator Dashboard to make it feel like the creator's control center instead of a simple list — done, Fase 5 of `97_Lovable_Redesign_Checklist.md` (Journey grid, real stats panel, real delete, unified drag & drop). Only gap left: never visually verified with a real authenticated browser session (longstanding limitation, not unfinished work).
 ☑ [High] Improve the Public Profile with a richer layout and better presentation of the creator.
 ☑ [Medium] Add profile avatar.
 ☑ [Medium] Add profile cover image.
 ☑ [Medium] Improve Journey presentation inside the profile — done, Fase 3 of `97_Lovable_Redesign_Checklist.md` (dedicated `ContentCard`, restructured Overview).
 ☑ [Medium] Improve Episode presentation inside Journeys — done, episode rows aligned to the Lovable glass style; the one real content gap left (missing duration) is tracked separately below.
-☐ [Medium] Improve overall visual hierarchy of creator pages.
+☑ [Medium] Improve overall visual hierarchy of creator pages — done 2026-08-24: draft-episode count on the Dashboard Journey grid now stands out in ember (was blended into the same muted line as chapter/episode counts, despite being the one actionable number); the status badge on the Journey management page now uses the same ember-for-live styling as the Dashboard grid (was flat gray in every state, inconsistent with the grid's own badge). Small, contained change — no new components, no database changes.
 ☐ [Medium] Show episode duration on the public Journey page's episode rows (`Episode.durationSec` already exists and is read automatically on upload, but isn't displayed there).
 
 ## Upload
@@ -52,7 +51,6 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ## Navigation
 
-☐ [Medium] Review whether the current Account page should remain a dedicated page or become part of Settings.
 ☐ [Medium] Improve navigation consistency across the application.
 
 ## Product Decisions

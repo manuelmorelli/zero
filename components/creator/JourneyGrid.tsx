@@ -92,7 +92,11 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
                     ? `${journey.chapterCount} ${journey.chapterCount === 1 ? "chapter" : "chapters"} · `
                     : ""}
                   {journey.episodeCount} {journey.episodeCount === 1 ? "episode" : "episodes"}
-                  {journey.draftCount > 0 ? ` · ${journey.draftCount} draft${journey.draftCount === 1 ? "" : "s"}` : ""}
+                  {journey.draftCount > 0 ? (
+                    <span className="text-ember"> · {journey.draftCount} draft{journey.draftCount === 1 ? "" : "s"}</span>
+                  ) : (
+                    ""
+                  )}
                 </span>
                 <span className="mt-0.5 block text-[0.62rem] font-semibold text-ember">
                   Open to edit →

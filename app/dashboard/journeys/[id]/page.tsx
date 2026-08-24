@@ -81,7 +81,13 @@ export default async function JourneyManagePage({
               <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">{journey.title}</h1>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-muted">
+              <span
+                className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+                  journey.status === "PUBLISHED" || journey.status === "DISCOVERY"
+                    ? "border-ember/40 bg-ember/15 text-ember"
+                    : "border-border text-ink-muted"
+                }`}
+              >
                 {STATUS_LABEL[journey.status] ?? journey.status}
               </span>
               <JourneyPublishControl journeyId={journey.id} status={journey.status} />
