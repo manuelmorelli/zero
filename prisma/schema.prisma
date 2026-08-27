@@ -134,7 +134,12 @@ model User {
   lastLoginAt   DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  deletedAt     DateTime?
+  // Non null = l'utente ha chiesto la cancellazione dell'account: nascosto ovunque da subito
+  // (stesso significato di deletedAt sugli altri modelli), ma la riga esiste ancora finché non
+  // scatta la cancellazione definitiva. scheduledDeletionAt = quando scatterà (10 giorni di
+  // grazia): se l'utente rifà login prima di quella data può riattivare (vedi lib/account/deletion.ts).
+  deletedAt           DateTime?
+  scheduledDeletionAt DateTime?
 
   sessions  Session[]
   accounts  Account[]

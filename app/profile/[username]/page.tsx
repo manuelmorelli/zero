@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { getCurrentSession } from "@/lib/session";
+import { getViewerSession } from "@/lib/session";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { LikeButton } from "@/components/journey/LikeButton";
@@ -56,7 +56,7 @@ export default async function PublicProfilePage({
   const activeTab = parseTab(tabParam);
 
   const user = await findUserByUsernameOrId(username);
-  if (!user) notFound();
+  if (!user || user.deletedAt) notFound();
 
   await promoteExpiredDiscoveryJourneys();
   const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
@@ -77,7 +77,7 @@ export default async function PublicProfilePage({
   const liveJourneys = journeys.filter((journey) => journey.status === "PUBLISHED" || journey.status === "DISCOVERY");
   const featuredJourney = await getFeaturedJourney(liveJourneys);
 
-  const session = await getCurrentSession();
+  const session = await getViewerSession();
   const isOwnProfile = session?.user.id === user.id;
   const isLoggedIn = Boolean(session);
 

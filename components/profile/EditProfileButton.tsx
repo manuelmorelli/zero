@@ -10,6 +10,7 @@ import { uploadFileWithProgress } from "@/lib/upload";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { JOURNEY_CATEGORIES, type JourneyCategory } from "@/lib/constants/categories";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { DeleteAccountSection } from "@/components/profile/DeleteAccountSection";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const BIO_MAX_LENGTH = 250;
@@ -352,6 +353,8 @@ function EditProfileModal({
             </button>
           </div>
         </form>
+
+        <DeleteAccountSection />
       </div>
 
       {cropTarget && (

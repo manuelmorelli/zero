@@ -12,7 +12,7 @@ import { Hero } from "@/components/landing/Hero";
 import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
-import { getCurrentSession } from "@/lib/session";
+import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 import {
@@ -36,7 +36,7 @@ import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 
 export default async function Home() {
   await promoteExpiredDiscoveryJourneys();
-  const session = await getCurrentSession();
+  const session = await getViewerSession();
   const userId = session?.user.id ?? null;
 
   // L'Onboarding (selezione interessi) non blocca più l'accesso alla Home (vedi

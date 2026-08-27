@@ -2,7 +2,7 @@ import { Flame } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { MomentJourneyCard } from "@/components/journey/MomentJourneyCard";
-import { getCurrentSession } from "@/lib/session";
+import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
@@ -10,7 +10,7 @@ import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 export const metadata = { title: "Journeys of the Moment — Zero" };
 
 export default async function MomentJourneysPage() {
-  const session = await getCurrentSession();
+  const session = await getViewerSession();
   const userId = session?.user.id ?? null;
   const interests = userId
     ? (await prisma.user.findUnique({ where: { id: userId }, select: { interests: true } }))?.interests ?? []

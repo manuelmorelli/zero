@@ -1,11 +1,13 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { requireSession } from "@/lib/session";
+import { requireSession, getCurrentSession } from "@/lib/session";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
+import { requestAccountDeletion, reactivateAccount } from "@/lib/account/deletion";
 
 const AccountSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters long.").max(100),
@@ -67,4 +69,22 @@ export async function updateAccount(
   revalidatePath(`/profile/${user.id}`);
   if (parsed.data.username) revalidatePath(`/profile/${parsed.data.username}`);
   return { error: null };
+}
+
+/** Avvia la cancellazione dell'account (dietro conferma esplicita, vedi
+ * components/profile/DeleteAccountSection.tsx). L'utente resta nel database per il periodo di
+ * grazia (lib/account/deletion.ts) ma sparisce subito da ricerca, profilo pubblico e Discovery. */
+export async function requestAccountDeletionAction(): Promise<void> {
+  const { user } = await requireSession();
+  await requestAccountDeletion(user.id);
+  redirect("/account/deletion-scheduled");
+}
+
+/** Annulla una cancellazione in corso: non passa da requireSession() perché durante il periodo
+ * di grazia requireSession() rimanderebbe qui stesso (vedi lib/session.ts). */
+export async function reactivateAccountAction(): Promise<void> {
+  const session = await getCurrentSession();
+  if (!session) redirect("/login");
+  await reactivateAccount(session.user.id);
+  redirect("/");
 }

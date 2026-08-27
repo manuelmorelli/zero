@@ -48,7 +48,7 @@ export async function getFollowersList({
   viewerId: string | null;
 }): Promise<FollowListPerson[]> {
   const follows = await prisma.follow.findMany({
-    where: { followingId: userId },
+    where: { followingId: userId, follower: { deletedAt: null } },
     orderBy: { createdAt: "desc" },
     take: LIST_LIMIT,
     select: { follower: { select: { id: true, username: true, name: true, avatarUrl: true } } },
@@ -67,7 +67,7 @@ export async function getFollowingList({
   viewerId: string | null;
 }): Promise<FollowListPerson[]> {
   const follows = await prisma.follow.findMany({
-    where: { followerId: userId },
+    where: { followerId: userId, following: { deletedAt: null } },
     orderBy: { createdAt: "desc" },
     take: LIST_LIMIT,
     select: { following: { select: { id: true, username: true, name: true, avatarUrl: true } } },

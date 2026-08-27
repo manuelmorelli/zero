@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ListVideo, Play } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { getCurrentSession } from "@/lib/session";
+import { getViewerSession } from "@/lib/session";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
@@ -38,7 +38,7 @@ export default async function PublicJourneyPage({
 
   const journeyCoverUrl = await resolveCoverUrl(journey.coverUrl);
 
-  const session = await getCurrentSession();
+  const session = await getViewerSession();
   const { groups, flatEpisodes } = await getEpisodeTimeline(journey.id, { userId: session?.user.id });
   const firstEpisode = flatEpisodes.at(0) ?? null;
 

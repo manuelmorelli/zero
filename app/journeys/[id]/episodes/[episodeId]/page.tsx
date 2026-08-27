@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getCurrentSession } from "@/lib/session";
+import { getViewerSession } from "@/lib/session";
 import { getImagePlaybackUrl, getVideoPlaybackUrl } from "@/lib/r2";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
@@ -29,7 +29,7 @@ export default async function EpisodePlayerPage({
   });
   if (!episode) notFound();
 
-  const session = await getCurrentSession();
+  const session = await getViewerSession();
   const userId = session?.user.id;
 
   const [{ flatEpisodes }, progress, likeCount, viewerLike, followersCount] = await Promise.all([

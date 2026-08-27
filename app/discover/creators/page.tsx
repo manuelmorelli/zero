@@ -2,7 +2,7 @@ import { UserPlus } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
-import { getCurrentSession } from "@/lib/session";
+import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
 import { DEMO_CREATORS } from "@/lib/demo/demoContent";
@@ -10,7 +10,7 @@ import { DEMO_CREATORS } from "@/lib/demo/demoContent";
 export const metadata = { title: "Creators to follow — Zero" };
 
 export default async function RecommendedCreatorsPage() {
-  const session = await getCurrentSession();
+  const session = await getViewerSession();
   const userId = session?.user.id ?? null;
   const interests = userId
     ? (await prisma.user.findUnique({ where: { id: userId }, select: { interests: true } }))?.interests ?? []

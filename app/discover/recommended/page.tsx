@@ -2,7 +2,7 @@ import { Sparkles } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { JourneyCard } from "@/components/journey/JourneyCard";
-import { getCurrentSession } from "@/lib/session";
+import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
@@ -10,7 +10,7 @@ import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 export const metadata = { title: "Recommended for you — Zero" };
 
 export default async function RecommendedJourneysPage() {
-  const session = await getCurrentSession();
+  const session = await getViewerSession();
   const userId = session?.user.id ?? null;
   const interests = userId
     ? (await prisma.user.findUnique({ where: { id: userId }, select: { interests: true } }))?.interests ?? []
