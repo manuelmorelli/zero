@@ -71,8 +71,8 @@ export function StoryViewer({ stories, initialCreatorIndex, isOwner, onClose }: 
   // il proprio contesto di stacking, facendolo comparire sotto ad Header e altri elementi della
   // pagina invece che sopra a tutto — indipendente da dove viene aperto il visualizzatore.
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
-      <div className="relative flex h-full w-full max-w-md flex-col overflow-hidden bg-black sm:h-[92vh] sm:rounded-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--color-surface)_0%,_var(--color-bg)_65%)]">
+      <div className="relative flex h-full w-full max-w-md flex-col overflow-hidden bg-bg sm:h-[92vh] sm:rounded-2xl">
         {/* `key={update.id}`: ogni Update riparte con stato proprio (progresso, voto, risposta,
             reazione) rimontando invece di resettare a mano dentro un effect — stesso pattern
             raccomandato da React per "reset state quando cambia una prop". */}

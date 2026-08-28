@@ -396,10 +396,10 @@ function FinalCta() {
           <div className="relative grid items-center gap-6 p-7 md:grid-cols-[minmax(0,1fr)_auto] md:p-10">
             <div className="min-w-0">
               <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-                Ready to start your journey?
+                Every Journey Starts From <span className="text-ember">Zero</span>.
               </h2>
               <p className="mt-2 max-w-md text-sm text-ink-muted">
-                Join thousands of creators and start documenting your transformation.
+                Start documenting your story today — one honest episode at a time.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
