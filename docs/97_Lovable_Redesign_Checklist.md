@@ -1,7 +1,7 @@
 ---
 title: Lovable Redesign Checklist
 doc_id: 97-lovable-redesign-checklist
-version: "1.3"
+version: "1.4"
 status: in-progress
 related_docs:
   - 14_UI_Pages
@@ -90,6 +90,11 @@ Ogni volta che un punto viene completato: spuntarlo qui (`- [x]`), aggiungere un
 - [x] Fase 5 — Quarto giro, Categoria a comparsa nel form "Journey details" — 2026-08-18:
   - La lista di 25 categorie era sempre visibile per intero, allungando lo scroll della pagina senza motivo (non è un punto del sorgente Lovable, richiesta di Manuel a sé). Trasformata in accordion: chiusa di default mostra solo una riga compatta (la categoria già selezionata, o "No category selected") con una freccia; al click si espande con animazione morbida (`grid-template-rows` 0fr→1fr) mostrando tutte le pillole cliccabili come prima
   - Verificato dal vivo con Playwright: stato chiuso/aperto, `aria-expanded` corretto, selezione di una categoria e richiusura mostrano la pillola scelta nella riga compatta, screenshot di entrambi gli stati
+- [x] Fase 5 — Gerarchia visiva pagina di gestione Journey + card Dashboard — 2026-08-30 (non un punto del sorgente Lovable, richiesta di Manuel a sé dopo aver notato che i 4 elementi in alto a destra sulla pagina Journey pesavano tutti uguale visivamente):
+  - Pagina di gestione Journey (`app/dashboard/journeys/[id]/page.tsx`): lo stato (Draft/In Discovery/Published) non è più una pillola bordata ma un puntino colorato + testo, per non sembrare un bottone cliccabile. "View public page" è diventato il bottone pieno e primario (prima era un semplice link di testo, il più debole di tutti pur essendo l'azione più usata). "Move to Draft" e "Archive Journey" non sono più bottoni sempre visibili: vivono ora in un menu "···" dedicato (`components/creator/JourneyHeaderMenu.tsx`, nuovo — riusa lo stesso `DropdownMenu` già in uso in `JourneyCardMenu`), con lo stesso dialog di conferma per Archive già esistente. `JourneyPublishControl.tsx` gestisce ora solo "Publish"; il vecchio `JourneyArchiveButton.tsx` (bottone isolato con `window.confirm`) è stato rimosso
+  - Badge Bozza/Pubblicato dell'Episodio (`EpisodeItem.tsx`) e badge di stato del Journey sulla card Dashboard (`JourneyGrid.tsx`): "Draft"/"Bozza" passa da un riquadro leggero (bordo + sfondo al 15% di opacità) a uno pieno (sfondo `ember` acceso, testo scuro) per segnalare un'azione in sospeso; "Published" resta discreto, perché non richiede nulla dal creator
+  - Card Dashboard (`JourneyGrid.tsx`): bordo della card acceso (`border-ember`) quando il Journey "richiede attenzione" — mai pubblicato, oppure pubblicato ma con episodi ancora in bozza (`draftCount > 0`) — bordo neutro altrimenti. Il contatore "N draft" nella riga capitoli/episodi è passato da semplice testo colorato a una piccola etichetta piena, più visibile
+  - Verificato dal vivo con Playwright (account di prova creato, verificato e cancellato a fine test, nessuna traccia lasciata su Neon): stato Draft (puntino+testo, bottone Publish, menu con solo Archive), stato Published (bottone "View public page" primario, menu con Move to Draft + Archive), card Dashboard sia con Journey in bozza sia pubblicato-ma-con-un-episodio-in-bozza (bordo acceso in entrambi i casi, badge di stato coerente)
 
 ### Profilo pubblico — foto di copertina (`ProfileHero`)
 - [x] Rimosso l'oscuramento di default sulla copertina del Profilo pubblico (`components/profile/ProfileHero.tsx`) — 2026-08-18, più giri di correzione con Manuel:

@@ -6,7 +6,7 @@ import { getImagePlaybackUrl } from "@/lib/r2";
 import { getJourneyPrivateStats } from "@/lib/dashboard/journeyStats";
 import { JourneyForm } from "@/components/creator/JourneyForm";
 import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
-import { JourneyArchiveButton } from "@/components/creator/JourneyArchiveButton";
+import { JourneyHeaderMenu } from "@/components/creator/JourneyHeaderMenu";
 import { DashboardPanel } from "@/components/creator/DashboardPanel";
 import { ChaptersAndEpisodesPanel } from "@/components/creator/ChaptersAndEpisodesPanel";
 import { PrivateStatsPanel } from "@/components/creator/PrivateStatsPanel";
@@ -81,25 +81,27 @@ export default async function JourneyManagePage({
               <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">{journey.title}</h1>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <span
-                className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-                  journey.status === "PUBLISHED" || journey.status === "DISCOVERY"
-                    ? "border-ember/40 bg-ember/15 text-ember"
-                    : "border-border text-ink-muted"
-                }`}
-              >
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted">
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    journey.status === "PUBLISHED" || journey.status === "DISCOVERY"
+                      ? "bg-ember"
+                      : "bg-ink-faint"
+                  }`}
+                  aria-hidden="true"
+                />
                 {STATUS_LABEL[journey.status] ?? journey.status}
               </span>
               <JourneyPublishControl journeyId={journey.id} status={journey.status} />
-              {journey.status !== "ARCHIVED" && <JourneyArchiveButton journeyId={journey.id} />}
               {journey.status !== "DRAFT" && (
                 <Link
                   href={`/journeys/${journey.id}`}
-                  className="text-sm text-ink-muted transition-colors hover:text-ink"
+                  className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
                 >
                   View public page →
                 </Link>
               )}
+              <JourneyHeaderMenu journeyId={journey.id} status={journey.status} />
             </div>
           </div>
           {journey.status === "ARCHIVED" && (

@@ -39,10 +39,18 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
         const reachableIndex = reachable.findIndex((item) => item.id === journey.id);
         const isReachable = reachableIndex !== -1;
         const isLive = journey.status === "PUBLISHED" || journey.status === "DISCOVERY";
+        // Un Journey "chiede attenzione" quando c'è ancora un'azione da fare: non è mai stato
+        // pubblicato, oppure è live ma ha episodi ancora in bozza. Pubblicato e senza bozze in sospeso
+        // non ha nulla da fare, quindi resta visivamente calmo (vedi anche il badge sotto).
+        const needsAttention = journey.status === "DRAFT" || (isLive && journey.draftCount > 0);
 
         return (
           <li key={journey.id} className="group">
-            <div className="relative w-full overflow-hidden rounded-xl border border-border transition-colors hover:border-ink-muted">
+            <div
+              className={`relative w-full overflow-hidden rounded-xl border transition-colors ${
+                needsAttention ? "border-ember/50 hover:border-ember" : "border-border hover:border-ink-muted"
+              }`}
+            >
               <Link
                 href={`/dashboard/journeys/${journey.id}`}
                 className="relative block aspect-4/3 overflow-hidden"
@@ -63,10 +71,10 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
                   <CategoryIcon category={journey.category} className="h-7 w-7" />
                 </span>
                 <span
-                  className={`absolute right-2 top-2 rounded-full border px-2 py-0.5 text-[0.58rem] font-semibold uppercase tracking-wider backdrop-blur-md ${
-                    isLive
-                      ? "border-ember/40 bg-ember/15 text-ember"
-                      : "border-white/15 bg-white/10 text-ink-muted"
+                  className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wider backdrop-blur-md ${
+                    journey.status === "DRAFT"
+                      ? "bg-ember text-bg"
+                      : "border border-white/15 bg-white/10 text-ink-muted"
                   }`}
                 >
                   {STATUS_LABEL[journey.status] ?? journey.status}
@@ -92,10 +100,10 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
                     ? `${journey.chapterCount} ${journey.chapterCount === 1 ? "chapter" : "chapters"} · `
                     : ""}
                   {journey.episodeCount} {journey.episodeCount === 1 ? "episode" : "episodes"}
-                  {journey.draftCount > 0 ? (
-                    <span className="text-ember"> · {journey.draftCount} draft{journey.draftCount === 1 ? "" : "s"}</span>
-                  ) : (
-                    ""
+                  {journey.draftCount > 0 && (
+                    <span className="ml-1 inline-block rounded-full bg-ember px-1.5 py-0.5 text-[0.58rem] font-bold normal-case tracking-normal text-bg">
+                      {journey.draftCount} draft{journey.draftCount === 1 ? "" : "s"}
+                    </span>
                   )}
                 </span>
                 <span className="mt-0.5 block text-[0.62rem] font-semibold text-ember">

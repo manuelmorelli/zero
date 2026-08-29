@@ -76,10 +76,10 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
         <p className="flex items-center gap-2 truncate text-sm font-semibold text-ink">
           <span className="truncate">{episode.title}</span>
           <span
-            className={`shrink-0 rounded-full border px-2 py-0.5 text-[0.58rem] font-semibold uppercase tracking-wider ${
+            className={`shrink-0 rounded-full px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wider ${
               episode.publishedAt
-                ? "border-white/15 bg-white/5 text-ink-muted"
-                : "border-ember/40 bg-ember/15 text-ember"
+                ? "border border-white/15 bg-white/5 text-ink-muted"
+                : "bg-ember text-bg"
             }`}
           >
             {episode.publishedAt ? "Published" : "Draft"}
