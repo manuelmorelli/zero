@@ -10,7 +10,7 @@ import { requireSession } from "@/lib/session";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { DISCOVERY_PHASE_DAYS, PUBLICLY_REACHABLE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewJourney } from "@/lib/notifications";
-import { deleteImage, getImageUploadUrl, newImageKey } from "@/lib/r2";
+import { deleteImage, deleteVideo, getImageUploadUrl, newImageKey } from "@/lib/r2";
 import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
 
 async function requireOwnedJourney(journeyId: string) {
@@ -309,19 +309,42 @@ export async function archiveJourney(
 }
 
 // Diverso da Archive: Delete rimuove il Journey per sempre, anche dal profilo pubblico (Archive
-// invece lo ritira solo dalla gestione attiva, restando visibile pubblicamente). Soft delete
-// (deletedAt), stesso meccanismo già usato per Capitoli ed Episodi — Capitoli/Episodi/Progressi
-// legati restano nel database ma smettono di comparire ovunque grazie ai filtri `deletedAt: null`
-// già presenti in ogni query che li legge.
+// invece lo ritira solo dalla gestione attiva, restando visibile pubblicamente). Cancellazione
+// vera (non soft delete): porta con sé Capitoli, Episodi e tutti i relativi video/copertine su
+// Cloudflare R2, incluso il coverUrl del Journey stesso — è il punto dove più spazio si accumulava
+// inutilmente, dato che un Journey può avere molti episodi. Stessa logica di cleanup di
+// deleteChapter/deleteEpisode in lib/actions/chapter.ts e lib/actions/episode.ts, applicata a
+// tutto il Journey in un colpo solo.
 export async function deleteJourney(formData: FormData): Promise<void> {
   const journeyId = formData.get("journeyId");
   if (typeof journeyId !== "string" || !journeyId) notFound();
   const journey = await requireOwnedJourney(journeyId);
 
-  await prisma.journey.update({
-    where: { id: journey.id },
-    data: { deletedAt: new Date() },
+  const episodes = await prisma.episode.findMany({
+    where: { journeyId: journey.id },
+    select: { id: true, videoKey: true, posterKey: true },
   });
+  const episodeIds = episodes.map((episode) => episode.id);
+
+  await prisma.$transaction([
+    prisma.episodeProgress.deleteMany({ where: { episodeId: { in: episodeIds } } }),
+    prisma.like.deleteMany({ where: { targetType: "EPISODE", targetId: { in: episodeIds } } }),
+    prisma.update.updateMany({ where: { linkedEpisodeId: { in: episodeIds } }, data: { linkedEpisodeId: null } }),
+    prisma.update.updateMany({ where: { linkedJourneyId: journey.id }, data: { linkedJourneyId: null } }),
+    prisma.journeyProgress.deleteMany({ where: { journeyId: journey.id } }),
+    prisma.analytics.deleteMany({ where: { journeyId: journey.id } }),
+    prisma.episode.deleteMany({ where: { journeyId: journey.id } }),
+    prisma.chapter.deleteMany({ where: { journeyId: journey.id } }),
+    prisma.journey.delete({ where: { id: journey.id } }),
+  ]);
+
+  await Promise.all([
+    ...episodes.flatMap((episode) => [
+      episode.videoKey ? deleteVideo(episode.videoKey) : Promise.resolve(),
+      episode.posterKey ? deleteImage(episode.posterKey) : Promise.resolve(),
+    ]),
+    journey.coverUrl ? deleteImage(journey.coverUrl) : Promise.resolve(),
+  ]);
 
   revalidatePath("/dashboard");
   revalidatePath(`/profile/${journey.creator.userId}`);

@@ -60,6 +60,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
   const [posterError, setPosterError] = useState<string | null>(null);
   const [posterProgress, setPosterProgress] = useState<number | null>(null);
   const posterInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   async function handlePosterChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -243,22 +244,33 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
         <label htmlFor={`${uid}-video`} className="text-xs font-medium text-ink-muted">
           Video <span className="text-ink-faint">(optional, max {formatMB(MAX_VIDEO_SIZE_BYTES)})</span>
         </label>
+        <div className="mt-1 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => videoInputRef.current?.click()}
+            className="shrink-0 rounded-full bg-ink px-3.5 py-1.5 text-xs font-semibold text-bg transition-colors hover:bg-ink-muted"
+          >
+            {videoKey ? "Replace video" : "Choose video"}
+          </button>
+          {uploadProgress !== null && <p className="text-xs text-ink-muted">Uploading… {uploadProgress}%</p>}
+          {uploadProgress === null && uploadError && <p className="text-xs text-danger">{uploadError}</p>}
+          {uploadProgress === null && !uploadError && videoKey && (
+            <p className="text-xs font-medium text-ink">
+              ✓ Video ready{durationSec !== null ? ` · ${formatDuration(durationSec)}` : ""}
+            </p>
+          )}
+          {uploadProgress === null && !uploadError && !videoKey && (
+            <p className="text-xs text-ink-faint">No video selected yet.</p>
+          )}
+        </div>
         <input
+          ref={videoInputRef}
           id={`${uid}-video`}
           type="file"
           accept="video/*"
           onChange={handleFileChange}
-          className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-3.5 file:py-1 file:text-xs file:font-semibold file:text-bg"
+          className="hidden"
         />
-        {uploadProgress !== null && (
-          <p className="mt-1 text-xs text-ink-muted">Uploading… {uploadProgress}%</p>
-        )}
-        {uploadError && <p className="mt-1 text-xs text-danger">{uploadError}</p>}
-        {uploadProgress === null && !uploadError && videoKey && (
-          <p className="mt-1 text-xs text-ink-muted">
-            Video ready{durationSec !== null ? ` · ${formatDuration(durationSec)}` : ""}.
-          </p>
-        )}
       </div>
 
       <label

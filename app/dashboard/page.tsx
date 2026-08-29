@@ -19,10 +19,19 @@ export default async function CreatorDashboardPage() {
   const activeJourneys = journeys.filter((journey) => journey.status !== "ARCHIVED");
   const archivedJourneys = journeys.filter((journey) => journey.status === "ARCHIVED");
 
-  const [chapterCounts, episodeCounts, draftCounts] = await Promise.all([
+  const [chapterCounts, looseEpisodeCounts, episodeCounts, draftCounts] = await Promise.all([
     Promise.all(
       activeJourneys.map((journey) =>
         prisma.chapter.count({ where: { journeyId: journey.id, deletedAt: null } })
+      )
+    ),
+    // Gli episodi senza Capitolo vivono nel gruppo "No Chapter" del pannello di gestione (vedi
+    // ChaptersAndEpisodesPanel.tsx): visivamente è indistinguibile da un capitolo vero (ha una sua
+    // intestazione e i suoi episodi), quindi qui conta come "un capitolo in più" quando non è vuoto
+    // — altrimenti il numero mostrato sembrerebbe sbagliato per errore agli occhi del creator.
+    Promise.all(
+      activeJourneys.map((journey) =>
+        prisma.episode.count({ where: { journeyId: journey.id, deletedAt: null, chapterId: null } })
       )
     ),
     Promise.all(
@@ -56,7 +65,7 @@ export default async function CreatorDashboardPage() {
     coverUrl: journey.coverUrl,
     category: journey.category,
     status: journey.status,
-    chapterCount: chapterCounts[index] ?? 0,
+    chapterCount: (chapterCounts[index] ?? 0) + ((looseEpisodeCounts[index] ?? 0) > 0 ? 1 : 0),
     episodeCount: episodeCounts[index] ?? 0,
     draftCount: draftCounts[index] ?? 0,
   }));

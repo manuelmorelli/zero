@@ -8,7 +8,14 @@ import { CSS } from "@dnd-kit/utilities";
 import { deleteEpisode } from "@/lib/actions/episode";
 import { formatDuration } from "@/lib/format/duration";
 import { EpisodeForm } from "@/components/creator/EpisodeForm";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type EpisodeItemProps = {
   journeyId: string;
@@ -34,6 +41,7 @@ type EpisodeItemProps = {
  * modifica si apre in un popup reale invece che in linea, stessa libreria della Fase 3. */
 export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeItemProps) {
   const [editing, setEditing] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: episode.id,
   });
@@ -93,12 +101,13 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
         <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
       </button>
 
-      <form action={deleteEpisode}>
-        <input type="hidden" name="episodeId" value={episode.id} />
-        <button type="submit" className="shrink-0 text-xs font-medium text-danger hover:opacity-80">
-          Delete
-        </button>
-      </form>
+      <button
+        type="button"
+        onClick={() => setDeleteOpen(true)}
+        className="shrink-0 text-xs font-medium text-danger hover:opacity-80"
+      >
+        Delete
+      </button>
 
       <Dialog open={editing} onOpenChange={setEditing}>
         <DialogContent className="max-w-sm">
@@ -108,6 +117,35 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
           <div className="p-4">
             <EpisodeForm journeyId={journeyId} chapters={chapters} episode={episode} />
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete Episode</DialogTitle>
+            <DialogDescription>
+              {`"${episode.title}" and its video will be deleted for good. This can't be undone.`}
+            </DialogDescription>
+          </DialogHeader>
+          <form action={deleteEpisode}>
+            <input type="hidden" name="episodeId" value={episode.id} />
+            <DialogFooter>
+              <button
+                type="button"
+                onClick={() => setDeleteOpen(false)}
+                className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90"
+              >
+                Delete
+              </button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

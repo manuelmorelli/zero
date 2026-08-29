@@ -13,6 +13,7 @@ export type TimelineEpisode = {
   posterUrl: string | null;
   /** Posizione 1-based nell'intero Journey (loose episodes + tutti i Capitoli insieme). */
   number: number;
+  durationSec: number | null;
   /** Avanzamento dell'utente corrente su questo episodio; null se non loggato o mai iniziato. */
   progress: { positionSec: number; completedAt: Date | null } | null;
 };
@@ -37,6 +38,7 @@ type EpisodeRow = {
   videoKey: string | null;
   posterKey: string | null;
   createdAt: Date;
+  durationSec: number | null;
 };
 
 function earliestCreatedAt(episodes: EpisodeRow[]): Date {
@@ -109,6 +111,7 @@ export async function getEpisodeTimeline(
         videoKey: episode.videoKey,
         posterUrl: null,
         number: counter,
+        durationSec: episode.durationSec,
         progress: null,
       };
       flatEpisodes.push(timelineEpisode);

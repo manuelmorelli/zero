@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
+import { deleteImage, deleteVideo } from "@/lib/r2";
 
 const ChapterSchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
@@ -139,15 +140,35 @@ export async function updateChapter(
   redirect(`/dashboard/journeys/${chapter.journeyId}`);
 }
 
+// Cancellazione vera (non soft delete): un Capitolo cancellato porta con sé tutti i suoi Episodi,
+// database e video su Cloudflare R2 inclusi — nessuno resta orfano, invisibile ma ancora a occupare
+// spazio. Stessa logica di cleanup di deleteEpisode in lib/actions/episode.ts, ripetuta per ogni
+// episodio del capitolo prima di cancellare il capitolo stesso.
 export async function deleteChapter(formData: FormData): Promise<void> {
   const chapterId = formData.get("chapterId");
   if (typeof chapterId !== "string" || !chapterId) notFound();
   const chapter = await requireOwnedChapter(chapterId);
 
-  await prisma.chapter.update({
-    where: { id: chapter.id },
-    data: { deletedAt: new Date() },
+  const episodes = await prisma.episode.findMany({
+    where: { chapterId: chapter.id },
+    select: { id: true, videoKey: true, posterKey: true },
   });
+  const episodeIds = episodes.map((episode) => episode.id);
+
+  await prisma.$transaction([
+    prisma.episodeProgress.deleteMany({ where: { episodeId: { in: episodeIds } } }),
+    prisma.like.deleteMany({ where: { targetType: "EPISODE", targetId: { in: episodeIds } } }),
+    prisma.update.updateMany({ where: { linkedEpisodeId: { in: episodeIds } }, data: { linkedEpisodeId: null } }),
+    prisma.episode.deleteMany({ where: { chapterId: chapter.id } }),
+    prisma.chapter.delete({ where: { id: chapter.id } }),
+  ]);
+
+  await Promise.all(
+    episodes.flatMap((episode) => [
+      episode.videoKey ? deleteVideo(episode.videoKey) : Promise.resolve(),
+      episode.posterKey ? deleteImage(episode.posterKey) : Promise.resolve(),
+    ])
+  );
 
   revalidatePath(`/dashboard/journeys/${chapter.journeyId}`);
   redirect(`/dashboard/journeys/${chapter.journeyId}`);

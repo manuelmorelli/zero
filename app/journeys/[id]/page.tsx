@@ -8,6 +8,7 @@ import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
+import { formatDuration } from "@/lib/format/duration";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { ShareButton } from "@/components/common/ShareButton";
 import { Avatar } from "@/components/common/Avatar";
@@ -226,6 +227,9 @@ function EpisodeRow({
             {episode.title}
           </span>
         </span>
+        {episode.durationSec !== null && (
+          <span className="shrink-0 text-xs text-ink-muted">{formatDuration(episode.durationSec)}</span>
+        )}
       </Link>
     </li>
   );
