@@ -328,15 +328,26 @@ export async function updateEpisode(
   redirect(`/dashboard/journeys/${episode.journeyId}`);
 }
 
+// Cancellazione vera (non soft delete): rimuove anche il video (e l'eventuale copertina propria)
+// da Cloudflare R2, altrimenti resterebbero a occupare spazio senza che nessuno possa più vederli.
+// Va sciolto prima ogni riferimento che punterebbe a un episodio ormai inesistente: i progressi di
+// visione di chi l'ha guardato, e l'aggancio da eventuali Update che lo linkano (l'Update resta,
+// perde solo il link). La conferma seria lato utente (dialog "questa azione è permanente") è la
+// vera protezione contro i click accidentali, non più il fatto che l'episodio restasse recuperabile.
 export async function deleteEpisode(formData: FormData): Promise<void> {
   const episodeId = formData.get("episodeId");
   if (typeof episodeId !== "string" || !episodeId) notFound();
   const episode = await requireOwnedEpisode(episodeId);
 
-  await prisma.episode.update({
-    where: { id: episode.id },
-    data: { deletedAt: new Date() },
-  });
+  await prisma.$transaction([
+    prisma.episodeProgress.deleteMany({ where: { episodeId: episode.id } }),
+    prisma.like.deleteMany({ where: { targetType: "EPISODE", targetId: episode.id } }),
+    prisma.update.updateMany({ where: { linkedEpisodeId: episode.id }, data: { linkedEpisodeId: null } }),
+    prisma.episode.delete({ where: { id: episode.id } }),
+  ]);
+
+  if (episode.videoKey) await deleteVideo(episode.videoKey);
+  if (episode.posterKey) await deleteImage(episode.posterKey);
 
   revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
   if (episode.chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${episode.chapterId}`);
@@ -368,14 +379,37 @@ async function moveEpisode(episodeId: string, direction: "up" | "down") {
   return episode;
 }
 
-// Per il drag & drop: l'elemento può essere rilasciato più di una posizione più in
-// là. Non introduce una nuova regola di riordino: ripete lo scambio con il vicino
-// (la stessa funzione `moveEpisode` sopra) una volta per ogni posizione da percorrere.
-export async function moveEpisodeToIndex(episodeId: string, targetIndex: number): Promise<void> {
+// Per il drag & drop: l'elemento può essere rilasciato più di una posizione più in là,
+// e anche in un gruppo diverso (un altro Capitolo, o "No Chapter"). Il cambio di gruppo
+// si limita ad aggiornare il chapterId e a mettere l'episodio in coda al nuovo gruppo; il
+// posizionamento nell'indice richiesto ripete poi lo stesso scambio con il vicino di
+// `moveEpisode` sopra, un passo alla volta — nessun nuovo algoritmo di riordino.
+export async function moveEpisodeToIndex(
+  episodeId: string,
+  targetChapterId: string | null,
+  targetIndex: number
+): Promise<void> {
   const episode = await requireOwnedEpisode(episodeId);
 
+  if (targetChapterId !== null) {
+    const chapter = await prisma.chapter.findUnique({ where: { id: targetChapterId } });
+    if (!chapter || chapter.journeyId !== episode.journeyId) notFound();
+  }
+
+  const previousChapterId = episode.chapterId;
+  if (targetChapterId !== previousChapterId) {
+    const lastInTarget = await prisma.episode.findFirst({
+      where: { journeyId: episode.journeyId, chapterId: targetChapterId, deletedAt: null },
+      orderBy: { order: "desc" },
+    });
+    await prisma.episode.update({
+      where: { id: episode.id },
+      data: { chapterId: targetChapterId, order: (lastInTarget?.order ?? 0) + 1 },
+    });
+  }
+
   const siblings = await prisma.episode.findMany({
-    where: { journeyId: episode.journeyId, chapterId: episode.chapterId, deletedAt: null },
+    where: { journeyId: episode.journeyId, chapterId: targetChapterId, deletedAt: null },
     orderBy: { order: "asc" },
   });
   const currentIndex = siblings.findIndex((sibling) => sibling.id === episodeId);
@@ -390,7 +424,8 @@ export async function moveEpisodeToIndex(episodeId: string, targetIndex: number)
   }
 
   revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
-  if (episode.chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${episode.chapterId}`);
+  if (previousChapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${previousChapterId}`);
+  if (targetChapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${targetChapterId}`);
   // Il drag & drop ora vive anche nel Profilo (vedi components/profile/EpisodeReorderSection.tsx),
   // e l'ordine si riflette sulla Pagina Journey pubblica (elenco episodi incluso): va rivalidata.
   revalidatePath(`/journeys/${episode.journeyId}`);
