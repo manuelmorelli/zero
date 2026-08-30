@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { signOut } from "@/lib/auth-client";
-import { BackLink } from "@/components/common/BackLink";
 
 /** L'azione requestAccountDeletionAction() ha già segnato l'account per la cancellazione;
  * questa pagina chiude la sessione lato client (stesso pattern di SignOutButton) e mostra
@@ -25,7 +25,14 @@ export default function DeletionScheduledPage() {
         </p>
       </div>
 
-      {signedOut && <BackLink href="/login" label="Back to login" />}
+      {signedOut && (
+        <Link
+          href="/login"
+          className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
+        >
+          Back to login
+        </Link>
+      )}
     </main>
   );
 }

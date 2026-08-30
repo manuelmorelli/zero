@@ -4,7 +4,6 @@ import { canMessage, getConversationForParticipant, listMessages, otherParticipa
 import { markConversationRead } from "@/lib/actions/message";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { Header } from "@/components/layout/Header";
-import { BackLink } from "@/components/common/BackLink";
 import { ChatWindow } from "@/components/messages/ChatWindow";
 
 export default async function ConversationPage({
@@ -33,22 +32,18 @@ export default async function ConversationPage({
       <Header />
 
       <div className="mx-auto max-w-2xl px-6 pb-10 pt-24">
-        <BackLink href="/messages" label="Messages" />
-
-        <div className="mt-3">
-          <ChatWindow
-            conversationId={conversationId}
-            currentUserId={user.id}
-            otherUser={{ name: otherUser.name, avatarUrl: otherUserAvatarUrl }}
-            initialMessages={messages.map((message) => ({
-              id: message.id,
-              senderId: message.senderId,
-              content: message.content,
-              createdAt: message.createdAt.toISOString(),
-            }))}
-            initialCanWrite={canWrite}
-          />
-        </div>
+        <ChatWindow
+          conversationId={conversationId}
+          currentUserId={user.id}
+          otherUser={{ name: otherUser.name, avatarUrl: otherUserAvatarUrl }}
+          initialMessages={messages.map((message) => ({
+            id: message.id,
+            senderId: message.senderId,
+            content: message.content,
+            createdAt: message.createdAt.toISOString(),
+          }))}
+          initialCanWrite={canWrite}
+        />
       </div>
     </main>
   );

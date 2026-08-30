@@ -7,7 +7,6 @@ import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } fro
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { Header } from "@/components/layout/Header";
-import { BackLink } from "@/components/common/BackLink";
 import { EpisodePlayer } from "@/components/journey/EpisodePlayer";
 import { UpNextList } from "@/components/journey/UpNextList";
 
@@ -55,11 +54,7 @@ export default async function EpisodePlayerPage({
     <main>
       <Header />
 
-      <div className="mx-auto max-w-[1400px] px-5 pt-24 md:px-8">
-        <BackLink href={`/journeys/${journey.id}`} label={journey.title} />
-      </div>
-
-      <div className="mx-auto mt-3 grid max-w-[1400px] gap-5 px-5 pb-10 md:px-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="mx-auto grid max-w-[1400px] gap-5 px-5 pb-10 pt-24 md:px-8 lg:grid-cols-[minmax(0,1fr)_340px]">
         <EpisodePlayer
           journeyId={journey.id}
           journeyTitle={journey.title}

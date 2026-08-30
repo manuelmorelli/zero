@@ -4,7 +4,6 @@ import { useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
 import { DevEmailLinkNotice } from "@/components/common/DevEmailLinkNotice";
 import { AuthHeader } from "@/components/layout/AuthHeader";
-import { BackLink } from "@/components/common/BackLink";
 
 export default function ForgotPasswordPage() {
   return (
@@ -20,10 +19,6 @@ export default function ForgotPasswordPage() {
         </p>
 
         <ForgotPasswordForm />
-
-        <div className="mt-6 flex justify-center">
-          <BackLink href="/login" label="Back to sign in" />
-        </div>
       </div>
     </main>
   );
