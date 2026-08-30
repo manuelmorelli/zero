@@ -12,6 +12,7 @@ import { ChaptersAndEpisodesPanel } from "@/components/creator/ChaptersAndEpisod
 import { PrivateStatsPanel } from "@/components/creator/PrivateStatsPanel";
 import { Header } from "@/components/layout/Header";
 import { Reveal } from "@/components/common/Reveal";
+import { BackLink } from "@/components/common/BackLink";
 import Link from "next/link";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -72,12 +73,7 @@ export default async function JourneyManagePage({
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-ember transition-colors hover:text-ink"
-              >
-                ← All Journeys
-              </Link>
+              <BackLink href="/dashboard" label="All Journeys" />
               <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">{journey.title}</h1>
             </div>
             <div className="flex flex-wrap items-center gap-3">

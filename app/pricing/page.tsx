@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Header } from "@/components/layout/Header";
+import { BackLink } from "@/components/common/BackLink";
 
 export default function PricingPage() {
   return (
@@ -11,12 +11,9 @@ export default function PricingPage() {
           Coming soon. Following Journeys on Zero is free — pricing for creators is on its way.
         </p>
 
-        <Link
-          href="/"
-          className="mt-8 inline-flex w-fit rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
-        >
-          Back to Home
-        </Link>
+        <div className="mt-8">
+          <BackLink href="/" label="Back to Home" />
+        </div>
       </div>
     </main>
   );

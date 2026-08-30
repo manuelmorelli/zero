@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Header } from "@/components/layout/Header";
+import { BackLink } from "@/components/common/BackLink";
 import { categoryFromSlug } from "@/lib/constants/categories";
 import { LIVE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { JourneyCard } from "@/components/journey/JourneyCard";
@@ -29,11 +29,7 @@ export default async function CategoryPage({
     <main>
       <Header />
       <div className="mx-auto max-w-2xl px-6 pb-16 pt-24">
-        <p className="text-sm font-semibold text-ink-muted">
-          <Link href="/categories" className="hover:text-ink transition-colors">
-            Journeys
-          </Link>
-        </p>
+        <BackLink href="/categories" label="Journeys" />
         <h1 className="mt-2 text-2xl font-extrabold tracking-tight">{category}</h1>
 
         <div className="mt-8 space-y-3">

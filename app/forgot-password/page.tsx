@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
 import { DevEmailLinkNotice } from "@/components/common/DevEmailLinkNotice";
 import { AuthHeader } from "@/components/layout/AuthHeader";
+import { BackLink } from "@/components/common/BackLink";
 
 export default function ForgotPasswordPage() {
   return (
@@ -21,14 +21,9 @@ export default function ForgotPasswordPage() {
 
         <ForgotPasswordForm />
 
-        <p className="mt-6 text-center text-sm text-ink-muted">
-          <Link
-            href="/login"
-            className="font-semibold text-ink hover:underline"
-          >
-            Back to sign in
-          </Link>
-        </p>
+        <div className="mt-6 flex justify-center">
+          <BackLink href="/login" label="Back to sign in" />
+        </div>
       </div>
     </main>
   );
