@@ -4,17 +4,13 @@ import Link from "next/link";
 import { useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
 import { DevEmailLinkNotice } from "@/components/common/DevEmailLinkNotice";
+import { AuthHeader } from "@/components/layout/AuthHeader";
 
 export default function ForgotPasswordPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
-        <Link
-          href="/"
-          className="font-sans text-xl font-extrabold tracking-tight"
-        >
-          ZERO
-        </Link>
+        <AuthHeader />
         <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
           Forgot your password?
         </h1>

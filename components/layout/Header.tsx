@@ -7,8 +7,8 @@ import { AuthStatus } from "@/components/layout/AuthStatus";
 import { SearchIcon } from "@/components/search/SearchForm";
 
 const NAV_LINKS = [
-  { label: "Discover", href: "/categories" },
-  { label: "Journeys", href: "/#discover" },
+  { label: "Discover", href: "/#discover" },
+  { label: "Journeys", href: "/categories" },
   { label: "What is Zero", href: "/what-is-zero" },
   { label: "Pricing", href: "/pricing" },
 ];

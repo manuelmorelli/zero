@@ -3,7 +3,7 @@ import { requireSession } from "@/lib/session";
 import { canMessage, getConversationForParticipant, listMessages, otherParticipant } from "@/lib/messaging";
 import { markConversationRead } from "@/lib/actions/message";
 import { getImagePlaybackUrl } from "@/lib/r2";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { Header } from "@/components/layout/Header";
 import { ChatWindow } from "@/components/messages/ChatWindow";
 
 export default async function ConversationPage({
@@ -29,9 +29,9 @@ export default async function ConversationPage({
 
   return (
     <main>
-      <PageHeader containerClassName="max-w-2xl" />
+      <Header />
 
-      <div className="mx-auto max-w-2xl px-6 py-10">
+      <div className="mx-auto max-w-2xl px-6 pb-10 pt-24">
         <ChatWindow
           conversationId={conversationId}
           currentUserId={user.id}

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireSession } from "@/lib/session";
 import { listConversations } from "@/lib/messaging";
 import { getImagePlaybackUrl } from "@/lib/r2";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { Header } from "@/components/layout/Header";
 import { formatRelativeDate } from "@/lib/utils";
 
 export default async function MessagesPage() {
@@ -24,9 +24,9 @@ export default async function MessagesPage() {
 
   return (
     <main>
-      <PageHeader containerClassName="max-w-2xl" />
+      <Header />
 
-      <div className="mx-auto max-w-2xl px-6 py-10">
+      <div className="mx-auto max-w-2xl px-6 pb-10 pt-24">
         <h1 className="text-lg font-bold tracking-tight text-ink">Messages</h1>
 
         {items.length === 0 ? (

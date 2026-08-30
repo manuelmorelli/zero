@@ -407,7 +407,7 @@ function FinalCta() {
                 Start Your Journey
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </ButtonPrimary>
-              <ButtonSecondary href="/categories">Explore Journeys</ButtonSecondary>
+              <ButtonSecondary href="/categories">Journeys</ButtonSecondary>
             </div>
           </div>
         </div>

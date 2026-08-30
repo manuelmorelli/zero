@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 import { OnboardingWelcome } from "@/components/onboarding/OnboardingWelcome";
 import { OnboardingForm } from "@/components/onboarding/OnboardingForm";
+import { AuthHeader } from "@/components/layout/AuthHeader";
 
 export default async function OnboardingPage() {
   const { user } = await requireSession();
@@ -17,9 +17,7 @@ export default async function OnboardingPage() {
   return (
     <main className="flex min-h-screen items-center justify-center overflow-hidden px-6 py-16">
       <div className="w-full max-w-2xl">
-        <Link href="/" className="font-sans text-xl font-extrabold tracking-tight">
-          ZERO
-        </Link>
+        <AuthHeader />
 
         <div className="mt-8">
           <OnboardingWelcome name={user.name} />
