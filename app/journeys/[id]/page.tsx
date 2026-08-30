@@ -16,6 +16,7 @@ import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
 import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
 import { Header } from "@/components/layout/Header";
 import { Reveal } from "@/components/common/Reveal";
+import { BackLink } from "@/components/common/BackLink";
 import type { TimelineEpisode } from "@/lib/journey/episodeTimeline";
 
 export default async function PublicJourneyPage({
@@ -65,8 +66,10 @@ export default async function PublicJourneyPage({
       <Header />
 
       <div className="mx-auto max-w-[1400px] px-5 pb-10 pt-24 md:px-8">
+        <BackLink href="/categories" label="Journeys" />
+
         <Reveal>
-          <div className="grid gap-4 rounded-2xl border border-border bg-white/[0.02] p-4 md:grid-cols-2 md:p-5">
+          <div className="mt-3 grid gap-4 rounded-2xl border border-border bg-white/[0.02] p-4 md:grid-cols-2 md:p-5">
             <div className="relative aspect-video overflow-hidden rounded-xl border border-border bg-surface-2">
               {journeyCoverUrl ? (
                 <Image
