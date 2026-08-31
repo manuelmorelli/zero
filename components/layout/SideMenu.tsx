@@ -5,8 +5,6 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 import { SignOutButton } from "@/components/common/SignOutButton";
-import { loadFollowList } from "@/lib/actions/follow";
-import type { FollowListPerson } from "@/lib/profile/followList";
 
 type NavLink = { label: string; href: string };
 
@@ -41,24 +39,11 @@ export function SideMenu() {
   const { data } = useSession();
   const isLoggedIn = !!data;
 
-  const [following, setFollowing] = useState<FollowListPerson[]>([]);
-  const [loadingFollowing, setLoadingFollowing] = useState(false);
-
   useEffect(() => {
     // Il portale può montarsi solo lato client (document.body non esiste in SSR).
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    if (!open || !data) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLoadingFollowing(true);
-    loadFollowList("following", data.user.id).then((people) => {
-      setFollowing(people);
-      setLoadingFollowing(false);
-    });
-  }, [open, data]);
 
   useEffect(() => {
     if (!open) return;
@@ -137,37 +122,6 @@ export function SideMenu() {
                   </MenuLink>
                 ))}
               </MenuSection>
-
-              {isLoggedIn && (
-                <MenuSection title="Following">
-                  {loadingFollowing ? (
-                    <p className="px-3 py-2.5 text-sm text-ink-muted">Loading…</p>
-                  ) : following.length === 0 ? (
-                    <p className="px-3 py-2.5 text-sm text-ink-muted">
-                      You&apos;re not following anyone yet.
-                    </p>
-                  ) : (
-                    following.map((person) => (
-                      <Link
-                        key={person.id}
-                        href={`/profile/${person.username ?? person.id}`}
-                        onClick={close}
-                        className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-surface-2"
-                      >
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-xs font-semibold text-ink-muted">
-                          {person.avatarUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={person.avatarUrl} alt="" className="h-full w-full object-cover" />
-                          ) : (
-                            person.name.charAt(0).toUpperCase()
-                          )}
-                        </span>
-                        <span className="min-w-0 truncate text-sm text-ink">{person.name}</span>
-                      </Link>
-                    ))
-                  )}
-                </MenuSection>
-              )}
 
               <div className="mt-auto space-y-3 border-t border-border px-5 py-5">
                 <div className="flex flex-wrap gap-x-3 gap-y-1.5">
