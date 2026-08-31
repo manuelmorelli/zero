@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Logo } from "@/components/layout/Logo";
 import { AuthStatus } from "@/components/layout/AuthStatus";
 import { BackButton } from "@/components/layout/BackButton";
+import { MobileNav } from "@/components/layout/MobileNav";
 import { SearchIcon } from "@/components/search/SearchForm";
 
 const NAV_LINKS = [
@@ -65,6 +66,7 @@ export function Header() {
             <SearchIcon className="h-4 w-4" />
           </Link>
           <AuthStatus />
+          <MobileNav links={NAV_LINKS} />
         </div>
       </div>
     </header>
