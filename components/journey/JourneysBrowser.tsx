@@ -51,12 +51,12 @@ export function JourneysBrowser({ rows }: JourneysBrowserProps) {
 
       {filteredRows.map((row) => (
         <HorizontalScrollRow key={row.category} id={row.slug} title={row.category}>
-          {row.journeys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} className="w-40 shrink-0 sm:w-44" />
-          ))}
           {row.wildcardJourneyId && (
             <WildcardJourneyCard journeyId={row.wildcardJourneyId} className="w-40 shrink-0 sm:w-44" />
           )}
+          {row.journeys.map((journey) => (
+            <JourneyCard key={journey.id} journey={journey} className="w-40 shrink-0 sm:w-44" />
+          ))}
         </HorizontalScrollRow>
       ))}
     </div>

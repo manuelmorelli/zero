@@ -53,7 +53,7 @@ export function HorizontalScrollRow({ id, title, subtitle, children }: Horizonta
       </div>
 
       <div className="relative mt-4">
-        <div ref={scrollRef} className="no-scrollbar flex gap-4 overflow-x-auto scroll-smooth pb-1">
+        <div ref={scrollRef} className="no-scrollbar flex items-start gap-4 overflow-x-auto scroll-smooth pb-1">
           {children}
         </div>
 
