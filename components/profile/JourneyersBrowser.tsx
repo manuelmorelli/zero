@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { SearchIcon } from "@/components/search/SearchForm";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
-import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
+import { JourneyerCard } from "@/components/profile/JourneyerCard";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 import type { JourneyerCategoryRow } from "@/lib/discovery/journeyersByCategory";
 
@@ -67,9 +67,7 @@ export function JourneyersBrowser({ newJourneyers, rows }: JourneyersBrowserProp
           subtitle="Journeyers whose Journey is in Discovery Phase right now."
         >
           {filteredNewJourneyers.map((journeyer) => (
-            <div key={journeyer.id} className="w-52 shrink-0">
-              <CreatorResultCard creator={journeyer} />
-            </div>
+            <JourneyerCard key={journeyer.id} journeyer={journeyer} className="w-40 shrink-0 sm:w-44" />
           ))}
         </HorizontalScrollRow>
       )}
@@ -77,9 +75,7 @@ export function JourneyersBrowser({ newJourneyers, rows }: JourneyersBrowserProp
       {filteredRows.map((row) => (
         <HorizontalScrollRow key={row.category} id={row.slug} title={row.category}>
           {row.journeyers.map((journeyer) => (
-            <div key={journeyer.id} className="w-52 shrink-0">
-              <CreatorResultCard creator={journeyer} />
-            </div>
+            <JourneyerCard key={journeyer.id} journeyer={journeyer} className="w-40 shrink-0 sm:w-44" />
           ))}
         </HorizontalScrollRow>
       ))}
