@@ -34,6 +34,11 @@ function readStack(): string[] {
  * ogni cambio pagina (senza mai scendere quando si torna indietro) finiva per mostrare il
  * pulsante anche in Home dopo un solo giro avanti/indietro, e un secondo click portava fuori
  * dal sito (alla pagina precedente vera del browser, es. Google) invece di restare su Zero.
+ *
+ * Se il pathname corrente è già presente nello stack (non solo in cima o al secondo posto,
+ * es. si torna a Home cliccando il logo da tre pagine di profondità, non con "Back"), lo stack
+ * si accorcia fino a quel punto invece di aggiungere un duplicato in fondo: altrimenti il
+ * pulsante restava visibile anche su una pagina "di partenza" già vista in questa sessione.
  */
 export function BackButton({ className }: { className?: string }) {
   const router = useRouter();
@@ -44,18 +49,9 @@ export function BackButton({ className }: { className?: string }) {
     const stack = freshDocumentLoad ? [] : readStack();
     freshDocumentLoad = false;
 
-    const top = stack[stack.length - 1];
-    const belowTop = stack[stack.length - 2];
-
-    let nextStack: string[];
-    if (pathname === top) {
-      nextStack = stack;
-    } else if (pathname === belowTop) {
-      // Stesso pathname di due passi fa: siamo tornati indietro di una pagina.
-      nextStack = stack.slice(0, -1);
-    } else {
-      nextStack = [...stack, pathname].slice(-MAX_STACK);
-    }
+    const existingIndex = stack.lastIndexOf(pathname);
+    const nextStack =
+      existingIndex !== -1 ? stack.slice(0, existingIndex + 1) : [...stack, pathname].slice(-MAX_STACK);
 
     sessionStorage.setItem(STACK_KEY, JSON.stringify(nextStack));
     // Sincronizza lo stato React con sessionStorage (fonte esterna) dopo un cambio pagina.
