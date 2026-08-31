@@ -41,6 +41,11 @@ export const auth = betterAuth({
       // il progetto usa "avatarUrl" invece del nome campo di default "image"
       image: "avatarUrl",
     },
+    changeEmail: {
+      // Riusa emailVerification.sendVerificationEmail sopra per confermare il nuovo indirizzo
+      // (stesso link "/verify-email", vedi Settings > Password & Security).
+      enabled: true,
+    },
   },
   plugins: [nextCookies()],
 });

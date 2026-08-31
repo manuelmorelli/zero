@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Logo } from "@/components/layout/Logo";
 import { AuthStatus } from "@/components/layout/AuthStatus";
 import { BackButton } from "@/components/layout/BackButton";
-import { MobileNav } from "@/components/layout/MobileNav";
+import { SideMenu } from "@/components/layout/SideMenu";
 import { SearchIcon } from "@/components/search/SearchForm";
 
 const NAV_LINKS = [
@@ -39,7 +39,8 @@ export function Header() {
     >
       <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-1.5 md:grid-cols-[1fr_auto_1fr] md:px-8">
         <div className="-ml-5 flex min-w-0 items-center gap-3 md:-ml-8">
-          <BackButton className="ml-5 md:ml-8" />
+          <SideMenu />
+          <BackButton />
           <Link href="/" className="flex min-w-0 items-center" aria-label="Zero home">
             <Logo className="h-7" />
           </Link>
@@ -66,7 +67,6 @@ export function Header() {
             <SearchIcon className="h-4 w-4" />
           </Link>
           <AuthStatus />
-          <MobileNav links={NAV_LINKS} />
         </div>
       </div>
     </header>

@@ -23,11 +23,14 @@ async function pruneOldNotifications(userId: string): Promise<void> {
   });
 }
 
+type FollowerPreferenceField = "notifyNewEpisode" | "notifyNewJourney";
+
 async function notifyFollowers(params: {
   creatorId: string;
   type: NotificationType;
   content: string;
   link: string;
+  preferenceField: FollowerPreferenceField;
 }): Promise<void> {
   // Follow è persona-segue-persona (vedi 00-project-context.md, sezione "Modello utente
   // unico"): si risolve prima l'utente dietro il Creator, poi chi lo segue come persona.
@@ -37,8 +40,9 @@ async function notifyFollowers(params: {
   });
   if (!creator) return;
 
+  // Solo chi non ha disattivato questo tipo di notifica in Settings > Notifications.
   const followers = await prisma.follow.findMany({
-    where: { followingId: creator.userId },
+    where: { followingId: creator.userId, follower: { [params.preferenceField]: true } },
     select: { followerId: true },
   });
   if (followers.length === 0) return;
@@ -74,6 +78,7 @@ export async function notifyNewEpisode(params: {
     type: "NEW_EPISODE",
     content: `${params.creatorName} published a new episode in ${params.journeyTitle}: ${params.episodeTitle}`,
     link: `/journeys/${params.journeyId}#${params.episodeId}`,
+    preferenceField: "notifyNewEpisode",
   });
 }
 
@@ -89,6 +94,7 @@ export async function notifyNewJourney(params: {
     type: "NEW_JOURNEY",
     content: `${params.creatorName} published a new Journey: ${params.journeyTitle}`,
     link: `/journeys/${params.journeyId}`,
+    preferenceField: "notifyNewJourney",
   });
 }
 
@@ -98,6 +104,12 @@ export async function notifyNewJourney(params: {
  * profilo, dove si apre il proprio Update dal cerchio sulla foto (ProfileAvatarStory.tsx) per
  * leggerle — non più a un pannello nella Dashboard, che non esiste più. */
 export async function notifyQuestionAnswered(params: { creatorUserId: string }): Promise<void> {
+  const creator = await prisma.user.findUnique({
+    where: { id: params.creatorUserId },
+    select: { notifyQuestionAnswered: true },
+  });
+  if (!creator?.notifyQuestionAnswered) return;
+
   await prisma.notification.create({
     data: {
       userId: params.creatorUserId,

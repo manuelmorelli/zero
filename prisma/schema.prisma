@@ -141,6 +141,13 @@ model User {
   deletedAt           DateTime?
   scheduledDeletionAt DateTime?
 
+  // Preferenze notifiche (Settings > Notifications): quali eventi generano una notifica per
+  // questo utente. Regola opt-out (default true) per non silenziare tutti al lancio della
+  // funzione. Vedi lib/notifications.ts per dove vengono lette.
+  notifyNewEpisode       Boolean @default(true)
+  notifyNewJourney       Boolean @default(true)
+  notifyQuestionAnswered Boolean @default(true)
+
   sessions  Session[]
   accounts  Account[]
 

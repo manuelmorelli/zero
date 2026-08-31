@@ -1,0 +1,18 @@
+import { Header } from "@/components/layout/Header";
+import { requireSession } from "@/lib/session";
+
+export default async function SettingsSubscriptionPage() {
+  await requireSession();
+
+  return (
+    <main className="flex min-h-screen flex-col justify-center">
+      <Header />
+      <div className="mx-auto w-full max-w-2xl px-6 pb-16 pt-24">
+        <h1 className="text-2xl font-extrabold tracking-tight">Subscription</h1>
+        <p className="mt-2 text-sm text-ink-muted">
+          Coming soon. Billing and plan management will be available once payments are connected.
+        </p>
+      </div>
+    </main>
+  );
+}
