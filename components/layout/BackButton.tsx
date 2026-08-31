@@ -6,6 +6,14 @@ import { useRouter, usePathname } from "next/navigation";
 const STACK_KEY = "zero-nav-stack";
 const MAX_STACK = 50;
 
+// Un modulo JS viene rivalutato solo a un caricamento pagina vero e proprio (prima visita,
+// refresh, arrivo da un link esterno come Google), mai durante una navigazione client-side
+// interna al sito (che riusa lo stesso documento): questa variabile parte quindi "true" esattamente
+// una volta per ogni reale ingresso nel sito, a differenza di sessionStorage che invece sopravvive
+// anche quando si lascia il sito e si torna nella stessa scheda — motivo per cui senza questo
+// controllo lo stack restava "sporco" di una visita precedente e il pulsante compariva subito.
+let freshDocumentLoad = true;
+
 function readStack(): string[] {
   try {
     const raw = sessionStorage.getItem(STACK_KEY);
@@ -20,7 +28,7 @@ function readStack(): string[] {
  * "indietro"), non a una destinazione fissa: la profondità di navigazione interna al sito
  * si tiene in sessionStorage perché document.referrer non cambia durante una navigazione
  * client-side. Nascosto quando non c'è una pagina precedente in questa sessione (prima
- * visita, link diretto), invece di portare fuori dal sito o non fare nulla.
+ * visita, link diretto, refresh), invece di portare fuori dal sito o non fare nulla.
  *
  * Tiene uno stack di pathname invece di un semplice contatore: un contatore che cresce a
  * ogni cambio pagina (senza mai scendere quando si torna indietro) finiva per mostrare il
@@ -33,7 +41,9 @@ export function BackButton({ className }: { className?: string }) {
   const [canGoBack, setCanGoBack] = useState(false);
 
   useEffect(() => {
-    const stack = readStack();
+    const stack = freshDocumentLoad ? [] : readStack();
+    freshDocumentLoad = false;
+
     const top = stack[stack.length - 1];
     const belowTop = stack[stack.length - 2];
 
