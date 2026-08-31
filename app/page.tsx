@@ -318,22 +318,22 @@ function Categories({ countByCategory }: { countByCategory: Map<string, number> 
           icon={<Compass className="h-6 w-6" aria-hidden="true" />}
           title="Categories"
           subtitle="Not sure where to start? Browse by category."
-          viewAllHref="/categories"
+          viewAllHref="/journeys"
         />
       </Reveal>
 
       <Reveal delayMs={60}>
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-4 flex flex-wrap gap-2">
           {JOURNEY_CATEGORIES.map((category) => {
             const count = countByCategory.get(category) ?? 0;
             return (
               <Link
                 key={category}
-                href={`/categories/${categoryToSlug(category)}`}
-                className="rounded-full border border-border bg-surface-2 px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-ink-muted"
+                href={`/journeys#${categoryToSlug(category)}`}
+                className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-ink-muted"
               >
                 {category}
-                <span className="ml-2 text-ink-faint">{count}</span>
+                <span className="ml-1.5 text-ink-faint">{count}</span>
               </Link>
             );
           })}
@@ -407,7 +407,7 @@ function FinalCta() {
                 Start Your Journey
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </ButtonPrimary>
-              <ButtonSecondary href="/categories">Journeys</ButtonSecondary>
+              <ButtonSecondary href="/journeys">Journeys</ButtonSecondary>
             </div>
           </div>
         </div>

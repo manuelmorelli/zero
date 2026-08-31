@@ -10,8 +10,8 @@ type NavLink = { label: string; href: string };
 
 const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "Discover", href: "/#discover" },
-  { label: "Journeys", href: "/categories" },
+  { label: "Journeys", href: "/journeys" },
+  { label: "Journeyers", href: "/journeyers" },
   { label: "What is Zero", href: "/what-is-zero" },
   { label: "Pricing", href: "/pricing" },
 ];
