@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 import {
@@ -80,6 +81,12 @@ export async function markConversationRead(conversationId: string): Promise<void
     where: { conversationId, senderId: { not: user.id }, read: false },
     data: { read: true },
   });
+
+  // Il pallino "non letti" dell'iconcina messaggi (components/messages/MessagesWidget.tsx) vive
+  // nel layout radice, condiviso da tutto il sito: senza questa invalidazione resta fermo al
+  // valore letto al primo caricamento della sessione finché non si ricarica l'intera pagina,
+  // anche se il messaggio è stato appena segnato come letto qui sopra.
+  revalidatePath("/", "layout");
 }
 
 /**

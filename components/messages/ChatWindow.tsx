@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { X } from "lucide-react";
-import { sendMessage, pollMessages } from "@/lib/actions/message";
+import { sendMessage, pollMessages, markConversationRead } from "@/lib/actions/message";
 import { MESSAGE_MAX_LENGTH, MESSAGE_POLL_INTERVAL_MS } from "@/lib/constants/messages";
 
 type ChatMessage = { id: string; senderId: string; content: string; createdAt: string };
@@ -32,11 +32,23 @@ export function ChatWindow({
   const [error, setError] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef(messages);
+  const markedReadRef = useRef<string | null>(null);
 
   useEffect(() => {
     messagesRef.current = messages;
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
   }, [messages]);
+
+  // Segna la conversazione come letta appena la finestra si apre (non al primo invio di una
+  // risposta): chiamata qui, lato client, così l'aggiornamento del pallino "non letti" globale
+  // (components/messages/MessagesWidget.tsx) può propagarsi subito, cosa non possibile se
+  // eseguita durante il render della pagina server (vedi lib/actions/message.ts). Il guard evita
+  // la doppia chiamata del mount effect in sviluppo (React Strict Mode).
+  useEffect(() => {
+    if (markedReadRef.current === conversationId) return;
+    markedReadRef.current = conversationId;
+    markConversationRead(conversationId);
+  }, [conversationId]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
