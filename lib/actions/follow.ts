@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { getFollowersList, getFollowingList, type FollowListPerson } from "@/lib/profile/followList";
@@ -25,6 +26,12 @@ export async function toggleFollow(
   } else {
     await prisma.follow.create({ data: { followerId: session.user.id, followingId: targetUserId } });
   }
+
+  // Il profilo del bersaglio mostra il pulsante Message in base al Follow appena cambiato
+  // (vedi lib/messaging.ts, canMessage): senza revalidation resterebbe con lo stato letto al
+  // primo caricamento della pagina finché non viene ricaricata manualmente.
+  revalidatePath(`/profile/${targetUserId}`);
+  if (targetUser.username) revalidatePath(`/profile/${targetUser.username}`);
 
   return { error: null, isFollowing: !existing };
 }
