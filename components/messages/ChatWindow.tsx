@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { X } from "lucide-react";
 import { sendMessage, pollMessages } from "@/lib/actions/message";
 import { MESSAGE_MAX_LENGTH, MESSAGE_POLL_INTERVAL_MS } from "@/lib/constants/messages";
 
@@ -78,7 +80,14 @@ export function ChatWindow({
     <div className="flex h-[70vh] flex-col overflow-hidden rounded-xl border border-border bg-surface">
       <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
         <Avatar name={otherUser.name} avatarUrl={otherUser.avatarUrl} />
-        <span className="text-sm font-semibold text-ink">{otherUser.name}</span>
+        <span className="flex-1 text-sm font-semibold text-ink">{otherUser.name}</span>
+        <Link
+          href="/messages"
+          aria-label="Close conversation"
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+        </Link>
       </div>
 
       <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto p-4">
