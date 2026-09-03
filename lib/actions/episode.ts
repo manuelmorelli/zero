@@ -20,23 +20,18 @@ import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewEpisode } from "@/lib/notifications";
 
-const EpisodeSchema = z
-  .object({
-    title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
-    caption: z.string().trim().max(10000).optional(),
-    videoKey: z.string().trim().max(500).optional().or(z.literal("")),
-    posterKey: z.string().trim().optional(),
-    durationSec: z.coerce.number().int().positive().optional(),
-    occurredAt: z
-      .string()
-      .trim()
-      .min(1, "Let us know when this episode happened.")
-      .pipe(z.coerce.date({ message: "Invalid date." })),
-  })
-  .refine((data) => data.caption || data.videoKey, {
-    message: "Add a caption or upload a video.",
-    path: ["caption"],
-  });
+const EpisodeSchema = z.object({
+  title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
+  caption: z.string().trim().max(10000).optional(),
+  videoKey: z.string().trim().max(500).optional().or(z.literal("")),
+  posterKey: z.string().trim().optional(),
+  durationSec: z.coerce.number().int().positive().optional(),
+  occurredAt: z
+    .string()
+    .trim()
+    .min(1, "Let us know when this episode happened.")
+    .pipe(z.coerce.date({ message: "Invalid date." })),
+});
 
 async function requireOwnedJourney(journeyId: string) {
   const { creator } = await requireCreator();

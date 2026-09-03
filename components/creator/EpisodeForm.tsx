@@ -242,7 +242,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
 
       <div>
         <label htmlFor={`${uid}-video`} className="text-xs font-medium text-ink-muted">
-          Video <span className="text-ink-faint">(optional, max {formatMB(MAX_VIDEO_SIZE_BYTES)})</span>
+          Video <span className="text-ink-faint">(required to publish, max {formatMB(MAX_VIDEO_SIZE_BYTES)})</span>
         </label>
         <div className="mt-1 flex items-center gap-3">
           <button

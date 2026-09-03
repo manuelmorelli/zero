@@ -141,7 +141,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
 
             <div>
               <label htmlFor="description" className="text-sm font-medium text-ink-muted">
-                Your story, in a few words <span className="text-ink-faint">(optional)</span>
+                Description <span className="text-ink-faint">(required to publish)</span>
               </label>
               <textarea
                 id="description"
