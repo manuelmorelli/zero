@@ -121,6 +121,20 @@ export async function notifyQuestionAnswered(params: { creatorUserId: string }):
   await pruneOldNotifications(params.creatorUserId);
 }
 
+/** Come `notifyQuestionAnswered`: una sola persona (chi viene seguito), nessuna preferenza
+ * dedicata in Settings > Notifications ancora (solo i tre tipi già in schema.prisma). */
+export async function notifyNewFollower(params: { followedUserId: string; followerName: string; followerUserId: string }): Promise<void> {
+  await prisma.notification.create({
+    data: {
+      userId: params.followedUserId,
+      type: "NEW_FOLLOWER",
+      content: `${params.followerName} started following you.`,
+      link: `/profile/${params.followerUserId}`,
+    },
+  });
+  await pruneOldNotifications(params.followedUserId);
+}
+
 export async function getUnreadNotificationCount(userId: string): Promise<number> {
   return prisma.notification.count({ where: { userId, read: false } });
 }

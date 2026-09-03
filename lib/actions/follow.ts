@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { getFollowersList, getFollowingList, type FollowListPerson } from "@/lib/profile/followList";
+import { notifyNewFollower } from "@/lib/notifications";
 
 export async function toggleFollow(
   targetUserId: string
@@ -25,6 +26,15 @@ export async function toggleFollow(
     await prisma.follow.delete({ where: { id: existing.id } });
   } else {
     await prisma.follow.create({ data: { followerId: session.user.id, followingId: targetUserId } });
+
+    const follower = await prisma.user.findUnique({ where: { id: session.user.id }, select: { name: true } });
+    if (follower) {
+      await notifyNewFollower({
+        followedUserId: targetUserId,
+        followerName: follower.name,
+        followerUserId: session.user.id,
+      });
+    }
   }
 
   // Il profilo del bersaglio mostra il pulsante Message in base al Follow appena cambiato
