@@ -14,7 +14,7 @@ export function DashboardPanel({ title, icon, action, className, children }: Das
   return (
     <section className={`rounded-2xl border border-border bg-surface p-4 md:p-5 ${className ?? ""}`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 text-sm font-semibold tracking-tight text-ink">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-ink-muted">
           {icon ? <span className="text-ember">{icon}</span> : null}
           {title}
         </h2>

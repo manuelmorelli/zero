@@ -226,7 +226,7 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {journeys.map((journey, index) => (
           <Reveal key={journey.id} as="li" delayMs={index * 70}>
             <JourneyCard

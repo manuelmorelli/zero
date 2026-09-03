@@ -27,7 +27,7 @@ export default async function TopJourneysPage() {
           subtitle="Timeless stories that continue to inspire."
         />
 
-        <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {displayed.map((journey) => (
             <li key={journey.id}>
               <JourneyCard

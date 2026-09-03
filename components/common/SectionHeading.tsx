@@ -17,7 +17,7 @@ export function SectionHeading({
       <div className="flex min-w-0 items-start gap-3">
         <span className="mt-0.5 shrink-0 text-ember">{icon}</span>
         <div className="min-w-0">
-          <h2 className="truncate text-xl font-bold tracking-tight sm:text-2xl">{title}</h2>
+          <h2 className="truncate text-lg font-bold tracking-tight">{title}</h2>
           <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>
         </div>
       </div>

@@ -96,7 +96,7 @@ export default async function PublicJourneyPage({
                 <p className="text-[0.6rem] tracking-[0.22em] text-ink-muted uppercase">
                   Journey{journey.category ? ` · ${journey.category}` : ""}
                 </p>
-                <h1 className="mt-1.5 text-2xl font-bold leading-tight tracking-tight md:text-4xl">
+                <h1 className="mt-1.5 text-xl font-bold leading-tight tracking-tight md:text-2xl">
                   {journey.title}
                 </h1>
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
@@ -155,9 +155,9 @@ export default async function PublicJourneyPage({
         </Reveal>
 
         <section className="mt-5">
-          <h2 className="text-lg font-bold tracking-tight">Episodes</h2>
+          <h2 className="text-sm font-bold tracking-tight">Episodes</h2>
           {flatEpisodes.length === 0 ? (
-            <p className="mt-3 rounded-xl border border-border bg-surface p-5 text-sm text-ink-muted">
+            <p className="mt-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
               This Journey doesn&apos;t have any episodes yet.
             </p>
           ) : (
@@ -224,10 +224,10 @@ function EpisodeRow({
           <span className="mt-0.5 block truncate text-sm font-semibold transition-colors group-hover:text-ember">
             {episode.title}
           </span>
+          {episode.durationSec !== null && (
+            <span className="mt-0.5 block text-xs text-ink-muted">{formatDuration(episode.durationSec)}</span>
+          )}
         </span>
-        {episode.durationSec !== null && (
-          <span className="shrink-0 text-xs text-ink-muted">{formatDuration(episode.durationSec)}</span>
-        )}
       </Link>
     </li>
   );

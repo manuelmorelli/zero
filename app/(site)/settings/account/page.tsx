@@ -11,9 +11,9 @@ export default async function SettingsAccountPage() {
   });
 
   return (
-    <main className="flex min-h-screen flex-col justify-center">
+    <main>
       <div className="mx-auto w-full max-w-2xl px-6 pb-16 pt-24">
-        <h1 className="text-2xl font-extrabold tracking-tight">Account</h1>
+        <h1 className="text-xl font-bold tracking-tight">Account</h1>
         <p className="mt-2 text-sm text-ink-muted">Update your name, username, bio and location.</p>
 
         <div className="mt-8 overflow-hidden rounded-xl border border-border bg-surface">

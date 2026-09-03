@@ -25,10 +25,10 @@ export default async function MessagesPage() {
     <main>
 
       <div className="mx-auto max-w-2xl px-6 pb-10 pt-24">
-        <h1 className="text-lg font-bold tracking-tight text-ink">Messages</h1>
+        <h1 className="text-xl font-bold tracking-tight">Messages</h1>
 
         {items.length === 0 ? (
-          <p className="mt-6 rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+          <p className="mt-6 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
             You don&apos;t have any conversations yet. You can message someone you follow, or who
             follows you, from their profile.
           </p>

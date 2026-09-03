@@ -77,7 +77,7 @@ export default async function CreatorDashboardPage() {
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="text-[0.7rem] uppercase tracking-[0.18em] text-ember">Creator area</p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+              <h1 className="mt-1 text-xl font-bold tracking-tight">
                 Hi, {creator.displayName}
               </h1>
             </div>
@@ -101,7 +101,7 @@ export default async function CreatorDashboardPage() {
         <Reveal delayMs={60}>
           <DashboardPanel title="Your Journeys">
             {gridJourneys.length === 0 ? (
-              <p className="rounded-xl border border-border bg-surface-2 p-6 text-sm text-ink-muted">
+              <p className="rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
                 You don&apos;t have an active Journey yet. Start one to begin sharing your story.
               </p>
             ) : (

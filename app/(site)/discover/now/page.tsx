@@ -18,7 +18,7 @@ export default async function DiscoveringNowPage() {
         />
 
         {journeys.length === 0 ? (
-          <p className="mt-6 rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+          <p className="mt-6 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
             No Journey is in Discovery Phase right now.
           </p>
         ) : (

@@ -209,7 +209,7 @@ export default async function PublicProfilePage({
             {/* 2. Recent Episodes */}
             <Reveal delayMs={40} className="mt-6 block">
               <section>
-                <h2 className="text-lg font-bold tracking-tight text-ink">Recent Episodes</h2>
+                <h2 className="text-sm font-bold tracking-tight">Recent Episodes</h2>
 
                 {episodeFeedItems.length > 0 ? (
                   <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
@@ -249,7 +249,7 @@ export default async function PublicProfilePage({
                     ))}
                   </div>
                 ) : (
-                  <p className="mt-4 rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+                  <p className="mt-4 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
                     {`${user.name} hasn't shared any episode yet.`}
                   </p>
                 )}
@@ -260,7 +260,7 @@ export default async function PublicProfilePage({
             <Reveal delayMs={120} className="mt-6 block">
               <section>
                 <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-lg font-bold tracking-tight text-ink">Published Journeys</h2>
+                  <h2 className="text-sm font-bold tracking-tight">Published Journeys</h2>
                   {liveJourneys.length > PUBLISHED_JOURNEYS_PREVIEW_COUNT && (
                     <Link
                       href={`/profile/${username}?tab=journeys`}
@@ -305,7 +305,7 @@ export default async function PublicProfilePage({
                     })}
                   </div>
                 ) : (
-                  <p className="mt-4 rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+                  <p className="mt-4 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
                     {`${user.name} hasn't published any Journey yet.`}
                   </p>
                 )}
@@ -317,7 +317,7 @@ export default async function PublicProfilePage({
         {activeTab === "journeys" && (
           <section>
             {journeys.length === 0 ? (
-              <p className="rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+              <p className="rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
                 {`${user.name} hasn't published any Journey yet.`}
               </p>
             ) : (

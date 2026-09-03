@@ -70,7 +70,7 @@ export default async function JourneyManagePage({
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">{journey.title}</h1>
+              <h1 className="mt-1 text-xl font-bold tracking-tight">{journey.title}</h1>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted">
@@ -97,7 +97,7 @@ export default async function JourneyManagePage({
             </div>
           </div>
           {journey.status === "ARCHIVED" && (
-            <p className="mt-3 rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-ink-muted">
+            <p className="mt-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
               This Journey is archived. It stays visible on your public profile, but it&apos;s no
               longer your active Journey.
             </p>

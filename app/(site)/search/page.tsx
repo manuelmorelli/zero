@@ -25,8 +25,8 @@ export default async function SearchPage({
 
   return (
     <main>
-      <div className="mx-auto max-w-5xl px-6 pb-16 pt-24">
-        <h1 className="text-2xl font-extrabold tracking-tight">Search</h1>
+      <div className="mx-auto max-w-[1400px] px-5 pb-16 pt-24 md:px-8">
+        <h1 className="text-xl font-bold tracking-tight">Search</h1>
         <div className="mt-4 max-w-md">
           <SearchForm defaultValue={query} />
         </div>
@@ -34,14 +34,14 @@ export default async function SearchPage({
         {!query && <p className="mt-10 text-sm text-ink-muted">Search for a Journey or a creator.</p>}
 
         {query && journeys.length === 0 && creators.length === 0 && people.length === 0 && (
-          <p className="mt-10 rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+          <p className="mt-10 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
             {`No results for "${query}".`}
           </p>
         )}
 
         {journeys.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-lg font-bold tracking-tight">Journeys</h2>
+            <h2 className="text-sm font-bold tracking-tight">Journeys</h2>
             <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {journeys.map((journey) => (
                 <JourneyCard key={journey.id} journey={journey} />
@@ -52,7 +52,7 @@ export default async function SearchPage({
 
         {creators.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-lg font-bold tracking-tight">Creators</h2>
+            <h2 className="text-sm font-bold tracking-tight">Creators</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {creators.map((creator) => (
                 <CreatorResultCard key={creator.id} creator={creator} />
@@ -63,7 +63,7 @@ export default async function SearchPage({
 
         {people.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-lg font-bold tracking-tight">People</h2>
+            <h2 className="text-sm font-bold tracking-tight">People</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {people.map((person) => (
                 <PersonResultCard key={person.id} person={person} />

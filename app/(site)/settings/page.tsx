@@ -5,6 +5,7 @@ const SETTINGS_SECTIONS = [
   { href: "/settings/account", label: "Account", description: "Name, username, bio, location" },
   { href: "/settings/security", label: "Password & Security", description: "Password and email address" },
   { href: "/settings/notifications", label: "Notifications", description: "Which updates you receive" },
+  { href: "/settings/creator", label: "Creator", description: "Notifications and tools for what you publish" },
   { href: "/settings/privacy", label: "Privacy", description: "Who can interact with you" },
   { href: "/settings/interests", label: "Interests", description: "Categories you care about" },
   { href: "/settings/subscription", label: "Subscription", description: "Billing and plan" },
@@ -14,9 +15,9 @@ export default async function SettingsPage() {
   await requireSession();
 
   return (
-    <main className="flex min-h-screen flex-col justify-center">
+    <main>
       <div className="mx-auto w-full max-w-2xl px-6 pb-16 pt-24">
-        <h1 className="text-2xl font-extrabold tracking-tight">Settings</h1>
+        <h1 className="text-xl font-bold tracking-tight">Settings</h1>
         <p className="mt-2 text-sm text-ink-muted">Manage your account, notifications and preferences.</p>
 
         <div className="mt-8 divide-y divide-border rounded-xl border border-border bg-surface">
