@@ -121,9 +121,14 @@ export async function notifyQuestionAnswered(params: { creatorUserId: string }):
   await pruneOldNotifications(params.creatorUserId);
 }
 
-/** Come `notifyQuestionAnswered`: una sola persona (chi viene seguito), nessuna preferenza
- * dedicata in Settings > Notifications ancora (solo i tre tipi già in schema.prisma). */
+/** Come `notifyQuestionAnswered`: una sola persona (chi viene seguito). */
 export async function notifyNewFollower(params: { followedUserId: string; followerName: string; followerUserId: string }): Promise<void> {
+  const followed = await prisma.user.findUnique({
+    where: { id: params.followedUserId },
+    select: { notifyNewFollower: true },
+  });
+  if (!followed?.notifyNewFollower) return;
+
   await prisma.notification.create({
     data: {
       userId: params.followedUserId,

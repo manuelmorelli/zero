@@ -147,6 +147,7 @@ model User {
   notifyNewEpisode       Boolean @default(true)
   notifyNewJourney       Boolean @default(true)
   notifyQuestionAnswered Boolean @default(true)
+  notifyNewFollower      Boolean @default(true)
 
   sessions  Session[]
   accounts  Account[]

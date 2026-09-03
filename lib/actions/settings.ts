@@ -119,3 +119,32 @@ export async function updateNotificationPreferences(
   revalidatePath("/settings/notifications");
   return { error: null };
 }
+
+const CreatorNotificationPreferencesSchema = z.object({
+  notifyNewFollower: z.coerce.boolean(),
+});
+
+/** Settings > Creator: preferenze notifiche specifiche del ruolo di creator (chi ti segue), a
+ * sé rispetto a `updateNotificationPreferences` — un unico form condiviso sovrascriverebbe i
+ * campi dell'altra pagina non inclusi nel suo FormData. */
+export async function updateCreatorNotificationPreferences(
+  _prevState: { error: string | null },
+  formData: FormData
+): Promise<{ error: string | null }> {
+  const { user } = await requireSession();
+
+  const parsed = CreatorNotificationPreferencesSchema.safeParse({
+    notifyNewFollower: formData.has("notifyNewFollower"),
+  });
+  if (!parsed.success) {
+    return { error: "Invalid data." };
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: parsed.data,
+  });
+
+  revalidatePath("/settings/creator");
+  return { error: null };
+}
