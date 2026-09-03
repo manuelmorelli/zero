@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { toSearchWords } from "@/lib/search/queryWords";
 
 type JourneyWithCreator = Awaited<ReturnType<typeof findMatchingJourneys>>[number];
 
@@ -20,20 +21,26 @@ export async function searchJourneys(query: string, limit = 12): Promise<Journey
 }
 
 async function findMatchingJourneys(query: string) {
+  const words = toSearchWords(query);
   return prisma.journey.findMany({
     where: {
       status: { in: LIVE_JOURNEY_STATUSES },
       deletedAt: null,
-      OR: [
-        { title: { contains: query, mode: "insensitive" } },
-        { description: { contains: query, mode: "insensitive" } },
-        { category: { contains: query, mode: "insensitive" } },
-        // Le liste (tags) non supportano "contains" case-insensitive lato Prisma/Postgres:
-        // qui si confronta il tag per intero, non una sua sottostringa. Limite noto,
-        // accettabile per l'MVP: titolo, presentazione e categoria coprono già la maggior
-        // parte dei casi reali di ricerca.
-        { tags: { hasSome: [query] } },
-      ],
+      // Ogni parola della query deve comparire da qualche parte (titolo, storia, categoria o
+      // tag), non necessariamente tutte nello stesso campo: così "burnout creativo" trova anche
+      // un titolo tipo "il mio burnout da lavoro creativo", non solo la frase esatta.
+      AND: words.map((word) => ({
+        OR: [
+          { title: { contains: word, mode: "insensitive" } },
+          { description: { contains: word, mode: "insensitive" } },
+          { category: { contains: word, mode: "insensitive" } },
+          // Le liste (tags) non supportano "contains" case-insensitive lato Prisma/Postgres:
+          // qui si confronta il tag per intero, non una sua sottostringa. Limite noto,
+          // accettabile per l'MVP: titolo, presentazione e categoria coprono già la maggior
+          // parte dei casi reali di ricerca.
+          { tags: { hasSome: [word] } },
+        ],
+      })),
     },
     include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
     take: 50,

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { toSearchWords } from "@/lib/search/queryWords";
 
 export type CreatorSearchResult = {
   id: string;
@@ -25,6 +26,7 @@ export async function searchCreators(query: string, limit = 12): Promise<Creator
 }
 
 async function findMatchingCreators(query: string) {
+  const words = toSearchWords(query);
   return prisma.user.findMany({
     where: {
       deletedAt: null,
@@ -34,11 +36,15 @@ async function findMatchingCreators(query: string) {
           journeys: { some: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null } },
         },
       },
-      OR: [
-        { name: { contains: query, mode: "insensitive" } },
-        { username: { contains: query, mode: "insensitive" } },
-        { bio: { contains: query, mode: "insensitive" } },
-      ],
+      // Ogni parola deve comparire da qualche parte (nome, username o bio), non tutte nello
+      // stesso campo: vedi lo stesso pattern in searchJourneys.ts.
+      AND: words.map((word) => ({
+        OR: [
+          { name: { contains: word, mode: "insensitive" } },
+          { username: { contains: word, mode: "insensitive" } },
+          { bio: { contains: word, mode: "insensitive" } },
+        ],
+      })),
     },
     include: { _count: { select: { followers: true } } },
     take: 50,

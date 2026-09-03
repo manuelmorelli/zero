@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { toSearchWords } from "@/lib/search/queryWords";
 
 export type PersonSearchResult = {
   id: string;
@@ -18,14 +19,19 @@ export async function searchPeople(
   excludeIds: string[] = [],
   limit = 12
 ): Promise<PersonSearchResult[]> {
+  const words = toSearchWords(query);
   const users = await prisma.user.findMany({
     where: {
       deletedAt: null,
       id: { notIn: excludeIds },
-      OR: [
-        { name: { contains: query, mode: "insensitive" } },
-        { username: { contains: query, mode: "insensitive" } },
-      ],
+      // Ogni parola deve comparire da qualche parte (nome o username), non tutte nello stesso
+      // campo: vedi lo stesso pattern in searchJourneys.ts.
+      AND: words.map((word) => ({
+        OR: [
+          { name: { contains: word, mode: "insensitive" } },
+          { username: { contains: word, mode: "insensitive" } },
+        ],
+      })),
     },
     include: { _count: { select: { followers: true } } },
     take: 50,
