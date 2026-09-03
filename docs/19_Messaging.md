@@ -1,7 +1,7 @@
 ---
 title: Messaging
 doc_id: 19-messaging
-version: "1.0"
+version: "1.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -32,7 +32,7 @@ Una nuova conversazione si può iniziare solo dal pulsante "Message" sul Profilo
 
 ## Aggiornamento quasi in tempo reale
 
-Zero non usa websocket per nessuna funzionalità. Mentre una conversazione è aperta sullo schermo, il client controlla se sono arrivati nuovi messaggi ogni 15-20 secondi. Il pallino "non letti" sul pulsante Messaggi si aggiorna al caricamento della pagina, non in tempo reale su tutto il sito — stesso comportamento già in uso per la campanella delle notifiche generali (`lib/notifications.ts`).
+Zero non usa websocket per nessuna funzionalità. Mentre una conversazione è aperta sullo schermo, il client controlla se sono arrivati nuovi messaggi ogni 15-20 secondi. Il pallino "non letti" sul pulsante Messaggi si spegne nel momento in cui si apre la conversazione (non serve rispondere), e l'aggiornamento si propaga subito al resto del sito senza bisogno di ricaricare la pagina a mano.
 
 Un nuovo messaggio non genera una notifica nella campanella generale: i due canali restano separati, ognuno con il proprio indicatore di non letti.
 

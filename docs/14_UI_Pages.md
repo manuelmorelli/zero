@@ -1,7 +1,7 @@
 ---
 title: UI Pages
 doc_id: 14-ui-pages
-version: "3.10"
+version: "3.11"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -192,6 +192,8 @@ Permette la gestione di:
 Elenco delle conversazioni private dell'utente, ordinate per ultimo messaggio ricevuto o inviato. Ogni conversazione apre uno scambio uno a uno, solo testo (`19_Messaging.md`).
 
 Raggiungibile in due modi: un pulsante flottante globale (impilato con la campanella delle notifiche e il pulsante "+", visibile su tutto il sito per chi è loggato) e la pagina `/messages` per l'elenco completo.
+
+Dal pulsante flottante, cliccando una conversazione si apre una finestra di risposta rapida sul posto (stesso pannello, senza cambiare pagina): freccia indietro per tornare all'elenco, X per chiudere tutto. Il link "View all" nello stesso pannello porta invece alla pagina `/messages` con l'elenco completo. La pagina di una singola conversazione (`/messages/[id]`) ha anch'essa una X nell'intestazione per tornare all'elenco.
 
 Si può iniziare una nuova conversazione solo dal pulsante "Message" sul Profilo di un'altra persona, non da questa pagina.
 

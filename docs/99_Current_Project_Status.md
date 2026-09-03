@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.44"
+version: "1.45"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -42,7 +42,7 @@ Confronto con le funzionalità definite in `12_MVP_Features.md`:
 | Community (seguire creator, Community Premium) | 🟡 Parziale — Follow fatto (pulsante su Profilo e Pagina Journey, conteggio reale); Community Premium ancora da fare (vedi Roadmap, Fase 4) |
 | Updates | ✅ Fatto — tutti e 5 i formati (testo, foto, video, sondaggio, domanda) dal pulsante "+" globale; anteprima come cerchi cliccabili nella Hero della Home (solo per chi ha fatto login, subito dopo i bottoni Explore/Create — non più una riga a sé sotto la Hero), massimo 6 mostrati + "View all", visualizzatore a schermo intero, reazioni e scadenza automatica (24h, pulizia lazy senza cron job) |
 | Dashboard (Updates, analisi base, Community Premium) | 🟡 Parziale — Dashboard come hub centrale del Journey (statistiche, Publish/Unpublish, Archive) e gestione Updates fatti (placeholder "Analytics — coming soon" per i numeri non ancora reali); allineamento preciso al design di riferimento Lovable non ancora fatto, vedi `97_Lovable_Redesign_Checklist.md` Fase 5; analisi reali e Community Premium ancora da fare (vedi Roadmap, Fase 4) |
-| Messaggistica (conversazioni uno a uno) | ✅ Fatto — sbloccata da un follow in una sola direzione (non serve il follow reciproco), pulsante flottante dedicato, aggiornamento della chat aperta ogni 15s |
+| Messaggistica (conversazioni uno a uno) | ✅ Fatto — sbloccata da un follow in una sola direzione (non serve il follow reciproco), pulsante flottante dedicato con finestra di risposta rapida sul posto (senza cambiare pagina), aggiornamento della chat aperta ogni 15s |
 
 In sintesi: il percorso di creazione e gestione lato Creator (Journey → Capitoli → Episodi, con modifica, Publish/Unpublish e riordino via drag & drop) è completo e verificato end-to-end, senza alcun intervento necessario sul database. Il Profilo pubblico esiste ora in versione minima (nome, bio, Journey pubblicati, con Follow). Follow è fatto ed è la base per il resto della Discovery (Recommended Journeys, Feed, Updates e Creator consigliati, tutti fatti). La navigazione per categoria (`/categories`) è fatta come pagina a sé, ed è ora riproposta anche in Home. "Recommended for you", "Creator consigliati", "From creators you follow" (Feed), la riga di Updates in stile Stories e "Categories" sono ora in Home con dati reali. La Ricerca base (`/search`, Journey e Creator) è fatta. Il sistema Updates (tutti i formati dal pulsante "+", scadenza automatica a 24h, visualizzatore Stories in Home) è completo. La Messaggistica privata (conversazioni uno a uno, solo testo) è fatta, appoggiata sul Follow universale. Manca ancora tutto ciò che riguarda video reali, Community Premium/Analytics e la preparazione al lancio pubblico — vedi "Roadmap" più sotto.
 
