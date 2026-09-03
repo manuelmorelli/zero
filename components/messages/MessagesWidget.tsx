@@ -29,5 +29,5 @@ export async function MessagesWidget() {
     }))
   );
 
-  return <MessagesButtonClient unreadCount={unreadCount} conversations={items} />;
+  return <MessagesButtonClient unreadCount={unreadCount} conversations={items} currentUserId={session.user.id} />;
 }

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireSession } from "@/lib/session";
-import { canMessage, getConversationForParticipant, listMessages, otherParticipant } from "@/lib/messaging";
+import { getConversationChatData } from "@/lib/messaging";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { ChatWindow } from "@/components/messages/ChatWindow";
 
@@ -12,18 +12,12 @@ export default async function ConversationPage({
   const { conversationId } = await params;
   const { user } = await requireSession();
 
-  const conversation = await getConversationForParticipant(conversationId, user.id);
-  if (!conversation) notFound();
-
-  const { user: otherUser } = otherParticipant(conversation, user.id);
-
   // Il messaggio viene segnato come letto lato client (vedi ChatWindow.tsx), non qui: revalidatePath
   // può essere chiamato solo da un'azione innescata dal client, non durante il render della pagina.
-  const [messages, canWrite] = await Promise.all([
-    listMessages(conversationId),
-    canMessage(user.id, otherUser.id),
-  ]);
+  const chatData = await getConversationChatData(conversationId, user.id);
+  if (!chatData) notFound();
 
+  const { otherUser, messages, canWrite } = chatData;
   const otherUserAvatarUrl = otherUser.avatarUrl ? await getImagePlaybackUrl(otherUser.avatarUrl) : null;
 
   return (

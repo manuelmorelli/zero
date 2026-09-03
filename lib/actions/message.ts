@@ -5,11 +5,13 @@ import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 import {
   canMessage,
+  getConversationChatData,
   getConversationForParticipant,
   listMessagesAfter,
   orderedPair,
   otherParticipant,
 } from "@/lib/messaging";
+import { getImagePlaybackUrl } from "@/lib/r2";
 import { MESSAGE_MAX_LENGTH } from "@/lib/constants/messages";
 
 /** Trova la conversazione con `targetUserId` o la crea, se almeno una delle due persone segue l'altra. */
@@ -68,6 +70,42 @@ export async function sendMessage(
       senderId: created.senderId,
       content: created.content,
       createdAt: created.createdAt.toISOString(),
+    },
+  };
+}
+
+/**
+ * Dati di una conversazione già esistente, per aprirla nella finestra di risposta rapida
+ * dell'iconcina flottante (components/messages/InlineChat.tsx) senza cambiare pagina — stessi
+ * dati che la pagina intera (app/(site)/messages/[conversationId]/page.tsx) ottiene lato server.
+ */
+export async function getConversationForChat(conversationId: string): Promise<{
+  error: string | null;
+  data?: {
+    otherUser: { name: string; avatarUrl: string | null };
+    messages: { id: string; senderId: string; content: string; createdAt: string }[];
+    canWrite: boolean;
+  };
+}> {
+  const { user } = await requireSession();
+  const chatData = await getConversationChatData(conversationId, user.id);
+  if (!chatData) return { error: "Conversation not found." };
+
+  const otherUserAvatarUrl = chatData.otherUser.avatarUrl
+    ? await getImagePlaybackUrl(chatData.otherUser.avatarUrl)
+    : null;
+
+  return {
+    error: null,
+    data: {
+      otherUser: { name: chatData.otherUser.name, avatarUrl: otherUserAvatarUrl },
+      messages: chatData.messages.map((message) => ({
+        id: message.id,
+        senderId: message.senderId,
+        content: message.content,
+        createdAt: message.createdAt.toISOString(),
+      })),
+      canWrite: chatData.canWrite,
     },
   };
 }

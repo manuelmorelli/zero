@@ -56,6 +56,24 @@ export async function listMessages(conversationId: string) {
   return prisma.message.findMany({ where: { conversationId }, orderBy: { createdAt: "asc" } });
 }
 
+/**
+ * Dati necessari per aprire una conversazione (usata sia dalla pagina intera che dalla finestra
+ * di risposta rapida nell'iconcina flottante, vedi lib/actions/message.ts:getConversationForChat):
+ * null se la conversazione non esiste o `userId` non ne fa parte.
+ */
+export async function getConversationChatData(conversationId: string, userId: string) {
+  const conversation = await getConversationForParticipant(conversationId, userId);
+  if (!conversation) return null;
+
+  const { user: otherUser } = otherParticipant(conversation, userId);
+  const [messages, canWrite] = await Promise.all([
+    listMessages(conversationId),
+    canMessage(userId, otherUser.id),
+  ]);
+
+  return { otherUser, messages, canWrite };
+}
+
 /** Messaggi arrivati dopo un certo momento, per il polling della chat aperta (19_Messaging.md). */
 export async function listMessagesAfter(conversationId: string, after: Date) {
   return prisma.message.findMany({
