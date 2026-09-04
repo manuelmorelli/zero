@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
+import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 
 export type JourneyerCategoryRow = {
@@ -33,22 +34,29 @@ export async function getJourneyersByCategory(): Promise<JourneyerCategoryRow[]>
     },
   });
 
-  const byCategory = new Map<string, CreatorSearchResult[]>();
-  for (const creator of creators) {
-    const result: CreatorSearchResult = {
+  // Risolta una sola volta per creator, in parallelo, anche se compare in più righe/categorie:
+  // stessa istanza condivisa tra le righe, non un'immagine risolta per ogni apparizione.
+  const results: CreatorSearchResult[] = await Promise.all(
+    creators.map(async (creator) => ({
       id: creator.user.id,
       username: creator.user.username,
       name: creator.user.name,
       bio: creator.user.bio,
+      avatarUrl: await resolveCoverUrl(creator.user.avatarUrl),
       followersCount: creator.user._count.followers,
-    };
+    }))
+  );
+
+  const byCategory = new Map<string, CreatorSearchResult[]>();
+  creators.forEach((creator, index) => {
+    const result = results[index];
     for (const journey of creator.journeys) {
       if (!journey.category) continue;
       const list = byCategory.get(journey.category) ?? [];
       list.push(result);
       byCategory.set(journey.category, list);
     }
-  }
+  });
 
   const rows: JourneyerCategoryRow[] = [];
   for (const category of JOURNEY_CATEGORIES) {
@@ -75,14 +83,18 @@ export async function getNewJourneyers(limit = 12): Promise<CreatorSearchResult[
     include: { user: { include: { _count: { select: { followers: true } } } } },
   });
 
-  return creators
-    .map((creator) => ({
+  const sorted = creators
+    .sort((a, b) => b.user._count.followers - a.user._count.followers)
+    .slice(0, limit);
+
+  return Promise.all(
+    sorted.map(async (creator) => ({
       id: creator.user.id,
       username: creator.user.username,
       name: creator.user.name,
       bio: creator.user.bio,
+      avatarUrl: await resolveCoverUrl(creator.user.avatarUrl),
       followersCount: creator.user._count.followers,
     }))
-    .sort((a, b) => b.followersCount - a.followersCount)
-    .slice(0, limit);
+  );
 }

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 import { getFollowedCreatorIds, getOwnCreatorId, getFollowedCategories } from "@/lib/discovery/follows";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 
 type CreatorWithUser = Awaited<ReturnType<typeof findPublishedCreators>>[number];
 
@@ -64,7 +65,7 @@ export async function getRecommendedCreators({
     }
   }
 
-  return selected.map(toCreatorSearchResult);
+  return Promise.all(selected.map(toCreatorSearchResult));
 }
 
 async function findPublishedCreators(filters: {
@@ -91,12 +92,13 @@ function sortByFollowersDesc(creators: CreatorWithUser[]): CreatorWithUser[] {
   return [...creators].sort((a, b) => b.user._count.followers - a.user._count.followers);
 }
 
-function toCreatorSearchResult(creator: CreatorWithUser): CreatorSearchResult {
+async function toCreatorSearchResult(creator: CreatorWithUser): Promise<CreatorSearchResult> {
   return {
     id: creator.user.id,
     username: creator.user.username,
     name: creator.user.name,
     bio: creator.user.bio,
+    avatarUrl: await resolveCoverUrl(creator.user.avatarUrl),
     followersCount: creator.user._count.followers,
   };
 }

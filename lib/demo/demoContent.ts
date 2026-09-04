@@ -116,10 +116,10 @@ export const DEMO_STORIES: CreatorStory[] = [
 ];
 
 export const DEMO_CREATORS: CreatorSearchResult[] = [
-  { id: "demo-creator-1", username: "marco-r", name: "Marco R.", bio: "Documenting a slow return to balance.", followersCount: 24000 },
-  { id: "demo-creator-2", username: "sara-j", name: "Sara J.", bio: "One rep, one day at a time.", followersCount: 18000 },
-  { id: "demo-creator-3", username: "david-l", name: "David L.", bio: "Chasing the unknown, camera in hand.", followersCount: 31000 },
-  { id: "demo-creator-4", username: "emma-w", name: "Emma W.", bio: "Creativity as a way back to myself.", followersCount: 16000 },
+  { id: "demo-creator-1", username: "marco-r", name: "Marco R.", bio: "Documenting a slow return to balance.", avatarUrl: null, followersCount: 24000 },
+  { id: "demo-creator-2", username: "sara-j", name: "Sara J.", bio: "One rep, one day at a time.", avatarUrl: null, followersCount: 18000 },
+  { id: "demo-creator-3", username: "david-l", name: "David L.", bio: "Chasing the unknown, camera in hand.", avatarUrl: null, followersCount: 31000 },
+  { id: "demo-creator-4", username: "emma-w", name: "Emma W.", bio: "Creativity as a way back to myself.", avatarUrl: null, followersCount: 16000 },
 ];
 
 export const DEMO_LATEST_VIDEOS: LatestVideoItem[] = [

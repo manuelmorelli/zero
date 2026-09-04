@@ -1,12 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { toSearchWords } from "@/lib/search/queryWords";
+import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 
 export type CreatorSearchResult = {
   id: string;
   username: string | null;
   name: string;
   bio: string | null;
+  avatarUrl: string | null;
   followersCount: number;
 };
 
@@ -20,9 +22,8 @@ type UserWithCreator = Awaited<ReturnType<typeof findMatchingCreators>>[number];
  */
 export async function searchCreators(query: string, limit = 12): Promise<CreatorSearchResult[]> {
   const users = await findMatchingCreators(query);
-  return rankByRelevance(users, query)
-    .slice(0, limit)
-    .map(toCreatorSearchResult);
+  const ranked = rankByRelevance(users, query).slice(0, limit);
+  return Promise.all(ranked.map(toCreatorSearchResult));
 }
 
 async function findMatchingCreators(query: string) {
@@ -63,12 +64,13 @@ function matchScore(user: UserWithCreator, q: string): number {
   return 2;
 }
 
-function toCreatorSearchResult(user: UserWithCreator): CreatorSearchResult {
+async function toCreatorSearchResult(user: UserWithCreator): Promise<CreatorSearchResult> {
   return {
     id: user.id,
     username: user.username,
     name: user.name,
     bio: user.bio,
+    avatarUrl: await resolveCoverUrl(user.avatarUrl),
     followersCount: user._count.followers,
   };
 }

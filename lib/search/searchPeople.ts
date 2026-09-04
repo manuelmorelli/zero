@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { toSearchWords } from "@/lib/search/queryWords";
+import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 
 export type PersonSearchResult = {
   id: string;
   username: string | null;
   name: string;
+  avatarUrl: string | null;
   followersCount: number;
 };
 
@@ -40,12 +42,15 @@ export async function searchPeople(
   const q = query.toLowerCase();
   const ranked = [...users].sort((a, b) => matchScore(a, q) - matchScore(b, q));
 
-  return ranked.slice(0, limit).map((user) => ({
-    id: user.id,
-    username: user.username,
-    name: user.name,
-    followersCount: user._count.followers,
-  }));
+  return Promise.all(
+    ranked.slice(0, limit).map(async (user) => ({
+      id: user.id,
+      username: user.username,
+      name: user.name,
+      avatarUrl: await resolveCoverUrl(user.avatarUrl),
+      followersCount: user._count.followers,
+    }))
+  );
 }
 
 function matchScore(user: { name: string; username: string | null }, q: string): number {

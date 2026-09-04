@@ -8,7 +8,7 @@ type CreatorResultCardProps = {
 };
 
 export function CreatorResultCard({ creator }: CreatorResultCardProps) {
-  const { name, bio, username, id, followersCount } = creator;
+  const { name, bio, username, id, avatarUrl, followersCount } = creator;
 
   return (
     <Link
@@ -17,6 +17,7 @@ export function CreatorResultCard({ creator }: CreatorResultCardProps) {
     >
       <Avatar
         name={name}
+        avatarUrl={avatarUrl}
         className="h-10 w-10 text-xs transition-transform duration-300 group-hover:scale-105"
       />
       <h3 className="mt-3 text-sm font-bold leading-snug">{name}</h3>
