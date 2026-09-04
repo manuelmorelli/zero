@@ -1,7 +1,7 @@
 ---
 title: Product Review
 doc_id: 98-product-review
-version: "1.7"
+version: "1.8"
 status: living
 related_docs:
   - 07_Creator_Experience
@@ -18,8 +18,8 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ☑ [High] Add show/hide password (eye icon) to every password field.
 ☑ [High] Ask for confirmation before deleting a Journey — done, real dialog with explicit warning text (`JourneyForm.tsx`/`JourneyCardMenu.tsx`).
-☐ [High] Ask for confirmation before deleting a Chapter or an Episode — checked 2026-08-24: neither has one yet (`ChapterEditButton.tsx`, `EpisodeItem.tsx` both delete on a single click, no dialog).
-☐ [High] Verify and improve drag & drop for Chapters.
+☑ [High] Ask for confirmation before deleting a Chapter or an Episode — re-checked 2026-09-04: both already have a real confirmation dialog with explicit warning text (`ChapterEditButton.tsx`, `EpisodeItem.tsx`). The 2026-08-24 note above was stale.
+☑ [High] Verify and improve drag & drop for Chapters — checked 2026-09-04: Chapters are already sortable (`useSortable`, drag handle, same mechanism as Episodes), confirmed working by Manuel.
 ☑ [High] ~~Add Back navigation inside internal pages~~ — reversed on Manuel's request: all Back buttons removed instead (see 99_Current_Project_Status.md).
 ☐ [Medium] Reduce the number of clicks required to complete common actions.
 ☐ [Medium] Improve transitions and overall navigation fluidity.
@@ -33,7 +33,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 ☑ [Medium] Improve Journey presentation inside the profile — done, Fase 3 of `97_Lovable_Redesign_Checklist.md` (dedicated `ContentCard`, restructured Overview).
 ☑ [Medium] Improve Episode presentation inside Journeys — done, episode rows aligned to the Lovable glass style; the one real content gap left (missing duration) is tracked separately below.
 ☑ [Medium] Improve overall visual hierarchy of creator pages — done 2026-08-24: draft-episode count on the Dashboard Journey grid now stands out in ember (was blended into the same muted line as chapter/episode counts, despite being the one actionable number); the status badge on the Journey management page now uses the same ember-for-live styling as the Dashboard grid (was flat gray in every state, inconsistent with the grid's own badge). Small, contained change — no new components, no database changes.
-☐ [Medium] Show episode duration on the public Journey page's episode rows (`Episode.durationSec` already exists and is read automatically on upload, but isn't displayed there).
+☑ [Medium] Show episode duration on the public Journey page's episode rows — done; also repositioned below the title/other episode metadata instead of at the far right of the row (was colliding with the floating chat/notification/+ buttons), 2026-09-04.
 
 ## Upload
 
@@ -47,24 +47,25 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 ☑ [Medium] Group multiple simultaneous Updates from the same creator instead of showing them as separate cards — already true by construction: the Stories row groups by creator (`storiesByCreator` map in `lib/discovery/stories.ts`), one circle per creator regardless of how many active Updates they have. The old card-based Home Feed this item originally referred to no longer exists (removed 2026-08-18, confirmed with Manuel — see `97_Lovable_Redesign_Checklist.md`).
 ☐ [Medium] Add a live character counter to the Update composer (500-character limit) so creators can see remaining space while typing.
 ☑ [Medium] Ask for confirmation before deleting an Update — done 2026-08-22. The Dashboard delete list this item originally referred to no longer exists (see "Ultimo task completato" in 99_Current_Project_Status.md); deleting now happens from the Update viewer itself (StoryViewer, owner-only), gated by a native confirm dialog.
-☐ [Medium] Update viewer (StoryViewer) background is pure black, too close to the rest of the site's dark background: make it lighter (not darker), so the Update card stands out visibly against the page behind it instead of blending into it.
+☑ [Medium] Update viewer (StoryViewer) background is pure black, too close to the rest of the site's dark background — done: the overlay now uses a radial gradient (surface color fading to the base background) behind the card instead of a flat black backdrop.
 
 ## Navigation
 
-☐ [Medium] Improve navigation consistency across the application.
+☐ [Medium] Improve navigation consistency across the application — re-checked 2026-09-04: feels fine to Manuel today, kept open pending a more thorough joint review to pin down what (if anything) still needs work.
 
 ## Product Decisions
 
-☐ [Medium] Show only the publication date of Episodes (do not display a separate "Recorded" date).
-☐ [Medium] Review the future Creator Settings experience before adding more account features.
-☐ [Medium] Show a welcome message once registration completes — a dismissible banner on Home, same pattern as the existing "Tell us what interests you" onboarding banner, not a dedicated screen or a Notification.
-☐ [Low] Sort categories alphabetically in `lib/constants/categories.ts` (single source of truth used everywhere; keep "Other" pinned last).
+☑ [Medium] Show only the publication date of Episodes (do not display a separate "Recorded" date) — checked 2026-09-04: no dual-date display exists anywhere (only `occurredAt` is shown, no separate "Recorded" label), so the described problem isn't present.
+☑ [Medium] Review the future Creator Settings experience before adding more account features — done 2026-09-04: new `/settings/creator` page (new-follower notification toggle, link to the Dashboard, payouts placeholder).
+☑ [Medium] Show a welcome message once registration completes — Manuel confirmed 2026-09-04 that the existing "Welcome to Zero, {name}" title on the Onboarding page is sufficient; no separate Home banner needed.
+☑ [Low] Sort categories alphabetically in `lib/constants/categories.ts` (single source of truth used everywhere; keep "Other" pinned last) — checked 2026-09-04: already alphabetical, with "Other" pinned last.
 
 ## Design
 
 ☑ [High] Align the interface with the Lovable design prototype — done, all 5 phases of `97_Lovable_Redesign_Checklist.md` closed and committed (checked 2026-08-24).
-☐ [Medium] Improve spacing, typography, cards, empty states and visual consistency across the application.
-☐ [Medium] Review all pages for a more modern and premium appearance.
+☑ [Medium] Improve spacing, typography, cards, empty states and visual consistency across the application — done 2026-09-04: page titles, section headings, empty-state cards and container widths unified across Settings/Dashboard/Journeys/Journeyers/Search/Profile/Discover toward the most compact style already present in the site, no in-between sizes invented.
+☐ [Medium] Review all pages for a more modern and premium appearance — still open, re-confirmed by Manuel 2026-09-04.
+☐ [Medium] Review color alternation across the site (which background shade — `bg`/`surface`/`surface-2` — follows which) — raised by Manuel 2026-09-04, not designed in detail yet.
 ☐ [Medium] Review Home payoff/copy (no decisions taken yet on which lines to change).
 ☐ [Medium] Design a mechanism to select real Journeys/creators for the Hero rotation, replacing the 4 fake demo slides in `lib/demo/heroSlides.ts` (starting idea: reuse the existing Journey Score ranking that already powers "Top Journeys", limited to Journeys with a cover photo — not designed in detail yet).
 

@@ -1,7 +1,7 @@
 ---
 title: Project History
 doc_id: 92-project-history
-version: "1.3"
+version: "1.4"
 status: living
 related_docs:
   - 01_Vision
@@ -138,12 +138,24 @@ Chiude il capitolo un piccolo miglioramento all'iconcina messaggi in basso a des
 
 ---
 
+## Capitolo 13 — Etichette che dicono la verità, e un giro di pulizia
+
+Questo capitolo comincia con un dettaglio minuscolo: un campo del Journey, "Your story, in a few words", etichettato "optional" — ma che in realtà bloccava la pubblicazione se lasciato vuoto. Non un bug nella logica, un bug nella sincerità dell'interfaccia: il campo si comportava in un modo e diceva di comportarsi in un altro. La prima correzione è stata onesta ma minima, "(required to publish)" al posto di "optional". Poi lo stesso identico difetto è riemerso da un'altra parte, nel form dell'Episodio, in una forma più contorta: Caption e Video, entrambi "optional", quando in realtà bastava uno dei due — ma non era vero nemmeno quello, perché serviva comunque qualcosa già solo per salvare una bozza. Il primo tentativo di spiegarlo meglio a parole ("required if no video") si è scontrato con un "ancora non ho capito, non è intuitivo" — ed è stata la spinta a tornare indietro e semplificare non il testo, ma la regola stessa: la Caption è sempre facoltativa, punto; il Video è l'unico campo richiesto per pubblicare, esattamente come la Description del Journey. Stesso meccanismo in entrambi i posti, capibile a prima vista in entrambi — un problema di parole che si è rivelato, guardando meglio, un problema di logica.
+
+Una seconda richiesta, quasi opposta nello spirito, ha attraversato il resto della sessione: rendere il sito più compatto. Non un'incoerenza da correggere trovando una via di mezzo, ma una direzione precisa — "per vederlo bene devo tenere lo zoom del browser al 75%" — che ha spinto a scegliere, punto per punto, sempre lo stile più piccolo già esistente da qualche parte nel sito, mai una misura nuova inventata a metà strada. Titoli di pagina, titoletti di sezione, riquadri vuoti, larghezze dei contenitori: uniformati ovunque, con due eccezioni tenute deliberatamente meno estreme — i titoli delle sezioni di Home e Discover, che nella Home reale hanno un ruolo di orientamento che un titolo minuscolo avrebbe indebolito, e la pagina di Ricerca, spostata nella famiglia di pagine "larghe" invece che in quella stretta, perché il suo contenuto (griglie di card affiancate) lo richiedeva.
+
+Il pezzo più rivelatore del capitolo, però, è arrivato da un'osservazione che il codice da solo non avrebbe mai fatto emergere: aprendo la pagina Journeyers con un solo iscritto — se stesso — Manuel ha notato che la propria foto profilo non compariva, solo le iniziali. Controllando, il motivo non era un errore isolato: ogni punto del sito che mostra più persone insieme — Journeyers, i risultati "Creators" e "People" della Ricerca, i creator raccomandati — non aveva mai chiesto la foto al database, in nessuno dei quattro casi. L'unico posto che la foto la mostrava davvero era l'intestazione del Profilo personale. La prima correzione ha mostrato la foto vera dentro lo stesso cerchietto piccolo che prima portava le iniziali — tecnicamente giusta, visivamente sbagliata: "lo vedi che la foto è tonda e non riempie la card [...] te lo avevo detto subito di fare attenzione." La versione definitiva fa esattamente quello che fa la copertina di un Journey: riempie tutto il riquadro rettangolare, non un cerchio piccolo al centro. Stessa foto, stesso ritaglio già quadrato scelto in fase di caricamento — bastava trattarla come una copertina, non come un'iniziale.
+
+Chiude il capitolo un giro di manutenzione sul registro delle cose da fare (`98_Product_Review.md`): rileggendo il codice voce per voce invece di fidarsi delle spunte esistenti, sono emerse altre voci già risolte da tempo ma mai segnate — la conferma di cancellazione per Capitoli ed Episodi, il drag & drop dei Capitoli, le categorie già in ordine alfabetico, una "data Recorded separata" che semplicemente non esisteva più. Lo stesso principio già visto nel Capitolo 12 — verificare sul prodotto vero, non fidarsi di cosa dice la documentazione o il codice a prima lettura — applicato stavolta non a un bug, ma alla lista stessa dei bug.
+
+---
+
 ## Epilogo — Dove siamo oggi
 
-A oggi, il percorso creator è completo e verificato end-to-end. Profilo pubblico, Follow universale, ricerca, Feed, Categorie, Updates e messaggistica funzionano con dati reali. La navigazione del sito è ora coerente su ogni pagina e ogni larghezza di schermo, con un'area Impostazioni reale al suo interno, e con Journeys e Journeyers finalmente due pagine vere invece di una scorciatoia verso la Home.
+A oggi, il percorso creator è completo e verificato end-to-end. Profilo pubblico, Follow universale, ricerca (ora per singola parola, non più solo a frase intera), Feed, Categorie, Updates e messaggistica funzionano con dati reali. La navigazione del sito è coerente su ogni pagina e ogni larghezza di schermo, con un'area Impostazioni reale al suo interno — inclusa una nuova sezione Creator, con il controllo sulla notifica "nuovo follower" — e con Journeys e Journeyers finalmente due pagine vere invece di una scorciatoia verso la Home. Ogni punto del sito che mostra una persona, non solo un Journey, mostra ora la sua foto vera quando c'è.
 
-Non ci sono ancora Journey pubblicati da utenti veri: solo tre Journey di prova tuoi, ancora nella Discovery Phase, con "laurea" prevista per i primi giorni di settembre 2026 — il momento in cui la Home smetterà di mostrare i Journey demo di riserva.
+Non ci sono ancora Journey pubblicati da utenti veri: solo tre Journey di prova tuoi, la cui "laurea" dalla Discovery Phase era prevista per i primi giorni di settembre 2026 — il momento in cui la Home smetterà di mostrare i Journey demo di riserva.
 
-Restano aperti: Analytics reali e Community Premium, i pagamenti (Stripe non ancora collegato, da cui dipendono anche Abbonamento nelle Impostazioni), i testi legali veri (Termini, Privacy, Cookie, Linee guida community — le pagine esistono già, vuote), la Privacy nelle Impostazioni (profilo privato, utenti bloccati).
+Restano aperti: Analytics reali e Community Premium, i pagamenti (Stripe non ancora collegato, da cui dipendono anche Abbonamento nelle Impostazioni e i Payout nella nuova sezione Creator), i testi legali veri (Termini, Privacy, Cookie, Linee guida community — le pagine esistono già, vuote), la Privacy nelle Impostazioni (profilo privato, utenti bloccati), un aspetto più "premium" per le pagine del sito e l'alternanza dei colori di sfondo, non ancora rivisti nel dettaglio.
 
 C'è anche un tratto di metodo che ha accompagnato tutte le ultime sessioni di lavoro e che vale la pena raccontare: l'abitudine di affrontare un solo compito per sessione, invece di incatenare più funzionalità insieme nello stesso momento. È coerente con tutto il resto di questa storia — un progetto costruito un pezzo alla volta, verificato prima di passare al successivo, con una Vision scritta il primo giorno ("il percorso conta più del risultato") che si ritrova, con sorprendente coerenza, tanto nel prodotto quanto nel modo in cui è stato costruito.
