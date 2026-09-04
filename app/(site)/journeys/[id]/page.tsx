@@ -105,7 +105,7 @@ export default async function PublicJourneyPage({
                     className="flex min-w-0 items-center gap-2 transition-colors hover:text-ember"
                   >
                     <Avatar name={journey.creator.displayName} className="h-7 w-7 text-[0.65rem]" />
-                    <span className="truncate">by {journey.creator.displayName}</span>
+                    <span className="truncate">{journey.creator.displayName}</span>
                   </Link>
                   <TrustScoreBadge score={trustScore} />
                   <span className="inline-flex items-center gap-1.5">

@@ -50,7 +50,7 @@ export function MomentJourneyCard({ journey, rank }: MomentJourneyCardProps) {
         {description && <p className="mt-1 line-clamp-1 text-xs text-ink-muted">{description}</p>}
         <div className="mt-2 flex min-w-0 items-center gap-2 text-xs text-ink-muted">
           <Avatar name={creator.displayName} />
-          <span className="truncate">by {creator.displayName}</span>
+          <span className="truncate">{creator.displayName}</span>
         </div>
       </div>
     </Link>

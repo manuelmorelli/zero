@@ -40,7 +40,7 @@ export function ContinueJourneyRow({ items }: { items: ContinueJourneyItem[] }) 
               </div>
               <div className="flex flex-1 flex-col justify-center px-4 py-3">
                 <h3 className="text-sm font-bold leading-snug text-ink">{item.title}</h3>
-                <p className="mt-1 text-xs text-ink-muted">by {item.creatorName}</p>
+                <p className="mt-1 text-xs text-ink-muted">{item.creatorName}</p>
                 {item.episodeTitle && (
                   <p className="mt-2 text-xs font-semibold text-ink-muted">
                     Continue: {item.episodeTitle}

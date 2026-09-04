@@ -62,7 +62,7 @@ export function JourneyCard({ journey, className, style, badge, footer }: Journe
           <h3 className="mt-1 truncate text-sm font-bold leading-tight text-ink transition-colors group-hover:text-ember">
             {title}
           </h3>
-          <p className="mt-1.5 truncate text-xs text-ink-muted">by {creator.displayName}</p>
+          <p className="mt-1.5 truncate text-xs text-ink-muted">{creator.displayName}</p>
         </div>
       </Link>
       {footer}
