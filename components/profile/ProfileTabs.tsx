@@ -14,8 +14,8 @@ type ProfileTabsProps = {
 
 export function ProfileTabs({ basePath, activeTab }: ProfileTabsProps) {
   return (
-    <div className="sticky top-12 z-40 border-y border-border bg-bg/70 backdrop-blur-md">
-      <div className="no-scrollbar mx-auto flex max-w-[1400px] gap-6 overflow-x-auto px-5 md:px-8">
+    <div className="sticky top-12 z-40 py-1">
+      <div className="no-scrollbar mx-auto flex max-w-[1400px] gap-2.5 overflow-x-auto px-5 md:px-8">
         {TABS.map((tab) => {
           const isActive = tab.key === activeTab;
           const href = tab.key === "overview" ? basePath : `${basePath}?tab=${tab.key}`;
@@ -23,12 +23,11 @@ export function ProfileTabs({ basePath, activeTab }: ProfileTabsProps) {
             <Link
               key={tab.key}
               href={href}
-              className={`relative shrink-0 py-2.5 text-sm transition-colors ${
-                isActive ? "text-ink" : "text-ink-muted hover:text-ink"
+              className={`shrink-0 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm backdrop-blur-md transition-colors ${
+                isActive ? "text-ember" : "text-ink-muted hover:text-ink"
               }`}
             >
               {tab.label}
-              {isActive && <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-ember" />}
             </Link>
           );
         })}

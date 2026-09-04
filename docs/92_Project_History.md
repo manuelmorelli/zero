@@ -1,7 +1,7 @@
 ---
 title: Project History
 doc_id: 92-project-history
-version: "1.4"
+version: "1.5"
 status: living
 related_docs:
   - 01_Vision
@@ -147,6 +147,20 @@ Una seconda richiesta, quasi opposta nello spirito, ha attraversato il resto del
 Il pezzo più rivelatore del capitolo, però, è arrivato da un'osservazione che il codice da solo non avrebbe mai fatto emergere: aprendo la pagina Journeyers con un solo iscritto — se stesso — Manuel ha notato che la propria foto profilo non compariva, solo le iniziali. Controllando, il motivo non era un errore isolato: ogni punto del sito che mostra più persone insieme — Journeyers, i risultati "Creators" e "People" della Ricerca, i creator raccomandati — non aveva mai chiesto la foto al database, in nessuno dei quattro casi. L'unico posto che la foto la mostrava davvero era l'intestazione del Profilo personale. La prima correzione ha mostrato la foto vera dentro lo stesso cerchietto piccolo che prima portava le iniziali — tecnicamente giusta, visivamente sbagliata: "lo vedi che la foto è tonda e non riempie la card [...] te lo avevo detto subito di fare attenzione." La versione definitiva fa esattamente quello che fa la copertina di un Journey: riempie tutto il riquadro rettangolare, non un cerchio piccolo al centro. Stessa foto, stesso ritaglio già quadrato scelto in fase di caricamento — bastava trattarla come una copertina, non come un'iniziale.
 
 Chiude il capitolo un giro di manutenzione sul registro delle cose da fare (`98_Product_Review.md`): rileggendo il codice voce per voce invece di fidarsi delle spunte esistenti, sono emerse altre voci già risolte da tempo ma mai segnate — la conferma di cancellazione per Capitoli ed Episodi, il drag & drop dei Capitoli, le categorie già in ordine alfabetico, una "data Recorded separata" che semplicemente non esisteva più. Lo stesso principio già visto nel Capitolo 12 — verificare sul prodotto vero, non fidarsi di cosa dice la documentazione o il codice a prima lettura — applicato stavolta non a un bug, ma alla lista stessa dei bug.
+
+---
+
+## Capitolo 14 — La sfumatura che non voleva saperne
+
+Il capitolo comincia con un problema all'apparenza piccolo — la foto di copertina del Profilo che finisce di colpo nel nero invece di sfumare — e diventa la storia di un difetto nascosto negli strumenti stessi usati per costruire il sito, non nel design.
+
+I primi tentativi seguono la strada ovvia: allungare la sfumatura, poi accorciarla, poi ridurne l'intensità. Nessuno basta da solo, e ognuno rivela un pezzo di verità diverso. Una sfumatura più lunga scurisce troppo la foto nel complesso. Una cortissima resta comunque percepita come una riga netta anche quando i pixel, misurati uno per uno, cambiano colore in modo perfettamente continuo: è un'illusione ottica reale (l'effetto "banda di Mach"), non un errore di codice — l'occhio segnala il punto in cui l'oscuramento *comincia bruscamente*, non solo dove il colore cambia.
+
+Il colpo di scena arriva dopo aver scritto una sfumatura "ad S" pensata apposta per evitare quell'effetto: il codice è corretto, ma sulla pagina non cambia assolutamente nulla. "Siamo sicuri che hai fatto il lavoro?" smonta l'assunzione sbagliata di quel momento — controllare che un file sia stato salvato non è la stessa cosa che controllare se il browser lo ha davvero ricevuto. Il confronto diretto tra il file sorgente e il CSS effettivamente scaricato dal sito trova la causa vera: una combinazione specifica di funzioni CSS moderne (`color-mix()` insieme a una variabile di colore) veniva scartata in silenzio dalla pipeline di build del progetto, senza nessun errore visibile — il file si salvava, il sito compilava, ma quella singola regola spariva nel nulla. Scritta con gli stessi valori in modo diretto, la sfumatura funziona subito.
+
+Risolto il mistero tecnico, la richiesta cambia natura: non più "sistema la sfumatura", ma "elimina il blocco nero" — le statistiche e i bottoni dell'intestazione del Profilo escono dalla fascia scura separata sotto la foto e si spostano dentro la foto stessa, come elementi in vetro smerigliato che galleggiano su un'immagine ora molto più alta. Lo stesso trattamento arriva poi alla barra "Overview / Journeys", che perde lo sfondo nero pieno e diventa due pillole in vetro coerenti con il resto.
+
+Il capitolo chiude con una scoperta separata, sulla card del Journey "in corso" del Profilo: una copertina verticale (lo stesso formato "poster" usato ovunque nel sito) forzata dentro un riquadro basso e largo, che ne tagliava via più della metà — più un effetto "si solleva al passaggio del mouse" che, vicino al bordo della card, innescava un piccolo loop di sfarfallio: il cursore esce dalla card quando questa si sposta, l'hover si spegne, la card torna giù, il cursore rientra, l'hover si riaccende, e così via. Due difetti diversi, la stessa lezione del capitolo: quello che sembra un dettaglio estetico nasconde spesso una causa tecnica precisa, che vale la pena trovare invece di limitarsi a spostare i numeri di un CSS finché "sembra meglio".
 
 ---
 

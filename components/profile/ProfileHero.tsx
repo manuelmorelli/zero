@@ -5,16 +5,6 @@ import { ProfileFollowStats } from "@/components/profile/ProfileFollowStats";
 import { Stat } from "@/components/profile/ProfileStat";
 import type { CreatorStory } from "@/lib/discovery/stories";
 
-/** Vignetta: la foto stessa sfuma nel trasparente su tutti i lati (più generosa in basso), via
- * mask-image — nessun overlay colorato sopra, sotto la foto si vede semplicemente lo sfondo. */
-const COVER_FADE_MASK = {
-  maskImage:
-    "linear-gradient(to bottom, transparent 0%, black 4%, black 87%, transparent 100%), linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%)",
-  WebkitMaskImage:
-    "linear-gradient(to bottom, transparent 0%, black 4%, black 87%, transparent 100%), linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%)",
-  maskComposite: "intersect",
-} as const;
-
 type ProfileHeroProps = {
   /** Id dell'utente di cui si sta guardando il profilo (non del visitatore) — serve a
    * ProfileFollowStats per caricare gli elenchi Followers/Following di questa persona. */
@@ -60,19 +50,21 @@ export function ProfileHero({
 
   return (
     <section className="relative isolate w-full">
-      <div
-        className="absolute inset-x-0 top-0 -z-10 h-56 overflow-hidden sm:h-72 md:h-80"
-        style={COVER_FADE_MASK}
-      >
+      <div className="absolute inset-x-0 top-0 -z-10 h-[22rem] overflow-hidden sm:h-[26rem] md:h-[29rem]">
         {coverUrl ? (
           <Image src={coverUrl} alt="" fill sizes="100vw" className="object-cover" preload />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
         )}
+        {/* Sfumatura ampia con curva "ad S" (vedi .cover-fade in globals.css): copre la parte
+         * bassa della foto, dove poggiano anche le statistiche e i bottoni, così quegli elementi
+         * si trovano su uno sfondo già naturalmente scurito invece che sulla foto a piena luce —
+         * meno contrasto netto, transizione morbida verso la barra Overview/Journeys sotto. */}
+        <div className="cover-fade absolute inset-x-0 bottom-0 h-32 sm:h-40 md:h-48" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-[1400px] px-5 md:px-8">
-        <div className="pt-[7.5rem] sm:pt-[11rem] md:pt-[12rem]">
+        <div className="pt-[calc(7.5rem+0.9cm)] sm:pt-[calc(11rem+0.9cm)] md:pt-[calc(12rem+0.9cm)]">
           <div className="flex items-end gap-4">
             <ProfileAvatarStory
               avatarUrl={avatarUrl}
@@ -82,11 +74,11 @@ export function ProfileHero({
             />
 
             <div className="min-w-0 pb-1">
-              <h1 className="truncate text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
+              <h1 className="truncate text-2xl font-extrabold tracking-tight text-ink drop-shadow-sm sm:text-3xl">
                 {name}
               </h1>
-              {username && <p className="text-sm text-ink-muted">@{username}</p>}
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-muted">
+              {username && <p className="text-sm text-ink-muted drop-shadow-sm">@{username}</p>}
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-muted drop-shadow-sm">
                 {location && (
                   <span className="inline-flex items-center gap-1.5">
                     <LocationIcon className="h-3.5 w-3.5" />
@@ -102,9 +94,9 @@ export function ProfileHero({
           </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 pb-4">
-          <ul className="grid shrink-0 grid-cols-4 gap-2 rounded-xl border border-border bg-white/[0.02] px-3 py-2">
-            <Stat label="Trust Score" value={trustScore.toString()} ember />
+        <div className="mt-1.5 flex flex-wrap items-center justify-between gap-3 pb-4">
+          <ul className="grid shrink-0 grid-cols-4 gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 backdrop-blur-md">
+            <Stat label="Trust Score" value={trustScore.toString()} />
             <Stat label="Journeys" value={formatCompactNumber(journeysCount)} />
             <ProfileFollowStats
               profileUserId={profileUserId}
@@ -115,7 +107,7 @@ export function ProfileHero({
             />
           </ul>
 
-          {actions && <div className="flex shrink-0 items-center gap-2.5">{actions}</div>}
+          {actions && <div className="mt-[0.5cm] flex shrink-0 items-center gap-2.5">{actions}</div>}
         </div>
       </div>
     </section>

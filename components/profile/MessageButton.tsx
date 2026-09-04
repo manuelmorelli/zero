@@ -37,7 +37,7 @@ export function MessageButton({ userId }: MessageButtonProps) {
         type="button"
         onClick={handleClick}
         disabled={isPending}
-        className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-ink-muted disabled:opacity-50"
+        className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-ember backdrop-blur-md transition-colors hover:bg-white/10 disabled:opacity-50"
       >
         {isPending ? "Opening…" : "Message"}
       </button>

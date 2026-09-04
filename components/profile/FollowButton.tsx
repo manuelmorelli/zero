@@ -27,10 +27,10 @@ export function FollowButton({
   if (!isLoggedIn) {
     return (
       <div className="flex items-center gap-3">
-        <span className="text-xs text-ink-muted">{countLabel}</span>
+        <span className="text-xs text-ember">{countLabel}</span>
         <Link
           href="/login"
-          className="rounded-full bg-ink px-4 py-1.5 text-xs font-semibold text-bg transition-colors hover:bg-ink-muted"
+          className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-ember backdrop-blur-md transition-colors hover:bg-white/10"
         >
           Follow
         </Link>
@@ -54,16 +54,12 @@ export function FollowButton({
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-ink-muted">{countLabel}</span>
+      <span className="text-xs text-ember">{countLabel}</span>
       <button
         type="button"
         onClick={handleClick}
         disabled={isPending}
-        className={
-          isFollowing
-            ? "rounded-full border border-border px-4 py-1.5 text-xs font-semibold text-ink-muted transition-colors hover:border-ink-muted disabled:opacity-50"
-            : "rounded-full bg-ink px-4 py-1.5 text-xs font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-        }
+        className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-ember backdrop-blur-md transition-colors hover:bg-white/10 disabled:opacity-50"
       >
         {isFollowing ? "Following" : "Follow"}
       </button>

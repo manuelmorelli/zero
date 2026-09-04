@@ -24,6 +24,30 @@ body {
   color: var(--color-ink);
 }
 
+/* Sfumatura verso il nero di pagina con curva "ad S" (non lineare): l'oscuramento parte quasi
+ * impercettibile e accelera solo vicino al fondo. Con un gradiente lineare a 2 tappe l'occhio
+ * percepisce comunque una riga netta nel punto esatto in cui l'oscuramento comincia (effetto
+ * banda di Mach), anche se il colore cambia in modo matematicamente continuo — da qui le tappe
+ * intermedie. Usata sul bordo inferiore della copertina Profilo. */
+/* Valori oklch ripetuti letteralmente (non var(--color-bg) + color-mix): quella combinazione
+ * viene scartata in silenzio dalla pipeline CSS del progetto in fase di build. */
+.cover-fade {
+  background-image: linear-gradient(
+    to top,
+    oklch(0.15 0.008 250 / 100%) 0%,
+    oklch(0.15 0.008 250 / 74%) 19%,
+    oklch(0.15 0.008 250 / 54%) 34%,
+    oklch(0.15 0.008 250 / 38%) 47%,
+    oklch(0.15 0.008 250 / 28%) 56.5%,
+    oklch(0.15 0.008 250 / 19%) 65%,
+    oklch(0.15 0.008 250 / 13%) 73%,
+    oklch(0.15 0.008 250 / 8%) 80.6%,
+    oklch(0.15 0.008 250 / 4%) 87.6%,
+    oklch(0.15 0.008 250 / 2%) 94.1%,
+    oklch(0.15 0.008 250 / 0%) 100%
+  );
+}
+
 /* Righe scorrevoli stile Netflix: scrollbar nascosta, lo scroll resta utilizzabile */
 .no-scrollbar {
   scrollbar-width: none;

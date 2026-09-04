@@ -17,7 +17,7 @@ export function ShareProfileButton() {
     <button
       type="button"
       onClick={handleClick}
-      className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-ink-muted"
+      className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-ember backdrop-blur-md transition-colors hover:bg-white/10"
     >
       Share Profile
     </button>
