@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Da Next.js 16 le qualità vanno dichiarate esplicitamente (altrimenti l'unica concessa è
+    // 75, vedi node_modules/next/dist/docs/.../image.md#qualities): 90 serve alla copertina
+    // dell'hero del Profilo (components/profile/ProfileHero.tsx).
+    qualities: [75, 90],
     remotePatterns: [
       {
         protocol: "https",

@@ -29,6 +29,10 @@ import { DEMO_FEED_ITEMS } from "@/lib/demo/demoProfile";
  * verso la tab Journeys (che resta la lista completa, archiviati compresi). */
 const PUBLISHED_JOURNEYS_PREVIEW_COUNT = 5;
 
+/** Colori alternati per le scritte motivazionali del feed demo (DEMO_FEED_ITEMS), per non usare
+ * solo l'ember su tutte e tre le card. */
+const DEMO_MESSAGE_COLORS = ["text-ember", "text-ink", "text-ink-muted"];
+
 // L'username non è ancora impostabile da UI: come fallback temporaneo si accetta
 // anche l'id dell'utente nello stesso segmento di rotta, finché non esiste una
 // gestione reale degli username. Nessuna nuova regola di business introdotta.
@@ -167,7 +171,7 @@ export default async function PublicProfilePage({
               />
               <Link
                 href="/dashboard"
-                className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-ember backdrop-blur-md transition-colors hover:bg-white/10"
+                className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-ink backdrop-blur-md transition-colors hover:bg-white/10"
               >
                 Dashboard
               </Link>
@@ -221,6 +225,15 @@ export default async function PublicProfilePage({
                           imageAlt={item.title}
                           title={item.title}
                           category={item.category}
+                          emptyMessage={
+                            isDemoFeed ? (
+                              <span
+                                className={`text-sm font-semibold leading-snug ${DEMO_MESSAGE_COLORS[index % DEMO_MESSAGE_COLORS.length]}`}
+                              >
+                                {item.caption}
+                              </span>
+                            ) : undefined
+                          }
                           likeSlot={
                             <LikeButton
                               targetType="EPISODE"

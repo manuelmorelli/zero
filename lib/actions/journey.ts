@@ -6,7 +6,6 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
-import { requireSession } from "@/lib/session";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { DISCOVERY_PHASE_DAYS, PUBLICLY_REACHABLE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewJourney } from "@/lib/notifications";
@@ -26,7 +25,7 @@ async function requireOwnedJourney(journeyId: string) {
 // I nuovi Journey vanno in cima alla lista del Profilo (stesso comportamento visivo di prima,
 // quando l'ordine era per data di creazione discendente): prendono un valore più piccolo del
 // più piccolo esistente, invece di essere accodati in fondo come capitoli/episodi.
-async function nextJourneyOrder(creatorId: string): Promise<number> {
+export async function nextJourneyOrder(creatorId: string): Promise<number> {
   const firstJourney = await prisma.journey.findFirst({
     where: { creatorId, deletedAt: null },
     orderBy: { order: "asc" },
@@ -99,43 +98,6 @@ export async function createJourney(
   });
 
   redirect(`/dashboard/journeys/${journey.id}`);
-}
-
-// Passo "new journey" del pulsante "+" globale (vedi components/creator/QuickUploadButton.tsx):
-// crea sempre un nuovo Journey con solo il titolo, senza passare dalla Dashboard né da "Become a
-// creator" — se manca anche il profilo Creator viene creato al volo (nome dell'account come
-// displayName di partenza, modificabile in seguito dal Profilo). Nessun redirect: il flusso resta
-// nello stesso riquadro e passa allo step successivo (caricare il video). Un creator può avere più
-// Journey attivi in parallelo (vedi 00-project-context.md, sezione "Archiviazione del Journey"),
-// quindi qui non c'è più nessun controllo "ne hai già uno": si crea sempre.
-const QuickJourneySchema = z.object({
-  title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
-});
-
-export type QuickJourneyState = { error: string | null; journeyId: string | null };
-
-export async function quickStartJourney(
-  _prevState: QuickJourneyState,
-  formData: FormData
-): Promise<QuickJourneyState> {
-  const { user } = await requireSession();
-
-  let creator = await prisma.creator.findUnique({ where: { userId: user.id } });
-  if (!creator) {
-    creator = await prisma.creator.create({ data: { userId: user.id, displayName: user.name } });
-  }
-
-  const parsed = QuickJourneySchema.safeParse({ title: formData.get("title") });
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid data.", journeyId: null };
-  }
-
-  const journey = await prisma.journey.create({
-    data: { creatorId: creator.id, title: parsed.data.title, order: await nextJourneyOrder(creator.id) },
-  });
-
-  revalidatePath("/dashboard");
-  return { error: null, journeyId: journey.id };
 }
 
 export async function updateJourney(
@@ -218,13 +180,24 @@ export async function publishJourney(
     return { error: `Before publishing, add: ${issues.join(", ")}.` };
   }
 
-  // Discovery Phase (08_Algorithm.md): un Journey pubblicato per la prima volta entra in
-  // DISCOVERY per 15 giorni (discoveryEndsAt), visibile a tutti indipendentemente dagli interessi.
-  // Sia publishedAt sia discoveryEndsAt si valorizzano una sola volta, mai ricalcolati: un ciclo
-  // bozza→ripubblica non riporta il Journey in Discovery una seconda volta (evita che un creator
-  // possa "resettare" la finestra di massima visibilità pubblicando e spubblicando a ripetizione).
-  // Se discoveryEndsAt esiste già ed è nel passato, la Discovery Phase è già stata vissuta: si
-  // ripubblica direttamente come PUBLISHED.
+  await applyJourneyPublish(journey);
+
+  revalidatePath(`/dashboard/journeys/${journey.id}`);
+  revalidatePath(`/journeys/${journey.id}`);
+  return { error: null };
+}
+
+// Discovery Phase (08_Algorithm.md): un Journey pubblicato per la prima volta entra in DISCOVERY
+// per 15 giorni (discoveryEndsAt), visibile a tutti indipendentemente dagli interessi. Sia
+// publishedAt sia discoveryEndsAt si valorizzano una sola volta, mai ricalcolati: un ciclo
+// bozza→ripubblica non riporta il Journey in Discovery una seconda volta (evita che un creator
+// possa "resettare" la finestra di massima visibilità pubblicando e spubblicando a ripetizione).
+// Se discoveryEndsAt esiste già ed è nel passato, la Discovery Phase è già stata vissuta: si
+// ripubblica direttamente come PUBLISHED. Condivisa tra `publishJourney` (Dashboard, esplicito) e
+// `autoPublishDraftJourney` (caricamento veloce dal "+" globale).
+async function applyJourneyPublish(
+  journey: Awaited<ReturnType<typeof requireOwnedJourney>>
+): Promise<void> {
   const alreadyHadDiscoveryPhase = journey.discoveryEndsAt !== null && journey.discoveryEndsAt <= new Date();
   const discoveryEndsAt =
     journey.discoveryEndsAt ?? new Date(Date.now() + DISCOVERY_PHASE_DAYS * 24 * 60 * 60 * 1000);
@@ -249,10 +222,30 @@ export async function publishJourney(
       journeyTitle: journey.title,
     });
   }
+}
+
+// Il caricamento veloce dal "+" globale (vedi components/creator/QuickUploadButton.tsx) dice
+// "Publish" ma prima pubblicava solo l'Episodio, lasciando il Journey invisibile in Draft senza
+// avvisare l'utente — questa funzione pubblica anche il Journey nella stessa azione, usando la
+// caption/il titolo dell'episodio come descrizione breve se il Journey non ne ha ancora una (il
+// campo è obbligatorio per pubblicare, vedi publishJourney sopra). Nessun controllo sul conteggio
+// episodi pubblicati: chi chiama questa funzione lo fa subito dopo aver creato un episodio
+// pubblicato, quindi il requisito è già soddisfatto.
+export async function autoPublishDraftJourney(journeyId: string, fallbackDescription: string): Promise<void> {
+  const journey = await requireOwnedJourney(journeyId);
+  if (journey.status !== "DRAFT") return;
+
+  if (!journey.description || journey.description.trim().length === 0) {
+    await prisma.journey.update({
+      where: { id: journey.id },
+      data: { description: fallbackDescription.trim().slice(0, 2000) },
+    });
+  }
+
+  await applyJourneyPublish(journey);
 
   revalidatePath(`/dashboard/journeys/${journey.id}`);
   revalidatePath(`/journeys/${journey.id}`);
-  return { error: null };
 }
 
 export async function unpublishJourney(

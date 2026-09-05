@@ -7,6 +7,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import {
+  copyImage,
   deleteImage,
   deleteVideo,
   getImageUploadUrl,
@@ -19,6 +20,7 @@ import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video
 import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewEpisode } from "@/lib/notifications";
+import { autoPublishDraftJourney, nextJourneyOrder } from "@/lib/actions/journey";
 
 const EpisodeSchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
@@ -103,6 +105,39 @@ export async function createEpisodePosterUploadUrl(
   } else {
     await requireOwnedEpisode(ownerId);
   }
+
+  if (!ALLOWED_IMAGE_TYPES.has(contentType)) {
+    return { error: "Unsupported image format." };
+  }
+
+  const key = newImageKey("episode-covers", contentType);
+  const uploadUrl = await getImageUploadUrl(key, contentType);
+  return { uploadUrl, key };
+}
+
+// Varianti per il caricamento veloce dal "+" globale (vedi components/creator/QuickUploadButton.tsx):
+// lì il video/la copertina vengono scelti PRIMA di sapere a quale Journey andranno (l'utente può
+// ancora decidere "nuovo Journey" nella stessa schermata), quindi non c'è ancora un Journey da
+// verificare come proprietario — basta essere un creator autenticato (requireCreator lo crea al
+// volo se manca, stesso comportamento di quickStartJourney in precedenza).
+export async function createQuickVideoUploadUrl(
+  contentType: string
+): Promise<{ uploadUrl: string; key: string } | { error: string }> {
+  await requireCreator();
+
+  if (!ALLOWED_VIDEO_TYPES.has(contentType)) {
+    return { error: "Unsupported video format." };
+  }
+
+  const key = newVideoKey(contentType);
+  const uploadUrl = await getVideoUploadUrl(key, contentType);
+  return { uploadUrl, key };
+}
+
+export async function createQuickPosterUploadUrl(
+  contentType: string
+): Promise<{ uploadUrl: string; key: string } | { error: string }> {
+  await requireCreator();
 
   if (!ALLOWED_IMAGE_TYPES.has(contentType)) {
     return { error: "Unsupported image format." };
@@ -221,26 +256,40 @@ export async function createEpisode(
   redirect(`/dashboard/journeys/${journey.id}`);
 }
 
-// Variante per il pulsante "+" globale (vedi components/creator/QuickUploadButton.tsx): stesso
-// risultato di `createEpisode`, ma senza redirect, perché il flusso resta in un riquadro sopra la
-// pagina in cui l'utente si trovava, non naviga verso la Dashboard.
-export type QuickEpisodeState = { error: string | null; done: boolean };
+// Flusso rapido dal "+" globale (vedi components/creator/QuickUploadButton.tsx): una sola
+// schermata che copre video, copertina, quale Journey (esistente o nuovo) e didascalia, e un solo
+// "Publish" che pubblica sia l'episodio SIA il Journey nella stessa azione — prima l'episodio
+// risultava pubblicato ma il Journey restava invisibile in Draft, senza che l'utente lo scegliesse
+// né lo sapesse (vedi autoPublishDraftJourney in lib/actions/journey.ts).
+export type QuickComposeState = { error: string | null; done: boolean };
 
-export async function quickCreateEpisode(
-  _prevState: QuickEpisodeState,
+const QuickComposeSchema = z.object({
+  journeyId: z.string().trim().optional(),
+  newJourneyTitle: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100).optional(),
+  title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
+  caption: z.string().trim().max(10000).optional(),
+  videoKey: z.string().trim().min(1, "Add a video before publishing."),
+  posterKey: z.string().trim().optional(),
+  durationSec: z.coerce.number().int().positive().optional(),
+  occurredAt: z
+    .string()
+    .trim()
+    .min(1, "Let us know when this episode happened.")
+    .pipe(z.coerce.date({ message: "Invalid date." })),
+});
+
+export async function quickComposeEpisode(
+  _prevState: QuickComposeState,
   formData: FormData
-): Promise<QuickEpisodeState> {
-  const journeyId = formData.get("journeyId");
-  if (typeof journeyId !== "string" || !journeyId) {
-    return { error: "Invalid journey.", done: false };
-  }
-  const journey = await requireOwnedJourney(journeyId);
-  const chapterId = await resolveChapterId(formData.get("chapterId"), journey.id);
+): Promise<QuickComposeState> {
+  const { creator } = await requireCreator();
 
-  const parsed = EpisodeSchema.safeParse({
+  const parsed = QuickComposeSchema.safeParse({
+    journeyId: formData.get("journeyId") || undefined,
+    newJourneyTitle: formData.get("newJourneyTitle") || undefined,
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
-    videoKey: formData.get("videoKey") || undefined,
+    videoKey: formData.get("videoKey"),
     posterKey: formData.get("posterKey") || undefined,
     durationSec: formData.get("durationSec") || undefined,
     occurredAt: formData.get("occurredAt"),
@@ -249,11 +298,53 @@ export async function quickCreateEpisode(
     return { error: parsed.error.issues[0]?.message ?? "Invalid data.", done: false };
   }
 
-  // Questo flusso rapido ("+" globale, primo episodio) è di per sé un'azione di pubblicazione
-  // esplicita ("Publish Episode" / "Publish"): a differenza del form completo della Dashboard,
-  // qui non c'è un interruttore Bozza/Pubblicato separato.
-  const result = await insertEpisode(journey, chapterId, parsed.data, true);
-  return { error: result.error, done: !result.error };
+  let journeyId = parsed.data.journeyId;
+  if (!journeyId) {
+    if (!parsed.data.newJourneyTitle) {
+      return { error: "Give your Journey a title.", done: false };
+    }
+    // Il flusso veloce chiede una sola copertina (quella dell'episodio): un Journey appena creato
+    // qui la eredita come propria copertina, così la pagina di gestione del Journey non mostra un
+    // riquadro vuoto che sembra un bug — è una copia vera (copyImage), non la stessa chiave
+    // condivisa, per non legare i due cicli di vita.
+    const journeyCoverUrl = parsed.data.posterKey
+      ? await copyImage(parsed.data.posterKey, "journey-covers")
+      : null;
+    const newJourney = await prisma.journey.create({
+      data: {
+        creatorId: creator.id,
+        title: parsed.data.newJourneyTitle,
+        coverUrl: journeyCoverUrl,
+        order: await nextJourneyOrder(creator.id),
+      },
+    });
+    journeyId = newJourney.id;
+  }
+
+  const journey = await requireOwnedJourney(journeyId);
+  const chapterId = await resolveChapterId(formData.get("chapterId"), journey.id);
+
+  // Questo flusso rapido ("+" globale) è di per sé un'azione di pubblicazione esplicita
+  // ("Publish"): a differenza del form completo della Dashboard, qui non c'è un interruttore
+  // Bozza/Pubblicato separato.
+  const result = await insertEpisode(
+    journey,
+    chapterId,
+    {
+      title: parsed.data.title,
+      caption: parsed.data.caption,
+      videoKey: parsed.data.videoKey,
+      posterKey: parsed.data.posterKey,
+      durationSec: parsed.data.durationSec,
+      occurredAt: parsed.data.occurredAt,
+    },
+    true
+  );
+  if (result.error) return { error: result.error, done: false };
+
+  await autoPublishDraftJourney(journeyId, parsed.data.caption || parsed.data.title);
+
+  return { error: null, done: true };
 }
 
 export async function updateEpisode(

@@ -164,6 +164,20 @@ Il capitolo chiude con una scoperta separata, sulla card del Journey "in corso" 
 
 ---
 
+## Capitolo 15 — "Due click, come su Instagram"
+
+Il capitolo comincia con una scoperta scomoda: caricando un video da un profilo diverso dal solito, Manuel scopre che il Journey appena creato finisce in Bozza — invisibile a tutti — senza che nessuno gliel'abbia detto né fatto scegliere. Il bottone diceva "Publish", ma pubblicava solo l'episodio: il Journey che lo conteneva restava fermo, perché pubblicarlo per davvero richiede anche una breve descrizione che quel percorso rapido non aveva mai chiesto.
+
+La richiesta che segue non è "aggiungi un avviso", ma una riscrittura del meccanismo stesso: tutto il caricamento veloce dal tasto "+" — scegliere il video, la copertina, a quale Journey aggiungerlo, titolo e didascalia — diventa un'unica schermata invece di quattro passaggi in fila, con la copertina proposta in automatico da un fotogramma del video stesso (estratto nel browser, senza upload preliminare), esattamente come fa Instagram. Un solo "Publish" ora pubblica davvero tutto insieme: episodio e Journey, usando la didascalia come descrizione breve quando il Journey è nuovo — così il bottone fa esattamente quello che promette.
+
+Il resto del capitolo è una serie di correzioni rapide fatte insieme a Manuel mentre provava dal vivo la nuova schermata: niente più scroll per vedere tutte le opzioni, la copertina ridimensionata più volte fino a una misura "via di mezzo" nel formato verticale già usato dalle card degli episodi, una X per rimuovere il video scelto al posto di una scritta cliccabile, "Episode title" al posto di un generico "Title" ripetuto due volte senza contesto, e il bottone Publish che diventa cliccabile appena il video è pronto invece di restare grigio — misterioso — finché ogni campo di testo non è compilato.
+
+L'ultima scoperta del capitolo arriva da una domanda semplice: perché la copertina di un episodio appena creato non si vede riaprendo la pagina per modificarlo? La copertina, in realtà, c'era — verificata fino al file vero su Cloudflare R2 — ma quella vuota era un'altra: la copertina del *Journey*, che il percorso veloce non aveva mai pensato di impostare, lasciando un riquadro nero apparentemente rotto su una pagina diversa da quella descritta all'inizio. Un Journey creato al volo ora eredita automaticamente la stessa copertina scelta per il suo primo episodio — una copia vera del file, non lo stesso riferimento condiviso, così cancellare l'uno in futuro non spezza l'altro.
+
+Chiude il capitolo un piccolo giallo tecnico nato da un tentativo di rendere più nitida la foto di copertina dell'Hero: alzare la qualità dell'immagine nel codice non cambiava assolutamente nulla sullo schermo. La causa era una novità silenziosa di Next.js 16, la versione "non classica" di cui il progetto avvisa fin dal primo file letto da chi ci lavora: da questa versione in poi le qualità delle immagini vanno dichiarate in una lista esplicita nella configurazione del sito, altrimenti l'unica concessa resta 75 di default, qualunque valore si scriva nel componente. Corretto quello, la differenza si è rivelata reale ma sottile a occhio nudo su una foto di paesaggio — un promemoria che non tutte le correzioni tecnicamente corrette producono un effetto visibile eclatante, e va bene così.
+
+---
+
 ## Epilogo — Dove siamo oggi
 
 A oggi, il percorso creator è completo e verificato end-to-end. Profilo pubblico, Follow universale, ricerca (ora per singola parola, non più solo a frase intera), Feed, Categorie, Updates e messaggistica funzionano con dati reali. La navigazione del sito è coerente su ogni pagina e ogni larghezza di schermo, con un'area Impostazioni reale al suo interno — inclusa una nuova sezione Creator, con il controllo sulla notifica "nuovo follower" — e con Journeys e Journeyers finalmente due pagine vere invece di una scorciatoia verso la Home. Ogni punto del sito che mostra una persona, non solo un Journey, mostra ora la sua foto vera quando c'è.

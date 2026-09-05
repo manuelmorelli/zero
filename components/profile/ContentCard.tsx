@@ -20,6 +20,9 @@ type ContentCardProps = {
   /** Menu/azioni in alto a destra sulla foto (solo proprietario del profilo): anche questo fuori
    * dal <Link> per lo stesso motivo. */
   menu?: React.ReactNode;
+  /** Testo mostrato al centro al posto della foto quando `imageUrl` è null (es. i placeholder
+   * motivazionali del feed demo). Se assente, l'area resta un semplice sfondo sfumato. */
+  emptyMessage?: React.ReactNode;
 };
 
 /** Card "poster" del Profilo: foto sola sopra, titolo/categoria/punteggio sotto — stile diverso
@@ -35,6 +38,7 @@ export function ContentCard({
   trust,
   likeSlot,
   menu,
+  emptyMessage,
 }: ContentCardProps) {
   return (
     <div className="group relative block transition-transform duration-300 hover:-translate-y-1">
@@ -50,6 +54,10 @@ export function ContentCard({
             sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
+        ) : emptyMessage ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-surface-2 via-surface-2 to-black p-4 text-center">
+            {emptyMessage}
+          </div>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
         )}

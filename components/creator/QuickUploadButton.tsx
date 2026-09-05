@@ -2,11 +2,11 @@
 
 import { createContext, useActionState, useContext, useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { quickStartJourney } from "@/lib/actions/journey";
-import { createEpisodeVideoUploadUrl, quickCreateEpisode } from "@/lib/actions/episode";
+import { createQuickPosterUploadUrl, createQuickVideoUploadUrl, quickComposeEpisode } from "@/lib/actions/episode";
 import { createUpdateMediaUploadUrl, publishUpdate } from "@/lib/actions/update";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { readVideoDuration } from "@/lib/media/readVideoDuration";
+import { captureVideoFrame } from "@/lib/media/captureVideoFrame";
 import { ALLOWED_VIDEO_TYPES, MAX_UPDATE_VIDEO_DURATION_SEC, MAX_UPDATE_VIDEO_SIZE_BYTES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { POLL_MAX_OPTIONS, POLL_MIN_OPTIONS, POLL_OPTION_MAX_LENGTH, UPDATE_TEXT_MAX_LENGTH } from "@/lib/constants/updates";
@@ -17,10 +17,8 @@ type LinkableJourney = { id: string; title: string; episodes: { id: string; titl
 type UpdateKind = "TEXT" | "IMAGE" | "VIDEO" | "POLL" | "QUESTION";
 
 type QuickUploadProviderProps = {
-  /** Journey attivi (non archiviati) del creator. Un creator può averne più di uno in parallelo
-   * (vedi 00-project-context.md, sezione "Archiviazione del Journey"): con zero se ne crea uno al
-   * volo, con uno solo si salta dritti al video (nessuna frizione in più), con due o più si chiede
-   * prima a quale aggiungere il video. */
+  /** Journey attivi (non archiviati) del creator: mostrati come scelta "aggiungi a" nella
+   * schermata di composizione, con "+ Start a new Journey" sempre disponibile in coda. */
   journeys: Journey[];
   /** Journey "live" (Pubblicato o in Discovery) del creator, con i loro Episodi: usati solo per il
    * "Link to…" facoltativo di un Update — un Journey ancora in Bozza non ha una pagina pubblica a
@@ -29,13 +27,7 @@ type QuickUploadProviderProps = {
   children: React.ReactNode;
 };
 
-type Step = "choice" | "journey" | "picker" | "video" | "details" | "updateType" | "updateForm";
-
-function initialJourneyStepFor(journeys: Journey[]): Step {
-  if (journeys.length === 0) return "journey";
-  if (journeys.length === 1) return "video";
-  return "picker";
-}
+type Step = "choice" | "compose" | "updateType" | "updateForm";
 
 function todayInputValue(): string {
   return new Date().toISOString().slice(0, 10);
@@ -69,12 +61,10 @@ export function useQuickUpload(): QuickUploadContextValue | null {
 export function QuickUploadProvider({ journeys, linkableJourneys, children }: QuickUploadProviderProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("choice");
-  const [journeyId, setJourneyId] = useState<string | null>(journeys.length === 1 ? journeys[0].id : null);
   const [updateKind, setUpdateKind] = useState<UpdateKind | null>(null);
 
   function openChoice() {
     setStep("choice");
-    setJourneyId(journeys.length === 1 ? journeys[0].id : null);
     setUpdateKind(null);
     setOpen(true);
   }
@@ -89,10 +79,6 @@ export function QuickUploadProvider({ journeys, linkableJourneys, children }: Qu
     setOpen(false);
   }
 
-  // Un Journey appena creato al volo (step "journey") non ha ancora Capitoli: nessuna voce
-  // corrispondente in `journeys` (snapshot caricato dal server all'apertura della pagina).
-  const chapters = journeys.find((journey) => journey.id === journeyId)?.chapters ?? [];
-
   return (
     <QuickUploadContext.Provider value={{ openChoice, openPostUpdate }}>
       {children}
@@ -102,9 +88,6 @@ export function QuickUploadProvider({ journeys, linkableJourneys, children }: Qu
           step={step}
           setStep={setStep}
           journeys={journeys}
-          journeyId={journeyId}
-          setJourneyId={setJourneyId}
-          chapters={chapters}
           updateKind={updateKind}
           setUpdateKind={setUpdateKind}
           linkableJourneys={linkableJourneys}
@@ -136,9 +119,6 @@ function QuickUploadModal({
   step,
   setStep,
   journeys,
-  journeyId,
-  setJourneyId,
-  chapters,
   updateKind,
   setUpdateKind,
   linkableJourneys,
@@ -147,17 +127,12 @@ function QuickUploadModal({
   step: Step;
   setStep: (step: Step) => void;
   journeys: Journey[];
-  journeyId: string | null;
-  setJourneyId: (id: string) => void;
-  chapters: Chapter[];
   updateKind: UpdateKind | null;
   setUpdateKind: (kind: UpdateKind) => void;
   linkableJourneys: LinkableJourney[];
   onClose: () => void;
 }) {
   const router = useRouter();
-  const [videoKey, setVideoKey] = useState<string | null>(null);
-  const [videoDurationSec, setVideoDurationSec] = useState<number | null>(null);
 
   return (
     <div
@@ -165,16 +140,15 @@ function QuickUploadModal({
       onClick={onClose}
     >
       <div
-        className="flex max-h-full w-full max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-surface"
+        className={`flex max-h-full w-full flex-col overflow-hidden rounded-xl border border-border bg-surface ${
+          step === "compose" ? "max-w-2xl" : "max-w-sm"
+        }`}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">
             {step === "choice" && "What do you want to share?"}
-            {step === "picker" && "Which Journey?"}
-            {step === "journey" && "New Journey"}
-            {step === "video" && "New video"}
-            {step === "details" && "Add details"}
+            {step === "compose" && "New episode"}
             {step === "updateType" && "Post an Update"}
             {step === "updateForm" && UPDATE_FORM_TITLE[updateKind ?? "TEXT"]}
           </p>
@@ -191,44 +165,13 @@ function QuickUploadModal({
         <div className="overflow-y-auto p-5">
           {step === "choice" && (
             <ChoiceStep
-              onPickJourney={() => setStep(initialJourneyStepFor(journeys))}
+              onPickJourney={() => setStep("compose")}
               onPickUpdate={() => setStep("updateType")}
             />
           )}
-          {step === "picker" && (
-            <PickerStep
+          {step === "compose" && (
+            <ComposeStep
               journeys={journeys}
-              onPick={(id) => {
-                setJourneyId(id);
-                setStep("video");
-              }}
-              onStartNew={() => setStep("journey")}
-            />
-          )}
-          {step === "journey" && (
-            <JourneyStep
-              onCreated={(id) => {
-                setJourneyId(id);
-                setStep("video");
-              }}
-            />
-          )}
-          {step === "video" && journeyId && (
-            <VideoStep
-              journeyId={journeyId}
-              onUploaded={(key, durationSec) => {
-                setVideoKey(key);
-                setVideoDurationSec(durationSec);
-                setStep("details");
-              }}
-            />
-          )}
-          {step === "details" && journeyId && videoKey && (
-            <DetailsStep
-              journeyId={journeyId}
-              videoKey={videoKey}
-              durationSec={videoDurationSec}
-              chapters={chapters}
               onDone={() => {
                 onClose();
                 router.refresh();
@@ -294,294 +237,418 @@ function ChoiceStep({
   );
 }
 
-function PickerStep({
-  journeys,
-  onPick,
-  onStartNew,
-}: {
-  journeys: Journey[];
-  onPick: (journeyId: string) => void;
-  onStartNew: () => void;
-}) {
-  return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-base font-bold text-ink">Add this video to…</h2>
-        <p className="mt-1 text-sm text-ink-muted">Pick which Journey this episode belongs to.</p>
-      </div>
-
-      <div className="space-y-2">
-        {journeys.map((journey) => (
-          <button
-            key={journey.id}
-            type="button"
-            onClick={() => onPick(journey.id)}
-            className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-left text-sm font-medium text-ink transition-colors hover:border-ink-muted"
-          >
-            {journey.title}
-          </button>
-        ))}
-      </div>
-
-      <button
-        type="button"
-        onClick={onStartNew}
-        className="w-full rounded-full border border-border px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink-muted"
-      >
-        Start a new Journey
-      </button>
-    </div>
-  );
-}
-
-function JourneyStep({ onCreated }: { onCreated: (journeyId: string) => void }) {
+// Un'unica schermata per video, copertina, a quale Journey (esistente o nuovo) e didascalia:
+// prima erano quattro passaggi separati (scegli Journey / crea Journey / carica video / dettagli),
+// qui restano solo due gesti reali — scegli il video, poi Publish — come chiesto esplicitamente
+// da Manuel ("deve avvenire in due click come su Instagram"). Non usa useActionState perché tra un
+// click e l'altro servono passaggi asincroni intermedi lato client (estrarre il fotogramma di
+// copertina dal video, caricare la copertina scelta) prima di chiamare l'azione server finale.
+function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => void }) {
   const uid = useId();
-  const [state, formAction, pending] = useActionState(quickStartJourney, {
-    error: null,
-    journeyId: null,
-  });
 
-  useEffect(() => {
-    if (state.journeyId) onCreated(state.journeyId);
-    // Chiamato solo quando lo stato dell'azione cambia, non a ogni render di `onCreated`.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.journeyId]);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoKey, setVideoKey] = useState<string | null>(null);
+  const [durationSec, setDurationSec] = useState<number | null>(null);
+  const [videoProgress, setVideoProgress] = useState<number | null>(null);
+  const [videoError, setVideoError] = useState<string | null>(null);
 
-  return (
-    <form action={formAction} className="space-y-4">
-      <div>
-        <h2 className="text-base font-bold text-ink">Give your Journey a title</h2>
-        <p className="mt-1 text-sm text-ink-muted">
-          Every video belongs to a Journey — your story over time. Let&apos;s start it.
-        </p>
-      </div>
+  const [posterPreviewUrl, setPosterPreviewUrl] = useState<string | null>(null);
+  const [posterBlob, setPosterBlob] = useState<Blob | null>(null);
+  const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [scrubTime, setScrubTime] = useState(0);
 
-      <div>
-        <label htmlFor={`${uid}-title`} className="sr-only">
-          Journey title
-        </label>
-        <input
-          id={`${uid}-title`}
-          name="title"
-          type="text"
-          required
-          minLength={2}
-          maxLength={100}
-          autoFocus
-          placeholder="e.g. My road to running a marathon"
-          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-        />
-      </div>
+  const [journeyChoice, setJourneyChoice] = useState(journeys.length > 0 ? journeys[0].id : "");
+  const [newJourneyTitle, setNewJourneyTitle] = useState("");
 
-      {state.error && <p className="text-sm text-danger">{state.error}</p>}
+  const [title, setTitle] = useState("");
+  const [caption, setCaption] = useState("");
+  const [advanced, setAdvanced] = useState(false);
+  const [chapterId, setChapterId] = useState("");
+  const [occurredAt, setOccurredAt] = useState(todayInputValue());
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
-        {pending ? "Creating…" : "Continue"}
-      </button>
-    </form>
-  );
-}
-
-function VideoStep({
-  journeyId,
-  onUploaded,
-}: {
-  journeyId: string;
-  onUploaded: (videoKey: string, durationSec: number | null) => void;
-}) {
-  const [progress, setProgress] = useState<number | null>(null);
+  const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const posterInputRef = useRef<HTMLInputElement>(null);
+
+  const chapters = journeys.find((journey) => journey.id === journeyChoice)?.chapters ?? [];
+  const isNewJourney = journeyChoice === "";
+  const stillUploadingVideo = videoProgress !== null && videoProgress < 100;
+
+  function setPosterFromBlob(blob: Blob) {
+    setPosterBlob(blob);
+    setPosterFile(null);
+    setPosterPreviewUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return URL.createObjectURL(blob);
+    });
+  }
+
+  async function handleVideoChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
 
-    setError(null);
+    setVideoError(null);
 
     if (!ALLOWED_VIDEO_TYPES.has(file.type)) {
-      setError("Unsupported video format.");
+      setVideoError("Unsupported video format.");
       return;
     }
     if (file.size > MAX_VIDEO_SIZE_BYTES) {
-      setError(`Video is too large (max ${formatMB(MAX_VIDEO_SIZE_BYTES)}).`);
+      setVideoError(`Video is too large (max ${formatMB(MAX_VIDEO_SIZE_BYTES)}).`);
       return;
     }
 
-    setProgress(0);
+    setVideoFile(file);
+    setVideoProgress(0);
+
+    const [result, duration] = await Promise.all([
+      createQuickVideoUploadUrl(file.type),
+      readVideoDuration(file),
+    ]);
+    setDurationSec(duration);
+
+    if ("error" in result) {
+      setVideoError(result.error);
+      setVideoProgress(null);
+      return;
+    }
+
     try {
-      const [result, durationSec] = await Promise.all([
-        createEpisodeVideoUploadUrl(journeyId, "journey", file.type),
-        readVideoDuration(file),
-      ]);
-      if ("error" in result) {
+      await uploadFileWithProgress(result.uploadUrl, file, setVideoProgress);
+      setVideoKey(result.key);
+    } catch {
+      setVideoError("Upload failed. Please try again.");
+      setVideoProgress(null);
+      return;
+    }
+
+    // Copertina proposta in automatico da un fotogramma del video, come su Instagram: l'utente
+    // può comunque scorrere per sceglierne un altro momento, o caricare una sua foto.
+    const initialTime = duration ? Math.min(1, duration / 2) : 0;
+    setScrubTime(initialTime);
+    const frame = await captureVideoFrame(file, initialTime);
+    if (frame) setPosterFromBlob(frame);
+  }
+
+  function handleRemoveVideo() {
+    setVideoFile(null);
+    setVideoKey(null);
+    setDurationSec(null);
+    setVideoProgress(null);
+    setVideoError(null);
+    setScrubTime(0);
+    setPosterBlob(null);
+    setPosterFile(null);
+    setPosterPreviewUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return null;
+    });
+  }
+
+  async function handleScrub(event: React.ChangeEvent<HTMLInputElement>) {
+    const time = Number(event.target.value);
+    setScrubTime(time);
+    if (!videoFile) return;
+    const frame = await captureVideoFrame(videoFile, time);
+    if (frame) setPosterFromBlob(frame);
+  }
+
+  function handlePosterFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      setError("Unsupported image format.");
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setError(`Image is too large (max ${formatMB(MAX_IMAGE_SIZE_BYTES)}).`);
+      return;
+    }
+
+    setError(null);
+    setPosterFile(file);
+    setPosterBlob(null);
+    setPosterPreviewUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return URL.createObjectURL(file);
+    });
+  }
+
+  // Il bottone diventa cliccabile appena il video è pronto (caricato, non più in upload): titolo
+  // ed eventuale nome del nuovo Journey restano comunque obbligatori, ma vengono controllati al
+  // click (vedi handlePublish/quickComposeEpisode) invece di tenere il bottone grigio finché non
+  // sono compilati — più intuitivo per chi non capisce subito perché è disattivato.
+  const canPublish = Boolean(videoKey) && !stillUploadingVideo && !publishing;
+
+  async function handlePublish() {
+    if (!videoKey) return;
+
+    if (title.trim().length < 2) {
+      setError("Give this episode a title before publishing.");
+      return;
+    }
+    if (isNewJourney && newJourneyTitle.trim().length < 2) {
+      setError("Give your Journey a title before publishing.");
+      return;
+    }
+
+    setPublishing(true);
+    setError(null);
+
+    try {
+      let posterKey: string | undefined;
+      const posterSource = posterFile ?? posterBlob;
+      if (posterSource) {
+        const posterResult = await createQuickPosterUploadUrl(posterSource.type || "image/jpeg");
+        if ("error" in posterResult) {
+          setError(posterResult.error);
+          setPublishing(false);
+          return;
+        }
+        await uploadFileWithProgress(posterResult.uploadUrl, posterSource, () => {});
+        posterKey = posterResult.key;
+      }
+
+      const formData = new FormData();
+      if (isNewJourney) {
+        formData.set("newJourneyTitle", newJourneyTitle);
+      } else {
+        formData.set("journeyId", journeyChoice);
+      }
+      formData.set("title", title);
+      if (caption) formData.set("caption", caption);
+      formData.set("videoKey", videoKey);
+      if (posterKey) formData.set("posterKey", posterKey);
+      if (durationSec) formData.set("durationSec", String(durationSec));
+      if (chapterId) formData.set("chapterId", chapterId);
+      formData.set("occurredAt", occurredAt);
+
+      const result = await quickComposeEpisode({ error: null, done: false }, formData);
+      if (result.error) {
         setError(result.error);
-        setProgress(null);
+        setPublishing(false);
         return;
       }
-      await uploadFileWithProgress(result.uploadUrl, file, setProgress);
-      onUploaded(result.key, durationSec);
+      onDone();
     } catch {
-      setError("Upload failed. Please try again.");
-      setProgress(null);
+      setError("Something went wrong. Please try again.");
+      setPublishing(false);
     }
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 py-6 text-center">
-      <input
-        ref={inputRef}
-        type="file"
-        accept="video/*"
-        onChange={handleFileChange}
-        className="hidden"
-      />
+    <div className="sm:grid sm:grid-cols-[260px_1fr] sm:gap-6">
+      <input ref={videoInputRef} type="file" accept="video/*" onChange={handleVideoChange} className="hidden" />
+      <input ref={posterInputRef} type="file" accept="image/*" onChange={handlePosterFileChange} className="hidden" />
 
-      {progress === null ? (
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="flex w-full flex-col items-center gap-3 rounded-xl border-2 border-dashed border-border py-12 transition-colors hover:border-ink-muted"
-        >
-          <VideoIcon className="h-9 w-9 text-ink-muted" />
-          <span className="text-sm font-semibold text-ink">Select a video from your device</span>
-          <span className="text-xs text-ink-faint">Max {formatMB(MAX_VIDEO_SIZE_BYTES)}</span>
-        </button>
-      ) : (
-        <div className="flex w-full flex-col items-center gap-3 rounded-xl border border-border py-12">
-          <span className="text-2xl font-extrabold tracking-tight text-ink">{progress}%</span>
-          <span className="text-xs text-ink-muted">Uploading…</span>
-        </div>
-      )}
+      {/* Colonna sinistra: video e copertina. Su schermi stretti (telefono) torna a impilarsi
+          sopra la colonna destra — lì un po' di scroll resta comunque inevitabile. */}
+      <div className="space-y-3">
+        {!videoFile ? (
+          <button
+            type="button"
+            onClick={() => videoInputRef.current?.click()}
+            className="flex w-full flex-col items-center gap-3 rounded-xl border-2 border-dashed border-border py-12 transition-colors hover:border-ink-muted sm:h-full sm:justify-center sm:py-0"
+          >
+            <VideoIcon className="h-9 w-9 text-ink-muted" />
+            <span className="text-sm font-semibold text-ink">Select a video from your device</span>
+            <span className="text-xs text-ink-faint">Max {formatMB(MAX_VIDEO_SIZE_BYTES)}</span>
+          </button>
+        ) : stillUploadingVideo ? (
+          <div className="flex w-full flex-col items-center gap-3 rounded-xl border border-border py-10 sm:h-full sm:justify-center sm:py-0">
+            <span className="text-2xl font-extrabold tracking-tight text-ink">{videoProgress}%</span>
+            <span className="text-xs text-ink-muted">Uploading video…</span>
+          </div>
+        ) : (
+          <>
+            <div className="relative w-56">
+              {posterPreviewUrl ? (
+                // Anteprima locale (blob: URL), non ancora su R2: caricata solo al momento del Publish.
+                // Stessa proporzione 4:5 delle card episodio del profilo (ContentCard), solo più
+                // piccola, per restare compatti senza scroll.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={posterPreviewUrl} alt="" className="aspect-4/5 w-56 rounded-lg object-cover" />
+              ) : (
+                <div className="flex aspect-4/5 w-56 items-center justify-center rounded-lg bg-surface-2">
+                  <VideoIcon className="h-6 w-6 text-ink-muted" />
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={handleRemoveVideo}
+                aria-label="Remove video"
+                className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+              >
+                <CloseIcon className="h-3.5 w-3.5" />
+              </button>
+            </div>
 
-      {error && <p className="text-sm text-danger">{error}</p>}
-    </div>
-  );
-}
+            {durationSec !== null && durationSec > 0.2 && (
+              <div>
+                <label htmlFor={`${uid}-scrub`} className="text-xs font-medium text-ink-muted">
+                  Cover: drag to pick a moment
+                </label>
+                <input
+                  id={`${uid}-scrub`}
+                  type="range"
+                  min={0}
+                  max={Math.max(durationSec - 0.1, 0.1)}
+                  step={0.1}
+                  value={scrubTime}
+                  onChange={handleScrub}
+                  className="mt-1.5 w-full"
+                />
+              </div>
+            )}
 
-function DetailsStep({
-  journeyId,
-  chapters,
-  videoKey,
-  durationSec,
-  onDone,
-}: {
-  journeyId: string;
-  chapters: Chapter[];
-  videoKey: string;
-  durationSec: number | null;
-  onDone: () => void;
-}) {
-  const uid = useId();
-  const [state, formAction, pending] = useActionState(quickCreateEpisode, {
-    error: null,
-    done: false,
-  });
-  const [advanced, setAdvanced] = useState(false);
+            <button
+              type="button"
+              onClick={() => posterInputRef.current?.click()}
+              className="block text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
+            >
+              Or upload your own cover photo
+            </button>
+          </>
+        )}
 
-  useEffect(() => {
-    if (state.done) onDone();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.done]);
-
-  return (
-    <form action={formAction} className="space-y-4">
-      <input type="hidden" name="journeyId" value={journeyId} />
-      <input type="hidden" name="videoKey" value={videoKey} />
-      <input type="hidden" name="durationSec" value={durationSec ?? ""} />
-
-      <div>
-        <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
-          Title
-        </label>
-        <input
-          id={`${uid}-title`}
-          name="title"
-          type="text"
-          required
-          minLength={2}
-          maxLength={100}
-          autoFocus
-          placeholder="Give this episode a title"
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-        />
+        {videoError && <p className="text-sm text-danger">{videoError}</p>}
       </div>
 
-      <button
-        type="button"
-        onClick={() => setAdvanced((value) => !value)}
-        className="text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
-      >
-        {advanced ? "Hide options" : "More options (caption, chapter, date)"}
-      </button>
+      {/* Colonna destra: a quale Journey, titolo, didascalia, opzioni avanzate, Publish. */}
+      <div className="mt-4 space-y-4 sm:mt-0">
+        {journeys.length > 0 && (
+          <div>
+            <label htmlFor={`${uid}-journey`} className="text-sm font-medium text-ink-muted">
+              Add to
+            </label>
+            <select
+              id={`${uid}-journey`}
+              value={journeyChoice}
+              onChange={(event) => setJourneyChoice(event.target.value)}
+              className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            >
+              {journeys.map((journey) => (
+                <option key={journey.id} value={journey.id}>
+                  {journey.title}
+                </option>
+              ))}
+              <option value="">+ Start a new Journey</option>
+            </select>
+          </div>
+        )}
 
-      {/* I campi restano nel DOM anche nascosti (invece di smontarli), così il loro valore
-          di default viene comunque inviato quando "Altre opzioni" resta chiuso. */}
-      <div className={advanced ? "space-y-4" : "hidden"}>
+        {isNewJourney && (
+          <div>
+            <label htmlFor={`${uid}-new-journey`} className="text-sm font-medium text-ink-muted">
+              {journeys.length > 0 ? "New Journey title" : "Give your Journey a title"}
+            </label>
+            <input
+              id={`${uid}-new-journey`}
+              type="text"
+              required
+              minLength={2}
+              maxLength={100}
+              value={newJourneyTitle}
+              onChange={(event) => setNewJourneyTitle(event.target.value)}
+              placeholder="e.g. My road to running a marathon"
+              className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            />
+          </div>
+        )}
+
+        <div>
+          <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
+            Episode title
+          </label>
+          <input
+            id={`${uid}-title`}
+            type="text"
+            required
+            minLength={2}
+            maxLength={100}
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            placeholder="Give this episode a title"
+            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          />
+        </div>
+
         <div>
           <label htmlFor={`${uid}-caption`} className="text-sm font-medium text-ink-muted">
             Caption
           </label>
           <textarea
             id={`${uid}-caption`}
-            name="caption"
             rows={3}
             maxLength={10000}
+            value={caption}
+            onChange={(event) => setCaption(event.target.value)}
             placeholder="Tell what happened in this episode."
             className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
           />
         </div>
 
-        {chapters.length > 0 && (
+        <button
+          type="button"
+          onClick={() => setAdvanced((value) => !value)}
+          className="text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
+        >
+          {advanced ? "Hide options" : "More options (chapter, date)"}
+        </button>
+
+        <div className={advanced ? "space-y-4" : "hidden"}>
+          {chapters.length > 0 && (
+            <div>
+              <label htmlFor={`${uid}-chapter`} className="text-sm font-medium text-ink-muted">
+                Chapter
+              </label>
+              <select
+                id={`${uid}-chapter`}
+                value={chapterId}
+                onChange={(event) => setChapterId(event.target.value)}
+                className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+              >
+                <option value="">No chapter</option>
+                {chapters.map((chapter) => (
+                  <option key={chapter.id} value={chapter.id}>
+                    {chapter.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div>
-            <label htmlFor={`${uid}-chapter`} className="text-sm font-medium text-ink-muted">
-              Chapter
+            <label htmlFor={`${uid}-occurredAt`} className="text-sm font-medium text-ink-muted">
+              When it actually happened
             </label>
-            <select
-              id={`${uid}-chapter`}
-              name="chapterId"
-              defaultValue=""
+            <input
+              id={`${uid}-occurredAt`}
+              type="date"
+              value={occurredAt}
+              onChange={(event) => setOccurredAt(event.target.value)}
               className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-            >
-              <option value="">No chapter</option>
-              {chapters.map((chapter) => (
-                <option key={chapter.id} value={chapter.id}>
-                  {chapter.title}
-                </option>
-              ))}
-            </select>
+            />
           </div>
-        )}
-
-        <div>
-          <label htmlFor={`${uid}-occurredAt`} className="text-sm font-medium text-ink-muted">
-            When it actually happened
-          </label>
-          <input
-            id={`${uid}-occurredAt`}
-            name="occurredAt"
-            type="date"
-            defaultValue={todayInputValue()}
-            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-          />
         </div>
+
+        {error && <p className="text-sm text-danger">{error}</p>}
+
+        <button
+          type="button"
+          onClick={handlePublish}
+          disabled={!canPublish}
+          className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
+        >
+          {publishing ? "Publishing…" : "Publish"}
+        </button>
       </div>
-
-      {state.error && <p className="text-sm text-danger">{state.error}</p>}
-
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
-        {pending ? "Publishing…" : "Publish"}
-      </button>
-    </form>
+    </div>
   );
 }
 

@@ -52,7 +52,7 @@ export function ProfileHero({
     <section className="relative isolate w-full">
       <div className="absolute inset-x-0 top-0 -z-10 h-[22rem] overflow-hidden sm:h-[26rem] md:h-[29rem]">
         {coverUrl ? (
-          <Image src={coverUrl} alt="" fill sizes="100vw" className="object-cover" preload />
+          <Image src={coverUrl} alt="" fill sizes="100vw" quality={90} className="object-cover" preload />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
         )}

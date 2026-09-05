@@ -5,6 +5,7 @@ import {
   GetObjectCommand,
   HeadObjectCommand,
   DeleteObjectCommand,
+  CopyObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { VIDEO_EXTENSIONS } from "@/lib/constants/video";
@@ -70,4 +71,22 @@ export async function getImagePlaybackUrl(key: string): Promise<string> {
 
 export async function deleteImage(key: string): Promise<void> {
   await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key })).catch(() => {});
+}
+
+/** Duplica un'immagine già su R2 sotto una nuova chiave, senza farla ripassare dal browser. Usata
+ * dal caricamento veloce (vedi quickComposeEpisode in lib/actions/episode.ts) per dare a un
+ * Journey appena creato la stessa copertina già scelta per il suo primo episodio — una copia
+ * vera e propria, non la stessa chiave condivisa, così cancellare in seguito l'una non spezza
+ * l'altra (episodio e Journey hanno cicli di vita indipendenti). */
+export async function copyImage(sourceKey: string, destPrefix: string): Promise<string> {
+  const extension = sourceKey.split(".").pop();
+  const destKey = `${destPrefix}/${randomUUID()}${extension ? `.${extension}` : ""}`;
+  await s3.send(
+    new CopyObjectCommand({
+      Bucket: bucket,
+      CopySource: `${bucket}/${sourceKey}`,
+      Key: destKey,
+    })
+  );
+  return destKey;
 }

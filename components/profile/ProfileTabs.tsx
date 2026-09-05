@@ -14,7 +14,7 @@ type ProfileTabsProps = {
 
 export function ProfileTabs({ basePath, activeTab }: ProfileTabsProps) {
   return (
-    <div className="sticky top-12 z-40 py-1">
+    <div className="py-1">
       <div className="no-scrollbar mx-auto flex max-w-[1400px] gap-2.5 overflow-x-auto px-5 md:px-8">
         {TABS.map((tab) => {
           const isActive = tab.key === activeTab;
