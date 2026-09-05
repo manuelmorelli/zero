@@ -623,6 +623,17 @@ function UpdateTypeStep({ onPick }: { onPick: (kind: UpdateKind) => void }) {
   );
 }
 
+function CharCount({ value, max }: { value: string; max: number }) {
+  const remaining = max - value.length;
+  return (
+    <p
+      className={`mt-1 text-right text-xs ${remaining <= 20 ? "text-danger" : "text-ink-faint"}`}
+    >
+      {value.length}/{max}
+    </p>
+  );
+}
+
 function UpdateFormStep({
   kind,
   linkableJourneys,
@@ -639,6 +650,7 @@ function UpdateFormStep({
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
+  const [content, setContent] = useState("");
   const [linkChoice, setLinkChoice] = useState("");
   // Solo per Foto/Video: si può abbinare al massimo un extra interattivo, non un tipo a parte
   // (scelta fatta con Manuel per non forzare a scegliere tra "foto" e "sondaggio/domanda").
@@ -724,6 +736,8 @@ function UpdateFormStep({
             required
             maxLength={UPDATE_TEXT_MAX_LENGTH}
             autoFocus
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
             placeholder={
               kind === "POLL"
                 ? "Ask a question…"
@@ -733,6 +747,7 @@ function UpdateFormStep({
             }
             className="w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
           />
+          <CharCount value={content} max={UPDATE_TEXT_MAX_LENGTH} />
         </div>
       )}
 
@@ -757,6 +772,8 @@ function UpdateFormStep({
             rows={2}
             required={extra !== ""}
             maxLength={UPDATE_TEXT_MAX_LENGTH}
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
             placeholder={
               extra === "POLL"
                 ? "Ask a question…"
@@ -766,6 +783,7 @@ function UpdateFormStep({
             }
             className="w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
           />
+          <CharCount value={content} max={UPDATE_TEXT_MAX_LENGTH} />
         </div>
       )}
 
