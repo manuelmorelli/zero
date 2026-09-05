@@ -45,7 +45,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 ## Updates
 
 ☑ [Medium] Group multiple simultaneous Updates from the same creator instead of showing them as separate cards — already true by construction: the Stories row groups by creator (`storiesByCreator` map in `lib/discovery/stories.ts`), one circle per creator regardless of how many active Updates they have. The old card-based Home Feed this item originally referred to no longer exists (removed 2026-08-18, confirmed with Manuel — see `97_Lovable_Redesign_Checklist.md`).
-☐ [Medium] Add a live character counter to the Update composer (500-character limit) so creators can see remaining space while typing.
+☑ [Medium] Add a live character counter to the Update composer (500-character limit) so creators can see remaining space while typing — done 2026-09-06, `QuickUploadButton.tsx` (`CharCount`), red warning under 20 characters left.
 ☑ [Medium] Ask for confirmation before deleting an Update — done 2026-08-22. The Dashboard delete list this item originally referred to no longer exists (see "Ultimo task completato" in 99_Current_Project_Status.md); deleting now happens from the Update viewer itself (StoryViewer, owner-only), gated by a native confirm dialog.
 ☑ [Medium] Update viewer (StoryViewer) background is pure black, too close to the rest of the site's dark background — done: the overlay now uses a radial gradient (surface color fading to the base background) behind the card instead of a flat black backdrop.
 
