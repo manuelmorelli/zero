@@ -18,9 +18,9 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
   return (
     <Link
       href={`/journeys/${journey.id}`}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white/[0.02] transition-colors duration-300 hover:border-ember/40 hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
+      className="group block self-start transition-transform duration-300 hover:-translate-y-1"
     >
-      <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden">
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]">
         {journey.coverUrl ? (
           <Image
             src={journey.coverUrl}
@@ -38,15 +38,17 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col justify-center p-4">
+      <div className="mt-3">
         {journey.category && (
           <p className="text-[0.7rem] uppercase tracking-wider text-ink-faint">{journey.category}</p>
         )}
-        <h3 className="mt-1 text-xl font-bold tracking-tight text-ink">{journey.title}</h3>
+        <h3 className="mt-1 text-lg font-bold tracking-tight text-ink transition-colors group-hover:text-ember">
+          {journey.title}
+        </h3>
         {journey.description && (
-          <p className="mt-2 line-clamp-2 text-sm text-ink-muted">{journey.description}</p>
+          <p className="mt-1.5 line-clamp-2 text-sm text-ink-muted">{journey.description}</p>
         )}
-        <span className="mt-4 inline-flex w-fit items-center justify-center rounded-full bg-ink px-4 py-2.5 text-[0.8rem] font-semibold text-bg transition-colors group-hover:bg-ink-muted">
+        <span className="mt-3 inline-flex w-fit items-center justify-center rounded-full bg-ink px-4 py-2.5 text-[0.8rem] font-semibold text-bg transition-colors group-hover:bg-ink-muted">
           View Journey
         </span>
       </div>
