@@ -11,7 +11,7 @@ type AboutCardProps = {
 // piattaforma, decisione di prodotto esplicita per questa card.
 export function AboutCard({ name, bio, interests }: AboutCardProps) {
   return (
-    <div className="self-start rounded-2xl border border-border bg-white/[0.02] p-4">
+    <div className="self-start rounded-2xl border border-border bg-surface p-4">
       <h2 className="inline-flex items-center gap-1.5 text-sm font-semibold text-ember">
         <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
         Bio

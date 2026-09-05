@@ -101,7 +101,7 @@ export default async function CreatorDashboardPage() {
         <Reveal delayMs={60}>
           <DashboardPanel title="Your Journeys">
             {gridJourneys.length === 0 ? (
-              <p className="rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
+              <p className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-ink-muted">
                 You don&apos;t have an active Journey yet. Start one to begin sharing your story.
               </p>
             ) : (

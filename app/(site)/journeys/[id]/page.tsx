@@ -64,7 +64,7 @@ export default async function PublicJourneyPage({
 
       <div className="mx-auto max-w-[1400px] px-5 pb-10 pt-24 md:px-8">
         <Reveal>
-          <div className="grid gap-4 rounded-2xl border border-border bg-white/[0.02] p-4 md:grid-cols-2 md:p-5">
+          <div className="grid gap-4 rounded-2xl border border-border bg-surface p-4 md:grid-cols-2 md:p-5">
             <div className="relative aspect-video overflow-hidden rounded-xl border border-border bg-surface-2">
               {journeyCoverUrl ? (
                 <Image
@@ -198,7 +198,7 @@ function EpisodeRow({
       <Link
         href={`/journeys/${journeyId}/episodes/${episode.id}`}
         id={episode.id}
-        className="group flex w-full scroll-mt-24 items-center gap-3 rounded-xl border border-border bg-white/[0.02] p-2.5 text-left transition-colors hover:border-white/25 hover:bg-white/[0.05]"
+        className="group flex w-full scroll-mt-24 items-center gap-3 rounded-xl border border-border bg-surface p-2.5 text-left transition-colors hover:border-ink-muted hover:bg-surface-2"
       >
         <span className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:w-36">
           {episode.posterUrl || coverUrl ? (

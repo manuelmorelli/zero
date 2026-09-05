@@ -55,7 +55,7 @@ export function EpisodeList({
     <SortableContext items={episodes.map((episode) => episode.id)} strategy={verticalListSortingStrategy}>
       <div ref={setNodeRef} className="space-y-2">
         {rows.length === 0 && (
-          <p className="rounded-xl border border-border bg-surface p-5 text-sm text-ink-muted">
+          <p className="rounded-xl border border-border bg-surface-2 p-5 text-sm text-ink-muted">
             You haven&apos;t added any episodes yet.
           </p>
         )}

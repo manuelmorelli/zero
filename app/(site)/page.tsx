@@ -351,7 +351,7 @@ function HowItWorksCta() {
       <Reveal>
         <Link
           href="/how-it-works"
-          className="group flex items-center justify-between gap-4 rounded-xl border border-border bg-white/[0.02] px-5 py-4 transition-colors hover:border-ink-muted"
+          className="group flex items-center justify-between gap-4 rounded-xl border border-border bg-surface px-5 py-4 transition-colors hover:border-ink-muted"
         >
           <div className="flex min-w-0 items-center gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-surface-2">

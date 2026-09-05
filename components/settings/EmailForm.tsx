@@ -43,7 +43,7 @@ export function EmailForm({ currentEmail }: { currentEmail: string }) {
           required
           value={newEmail}
           onChange={(event) => setNewEmail(event.target.value)}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
         <p className="mt-1.5 text-xs text-ink-muted">
           We&apos;ll send a confirmation link to the new address before the change takes effect.

@@ -43,7 +43,7 @@ export function AccountDetailsForm({ name, username, bio, location }: AccountDet
           minLength={2}
           maxLength={100}
           defaultValue={name}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
       </div>
 
@@ -58,7 +58,7 @@ export function AccountDetailsForm({ name, username, bio, location }: AccountDet
           maxLength={30}
           placeholder="e.g. jane-doe"
           defaultValue={username ?? ""}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
       </div>
 
@@ -73,7 +73,7 @@ export function AccountDetailsForm({ name, username, bio, location }: AccountDet
           maxLength={100}
           placeholder="e.g. Lisbon, Portugal"
           defaultValue={location ?? ""}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
       </div>
 
@@ -88,7 +88,7 @@ export function AccountDetailsForm({ name, username, bio, location }: AccountDet
           maxLength={250}
           defaultValue={bio ?? ""}
           placeholder="Tell your story: who you are, what you're working on, why it matters."
-          className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
       </div>
 
