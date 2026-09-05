@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 const STACK_KEY = "zero-nav-stack";
 const MAX_STACK = 50;
+
+// useLayoutEffect non esiste lato server (React avvisa se lo si usa durante il render
+// sul server): su una pagina servita da Next questo componente viene comunque preparato
+// una prima volta sul server, quindi qui si sceglie l'uno o l'altro in base a dove gira.
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 // Un modulo JS viene rivalutato solo a un caricamento pagina vero e proprio (prima visita,
 // refresh, arrivo da un link esterno come Google), mai durante una navigazione client-side
@@ -45,7 +50,11 @@ export function BackButton({ className }: { className?: string }) {
   const pathname = usePathname();
   const [canGoBack, setCanGoBack] = useState(false);
 
-  useEffect(() => {
+  // useLayoutEffect invece di useEffect: applica il valore corretto prima che il browser
+  // disegni la pagina, così durante una transizione animata non si vede per un istante
+  // il pulsante nel suo stato vecchio (es. ancora visibile per un attimo in Home) prima
+  // che si aggiorni — con useEffect quella correzione arriva un frame troppo tardi.
+  useIsomorphicLayoutEffect(() => {
     const stack = freshDocumentLoad ? [] : readStack();
     freshDocumentLoad = false;
 

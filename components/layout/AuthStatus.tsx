@@ -1,13 +1,24 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 import { SignOutButton } from "@/components/common/SignOutButton";
 
 export function AuthStatus() {
   const { data, isPending } = useSession();
+  const [mounted, setMounted] = useState(false);
 
-  if (isPending) {
+  useEffect(() => {
+    // Il server non conosce mai la sessione: se il client ha già la sessione in cache,
+    // la prima resa lato client rischia di non combaciare con quella dello stesso
+    // istante sul server, un mismatch di hydration. Restare sullo scheletro fino a dopo
+    // il mount garantisce che la primissima resa combaci sempre con quella del server.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  if (!mounted || isPending) {
     return <div className="h-9 w-24" />;
   }
 
