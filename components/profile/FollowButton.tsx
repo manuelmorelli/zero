@@ -30,7 +30,7 @@ export function FollowButton({
         <span className="text-xs text-ember">{countLabel}</span>
         <Link
           href="/login"
-          className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-ember backdrop-blur-md transition-colors hover:bg-white/10"
+          className="rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-4 py-1.5 text-xs font-semibold text-ember backdrop-blur-md transition-colors hover:from-ember/15"
         >
           Follow
         </Link>
@@ -59,7 +59,7 @@ export function FollowButton({
         type="button"
         onClick={handleClick}
         disabled={isPending}
-        className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-ember backdrop-blur-md transition-colors hover:bg-white/10 disabled:opacity-50"
+        className="rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-4 py-1.5 text-xs font-semibold text-ember backdrop-blur-md transition-colors hover:from-ember/15 disabled:opacity-50"
       >
         {isFollowing ? "Following" : "Follow"}
       </button>

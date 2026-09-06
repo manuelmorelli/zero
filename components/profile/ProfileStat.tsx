@@ -20,7 +20,7 @@ export function Stat({
   if (onClick) {
     return (
       <li className="text-center">
-        <button type="button" onClick={onClick} className="w-full transition-opacity hover:opacity-75">
+        <button type="button" onClick={onClick} className="w-full transition duration-300 hover:scale-110 hover:brightness-125">
           {content}
         </button>
       </li>

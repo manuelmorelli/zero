@@ -23,7 +23,7 @@ export function ProfileTabs({ basePath, activeTab }: ProfileTabsProps) {
             <Link
               key={tab.key}
               href={href}
-              className={`shrink-0 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm backdrop-blur-md transition-colors ${
+              className={`shrink-0 rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-4 py-2 text-sm backdrop-blur-md transition-colors ${
                 isActive ? "text-ember" : "text-ink-muted hover:text-ink"
               }`}
             >

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { formatCompactNumber } from "@/lib/utils";
 import { ProfileAvatarStory } from "@/components/profile/ProfileAvatarStory";
 import { ProfileFollowStats } from "@/components/profile/ProfileFollowStats";
+import { ProfileTrustStat } from "@/components/profile/ProfileTrustStat";
 import { Stat } from "@/components/profile/ProfileStat";
 import type { CreatorStory } from "@/lib/discovery/stories";
 
@@ -95,8 +96,8 @@ export function ProfileHero({
         </div>
 
         <div className="mt-1.5 flex flex-wrap items-center justify-between gap-3 pb-4">
-          <ul className="grid shrink-0 grid-cols-4 gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 backdrop-blur-md">
-            <Stat label="Trust Score" value={trustScore.toString()} />
+          <ul className="grid shrink-0 grid-cols-4 gap-2 rounded-xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-3 py-2 backdrop-blur-md">
+            <ProfileTrustStat score={trustScore} />
             <Stat label="Journeys" value={formatCompactNumber(journeysCount)} />
             <ProfileFollowStats
               profileUserId={profileUserId}

@@ -171,7 +171,7 @@ export default async function PublicProfilePage({
               />
               <Link
                 href="/dashboard"
-                className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-ink backdrop-blur-md transition-colors hover:bg-white/10"
+                className="rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-5 py-2.5 text-sm font-semibold text-ink backdrop-blur-md transition-colors hover:from-ember/15"
               >
                 Dashboard
               </Link>

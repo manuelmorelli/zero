@@ -98,6 +98,19 @@ export function SideMenu() {
               }`}
               aria-hidden={!open}
             >
+              <div className="flex justify-end px-3 pt-3">
+                <button
+                  type="button"
+                  onClick={close}
+                  aria-label="Close menu"
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.75">
+                    <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+
               {isLoggedIn && (
                 <MenuSection title="You">
                   <MenuLink href={`/profile/${data.user.id}`} onClick={close}>
