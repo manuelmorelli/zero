@@ -13,12 +13,12 @@ const NAV_LINKS: NavLink[] = [
   { label: "Journeys", href: "/journeys" },
   { label: "Journeyers", href: "/journeyers" },
   { label: "What is Zero", href: "/what-is-zero" },
+  { label: "Algorithm", href: "/how-it-works" },
   { label: "Pricing", href: "/pricing" },
 ];
 
 const FOOTER_LINKS: NavLink[] = [
   { label: "About Zero", href: "/what-is-zero" },
-  { label: "How it works", href: "/how-it-works" },
   { label: "Contact us", href: "/contact" },
   { label: "Terms of Service", href: "/terms" },
   { label: "Privacy Policy", href: "/privacy" },

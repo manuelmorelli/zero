@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { label: "Journeys", href: "/journeys" },
   { label: "Journeyers", href: "/journeyers" },
   { label: "What is Zero", href: "/what-is-zero" },
+  { label: "Algorithm", href: "/how-it-works" },
   { label: "Pricing", href: "/pricing" },
 ];
 

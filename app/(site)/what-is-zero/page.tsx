@@ -10,6 +10,7 @@ import {
   Sparkles,
   type LucideIcon,
 } from "lucide-react";
+import Link from "next/link";
 import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
 import { Reveal } from "@/components/common/Reveal";
 
@@ -133,7 +134,16 @@ export default function WhatIsZeroPage() {
           </Reveal>
         </div>
 
-        <div className="mt-10 flex flex-wrap gap-3">
+        <Reveal>
+          <p className="mt-8 text-sm text-ink-muted">
+            Curious how the algorithm actually decides what to show?{" "}
+            <Link href="/how-it-works#algorithm" className="font-semibold text-ember hover:text-ember/80">
+              Know the Algorithm. Know Zero.
+            </Link>
+          </p>
+        </Reveal>
+
+        <div className="mt-6 flex flex-wrap gap-3">
           <ButtonPrimary href="/">Explore Journeys</ButtonPrimary>
           <ButtonSecondary href="/dashboard">Create Your Journey</ButtonSecondary>
         </div>
