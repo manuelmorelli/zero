@@ -2,16 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Play, Quote } from "lucide-react";
 import { Avatar } from "@/components/common/Avatar";
 import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
 import { StoryViewer } from "@/components/home/StoryViewer";
-import { heroSlides } from "@/lib/demo/heroSlides";
+import type { HeroSlide } from "@/lib/demo/heroSlides";
 import type { CreatorStory } from "@/lib/discovery/stories";
 
 const creators = ["Alex R.", "Sarah J.", "David L.", "Emma W.", "James T."];
 
 type HeroProps = {
+  /** Foto a rotazione: Journey reali con più punteggio quando ce ne sono, altrimenti le 4 foto
+   * demo (vedi lib/discovery/heroJourneys.ts e lib/demo/heroSlides.ts). */
+  slides: HeroSlide[];
   /** Updates dei creator seguiti: solo per chi ha fatto il sign in (vuoto per gli ospiti). */
   stories: CreatorStory[];
   /** Il proprio Update attivo, se si ha un profilo Creator: null per chi non ne ha uno (mai
@@ -20,25 +24,25 @@ type HeroProps = {
   ownStory: CreatorStory | null;
 };
 
-export function Hero({ stories, ownStory }: HeroProps) {
+export function Hero({ slides, stories, ownStory }: HeroProps) {
   const [active, setActive] = useState(0);
   const [openStoryIndex, setOpenStoryIndex] = useState<number | null>(null);
   const [ownStoryOpen, setOwnStoryOpen] = useState(false);
 
   useEffect(() => {
     const id = window.setInterval(() => {
-      setActive((prev) => (prev + 1) % heroSlides.length);
+      setActive((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => window.clearInterval(id);
-  }, []);
+  }, [slides.length]);
 
-  const slide = heroSlides[active] ?? heroSlides[0]!;
+  const slide = slides[active] ?? slides[0]!;
 
   return (
     <section className="relative overflow-hidden">
       {/* Foto cinematografica: a schermo intero su mobile, colonna destra su desktop */}
       <div className="absolute inset-0">
-        {heroSlides.map((item, index) => (
+        {slides.map((item, index) => (
           <Image
             key={item.alt}
             src={item.image}
@@ -174,16 +178,13 @@ export function Hero({ stories, ownStory }: HeroProps) {
           )}
         </div>
 
-        {/* Citazione sopra la foto, allineata alla riga dei bottoni */}
+        {/* Card sopra la foto, allineata alla riga dei bottoni: Journey reale se disponibile
+         * (cliccabile, porta alla sua pagina), altrimenti la citazione demo. */}
         <div className="relative flex md:col-start-2 md:row-start-2 md:justify-end md:self-start">
           <div className="w-full md:max-w-[22rem]">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-md">
-              <Quote className="h-3.5 w-3.5 text-ember" aria-hidden="true" />
-              <p className="mt-2 text-xs leading-relaxed text-ink/90">{slide.quote}</p>
-              <p className="mt-2 text-[0.65rem] text-ink-muted">&mdash; {slide.author}</p>
-            </div>
+            <HeroSlideCard slide={slide} />
             <div className="mt-2.5 flex items-center gap-2 md:justify-end">
-              {heroSlides.map((item, index) => (
+              {slides.map((item, index) => (
                 <button
                   key={item.alt}
                   type="button"
@@ -217,5 +218,32 @@ export function Hero({ stories, ownStory }: HeroProps) {
         />
       )}
     </section>
+  );
+}
+
+/** Contenuto testuale sopra la foto in Hero: un vero Journey (cliccabile) quando disponibile,
+ * altrimenti la citazione demo di fallback (vedi lib/demo/heroSlides.ts). */
+function HeroSlideCard({ slide }: { slide: HeroSlide }) {
+  if (slide.kind === "demo") {
+    return (
+      <div className="rounded-xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-md">
+        <Quote className="h-3.5 w-3.5 text-ember" aria-hidden="true" />
+        <p className="mt-2 text-xs leading-relaxed text-ink/90">{slide.quote}</p>
+        <p className="mt-2 text-[0.65rem] text-ink-muted">&mdash; {slide.author}</p>
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={`/journeys/${slide.id}`}
+      className="block rounded-xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-md transition-colors hover:border-ember/40"
+    >
+      {slide.category && (
+        <p className="text-[0.6rem] uppercase tracking-[0.2em] text-ember">{slide.category}</p>
+      )}
+      <p className="mt-1.5 text-sm leading-snug font-semibold text-ink">{slide.title}</p>
+      <p className="mt-1.5 text-[0.65rem] text-ink-muted">by {slide.creatorName}</p>
+    </Link>
   );
 }

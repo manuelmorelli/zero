@@ -26,6 +26,8 @@ import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
 import { getFollowedCreatorsStories, getOwnStory } from "@/lib/discovery/stories";
 import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
+import { getHeroJourneys } from "@/lib/discovery/heroJourneys";
+import { demoHeroSlidesWithKind, type HeroSlide } from "@/lib/demo/heroSlides";
 import { getDiscoveringNowJourneys, type DiscoveringNowItem } from "@/lib/discovery/discoveringNow";
 import { getContinueJourneys } from "@/lib/discovery/continueJourneys";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
@@ -68,6 +70,7 @@ export default async function Home() {
     latestVideos,
     topJourneys,
     discoveringNow,
+    heroJourneys,
   ] = await Promise.all([
     getFollowedCreatorsStories({ userId }),
     getOwnStory({ userId }),
@@ -80,6 +83,7 @@ export default async function Home() {
     // Nessuna personalizzazione: "Discovering Now" mostra tutti i Journey in Discovery Phase a
     // chiunque, loggato o no, indipendentemente da interessi o creator seguiti (08_Algorithm.md).
     getDiscoveringNowJourneys(10),
+    getHeroJourneys(4),
   ]);
 
   // DEMO DATA - replace when real data available: placeholder realistici per le sezioni
@@ -93,11 +97,23 @@ export default async function Home() {
   const displayedStories = creatorStories.length > 0 ? creatorStories : DEMO_STORIES;
   const displayedRecommendedJourneys = recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS.slice(0, 5);
   const displayedRecommendedCreators = recommendedCreators.length > 0 ? recommendedCreators : DEMO_CREATORS;
+  const heroSlides: HeroSlide[] =
+    heroJourneys.length > 0
+      ? heroJourneys.map((journey) => ({
+          kind: "journey" as const,
+          id: journey.id,
+          image: journey.coverUrl!,
+          alt: journey.title,
+          title: journey.title,
+          category: journey.category,
+          creatorName: journey.creatorName,
+        }))
+      : demoHeroSlidesWithKind;
 
   return (
     <main>
       {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
-      <Hero stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
+      <Hero slides={heroSlides} stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
 
       <div id="discover">
         <DiscoveringNow journeys={displayedDiscoveringNow} />

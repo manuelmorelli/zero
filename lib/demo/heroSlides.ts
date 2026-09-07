@@ -1,13 +1,26 @@
-export type HeroSlide = {
+export type DemoHeroSlide = {
+  kind: "demo";
   image: string;
   alt: string;
   quote: string;
   author: string;
 };
 
-// DEMO DATA - replace when real data available: Journey in evidenza da mostrare a rotazione in
-// Hero, in attesa di un meccanismo reale di selezione dei Journey del momento per questo slot.
-export const heroSlides: HeroSlide[] = [
+export type JourneyHeroSlide = {
+  kind: "journey";
+  id: string;
+  image: string;
+  alt: string;
+  title: string;
+  category: string | null;
+  creatorName: string;
+};
+
+export type HeroSlide = DemoHeroSlide | JourneyHeroSlide;
+
+// DEMO DATA - fallback per quando non esiste ancora nessun Journey reale con una foto di
+// copertina (vedi lib/discovery/heroJourneys.ts, che fornisce i dati reali quando disponibili).
+const demoHeroSlides: Omit<DemoHeroSlide, "kind">[] = [
   {
     image:
       "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=1920&q=80",
@@ -37,3 +50,8 @@ export const heroSlides: HeroSlide[] = [
     author: "Olivia H.",
   },
 ];
+
+export const demoHeroSlidesWithKind: DemoHeroSlide[] = demoHeroSlides.map((slide) => ({
+  kind: "demo",
+  ...slide,
+}));
