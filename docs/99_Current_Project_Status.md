@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.45"
+version: "1.46"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -258,7 +258,7 @@ Iniziata: upload reale e player interno fatti (vedi "Funzionalità implementate"
 
 - ✅ **Video Upload** — upload diretto del file dal dispositivo a Cloudflare R2 (URL firmati, nessun bucket pubblico), limite 1GB verificato lato server, sostituisce il vecchio link esterno temporaneo.
 - ✅ **Internal Video Player** — pagina Player dedicata (`/journeys/[id]/episodes/[episodeId]`, `components/journey/EpisodePlayer.tsx`) con controlli costruiti su misura (seek bar, play/pausa, volume, schermo intero) e sidebar "Up next"; sostituisce il precedente `<video controls>` nativo aperto in un overlay dentro la Pagina Journey.
-- ⬜ **Video Processing** — non iniziato (es. transcodifica, thumbnail automatiche): non richiesto da questo task, il player usa il file caricato così com'è.
+- 🟡 **Video Processing** — versioni leggere del video per connessioni lente (piano condiviso con Manuel il 2026-09-07): codice completo (`lib/stream.ts`, webhook `app/api/webhooks/stream`, controllo giornaliero di riserva `app/api/cron/sync-light-videos`, player con fallback automatico all'originale in `EpisodePlayer.tsx`), verificato senza regressioni sul video originale (build/typecheck/lint puliti, video R2 testato con Playwright). Resta da fare solo fuori dal codice: Manuel deve abilitare Cloudflare Stream sull'account Cloudflare esistente, generare l'API token e registrare il webhook (istruzioni in `.env.example`) — finché quelle variabili sono vuote l'app si comporta esattamente come prima, nessun video processato.
 - ✅ **Progress Tracking** — posizione di riproduzione e completamento tracciati per singolo episodio (`EpisodeProgress`), non solo a livello di Journey; vedi "Ripresa esatta del video e completamento per episodio" più sopra.
 - ⬜ **Most Completed Journeys** — la base dati per un vero completamento esiste ora (`EpisodeProgress`), ma la sezione stessa (classifica dei Journey per tasso di completamento) non è ancora stata costruita.
 - ✅ **Advanced Continue Journey** — il player riprende dal secondo esatto in cui l'utente aveva interrotto la visione (non solo dall'ultimo episodio), tranne per un episodio già completato, che riparte sempre dall'inizio per scelta di prodotto.

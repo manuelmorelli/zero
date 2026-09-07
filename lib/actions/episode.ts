@@ -16,6 +16,7 @@ import {
   newImageKey,
   newVideoKey,
 } from "@/lib/r2";
+import { deleteLightVideo, startLightVideoEncoding } from "@/lib/stream";
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
@@ -161,6 +162,21 @@ async function assertVideoWithinLimit(videoKey: string | undefined): Promise<str
   return null;
 }
 
+// Avvia in background la creazione della versione leggera (Cloudflare Stream, vedi lib/stream.ts):
+// aspetta solo la chiamata che mette il video in coda, mai l'elaborazione vera e propria (richiede
+// minuti) — non rallenta percettibilmente la pubblicazione, stesso principio di notifyNewEpisode
+// qui sotto. Se Stream non è configurato o la chiamata fallisce, non solleva errori: l'episodio
+// resta semplicemente sul video originale finché lightVideoStatus non passa a READY.
+async function maybeStartLightVideoEncoding(episodeId: string, videoKey: string): Promise<void> {
+  const streamVideoId = await startLightVideoEncoding(videoKey);
+  if (streamVideoId) {
+    await prisma.episode.update({
+      where: { id: episodeId },
+      data: { lightVideoId: streamVideoId, lightVideoStatus: "PENDING", lightVideoPlaybackUrl: null },
+    });
+  }
+}
+
 // Logica di creazione condivisa tra `createEpisode` (form della Dashboard, termina con un
 // redirect) e `quickCreateEpisode` (flusso rapido dal pulsante "+" globale, resta in un riquadro
 // sopra la pagina corrente e quindi non può fare un redirect): stessa validazione dimensione video
@@ -214,6 +230,10 @@ async function insertEpisode(
       episodeId: episode.id,
       episodeTitle: episode.title,
     });
+  }
+
+  if (published && episode.videoKey) {
+    await maybeStartLightVideoEncoding(episode.id, episode.videoKey);
   }
 
   revalidatePath(`/dashboard/journeys/${journey.id}`);
@@ -408,6 +428,17 @@ export async function updateEpisode(
     await deleteImage(episode.posterKey);
   }
 
+  // La versione leggera precedente (se esisteva) puntava al video ormai sostituito: va cancellata
+  // su Stream, altrimenti resta a occupare spazio fatturato senza che nessun episodio la usi più.
+  if (replacesVideo && episode.lightVideoId) {
+    await deleteLightVideo(episode.lightVideoId);
+  }
+  // Riparte da zero se il video è cambiato, oppure si avvia per la prima volta se l'episodio
+  // passa da Bozza a Pubblicato senza mai aver avuto una versione leggera in corso.
+  if (published && newVideoKeyValue && (replacesVideo || episode.lightVideoStatus === null)) {
+    await maybeStartLightVideoEncoding(episode.id, newVideoKeyValue);
+  }
+
   revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
   if (episode.chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${episode.chapterId}`);
   if (chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${chapterId}`);
@@ -434,6 +465,7 @@ export async function deleteEpisode(formData: FormData): Promise<void> {
 
   if (episode.videoKey) await deleteVideo(episode.videoKey);
   if (episode.posterKey) await deleteImage(episode.posterKey);
+  if (episode.lightVideoId) await deleteLightVideo(episode.lightVideoId);
 
   revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
   if (episode.chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${episode.chapterId}`);

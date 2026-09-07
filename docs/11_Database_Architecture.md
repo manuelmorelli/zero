@@ -1,7 +1,7 @@
 ---
 title: Database Architecture
 doc_id: 11-database-architecture
-version: "3.5"
+version: "3.6"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -94,6 +94,8 @@ Le relazioni tra le entità devono:
 `Like` punta a un Episodio o a un Update tramite `targetType` (`EPISODE`/`UPDATE`) + `targetId`, un solo modello invece di due tabelle quasi identiche una per ciascun target — nessuna relation diretta verso Episode/Update, per questo `targetId` non è vincolato da una foreign key (migrazione `20260804165919_profile_richness`, che aggiunge anche `User.coverUrl`, `User.location` e `Journey.viewsCount`).
 
 L'avanzamento di visione si legge su due livelli separati, non su un unico modello: `JourneyProgress` (una riga per utente+Journey) resta solo il puntatore all'ultimo episodio visto (`currentEpisodeId`), usato da "Continua il tuo Journey"; la posizione video e il completamento vivono per singolo episodio in `EpisodeProgress` (una riga per utente+episodio, `positionSec` + `completedAt`), perché un Journey con più episodi richiede di sapere quali episodi specifici sono stati completati, non solo l'ultimo aperto (migrazione `20260809103604_episode_progress`, che rimuove anche `positionSec`/`completedAt` da `JourneyProgress`, rimasti inutilizzati finché non esisteva un player capace di scriverli).
+
+`Episode` ha tre campi in più per la versione leggera del video (migrazione `20260907125348_episode_light_video`, piano condiviso con Manuel il 2026-09-07): `lightVideoStatus` (enum `LightVideoStatus`: `PENDING`/`READY`/`FAILED`, `null` = mai avviata), `lightVideoId` (uid del video su Cloudflare Stream) e `lightVideoPlaybackUrl` (URL manifest HLS, valorizzato solo a `READY`). Il video originale (`videoKey`) non viene mai toccato: questi campi descrivono solo una copia aggiuntiva per lo streaming adattivo, generata in background dopo la pubblicazione (vedi `lib/stream.ts` e `app/api/webhooks/stream/route.ts`).
 
 `Update` si è esteso da solo testo a cinque formati (migrazione `20260812083850_updates_rich_media`): `mediaKey` porta la chiave R2 di una foto o di un video (stesso principio già in uso per `Episode.videoKey`), `linkedJourneyId`/`linkedEpisodeId` sono foreign key facoltative verso un Journey o Episodio del creator. Quattro tabelle nuove, tutte con cancellazione a cascata quando l'Update a cui appartengono viene eliminato (scaduto o rimosso a mano dal creator), coerente con "contenuti temporanei": `PollOption` (opzioni di un sondaggio) e `UpdateVote` (un voto per utente+Update, vincolo di unicità); `UpdateAnswer` (risposta libera a una Domanda, privata, un utente può risponderne una sola per Update); `UpdateReaction` (un'emoji per utente+Update, il tocco più recente sostituisce il precedente). Una quinta tabella, `UpdateView`, non ha cascata particolare da segnalare oltre a quella dallo stesso Update: registra chi ha già visto quale Update, base per il contorno "visto/non visto" della riga di Stories in Home (`14_UI_Pages.md`). Nessuna di queste tabelle duplica dati già presenti altrove: `UpdateVote`/`UpdateAnswer`/`UpdateReaction`/`UpdateView` puntano sempre a `Update` + `User` con foreign key dirette, non un `targetType`/`targetId` polimorfico come `Like` — a differenza di `Like`, qui il target è sempre e solo l'Update, non serve distinguere tra entità diverse.
 

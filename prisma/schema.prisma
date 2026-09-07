@@ -44,6 +44,13 @@ enum JourneyStatus {
   ARCHIVED
 }
 
+// Stato della versione leggera del video di un Episodio su Cloudflare Stream, vedi lib/stream.ts.
+enum LightVideoStatus {
+  PENDING
+  READY
+  FAILED
+}
+
 enum UpdateType {
   TEXT
   IMAGE
@@ -326,6 +333,15 @@ model Episode {
   // Durata del video in secondi, letta automaticamente dal browser al caricamento
   // (vedi lib/media/readVideoDuration.ts) — non richiede transcodifica lato server.
   durationSec Int?
+  // Versione leggera del video (Cloudflare Stream), generata in background dopo la pubblicazione
+  // per chi ha connessione lenta (vedi lib/stream.ts). Il file originale su R2 (videoKey) non viene
+  // mai toccato: questi campi descrivono solo una copia aggiuntiva usata per lo streaming adattivo.
+  // null = mai avviata (nessun video, oppure Stream non ancora configurato); PENDING = in
+  // elaborazione su Cloudflare; READY = pronta, lightVideoPlaybackUrl valorizzato; FAILED = errore,
+  // il player resta sul video originale.
+  lightVideoStatus      LightVideoStatus?
+  lightVideoId          String? // uid del video su Cloudflare Stream, serve per cancellarlo se il video originale viene sostituito
+  lightVideoPlaybackUrl String? // URL manifest HLS restituito da Cloudflare Stream, valorizzato solo quando lightVideoStatus = READY
   caption     String?
   // Data reale in cui l'evento è accaduto, separata dall'ordine narrativo
   // (vedi 05_Journey.md: ordine narrativo e cronologia reale sono informazioni distinte).

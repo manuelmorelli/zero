@@ -46,7 +46,7 @@ const questions = [
 const uploadTips = [
   "Export as MP4 — it works everywhere and keeps quality high.",
   "Upload your original file, not a copy you already posted somewhere else — every re-upload loses a little quality.",
-  "Keep your original resolution (1080p or higher) — Zero never compresses your video, so what you upload is exactly what people see.",
+  "Keep your original resolution (1080p or higher) — Zero never compresses or replaces your original file, it always stays exactly as you uploaded it.",
 ];
 
 export default function HowItWorksPage() {

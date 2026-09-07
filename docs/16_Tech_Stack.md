@@ -1,7 +1,7 @@
 ---
 title: Tech Stack
 doc_id: 16-tech-stack
-version: "3.0"
+version: "3.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -98,6 +98,10 @@ Ogni tecnologia viene adottata solo se contribuisce concretamente alla qualità 
 ## Storage
 
 - Cloudflare R2
+
+## Video
+
+- Cloudflare Stream — versioni leggere dei video per connessioni lente, generate in background a partire dal file originale su R2 (mai sostituito)
 
 ## Pagamenti
 

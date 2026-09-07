@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/purge-accounts",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/sync-light-videos",
+      "schedule": "0 4 * * *"
     }
   ]
 }

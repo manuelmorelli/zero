@@ -44,6 +44,9 @@ export default async function EpisodePlayerPage({
   const trustScore = computeTrustScore(await getCreatorTrustInputs(journey.creator.id, followersCount));
   const currentNumber = flatEpisodes.find((item) => item.id === episodeId)?.number ?? 1;
   const videoSrc = episode.videoKey ? await getVideoPlaybackUrl(episode.videoKey) : null;
+  // Versione leggera per connessioni lente (Cloudflare Stream): usata solo quando pronta, il
+  // player ricade sull'originale (videoSrc) finché non lo è — vedi components/journey/EpisodePlayer.
+  const lightVideoSrc = episode.lightVideoStatus === "READY" ? episode.lightVideoPlaybackUrl : null;
   const [journeyCoverUrl, episodePosterUrl] = await Promise.all([
     resolveCoverUrl(journey.coverUrl),
     episode.posterKey ? getImagePlaybackUrl(episode.posterKey) : Promise.resolve(null),
@@ -65,6 +68,7 @@ export default async function EpisodePlayerPage({
             caption: episode.caption,
             number: currentNumber,
             videoSrc,
+            lightVideoSrc,
             posterUrl: episodePosterUrl ?? journeyCoverUrl,
           }}
           initialPositionSec={progress?.positionSec ?? 0}
