@@ -155,7 +155,7 @@ export default async function PublicJourneyPage({
         </Reveal>
 
         <section className="mt-5">
-          <h2 className="text-sm font-bold tracking-tight">Episodes</h2>
+          <h2 className="text-base font-bold tracking-tight">Episodes</h2>
           {flatEpisodes.length === 0 ? (
             <p className="mt-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
               This Journey doesn&apos;t have any episodes yet.

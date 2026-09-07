@@ -40,7 +40,7 @@ export function JourneyerCard({ journeyer, className }: JourneyerCardProps) {
         </div>
 
         <div className="mt-3">
-          <h3 className="truncate text-sm font-bold leading-tight text-ink transition-colors group-hover:text-ember">
+          <h3 className="truncate text-base font-bold leading-tight text-ink transition-colors group-hover:text-ember">
             {name}
           </h3>
           <p className="mt-1.5 truncate text-xs text-ink-muted">

@@ -40,7 +40,7 @@ export function VideoCard({ video }: VideoCardProps) {
         <CategoryIcon category={category} className="absolute left-2.5 top-2.5 h-7 w-7" />
       </div>
 
-      <h3 className="mt-3 truncate text-sm font-semibold transition-colors group-hover:text-ember">{title}</h3>
+      <h3 className="mt-3 truncate text-base font-semibold transition-colors group-hover:text-ember">{title}</h3>
       <div className="mt-2 flex items-center justify-between gap-2 text-xs text-ink-muted">
         <span className="flex min-w-0 items-center gap-2">
           <Avatar name={creatorName} />

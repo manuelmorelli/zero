@@ -48,7 +48,7 @@ export function HorizontalScrollRow({ id, title, subtitle, children }: Horizonta
   return (
     <section id={id} className="scroll-mt-24">
       <div>
-        <h2 className="text-sm font-bold tracking-tight">{title}</h2>
+        <h2 className="text-base font-bold tracking-tight">{title}</h2>
         {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}
       </div>
 
