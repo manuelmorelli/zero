@@ -37,7 +37,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 ☑ [Medium] Improve Episode presentation inside Journeys — done, episode rows aligned to the Lovable glass style; the one real content gap left (missing duration) is tracked separately below.
 ☑ [Medium] Improve overall visual hierarchy of creator pages — done 2026-08-24: draft-episode count on the Dashboard Journey grid now stands out in ember (was blended into the same muted line as chapter/episode counts, despite being the one actionable number); the status badge on the Journey management page now uses the same ember-for-live styling as the Dashboard grid (was flat gray in every state, inconsistent with the grid's own badge). Small, contained change — no new components, no database changes.
 ☑ [Medium] Show episode duration on the public Journey page's episode rows — done; also repositioned below the title/other episode metadata instead of at the far right of the row (was colliding with the floating chat/notification/+ buttons), 2026-09-04.
-☐ [Medium] Review all edit options available after publishing — Journey, Episode, Chapter, image and video uploads. Manuel wants creators to have as much freedom as possible to edit content even after it has been posted, not only while in draft. For personal images (avatar, cover, etc.) this should include a real positioning editor: move, zoom in/out, flip — a level of control other social platforms don't offer. Raised by Manuel 2026-09-06, not designed in detail yet. Partial progress 2026-09-07: zoom out added to the existing crop editor (`ImageCropper.tsx`, min zoom 0.5 instead of 1-only-in) for Journey cover, avatar and profile cover — move was already free on both axes. Flip and the broader "edit anything after publishing" scope are still untouched.
+☑ [Medium] Review all edit options available after publishing — Journey, Episode, Chapter, image and video uploads. Manuel wants creators to have as much freedom as possible to edit content even after it has been posted, not only while in draft. For personal images (avatar, cover, etc.) this should include a real positioning editor: move, zoom in/out, flip — a level of control other social platforms don't offer. Raised by Manuel 2026-09-06; partial progress 2026-09-07 (zoom out added to the existing crop editor, `ImageCropper.tsx`, min zoom 0.5 instead of 1-only-in, for Journey cover, avatar and profile cover — move was already free on both axes). Manuel confirmed done as-is on 2026-09-07.
 
 ## Upload
 
@@ -55,7 +55,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ## Navigation
 
-☐ [Medium] Improve navigation consistency across the application — re-checked 2026-09-04: feels fine to Manuel today, kept open pending a more thorough joint review to pin down what (if anything) still needs work.
+☑ [Medium] Improve navigation consistency across the application — re-checked 2026-09-04: felt fine to Manuel already; confirmed done, no further review needed, on 2026-09-07.
 
 ## Product Decisions
 
@@ -68,9 +68,9 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 
 ☑ [High] Align the interface with the Lovable design prototype — done, all 5 phases of `97_Lovable_Redesign_Checklist.md` closed and committed (checked 2026-08-24).
 ☑ [Medium] Improve spacing, typography, cards, empty states and visual consistency across the application — done 2026-09-04: page titles, section headings, empty-state cards and container widths unified across Settings/Dashboard/Journeys/Journeyers/Search/Profile/Discover toward the most compact style already present in the site, no in-between sizes invented.
-☐ [Medium] Review all pages for a more modern and premium appearance — still open, re-confirmed by Manuel 2026-09-04.
+☑ [Medium] Review all pages for a more modern and premium appearance — open as of 2026-09-04, confirmed done by Manuel on 2026-09-07 (includes the sitewide ~15% scale reduction and title-size fixes across Home/Journeys/Journeyers/Profile/Journey page).
 ☑ [Medium] Review color alternation across the site (which background shade — `bg`/`surface`/`surface-2` — follows which) — done 2026-09-06: fixed inconsistent glass (`bg-white/*`) backgrounds outside the bg/surface/surface-2 scale on Profile (`AboutCard`), Home (`HowItWorksCta`) and Journey detail (hero card, episode rows); aligned Settings text inputs and Dashboard empty-states to `surface-2` where they were flattened against their `surface` container (commit `fe29b89`). Glass kept where it overlays a photo (Hero quote, Journey card status badge) — that usage is intentional, not an inconsistency.
-☐ [Medium] Review Home payoff/copy (no decisions taken yet on which lines to change).
+☑ [Medium] Review Home payoff/copy — confirmed done by Manuel on 2026-09-07, no copy changes needed.
 ☐ [Medium] Design a mechanism to select real Journeys/creators for the Hero rotation, replacing the 4 fake demo slides in `lib/demo/heroSlides.ts` (starting idea: reuse the existing Journey Score ranking that already powers "Top Journeys", limited to Journeys with a cover photo — not designed in detail yet).
 ☑ [Medium] Extend the "orange glass" card style (already used on What is Zero) to the public Profile's other glass containers — done 2026-09-07: Bio card, stats bar, Overview/Journeys tabs, Edit profile/Dashboard/Share/Follow/Message buttons. The white/neutral glass elsewhere in the site (Landing Hero, Update reactions, episode chips) hasn't been touched yet.
 
