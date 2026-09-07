@@ -5,7 +5,6 @@ type FeaturedJourneySectionProps = {
   journey: {
     id: string;
     title: string;
-    description: string | null;
     coverUrl: string | null;
     category: string | null;
   };
@@ -38,17 +37,16 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
         </span>
       </div>
 
-      <div className="mt-3">
-        {journey.category && (
-          <p className="text-[0.7rem] uppercase tracking-wider text-ink-faint">{journey.category}</p>
-        )}
-        <h3 className="mt-1 text-lg font-bold tracking-tight text-ink transition-colors group-hover:text-ember">
-          {journey.title}
-        </h3>
-        {journey.description && (
-          <p className="mt-1.5 line-clamp-2 text-sm text-ink-muted">{journey.description}</p>
-        )}
-        <span className="mt-3 inline-flex w-fit items-center justify-center rounded-full bg-ink px-4 py-2.5 text-[0.8rem] font-semibold text-bg transition-colors group-hover:bg-ink-muted">
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="truncate text-sm font-semibold text-ink transition-colors group-hover:text-ember">
+            {journey.title}
+          </h3>
+          {journey.category && (
+            <p className="mt-1 text-[0.7rem] uppercase tracking-wider text-ink-faint">{journey.category}</p>
+          )}
+        </div>
+        <span className="inline-flex w-fit shrink-0 items-center justify-center rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-4 py-1.5 text-xs font-semibold text-ember backdrop-blur-md transition-colors group-hover:from-ember/15">
           View Journey
         </span>
       </div>
