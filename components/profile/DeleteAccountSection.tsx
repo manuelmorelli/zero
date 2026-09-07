@@ -4,10 +4,15 @@ import { useState, useTransition } from "react";
 import { requestAccountDeletionAction } from "@/lib/actions/account";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
-/** Sezione in fondo a Edit Profile (components/profile/EditProfileButton.tsx): avvia la
- * cancellazione dell'account dietro conferma esplicita, come deciso con Manuel
- * (docs/91_Legal_Audit_And_Roadmap.md). */
-export function DeleteAccountSection() {
+type DeleteAccountSectionProps = {
+  /** Bare button, no border/padding wrapper — used inline next to Save in EditProfileButton. */
+  inline?: boolean;
+};
+
+/** Avvia la cancellazione dell'account dietro conferma esplicita, come deciso con Manuel
+ * (docs/91_Legal_Audit_And_Roadmap.md). Usato in fondo a Settings/Account e, in forma inline,
+ * accanto al bottone Save di Edit Profile (components/profile/EditProfileButton.tsx). */
+export function DeleteAccountSection({ inline = false }: DeleteAccountSectionProps) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -18,11 +23,15 @@ export function DeleteAccountSection() {
   }
 
   return (
-    <div className="border-t border-border px-5 py-4">
+    <div className={inline ? "" : "border-t border-border px-5 py-4"}>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-sm font-medium text-danger hover:underline"
+        className={
+          inline
+            ? "rounded-full border border-border px-4 py-2 text-sm font-medium text-danger transition-colors hover:border-danger"
+            : "text-sm font-medium text-danger hover:underline"
+        }
       >
         Delete my account
       </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ChevronDown } from "lucide-react";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -77,6 +78,7 @@ function EditProfileModal({
   const [coverProgress, setCoverProgress] = useState<number | null>(null);
 
   const [selected, setSelected] = useState<JourneyCategory[]>(user.interests as JourneyCategory[]);
+  const [interestsOpen, setInterestsOpen] = useState(false);
 
   const [bioValue, setBioValue] = useState(user.bio ?? "");
   const bioLength = bioValue.trim().length;
@@ -160,115 +162,118 @@ function EditProfileModal({
   }, [submitted, pending, state.error, router, onClose]);
 
   return (
-    <DialogContent className="max-w-lg p-0">
+    <DialogContent className="max-h-[92vh] max-w-3xl p-0">
       <DialogHeader className="sr-only">
         <DialogTitle>Edit profile</DialogTitle>
       </DialogHeader>
 
-      <div className="flex max-h-[85vh] flex-col overflow-hidden">
-        <form
-          action={(formData) => {
-            formData.set("avatarKey", avatarKey);
-            formData.set("coverKey", coverKey);
-            setSubmitted(true);
-            formAction(formData);
-          }}
-          className="flex-1 overflow-y-auto"
-        >
-          <div className="relative">
-            <div className="relative aspect-[3/1] w-full overflow-hidden bg-surface-2">
-              {coverPreview ? (
-                <Image src={coverPreview} alt="" fill sizes="512px" className="object-cover" />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
-              )}
-              <button
-                type="button"
-                onClick={() => coverInputRef.current?.click()}
-                aria-label="Change cover photo"
-                className="absolute inset-0 flex items-center justify-center bg-black/0 text-sm font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
-              >
-                {coverProgress !== null ? `Uploading… ${coverProgress}%` : "Change cover photo"}
-              </button>
-              <span className="pointer-events-none absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white">
-                <CameraIcon className="h-4 w-4" />
-              </span>
-              <input
-                ref={coverInputRef}
-                type="file"
-                accept="image/*"
-                onChange={(event) => handleFileChosen("cover", event)}
-                className="hidden"
-              />
+      <form
+        action={(formData) => {
+          formData.set("avatarKey", avatarKey);
+          formData.set("coverKey", coverKey);
+          setSubmitted(true);
+          formAction(formData);
+        }}
+        className="p-4"
+      >
+        <div className="grid gap-4 md:grid-cols-[280px_1fr]">
+          <div className="space-y-3">
+            <div>
+              <span className="text-sm font-medium text-ink-muted">Cover</span>
+              <div className="relative mt-1.5 aspect-[3/1] w-full overflow-hidden rounded-xl border border-border bg-surface-2">
+                {coverPreview ? (
+                  <Image src={coverPreview} alt="" fill sizes="280px" className="object-cover" />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+                )}
+                <button
+                  type="button"
+                  onClick={() => coverInputRef.current?.click()}
+                  aria-label="Change cover photo"
+                  className="absolute inset-0 flex items-center justify-center bg-black/0 text-[0.65rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
+                >
+                  {coverProgress !== null ? `${coverProgress}%` : "Change"}
+                </button>
+                <span className="pointer-events-none absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/50 text-white">
+                  <CameraIcon className="h-3 w-3" />
+                </span>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => handleFileChosen("cover", event)}
+                  className="hidden"
+                />
+              </div>
             </div>
 
-            <div className="group absolute -bottom-10 left-5 h-20 w-20 overflow-hidden rounded-full border-4 border-surface bg-surface-2">
-              {avatarPreview ? (
-                <Image src={avatarPreview} alt="" fill sizes="80px" className="object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-lg font-bold text-ink-muted">
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
+            <div className="flex items-center gap-3">
+              <div className="group relative h-24 w-24 shrink-0 overflow-hidden rounded-full border-4 border-surface bg-surface-2">
+                {avatarPreview ? (
+                  <Image src={avatarPreview} alt="" fill sizes="96px" className="object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-xl font-bold text-ink-muted">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  aria-label="Change profile photo"
+                  className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all group-hover:bg-black/50 group-hover:opacity-100"
+                >
+                  <CameraIcon className="h-4 w-4" />
+                </button>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => handleFileChosen("avatar", event)}
+                  className="hidden"
+                />
+              </div>
+              {avatarProgress !== null && (
+                <span className="text-xs text-ink-muted">Uploading… {avatarProgress}%</span>
               )}
-              <button
-                type="button"
-                onClick={() => avatarInputRef.current?.click()}
-                aria-label="Change profile photo"
-                className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all group-hover:bg-black/50 group-hover:opacity-100"
-              >
-                <CameraIcon className="h-4 w-4" />
-                {avatarProgress !== null && <span className="ml-1 text-[10px] font-semibold">{avatarProgress}%</span>}
-              </button>
-              <span className="pointer-events-none absolute bottom-0.5 right-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white">
-                <CameraIcon className="h-3 w-3" />
-              </span>
-              <input
-                ref={avatarInputRef}
-                type="file"
-                accept="image/*"
-                onChange={(event) => handleFileChosen("avatar", event)}
-                className="hidden"
-              />
             </div>
+
+            {(avatarError || coverError) && (
+              <p className="text-xs text-danger">{avatarError ?? coverError}</p>
+            )}
           </div>
 
-          <div className="space-y-5 px-5 pb-5 pt-14">
-            {(avatarError || coverError) && (
-              <p className="text-sm text-danger">{avatarError ?? coverError}</p>
-            )}
-            {(avatarProgress !== null || coverProgress !== null) && (
-              <p className="text-sm text-ink-muted">Uploading photo…</p>
-            )}
+          <div className="space-y-3">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label htmlFor="name" className="text-sm font-medium text-ink-muted">
+                  Name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  minLength={2}
+                  maxLength={100}
+                  defaultValue={user.name}
+                  className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="name" className="text-sm font-medium text-ink-muted">
-                Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                minLength={2}
-                maxLength={100}
-                defaultValue={user.name}
-                className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="username" className="text-sm font-medium text-ink-muted">
-                Username <span className="text-ink-faint">(optional)</span>
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                maxLength={30}
-                placeholder="e.g. jane-doe"
-                defaultValue={user.username ?? ""}
-                className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-              />
+              <div>
+                <label htmlFor="username" className="text-sm font-medium text-ink-muted">
+                  Username <span className="text-ink-faint">(optional)</span>
+                </label>
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  maxLength={30}
+                  placeholder="e.g. jane-doe"
+                  defaultValue={user.username ?? ""}
+                  className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                />
+              </div>
             </div>
 
             <div>
@@ -298,64 +303,80 @@ function EditProfileModal({
               <textarea
                 id="bio"
                 name="bio"
-                rows={5}
+                rows={4}
                 maxLength={BIO_MAX_LENGTH}
                 placeholder="Tell your story: who you are, what you're working on, why it matters."
                 value={bioValue}
                 onChange={(event) => setBioValue(event.target.value)}
-                className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                className="mt-1.5 w-full resize-none overflow-hidden rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
               />
             </div>
 
             <div>
-              <p className="text-sm font-medium text-ink-muted">Interests</p>
-              <div className="mt-1.5 flex flex-wrap gap-2">
-                {JOURNEY_CATEGORIES.map((category) => {
-                  const active = selected.includes(category);
-                  return (
-                    <label key={category}>
-                      <input
-                        type="checkbox"
-                        name="interests"
-                        value={category}
-                        checked={active}
-                        onChange={() => toggle(category)}
-                        className="sr-only"
-                      />
-                      <span
-                        className={`inline-block cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                          active
-                            ? "border-ink bg-ink text-bg"
-                            : "border-border bg-surface-2 text-ink hover:border-ink-muted"
-                        }`}
-                      >
-                        {category}
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
+              <button
+                type="button"
+                onClick={() => setInterestsOpen((value) => !value)}
+                aria-expanded={interestsOpen}
+                className="flex w-full items-center justify-between text-left"
+              >
+                <span className="text-sm font-medium text-ink-muted">
+                  Interests <span className="text-ink-faint">({selected.length} selected)</span>
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 text-ink-muted transition-transform ${interestsOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                />
+              </button>
+
+              {selected.map((category) => (
+                <input key={category} type="hidden" name="interests" value={category} />
+              ))}
+
+              {interestsOpen && (
+                <div className="mt-1.5">
+                  <div className="flex flex-wrap gap-1.5 pb-0.5">
+                    {JOURNEY_CATEGORIES.map((category) => {
+                      const active = selected.includes(category);
+                      return (
+                        <button
+                          key={category}
+                          type="button"
+                          onClick={() => toggle(category)}
+                          className={`inline-block cursor-pointer rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${
+                            active
+                              ? "border-ink bg-ink text-bg"
+                              : "border-border bg-surface-2 text-ink hover:border-ink-muted"
+                          }`}
+                        >
+                          {category}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {state.error && <p className="text-sm text-danger">{state.error}</p>}
 
-            <button
-              type="submit"
-              disabled={
-                pending ||
-                selected.length === 0 ||
-                avatarProgress !== null ||
-                coverProgress !== null
-              }
-              className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-            >
-              {pending ? "Saving…" : "Save changes"}
-            </button>
+            <div className="flex items-center gap-3">
+              <DeleteAccountSection inline />
+              <button
+                type="submit"
+                disabled={
+                  pending ||
+                  selected.length === 0 ||
+                  avatarProgress !== null ||
+                  coverProgress !== null
+                }
+                className="flex-1 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
+              >
+                {pending ? "Saving…" : "Save changes"}
+              </button>
+            </div>
           </div>
-        </form>
-
-        <DeleteAccountSection />
-      </div>
+        </div>
+      </form>
 
       {cropTarget && (
         <ImageCropper

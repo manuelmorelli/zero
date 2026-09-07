@@ -56,6 +56,8 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
             image={imageSrc}
             crop={crop}
             zoom={zoom}
+            minZoom={0.5}
+            maxZoom={3}
             aspect={aspect}
             cropShape={cropShape}
             showGrid={cropShape === "rect"}
@@ -68,7 +70,7 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
         <div className="space-y-4 p-5">
           <input
             type="range"
-            min={1}
+            min={0.5}
             max={3}
             step={0.01}
             value={zoom}

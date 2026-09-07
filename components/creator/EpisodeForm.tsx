@@ -130,6 +130,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
       await uploadFileWithProgress(result.uploadUrl, file, setUploadProgress);
       setVideoKey(result.key);
       setDurationSec(duration);
+      setPublished(true);
     } catch {
       setUploadError("Upload failed. Please try again.");
     } finally {

@@ -282,11 +282,6 @@ export function JourneyForm({ journey }: JourneyFormProps) {
             <span />
           )}
           <div className="flex flex-wrap items-center gap-2.5">
-            {journey && (
-              <span className="text-xs text-ink-muted">
-                {dirty ? "Unsaved changes" : "All changes saved"}
-              </span>
-            )}
             {journey && dirty && (
               <button
                 type="button"
