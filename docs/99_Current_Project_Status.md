@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.46"
+version: "1.47"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -145,7 +145,19 @@ Nessuna funzionalità in corso di implementazione al momento.
 
 ### Ultimo task completato
 
-**Gerarchia visiva della pagina di gestione Journey e delle card Dashboard (2026-08-30)**. Manuel ha notato che i 4 elementi in alto a destra sulla pagina di gestione Journey (stato, Publish/Unpublish, Archive, "View public page") pesavano tutti uguale visivamente, senza distinguere cosa fosse solo informativo da cosa fosse un'azione — risultato:
+**Video ottimizzati per connessioni lente — Cloudflare Stream (2026-09-07)**. Su richiesta di Manuel: generare automaticamente 1-2 versioni più leggere di ogni video caricato, servite a chi ha connessione lenta, senza mai toccare o sostituire il file originale caricato dal creator su R2. Prima di scrivere codice, discusso con Manuel un piano completo (come generarle tecnicamente, quando avviene la generazione, come il player sceglie quale versione servire, stima costi) — incluso il confronto con l'alternativa "Cloudflare Media Transformations", scartata perché limitata a output di massimo 60 secondi (adatta solo a brevi clip/anteprime, non a un episodio intero). Piano approvato ("vai"), poi implementato:
+
+- **Database**: tre campi nuovi su `Episode` (`lightVideoStatus`, `lightVideoId`, `lightVideoPlaybackUrl`, migrazione `20260907125348_episode_light_video`) — vedi `11_Database_Architecture.md`.
+- **`lib/stream.ts`**: avvio della creazione della versione leggera su Cloudflare Stream (a partire da un URL di lettura temporaneo del video già su R2, non un nuovo upload), cancellazione quando un video viene sostituito o l'episodio eliminato, verifica della firma dei webhook.
+- **Trigger automatico**: agganciato alla pubblicazione dell'episodio in `lib/actions/episode.ts` (creazione, modifica, sostituzione video, cancellazione) — non rallenta percettibilmente la pubblicazione, aspetta solo la chiamata che mette il video in coda, mai l'elaborazione vera e propria.
+- **`app/api/webhooks/stream`**: riceve da Cloudflare la notifica "video pronto" (istantanea) e aggiorna l'episodio.
+- **`app/api/cron/sync-light-videos`**: controllo giornaliero di riserva (stesso schema di `purge-accounts`, 2° cron in `vercel.json`) per i casi persi dal webhook — i piani gratuiti di Vercel Cron non permettono un controllo più frequente di 1x/giorno, per questo il webhook è il percorso principale, non un ciclo di polling frequente.
+- **Player** (`EpisodePlayer.tsx`): usa la versione leggera (streaming adattivo via `hls.js`, qualità scelta automaticamente da Cloudflare in base alla connessione di chi guarda) appena è pronta; ricade sull'originale finché non lo è o se la elaborazione fallisce — nessun controllo manuale della qualità richiesto all'utente.
+- **Copy**: corretta la frase in `/how-it-works` che sarebbe diventata imprecisa ("Zero non comprime mai il tuo video, quello che carichi è quello che le persone vedono" → ora parla solo del file originale, mai toccato).
+
+**Attivazione volutamente in pausa**: tutto il codice sopra resta inerte finché le variabili `CLOUDFLARE_ACCOUNT_ID`/`CLOUDFLARE_STREAM_API_TOKEN`/`CLOUDFLARE_STREAM_WEBHOOK_SECRET` restano vuote (vedi `.env.example`) — scelta deliberata di Manuel, non un blocco tecnico: si attiverà quando ci saranno utenti reali sulla piattaforma (0 Journey pubblicati reali al momento, vedi nota Hero più sotto), non prima. Verificato senza regressioni sul comportamento attuale: `npx tsc --noEmit` e `npm run build` puliti, un episodio pubblicato esistente testato con Playwright (video originale caricato e riprodotto correttamente, nessun errore console) dopo il refactoring del player da attributo `src` statico a scelta dinamica della sorgente.
+
+Task precedente: **Gerarchia visiva della pagina di gestione Journey e delle card Dashboard (2026-08-30)**. Manuel ha notato che i 4 elementi in alto a destra sulla pagina di gestione Journey (stato, Publish/Unpublish, Archive, "View public page") pesavano tutti uguale visivamente, senza distinguere cosa fosse solo informativo da cosa fosse un'azione — risultato:
 
 - **Stato del Journey** (Draft/In Discovery/Published): non più una pillola bordata come i bottoni accanto, ma un puntino colorato + testo, per leggersi subito come pura informazione, non come qualcosa da cliccare.
 - **"View public page" promosso a bottone primario** (`app/dashboard/journeys/[id]/page.tsx`): prima era il più debole di tutti (semplice link di testo grigio) pur essendo l'azione più usata una volta pubblicato; ora è il bottone pieno e ben visibile.
@@ -258,7 +270,7 @@ Iniziata: upload reale e player interno fatti (vedi "Funzionalità implementate"
 
 - ✅ **Video Upload** — upload diretto del file dal dispositivo a Cloudflare R2 (URL firmati, nessun bucket pubblico), limite 1GB verificato lato server, sostituisce il vecchio link esterno temporaneo.
 - ✅ **Internal Video Player** — pagina Player dedicata (`/journeys/[id]/episodes/[episodeId]`, `components/journey/EpisodePlayer.tsx`) con controlli costruiti su misura (seek bar, play/pausa, volume, schermo intero) e sidebar "Up next"; sostituisce il precedente `<video controls>` nativo aperto in un overlay dentro la Pagina Journey.
-- 🟡 **Video Processing** — versioni leggere del video per connessioni lente (piano condiviso con Manuel il 2026-09-07): codice completo (`lib/stream.ts`, webhook `app/api/webhooks/stream`, controllo giornaliero di riserva `app/api/cron/sync-light-videos`, player con fallback automatico all'originale in `EpisodePlayer.tsx`), verificato senza regressioni sul video originale (build/typecheck/lint puliti, video R2 testato con Playwright). Resta da fare solo fuori dal codice: Manuel deve abilitare Cloudflare Stream sull'account Cloudflare esistente, generare l'API token e registrare il webhook (istruzioni in `.env.example`) — finché quelle variabili sono vuote l'app si comporta esattamente come prima, nessun video processato.
+- 🟡 **Video Processing** — versioni leggere del video per connessioni lente (vedi "Ultimo task completato", 2026-09-07): codice completo e verificato, **attivazione volutamente in pausa** su decisione di Manuel finché non ci saranno utenti reali sulla piattaforma, non un blocco tecnico. Per attivarla: abilitare Cloudflare Stream sull'account Cloudflare esistente, generare l'API token e registrare il webhook (istruzioni in `.env.example`) — finché quelle variabili sono vuote l'app si comporta esattamente come oggi, nessun video processato.
 - ✅ **Progress Tracking** — posizione di riproduzione e completamento tracciati per singolo episodio (`EpisodeProgress`), non solo a livello di Journey; vedi "Ripresa esatta del video e completamento per episodio" più sopra.
 - ⬜ **Most Completed Journeys** — la base dati per un vero completamento esiste ora (`EpisodeProgress`), ma la sezione stessa (classifica dei Journey per tasso di completamento) non è ancora stata costruita.
 - ✅ **Advanced Continue Journey** — il player riprende dal secondo esatto in cui l'utente aveva interrotto la visione (non solo dall'ultimo episodio), tranne per un episodio già completato, che riparte sempre dall'inizio per scelta di prodotto.

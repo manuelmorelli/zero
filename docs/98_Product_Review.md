@@ -1,7 +1,7 @@
 ---
 title: Product Review
 doc_id: 98-product-review
-version: "2.0"
+version: "2.1"
 status: living
 related_docs:
   - 07_Creator_Experience
@@ -45,6 +45,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 ☑ [High] Support uploads from desktop and mobile devices — a standard file picker, works on both by construction; not yet tried on a real phone.
 ☑ [Medium] Design the future upload experience (progress, processing state, error handling) — done for both video and episode cover (`EpisodeForm.tsx`: live % progress, format/size validation, error messages).
 ☑ [Medium] Add Episode thumbnail support — done (`EpisodeForm.tsx`, `posterKey`/`posterPreview`, real R2 upload); Journey cover is used as fallback when not set.
+☑ [Medium] Generate lighter video versions for slow connections, without ever touching the original upload — code complete 2026-09-07 (Cloudflare Stream, background generation after publish, adaptive player with automatic fallback to the original, see 99_Current_Project_Status.md "Ultimo task completato"); activation deliberately paused by Manuel until real users are on the platform, not a technical blocker.
 
 ## Updates
 
