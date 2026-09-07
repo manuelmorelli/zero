@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { FadeImage } from "@/components/common/FadeImage";
 import { ShieldCheck } from "lucide-react";
 
 type ContentCardProps = {
@@ -47,7 +47,7 @@ export function ContentCard({
         className="relative block aspect-4/5 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
       >
         {imageUrl ? (
-          <Image
+          <FadeImage
             src={imageUrl}
             alt={imageAlt}
             fill

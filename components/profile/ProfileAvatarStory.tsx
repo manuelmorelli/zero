@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { FadeImage } from "@/components/common/FadeImage";
 import { Plus } from "lucide-react";
 import { StoryViewer } from "@/components/home/StoryViewer";
 import { useQuickUpload } from "@/components/creator/QuickUploadButton";
@@ -75,7 +76,7 @@ function AvatarPhoto({
   const content = (
     <div className="relative h-full w-full overflow-hidden rounded-full">
       {avatarUrl ? (
-        <Image src={avatarUrl} alt={name} fill sizes="128px" className="object-cover" />
+        <FadeImage src={avatarUrl} alt={name} fill sizes="128px" className="object-cover" />
       ) : (
         <div className="flex h-full w-full items-center justify-center rounded-full bg-surface-2 text-2xl font-bold text-ink-muted">
           {name.charAt(0).toUpperCase()}
