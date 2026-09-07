@@ -1,7 +1,7 @@
 ---
 title: Product Review
 doc_id: 98-product-review
-version: "1.9"
+version: "2.0"
 status: living
 related_docs:
   - 07_Creator_Experience
@@ -22,7 +22,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 ☑ [High] Verify and improve drag & drop for Chapters — checked 2026-09-04: Chapters are already sortable (`useSortable`, drag handle, same mechanism as Episodes), confirmed working by Manuel.
 ☑ [High] ~~Add Back navigation inside internal pages~~ — reversed on Manuel's request: all Back buttons removed instead (see 99_Current_Project_Status.md).
 ☑ [Medium] Reduce the number of clicks required to complete common actions — reviewed 2026-09-07: the only real waste was the "Add episode" dialog defaulting to Draft even after a successful video upload, requiring a manual "Published" checkbox click (`EpisodeForm.tsx`, fixed). The floating "+" quick-upload and Update publishing flows (3-5 clicks) are physiologically necessary — picking a content type, a title — not waste. The Settings toggle + explicit "Save changes" click is intentional, matching industry standard for preference forms.
-☐ [Medium] Improve transitions and overall navigation fluidity.
+☑ [Medium] Improve transitions and overall navigation fluidity — reviewed 2026-09-07: Manuel confirmed the page-to-page transition itself is fine as-is, no work needed there. The real issue was profile photos (cover, avatar, Journey cards) showing empty/gray space while loading from R2 — fixed with a shared `FadeImage` component (pulsing skeleton + fade-in), wired into `ProfileHero`, `ProfileAvatarStory` and `ContentCard`.
 ☑ [Medium] Add an explanation for the Trust Score on the public Profile (there was none) — done 2026-09-07: click/tap-to-open panel shared with the existing inline badge (`TrustScorePanel.tsx`), closes via a visible X, click-outside or Esc. Rendered through a portal so it never ends up hidden behind the Overview/Journeys tab bar below it.
 ☑ [Low] Make it obvious that Trust Score/Followers/Following are clickable — done 2026-09-07: same hover effect already used on photo cards (scale up + brightness), instead of adding an extra icon.
 ☑ [Low] Add a visible close (X) button inside the side menu panel itself, not just the hamburger button that already toggled into one — done 2026-09-07.
