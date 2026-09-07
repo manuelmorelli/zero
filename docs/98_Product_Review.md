@@ -1,7 +1,7 @@
 ---
 title: Product Review
 doc_id: 98-product-review
-version: "1.8"
+version: "1.9"
 status: living
 related_docs:
   - 07_Creator_Experience
@@ -23,6 +23,9 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 ☑ [High] ~~Add Back navigation inside internal pages~~ — reversed on Manuel's request: all Back buttons removed instead (see 99_Current_Project_Status.md).
 ☐ [Medium] Reduce the number of clicks required to complete common actions.
 ☐ [Medium] Improve transitions and overall navigation fluidity.
+☑ [Medium] Add an explanation for the Trust Score on the public Profile (there was none) — done 2026-09-07: click/tap-to-open panel shared with the existing inline badge (`TrustScorePanel.tsx`), closes via a visible X, click-outside or Esc. Rendered through a portal so it never ends up hidden behind the Overview/Journeys tab bar below it.
+☑ [Low] Make it obvious that Trust Score/Followers/Following are clickable — done 2026-09-07: same hover effect already used on photo cards (scale up + brightness), instead of adding an extra icon.
+☑ [Low] Add a visible close (X) button inside the side menu panel itself, not just the hamburger button that already toggled into one — done 2026-09-07.
 
 ## Creator Experience
 
@@ -69,6 +72,7 @@ Elenco compatto dei miglioramenti (non bug) emersi dall'uso reale di Zero, da te
 ☑ [Medium] Review color alternation across the site (which background shade — `bg`/`surface`/`surface-2` — follows which) — done 2026-09-06: fixed inconsistent glass (`bg-white/*`) backgrounds outside the bg/surface/surface-2 scale on Profile (`AboutCard`), Home (`HowItWorksCta`) and Journey detail (hero card, episode rows); aligned Settings text inputs and Dashboard empty-states to `surface-2` where they were flattened against their `surface` container (commit `fe29b89`). Glass kept where it overlays a photo (Hero quote, Journey card status badge) — that usage is intentional, not an inconsistency.
 ☐ [Medium] Review Home payoff/copy (no decisions taken yet on which lines to change).
 ☐ [Medium] Design a mechanism to select real Journeys/creators for the Hero rotation, replacing the 4 fake demo slides in `lib/demo/heroSlides.ts` (starting idea: reuse the existing Journey Score ranking that already powers "Top Journeys", limited to Journeys with a cover photo — not designed in detail yet).
+☑ [Medium] Extend the "orange glass" card style (already used on What is Zero) to the public Profile's other glass containers — done 2026-09-07: Bio card, stats bar, Overview/Journeys tabs, Edit profile/Dashboard/Share/Follow/Message buttons. The white/neutral glass elsewhere in the site (Landing Hero, Update reactions, episode chips) hasn't been touched yet.
 
 ## General
 
