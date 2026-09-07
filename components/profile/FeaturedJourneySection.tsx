@@ -39,7 +39,7 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
 
       <div className="mt-3 flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-sm font-semibold text-ink transition-colors group-hover:text-ember">
+          <h3 className="truncate text-base font-semibold text-ink transition-colors group-hover:text-ember">
             {journey.title}
           </h3>
           {journey.category && (

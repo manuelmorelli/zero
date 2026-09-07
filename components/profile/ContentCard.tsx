@@ -76,7 +76,7 @@ export function ContentCard({
       )}
 
       <Link href={href} className="mt-2 block">
-        <h3 className="truncate text-sm font-semibold text-ink transition-colors group-hover:text-ember">
+        <h3 className="truncate text-base font-semibold text-ink transition-colors group-hover:text-ember">
           {title}
         </h3>
       </Link>
