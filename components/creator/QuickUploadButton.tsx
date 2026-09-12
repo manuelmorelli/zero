@@ -216,14 +216,6 @@ function ChoiceStep({
 }) {
   return (
     <div className="space-y-3">
-      <button
-        type="button"
-        onClick={onPickJourney}
-        className="w-full rounded-lg border border-border bg-surface px-4 py-4 text-left transition-colors hover:border-ink-muted"
-      >
-        <span className="block text-sm font-semibold text-ink">Add to your Journey</span>
-        <span className="mt-1 block text-xs text-ink-muted">Upload a new episode video.</span>
-      </button>
       <Link
         href="/dashboard/journeys/new"
         className="block w-full rounded-lg border border-border bg-surface px-4 py-4 text-left transition-colors hover:border-ink-muted"
@@ -233,6 +225,14 @@ function ChoiceStep({
           Set it up properly first — title, category, cover — then add episodes.
         </span>
       </Link>
+      <button
+        type="button"
+        onClick={onPickJourney}
+        className="w-full rounded-lg border border-border bg-surface px-4 py-4 text-left transition-colors hover:border-ink-muted"
+      >
+        <span className="block text-sm font-semibold text-ink">Add to your Journey</span>
+        <span className="mt-1 block text-xs text-ink-muted">Upload a new episode video.</span>
+      </button>
       <button
         type="button"
         onClick={onPickUpdate}
