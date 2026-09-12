@@ -45,7 +45,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
        * di prima, cambia solo la forma del contenitore. Da desktop in su la sezione è spostata in
        * basso di md:mt-12 (~altezza dell'header) così la card inizia subito sotto l'header invece
        * di iniziare dietro di lui: su mobile l'header resta sovrapposto come oggi. */}
-      <div className="absolute inset-0 md:inset-x-8 md:overflow-hidden md:rounded-2xl">
+      <div className="absolute inset-0 md:inset-x-[4.43%] md:overflow-hidden md:rounded-2xl">
         {slides.map((item, index) => (
           <Image
             key={item.alt}
@@ -65,7 +65,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
       </div>
 
-      <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-8 md:pt-6 md:pb-12">
+      <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-[calc(4.43%+2rem)] md:pt-6 md:pb-12">
         <div className="max-w-lg md:col-start-1 md:row-start-1">
           <p className="text-[0.77rem] uppercase tracking-[0.42em] text-ink-muted">
             Every <span className="text-ember">journey</span> starts from
