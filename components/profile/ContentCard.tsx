@@ -13,13 +13,12 @@ type ContentCardProps = {
   status?: string;
   /** Journey Score (0-100, lib/scoring/journeyScore.ts): per i Journey è il proprio; per gli
    * episodi è quello del Journey a cui appartengono (non ne hanno uno proprio). Assente per
-   * Journey ancora in Discovery Phase o per gli Update, che non ne hanno uno. */
+   * Journey ancora in Discovery Phase o per gli Update, che non ne hanno uno. Mostrato in basso
+   * a destra sulla foto: l'icona compare sempre, il numero solo se maggiore di zero (un Journey
+   * appena pubblicato può avere davvero 0, mostrarlo sembrerebbe un errore). */
   trust?: number;
-  /** Il vero pulsante Like (interattivo): un elemento a sé, mai dentro il <Link> della card
-   * (un bottone annidato in un link non è HTML valido). */
-  likeSlot?: React.ReactNode;
-  /** Menu/azioni in alto a destra sulla foto (solo proprietario del profilo): anche questo fuori
-   * dal <Link> per lo stesso motivo. */
+  /** Menu/azioni in alto a destra sulla foto (solo proprietario del profilo): fuori dal <Link>
+   * perché è un elemento interattivo (un bottone annidato in un link non è HTML valido). */
   menu?: React.ReactNode;
   /** Testo mostrato al centro al posto della foto quando `imageUrl` è null (es. i placeholder
    * motivazionali del feed demo). Se assente, l'area resta un semplice sfondo sfumato. */
@@ -40,7 +39,6 @@ export function ContentCard({
   category,
   status,
   trust,
-  likeSlot,
   menu,
   emptyMessage,
   isVideo,
@@ -90,13 +88,13 @@ export function ContentCard({
           <h3 className="mt-2 truncate text-base font-semibold text-white transition-colors group-hover:text-ember">
             {title}
           </h3>
-          {trust !== undefined && (
-            <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-bold text-ember">
-              <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-              {trust}
-            </span>
-          )}
         </div>
+        {trust !== undefined && (
+          <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 text-xs font-bold text-ember">
+            <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+            {trust > 0 ? trust : null}
+          </span>
+        )}
       </Link>
 
       {menu && (
@@ -104,7 +102,6 @@ export function ContentCard({
           {menu}
         </div>
       )}
-      {likeSlot && <div className="absolute bottom-3 right-3 z-10">{likeSlot}</div>}
     </div>
   );
 }

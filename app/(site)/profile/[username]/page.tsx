@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { getViewerSession } from "@/lib/session";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { FollowButton } from "@/components/profile/FollowButton";
-import { LikeButton } from "@/components/journey/LikeButton";
 import { ContentCard } from "@/components/profile/ContentCard";
 import { ShareButton } from "@/components/common/ShareButton";
 import { JourneyCardMenu } from "@/components/profile/JourneyCardMenu";
@@ -235,15 +234,6 @@ export default async function PublicProfilePage({
                                 {item.caption}
                               </span>
                             ) : undefined
-                          }
-                          likeSlot={
-                            <LikeButton
-                              targetType="EPISODE"
-                              targetId={item.episodeId}
-                              initialLikeCount={item.likeCount}
-                              initialIsLiked={item.isLiked}
-                              isLoggedIn={isLoggedIn && !isDemoFeed}
-                            />
                           }
                           menu={
                             !isDemoFeed ? (
