@@ -9,7 +9,7 @@ import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { getCreatorPrivateStats } from "@/lib/dashboard/creatorStats";
 
 export default async function CreatorDashboardPage() {
-  const { user, creator } = await requireCreator();
+  const { creator } = await requireCreator();
   const [rawJourneys, creatorStats] = await Promise.all([
     prisma.journey.findMany({
       where: { creatorId: creator.id, deletedAt: null },
@@ -87,12 +87,6 @@ export default async function CreatorDashboardPage() {
               </h1>
             </div>
             <div className="flex items-center gap-3">
-              <Link
-                href={`/profile/${user.id}`}
-                className="text-sm text-ink-muted transition-colors hover:text-ink"
-              >
-                View Public Profile →
-              </Link>
               <Link
                 href="/dashboard/journeys/new"
                 className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"

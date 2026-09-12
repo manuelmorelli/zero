@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useActionState, useContext, useEffect, useId, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createQuickPosterUploadUrl, createQuickVideoUploadUrl, quickComposeEpisode } from "@/lib/actions/episode";
 import { createUpdateMediaUploadUrl, publishUpdate } from "@/lib/actions/update";
@@ -223,6 +224,15 @@ function ChoiceStep({
         <span className="block text-sm font-semibold text-ink">Add to your Journey</span>
         <span className="mt-1 block text-xs text-ink-muted">Upload a new episode video.</span>
       </button>
+      <Link
+        href="/dashboard/journeys/new"
+        className="block w-full rounded-lg border border-border bg-surface px-4 py-4 text-left transition-colors hover:border-ink-muted"
+      >
+        <span className="block text-sm font-semibold text-ink">Start a new Journey</span>
+        <span className="mt-1 block text-xs text-ink-muted">
+          Set it up properly first — title, category, cover — then add episodes.
+        </span>
+      </Link>
       <button
         type="button"
         onClick={onPickUpdate}
