@@ -63,7 +63,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
 
       <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-8 md:pt-[70px] md:pb-12">
         <div className="max-w-lg md:col-start-1 md:row-start-1">
-          <p className="text-[0.7rem] uppercase tracking-[0.42em] text-ink-muted">
+          <p className="text-[0.77rem] uppercase tracking-[0.42em] text-ink-muted">
             Every <span className="text-ember">journey</span> starts from
           </p>
           <Image
@@ -74,11 +74,11 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
             unoptimized
             className="mt-1 w-72 origin-left scale-x-95 sm:w-80 lg:w-96"
           />
-          <p className="mt-3 max-w-[19ch] text-2xl leading-tight font-semibold text-balance sm:text-[1.5rem]">
+          <p className="mt-[0.675rem] max-w-[19ch] text-[1.65rem] leading-tight font-semibold text-balance">
             Because the destination is only part of{" "}
             <span className="text-ember">the story.</span>
           </p>
-          <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-muted">
+          <p className="mt-2 max-w-sm text-[0.96rem] leading-relaxed text-ink-muted">
             Every journey has a beginning, every step has a story, and every story can inspire
             someone to start their own.
           </p>

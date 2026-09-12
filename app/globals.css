@@ -22,7 +22,7 @@
 html {
   /* Riduzione globale della scala del sito (~15%): tutte le unità rem di Tailwind
    * (spaziature, dimensioni testo) si restringono di conseguenza in automatico. */
-  font-size: 85%;
+  font-size: 90%;
 }
 
 body {
