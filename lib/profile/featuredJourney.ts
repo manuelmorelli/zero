@@ -6,6 +6,10 @@ export type FeaturedJourneyCandidate = {
   description: string | null;
   coverUrl: string | null;
   category: string | null;
+  /** Journey Score (0-100): il badge si mostra solo quando `status` è "PUBLISHED" (i Journey in
+   * Discovery Phase non partecipano a questo punteggio, vedi lib/scoring/journeyScore.ts). */
+  journeyScore: number;
+  status: string;
 };
 
 /**

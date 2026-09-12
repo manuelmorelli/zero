@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Compass, Flame, Video as VideoIcon, Star, ArrowRight, Sparkles, UserPlus, HelpCircle, History, Play } from "lucide-react";
+import { Compass, Flame, Video as VideoIcon, Star, ArrowRight, Sparkles, UserPlus, HelpCircle, History, Play, ShieldCheck } from "lucide-react";
 import type { ContinueJourneyItem } from "@/lib/discovery/continueJourneys";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { MomentJourneyCard } from "@/components/journey/MomentJourneyCard";
 import { VideoCard } from "@/components/journey/VideoCard";
+import { Avatar } from "@/components/common/Avatar";
 import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
 import { Logo } from "@/components/layout/Logo";
 import { OnboardingBanner } from "@/components/layout/OnboardingBanner";
@@ -169,7 +170,7 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
                 )}
-                <div className="absolute inset-0 bg-bg/30 transition-colors group-hover:bg-bg/15" />
+                <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-transparent" />
                 <span className="absolute left-2.5 top-2.5 rounded-full border border-ember/30 bg-bg/70 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-ember backdrop-blur-md">
                   Continue watching
                 </span>
@@ -178,14 +179,30 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
                     <Play className="h-4 w-4 translate-x-[1px] fill-current text-ember" aria-hidden="true" />
                   </span>
                 </span>
-              </div>
 
-              <h3 className="mt-3 truncate text-base font-semibold transition-colors group-hover:text-ember">
-                {item.episodeTitle ?? item.title}
-              </h3>
-              <p className="mt-1 truncate text-xs text-ink-muted">
-                {item.title} · {item.creatorName}
-              </p>
+                <div className="absolute inset-x-0 bottom-0 p-3">
+                  {item.category && (
+                    <span className="inline-block rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+                      {item.category}
+                    </span>
+                  )}
+                  <h3 className="mt-2 truncate text-base font-bold leading-tight text-white transition-colors group-hover:text-ember">
+                    {item.episodeTitle ?? item.title}
+                  </h3>
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <span className="flex min-w-0 items-center gap-1.5 text-xs text-white/85">
+                      <Avatar name={item.creatorName} className="h-5 w-5 text-[0.55rem]" />
+                      <span className="truncate">{item.creatorName}</span>
+                    </span>
+                    {item.journeyScore !== undefined && (
+                      <span className="flex shrink-0 items-center gap-1 text-xs font-bold text-ember">
+                        <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                        {item.journeyScore}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </Link>
           </Reveal>
         ))}
