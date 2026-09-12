@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Clock } from "lucide-react";
-import { formatRelativeDate } from "@/lib/utils";
+import { ShieldCheck } from "lucide-react";
 import { Avatar } from "@/components/common/Avatar";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
 import type { LatestVideoItem } from "@/lib/discovery/latestVideos";
@@ -10,9 +9,10 @@ type VideoCardProps = {
   video: LatestVideoItem;
 };
 
-/** Card per la riga "Latest Videos": copertina del Journey come anteprima, link diretto all'episodio. */
+/** Card per la riga "Latest Videos": copertina del Journey come anteprima, link diretto
+ * all'episodio — stesso "poster style" sovrapposto alla foto di JourneyCard/MomentJourneyCard. */
 export function VideoCard({ video }: VideoCardProps) {
-  const { journeyId, episodeId, title, coverUrl, category, creatorName, createdAt } = video;
+  const { journeyId, episodeId, title, coverUrl, category, creatorName, journeyScore } = video;
 
   return (
     <Link
@@ -31,25 +31,36 @@ export function VideoCard({ video }: VideoCardProps) {
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
         )}
-        <div className="absolute inset-0 bg-bg/40 transition-colors group-hover:bg-bg/25" />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-transparent" />
         <span className="absolute inset-0 grid place-items-center">
           <span className="grid h-12 w-12 place-items-center rounded-full border border-white/20 bg-bg/50 backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
             <PlayIcon className="h-4 w-4 translate-x-[1px] fill-current text-ember" />
           </span>
         </span>
         <CategoryIcon category={category} className="absolute left-2.5 top-2.5 h-7 w-7" />
-      </div>
 
-      <h3 className="mt-3 truncate text-base font-semibold transition-colors group-hover:text-ember">{title}</h3>
-      <div className="mt-2 flex items-center justify-between gap-2 text-xs text-ink-muted">
-        <span className="flex min-w-0 items-center gap-2">
-          <Avatar name={creatorName} />
-          <span className="truncate">{creatorName}</span>
-        </span>
-        <span className="flex shrink-0 items-center gap-1">
-          <Clock className="h-3 w-3" aria-hidden="true" />
-          {formatRelativeDate(createdAt)}
-        </span>
+        <div className="absolute inset-x-0 bottom-0 p-3">
+          {category && (
+            <span className="inline-block rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+              {category}
+            </span>
+          )}
+          <h3 className="mt-2 truncate text-base font-bold leading-tight text-white transition-colors group-hover:text-ember">
+            {title}
+          </h3>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <span className="flex min-w-0 items-center gap-1.5 text-xs text-white/85">
+              <Avatar name={creatorName} className="h-5 w-5 text-[0.55rem]" />
+              <span className="truncate">{creatorName}</span>
+            </span>
+            {journeyScore !== undefined && (
+              <span className="flex shrink-0 items-center gap-1 text-xs font-bold text-ember">
+                <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                {journeyScore}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </Link>
   );

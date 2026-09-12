@@ -16,6 +16,10 @@ export type CreatorFeedItem = {
       title: string;
       caption: string | null;
       category: string | null;
+      /** Journey Score (0-100) del Journey a cui appartiene: gli episodi non ne hanno uno
+       * proprio. Assente se il Journey è ancora in Discovery Phase (non partecipa a questo
+       * punteggio, vedi lib/scoring/journeyScore.ts). */
+      journeyScore?: number;
     }
   | { type: "update"; updateId: string; content: string }
 );
@@ -82,6 +86,7 @@ export async function getCreatorFeed({
       title: episode.title,
       caption: episode.caption,
       category: episode.journey.category,
+      journeyScore: episode.journey.status === "PUBLISHED" ? episode.journey.journeyScore : undefined,
       coverUrl: episode.posterKey ?? episode.journey.coverUrl,
       likeCount: countByTarget.get(`EPISODE:${episode.id}`) ?? 0,
       isLiked: likedByViewer.has(`EPISODE:${episode.id}`),

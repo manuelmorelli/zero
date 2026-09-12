@@ -225,6 +225,7 @@ export default async function PublicProfilePage({
                           imageAlt={item.title}
                           title={item.title}
                           category={item.category}
+                          trust={item.journeyScore !== undefined ? Math.round(item.journeyScore) : undefined}
                           isVideo
                           emptyMessage={
                             isDemoFeed ? (

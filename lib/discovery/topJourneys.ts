@@ -10,6 +10,9 @@ export type TopJourneyItem = {
   creatorName: string;
   followersCount: number;
   episodesCount: number;
+  /** Journey Score (0-100, lib/scoring/journeyScore.ts): qui sempre presente, solo Journey
+   * PUBLISHED partecipano a questa sezione. */
+  journeyScore: number;
 };
 
 /**
@@ -56,12 +59,10 @@ export async function getTopJourneys({
     }))
     .sort((a, b) => b.journeyScore - a.journeyScore);
 
-  const withoutScore = sorted.map(({ journeyScore: _journeyScore, ...journey }) => journey);
-
-  if (interests.length === 0) return withResolvedCoverUrls(withoutScore.slice(0, limit));
+  if (interests.length === 0) return withResolvedCoverUrls(sorted.slice(0, limit));
 
   const interestSet = new Set(interests);
-  const matching = withoutScore.filter((journey) => journey.category && interestSet.has(journey.category));
-  const rest = withoutScore.filter((journey) => !(journey.category && interestSet.has(journey.category)));
+  const matching = sorted.filter((journey) => journey.category && interestSet.has(journey.category));
+  const rest = sorted.filter((journey) => !(journey.category && interestSet.has(journey.category)));
   return withResolvedCoverUrls([...matching, ...rest].slice(0, limit));
 }

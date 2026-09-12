@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
+import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 /**
@@ -45,11 +46,23 @@ export async function getNewJourneys(
         return [...matching, ...rest];
       })();
 
-  const items = ordered.slice(0, limit).map((journey) => ({
+  const selected = ordered.slice(0, limit);
+
+  // Il badge del punteggio si mostra solo per i Journey già PUBLISHED: quelli in Discovery Phase
+  // non partecipano al Journey Score (vedi lib/scoring/journeyScore.ts).
+  const publishedIds = selected.filter((journey) => journey.status === "PUBLISHED").map((journey) => journey.id);
+  await ensureFreshJourneyScores(publishedIds);
+  const freshScores = publishedIds.length > 0
+    ? await prisma.journey.findMany({ where: { id: { in: publishedIds } }, select: { id: true, journeyScore: true } })
+    : [];
+  const scoreById = new Map(freshScores.map((journey) => [journey.id, journey.journeyScore]));
+
+  const items = selected.map((journey) => ({
     id: journey.id,
     title: journey.title,
     coverUrl: journey.coverUrl,
     category: journey.category,
+    journeyScore: scoreById.get(journey.id),
     creator: { displayName: journey.creator.displayName },
   }));
   return withResolvedCoverUrls(items);

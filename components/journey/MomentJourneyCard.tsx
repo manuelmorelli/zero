@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 import { Avatar } from "@/components/common/Avatar";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
@@ -10,9 +11,9 @@ type MomentJourneyCardProps = {
 };
 
 /** Card per la riga "Journeys of the Moment": copertina 4:3, numero di posizione + icona categoria
- * sovrapposti alla foto, testo sotto — stesso stile ormai unico di JourneyCard/VideoCard. */
+ * in alto, testo/punteggio sovrapposti in basso — stesso "poster style" di JourneyCard/VideoCard. */
 export function MomentJourneyCard({ journey, rank }: MomentJourneyCardProps) {
-  const { title, description, coverUrl, category, creator } = journey;
+  const { title, coverUrl, category, creator, journeyScore } = journey;
 
   return (
     <Link
@@ -31,26 +32,35 @@ export function MomentJourneyCard({ journey, rank }: MomentJourneyCardProps) {
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-bg/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-transparent" />
         <div className="absolute left-2.5 top-2.5 flex items-center gap-2">
           <span className="grid h-8 w-8 place-items-center rounded-md border border-white/15 bg-bg/40 text-sm font-bold text-ink backdrop-blur-md">
             {rank}
           </span>
           <CategoryIcon category={category} />
         </div>
-      </div>
 
-      <div className="mt-3">
-        {category && (
-          <p className="text-[0.6rem] uppercase tracking-[0.22em] text-ink-faint">{category}</p>
-        )}
-        <h3 className="mt-1 text-base font-bold leading-tight text-ink transition-colors group-hover:text-ember">
-          {title}
-        </h3>
-        {description && <p className="mt-1 line-clamp-1 text-xs text-ink-muted">{description}</p>}
-        <div className="mt-2 flex min-w-0 items-center gap-2 text-xs text-ink-muted">
-          <Avatar name={creator.displayName} />
-          <span className="truncate">{creator.displayName}</span>
+        <div className="absolute inset-x-0 bottom-0 p-3">
+          {category && (
+            <span className="inline-block rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+              {category}
+            </span>
+          )}
+          <h3 className="mt-2 truncate text-base font-bold leading-tight text-white transition-colors group-hover:text-ember">
+            {title}
+          </h3>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <span className="flex min-w-0 items-center gap-1.5 text-xs text-white/85">
+              <Avatar name={creator.displayName} className="h-5 w-5 text-[0.55rem]" />
+              <span className="truncate">{creator.displayName}</span>
+            </span>
+            {journeyScore !== undefined && (
+              <span className="flex shrink-0 items-center gap-1 text-xs font-bold text-ember">
+                <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                {journeyScore}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </Link>

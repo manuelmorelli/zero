@@ -36,6 +36,7 @@ export default async function TopJourneysPage() {
                   title: journey.title,
                   coverUrl: journey.coverUrl,
                   category: journey.category,
+                  journeyScore: journey.journeyScore,
                   creator: { displayName: journey.creatorName },
                 }}
                 footer={

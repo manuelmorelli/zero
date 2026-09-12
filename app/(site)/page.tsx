@@ -313,6 +313,7 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
                 title: journey.title,
                 coverUrl: journey.coverUrl,
                 category: journey.category,
+                journeyScore: journey.journeyScore,
                 creator: { displayName: journey.creatorName },
               }}
               footer={

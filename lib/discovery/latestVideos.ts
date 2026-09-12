@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 
 export type LatestVideoItem = {
@@ -10,6 +11,10 @@ export type LatestVideoItem = {
   category: string | null;
   creatorName: string;
   createdAt: Date;
+  /** Journey Score (0-100) del Journey a cui appartiene l'episodio: gli episodi non hanno un
+   * punteggio proprio, quindi mostrano quello del loro Journey. Assente se il Journey è ancora
+   * in Discovery Phase (non partecipa a questo punteggio, vedi lib/scoring/journeyScore.ts). */
+  journeyScore?: number;
 };
 
 /**
@@ -48,7 +53,25 @@ export async function getLatestVideos({
         return [...matching, ...rest];
       })();
 
-  const items = ordered.slice(0, limit).map((episode) => ({
+  const selected = ordered.slice(0, limit);
+
+  // Il punteggio mostrato è quello del Journey (gli episodi non ne hanno uno proprio): solo per
+  // i Journey già PUBLISHED, coerente con "Discovery Phase non partecipa a questo punteggio".
+  const publishedJourneyIds = [
+    ...new Set(
+      selected.filter((episode) => episode.journey.status === "PUBLISHED").map((episode) => episode.journey.id)
+    ),
+  ];
+  await ensureFreshJourneyScores(publishedJourneyIds);
+  const freshScores = publishedJourneyIds.length > 0
+    ? await prisma.journey.findMany({
+        where: { id: { in: publishedJourneyIds } },
+        select: { id: true, journeyScore: true },
+      })
+    : [];
+  const scoreByJourneyId = new Map(freshScores.map((journey) => [journey.id, journey.journeyScore]));
+
+  const items = selected.map((episode) => ({
     episodeId: episode.id,
     journeyId: episode.journey.id,
     title: episode.title,
@@ -56,6 +79,7 @@ export async function getLatestVideos({
     category: episode.journey.category,
     creatorName: episode.journey.creator.displayName,
     createdAt: episode.createdAt,
+    journeyScore: scoreByJourneyId.get(episode.journey.id),
   }));
   return withResolvedCoverUrls(items);
 }

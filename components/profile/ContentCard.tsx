@@ -11,9 +11,9 @@ type ContentCardProps = {
   category?: string | null;
   /** Badge assoluto in alto a sinistra sulla foto, es. "Discovery"/"Archived". */
   status?: string;
-  /** Punteggio Journey Score (0-100): solo per i Journey, che sono l'unico contenuto con un
-   * punteggio reale salvato (vedi lib/scoring/journeyScore.ts). Gli episodi/update non ne hanno
-   * uno proprio: per quelli questa prop resta assente, niente numero inventato. */
+  /** Journey Score (0-100, lib/scoring/journeyScore.ts): per i Journey è il proprio; per gli
+   * episodi è quello del Journey a cui appartengono (non ne hanno uno proprio). Assente per
+   * Journey ancora in Discovery Phase o per gli Update, che non ne hanno uno. */
   trust?: number;
   /** Il vero pulsante Like (interattivo): un elemento a sé, mai dentro il <Link> della card
    * (un bottone annidato in un link non è HTML valido). */
@@ -29,9 +29,9 @@ type ContentCardProps = {
   isVideo?: boolean;
 };
 
-/** Card "poster" del Profilo: foto sola sopra, titolo/categoria/punteggio sotto — stile diverso
- * da JourneyCard (usata in Home/Discover/Categorie/Ricerca, testo sovrapposto alla foto). Qui si
- * segue fedelmente ContentCard del sorgente Lovable (src/components/zero/Profile.tsx). */
+/** Card "poster" del Profilo: titolo/categoria/punteggio sovrapposti alla foto — stesso "poster
+ * style" di JourneyCard/VideoCard/MomentJourneyCard. Il Like resta un elemento reale a sé, fuori
+ * dal <Link>, sovrapposto in basso a destra (un bottone non può stare dentro un <a>). */
 export function ContentCard({
   href,
   imageUrl,
@@ -66,7 +66,7 @@ export function ContentCard({
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-bg/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-transparent" />
         {status && (
           <span className="absolute left-2.5 top-2.5 rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
             {status}
@@ -80,6 +80,23 @@ export function ContentCard({
             </span>
           </span>
         )}
+
+        <div className="absolute inset-x-0 bottom-0 p-3">
+          {category && (
+            <span className="inline-block rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+              {category}
+            </span>
+          )}
+          <h3 className="mt-2 truncate text-base font-semibold text-white transition-colors group-hover:text-ember">
+            {title}
+          </h3>
+          {trust !== undefined && (
+            <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-bold text-ember">
+              <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+              {trust}
+            </span>
+          )}
+        </div>
       </Link>
 
       {menu && (
@@ -87,26 +104,7 @@ export function ContentCard({
           {menu}
         </div>
       )}
-
-      <Link href={href} className="mt-2 block">
-        <h3 className="truncate text-base font-semibold text-ink transition-colors group-hover:text-ember">
-          {title}
-        </h3>
-      </Link>
-      {category && (
-        <p className="mt-0.5 text-[0.7rem] uppercase tracking-wider text-ink-faint">{category}</p>
-      )}
-      {(trust !== undefined || likeSlot) && (
-        <div className="mt-1.5 flex items-center gap-3 text-[0.7rem] text-ink-muted">
-          {trust !== undefined && (
-            <span className="inline-flex items-center gap-1 text-ember">
-              <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-              {trust}
-            </span>
-          )}
-          {likeSlot}
-        </div>
-      )}
+      {likeSlot && <div className="absolute bottom-3 right-3 z-10">{likeSlot}</div>}
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
+import { Avatar } from "@/components/common/Avatar";
 
 /** Subset of Journey (+ Creator) fields from prisma/schema.prisma needed to render the card. */
 export type JourneyCardData = {
@@ -9,6 +11,9 @@ export type JourneyCardData = {
   description?: string | null;
   coverUrl: string | null;
   category: string | null;
+  /** Journey Score (0-100, lib/scoring/journeyScore.ts): assente per i Journey ancora in
+   * Discovery Phase, che non partecipano a questo punteggio (troppo recenti per essere affidabile). */
+  journeyScore?: number;
   creator: {
     displayName: string;
   };
@@ -30,10 +35,10 @@ type JourneyCardProps = {
 // card (es. il conteggio episodi in "Top Journeys"), usa la prop `footer` invece di avvolgere
 // di nuovo la card in un secondo <Link>, che creerebbe un <a> annidato non valido.
 //
-// Titolo/categoria/creator sotto la foto, non sovrapposti: stesso stile ormai unico in tutto il
-// sito (VideoCard, ContentCard, JourneyGrid della Dashboard), non più un'eccezione a parte.
+// Titolo/categoria/creator/punteggio sovrapposti alla foto (sfumatura scura in basso), stesso
+// "poster style" ormai unico in tutto il sito (VideoCard, MomentJourneyCard, ContentCard).
 export function JourneyCard({ journey, className, style, badge, footer }: JourneyCardProps) {
-  const { id, title, coverUrl, category, creator } = journey;
+  const { id, title, coverUrl, category, creator, journeyScore } = journey;
 
   return (
     <div className={className} style={style}>
@@ -52,17 +57,31 @@ export function JourneyCard({ journey, className, style, badge, footer }: Journe
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
           )}
+          <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-transparent" />
           <CategoryIcon category={category} className="absolute left-2.5 top-2.5" />
-        </div>
 
-        <div className="mt-3">
-          {category && (
-            <p className="text-[0.6rem] uppercase tracking-[0.22em] text-ink-faint">{category}</p>
-          )}
-          <h3 className="mt-1 truncate text-base font-bold leading-tight text-ink transition-colors group-hover:text-ember">
-            {title}
-          </h3>
-          <p className="mt-1.5 truncate text-xs text-ink-muted">{creator.displayName}</p>
+          <div className="absolute inset-x-0 bottom-0 p-3">
+            {category && (
+              <span className="inline-block rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+                {category}
+              </span>
+            )}
+            <h3 className="mt-2 truncate text-base font-bold leading-tight text-white transition-colors group-hover:text-ember">
+              {title}
+            </h3>
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <span className="flex min-w-0 items-center gap-1.5 text-xs text-white/85">
+                <Avatar name={creator.displayName} className="h-5 w-5 text-[0.55rem]" />
+                <span className="truncate">{creator.displayName}</span>
+              </span>
+              {journeyScore !== undefined && (
+                <span className="flex shrink-0 items-center gap-1 text-xs font-bold text-ember">
+                  <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                  {journeyScore}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </Link>
       {footer}
