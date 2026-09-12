@@ -4,12 +4,16 @@ import type { JourneyPrivateStats } from "@/lib/dashboard/journeyStats";
 
 type PrivateStatsPanelProps = {
   stats: JourneyPrivateStats;
+  /** "Private Stats" per il singolo Journey, "All Journeys" per il riepilogo generale in cima
+   * alla Dashboard (vedi lib/dashboard/creatorStats.ts). */
+  title?: string;
 };
 
-/** Statistiche reali del Journey, visibili solo al creator. Niente trend "+12% questa settimana"
- * come nel mockup Lovable: non abbiamo nessuno storico settimanale salvato da nessuna parte, e un
- * numero inventato qui sarebbe fuorviante — meglio 4 numeri veri senza confronto che un falso trend. */
-export function PrivateStatsPanel({ stats }: PrivateStatsPanelProps) {
+/** Statistiche reali del Journey (o di tutti i Journey insieme), visibili solo al creator. Niente
+ * trend "+12% questa settimana" come nel mockup Lovable: non abbiamo nessuno storico settimanale
+ * salvato da nessuna parte, e un numero inventato qui sarebbe fuorviante — meglio 4 numeri veri
+ * senza confronto che un falso trend. */
+export function PrivateStatsPanel({ stats, title = "Private Stats" }: PrivateStatsPanelProps) {
   const tiles = [
     {
       icon: Eye,
@@ -38,7 +42,7 @@ export function PrivateStatsPanel({ stats }: PrivateStatsPanelProps) {
   ];
 
   return (
-    <DashboardPanel title="Private Stats" icon={<BarChart3 className="h-4 w-4" aria-hidden="true" />}>
+    <DashboardPanel title={title} icon={<BarChart3 className="h-4 w-4" aria-hidden="true" />}>
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {tiles.map((tile) => {
           const Icon = tile.icon;

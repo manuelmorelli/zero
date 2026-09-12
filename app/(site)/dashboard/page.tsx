@@ -3,15 +3,20 @@ import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { DashboardPanel } from "@/components/creator/DashboardPanel";
 import { JourneyGrid, type GridJourney } from "@/components/creator/JourneyGrid";
+import { PrivateStatsPanel } from "@/components/creator/PrivateStatsPanel";
 import { Reveal } from "@/components/common/Reveal";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { getCreatorPrivateStats } from "@/lib/dashboard/creatorStats";
 
 export default async function CreatorDashboardPage() {
   const { user, creator } = await requireCreator();
-  const rawJourneys = await prisma.journey.findMany({
-    where: { creatorId: creator.id, deletedAt: null },
-    orderBy: { order: "asc" },
-  });
+  const [rawJourneys, creatorStats] = await Promise.all([
+    prisma.journey.findMany({
+      where: { creatorId: creator.id, deletedAt: null },
+      orderBy: { order: "asc" },
+    }),
+    getCreatorPrivateStats(creator.id),
+  ]);
   const journeys = await withResolvedCoverUrls(rawJourneys);
   // Un creator può avere più Journey attivi (non archiviati) in parallelo — vedi
   // 00-project-context.md, sezione "Archiviazione del Journey".
@@ -96,6 +101,10 @@ export default async function CreatorDashboardPage() {
               </Link>
             </div>
           </div>
+        </Reveal>
+
+        <Reveal delayMs={40}>
+          <PrivateStatsPanel stats={creatorStats} title="All Journeys" />
         </Reveal>
 
         <Reveal delayMs={60}>
