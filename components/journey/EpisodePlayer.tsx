@@ -219,7 +219,7 @@ export function EpisodePlayer({
             className="absolute inset-0 grid place-items-center bg-bg/35 transition-opacity"
           >
             <span className="grid h-16 w-16 place-items-center rounded-full border border-white/20 bg-bg/60 backdrop-blur-md transition-transform duration-300 hover:scale-105">
-              <Play className="h-6 w-6 fill-current" aria-hidden="true" />
+              <Play className="h-6 w-6 fill-current text-ember" aria-hidden="true" />
             </span>
           </button>
         )}

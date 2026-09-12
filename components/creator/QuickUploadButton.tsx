@@ -469,12 +469,12 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
             <div className="relative w-56">
               {posterPreviewUrl ? (
                 // Anteprima locale (blob: URL), non ancora su R2: caricata solo al momento del Publish.
-                // Stessa proporzione 4:5 delle card episodio del profilo (ContentCard), solo più
+                // Stessa proporzione 4:3 delle card episodio del profilo (ContentCard), solo più
                 // piccola, per restare compatti senza scroll.
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={posterPreviewUrl} alt="" className="aspect-4/5 w-56 rounded-lg object-cover" />
+                <img src={posterPreviewUrl} alt="" className="aspect-4/3 w-56 rounded-lg object-cover" />
               ) : (
-                <div className="flex aspect-4/5 w-56 items-center justify-center rounded-lg bg-surface-2">
+                <div className="flex aspect-4/3 w-56 items-center justify-center rounded-lg bg-surface-2">
                   <VideoIcon className="h-6 w-6 text-ink-muted" />
                 </div>
               )}
@@ -598,7 +598,7 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
           onClick={() => setAdvanced((value) => !value)}
           className="text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
         >
-          {advanced ? "Hide options" : "More options (chapter, date)"}
+          {advanced ? "Hide options" : chapters.length > 0 ? "More options (chapter, date)" : "More options (date)"}
         </button>
 
         <div className={advanced ? "space-y-4" : "hidden"}>

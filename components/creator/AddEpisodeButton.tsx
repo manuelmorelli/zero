@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { EpisodeForm } from "@/components/creator/EpisodeForm";
+import { AddEpisodeCard } from "@/components/creator/AddEpisodeCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export function AddEpisodeButton({
@@ -30,12 +30,12 @@ export function AddEpisodeButton({
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Add episode</DialogTitle>
           </DialogHeader>
           <div className="p-4">
-            <EpisodeForm journeyId={journeyId} chapters={chapters} defaultChapterId={defaultChapterId} />
+            <AddEpisodeCard journeyId={journeyId} chapters={chapters} defaultChapterId={defaultChapterId} />
           </div>
         </DialogContent>
       </Dialog>

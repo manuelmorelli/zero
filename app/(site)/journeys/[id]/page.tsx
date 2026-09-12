@@ -198,17 +198,17 @@ function EpisodeRow({
       <Link
         href={`/journeys/${journeyId}/episodes/${episode.id}`}
         id={episode.id}
-        className="group flex w-full scroll-mt-24 items-center gap-3 rounded-xl border border-border bg-surface p-2.5 text-left transition-colors hover:border-ink-muted hover:bg-surface-2"
+        className="group flex w-full max-w-[420px] scroll-mt-24 items-center gap-3 rounded-xl border border-border bg-surface p-2 text-left transition-colors hover:border-ink-muted hover:bg-surface-2"
       >
-        <span className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:w-36">
+        <span className="relative aspect-4/3 w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:w-44">
           {episode.posterUrl || coverUrl ? (
-            <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="144px" className="object-cover" />
+            <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="176px" className="object-cover" />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
           )}
           <span className="absolute inset-0 grid place-items-center bg-bg/30 opacity-0 transition-opacity group-hover:opacity-100">
             <span className="grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-bg/60 backdrop-blur-md">
-              <Play className="h-3 w-3 fill-current" aria-hidden="true" />
+              <Play className="h-3 w-3 fill-current text-ember" aria-hidden="true" />
             </span>
           </span>
         </span>

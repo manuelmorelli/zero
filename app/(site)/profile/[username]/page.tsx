@@ -216,7 +216,7 @@ export default async function PublicProfilePage({
                 <h2 className="text-base font-bold tracking-tight">Recent Episodes</h2>
 
                 {episodeFeedItems.length > 0 ? (
-                  <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {episodeFeedItems.map((item, index) => (
                       <Reveal key={item.episodeId} delayMs={index * 60}>
                         <ContentCard
@@ -225,6 +225,7 @@ export default async function PublicProfilePage({
                           imageAlt={item.title}
                           title={item.title}
                           category={item.category}
+                          isVideo
                           emptyMessage={
                             isDemoFeed ? (
                               <span
@@ -285,7 +286,7 @@ export default async function PublicProfilePage({
                 </div>
 
                 {liveJourneys.length > 0 ? (
-                  <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {liveJourneys.slice(0, PUBLISHED_JOURNEYS_PREVIEW_COUNT).map((journey, index) => {
                       // Posizione nell'elenco completo (non nella sola anteprima): "Move" deve
                       // rispecchiare l'ordine reale, che include anche i Journey archiviati non
@@ -334,7 +335,7 @@ export default async function PublicProfilePage({
                 {`${user.name} hasn't published any Journey yet.`}
               </p>
             ) : (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {journeys.map((journey, index) => (
                   <Reveal key={journey.id} delayMs={index * 80}>
                     <ContentCard

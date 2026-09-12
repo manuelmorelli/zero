@@ -235,7 +235,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
           {journey && (
             <div>
               <span className="text-sm font-medium text-ink-muted">Cover</span>
-              <div className="relative mt-1.5 aspect-4/5 w-full overflow-hidden rounded-xl border border-border bg-surface-2">
+              <div className="relative mt-1.5 aspect-4/3 w-full overflow-hidden rounded-xl border border-border bg-surface-2">
                 {coverPreview ? (
                   <Image src={coverPreview} alt="" fill sizes="220px" className="object-cover" />
                 ) : (

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FadeImage } from "@/components/common/FadeImage";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Play } from "lucide-react";
+import { CategoryIcon } from "@/components/journey/CategoryIcon";
 
 type ContentCardProps = {
   href: string;
@@ -23,6 +24,9 @@ type ContentCardProps = {
   /** Testo mostrato al centro al posto della foto quando `imageUrl` è null (es. i placeholder
    * motivazionali del feed demo). Se assente, l'area resta un semplice sfondo sfumato. */
   emptyMessage?: React.ReactNode;
+  /** Mostra l'icona play sovrapposta alla foto: solo per le card che aprono un video (episodi),
+   * non per i Journey (che non sono un contenuto riproducibile in sé). */
+  isVideo?: boolean;
 };
 
 /** Card "poster" del Profilo: foto sola sopra, titolo/categoria/punteggio sotto — stile diverso
@@ -39,12 +43,13 @@ export function ContentCard({
   likeSlot,
   menu,
   emptyMessage,
+  isVideo,
 }: ContentCardProps) {
   return (
     <div className="group relative block transition-transform duration-300 hover:-translate-y-1">
       <Link
         href={href}
-        className="relative block aspect-4/5 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
+        className="relative block aspect-4/3 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
       >
         {imageUrl ? (
           <FadeImage
@@ -65,6 +70,14 @@ export function ContentCard({
         {status && (
           <span className="absolute left-2.5 top-2.5 rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
             {status}
+          </span>
+        )}
+        {category && <CategoryIcon category={category} className={status ? "absolute right-2.5 top-2.5" : "absolute left-2.5 top-2.5"} />}
+        {isVideo && (
+          <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity group-hover:opacity-100">
+            <span className="grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-bg/60 backdrop-blur-md">
+              <Play className="h-3.5 w-3.5 fill-current text-ember" aria-hidden="true" />
+            </span>
           </span>
         )}
       </Link>

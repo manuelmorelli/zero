@@ -52,10 +52,10 @@ export function JourneysBrowser({ rows }: JourneysBrowserProps) {
       {filteredRows.map((row) => (
         <HorizontalScrollRow key={row.category} id={row.slug} title={row.category}>
           {row.wildcardJourneyId && (
-            <WildcardJourneyCard journeyId={row.wildcardJourneyId} className="w-40 shrink-0 sm:w-44" />
+            <WildcardJourneyCard journeyId={row.wildcardJourneyId} className="w-56 shrink-0 sm:w-72 lg:w-80" />
           )}
           {row.journeys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} className="w-40 shrink-0 sm:w-44" />
+            <JourneyCard key={journey.id} journey={journey} className="w-56 shrink-0 sm:w-72 lg:w-80" />
           ))}
         </HorizontalScrollRow>
       ))}

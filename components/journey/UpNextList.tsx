@@ -14,8 +14,10 @@ type UpNextListProps = {
 export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, activeEpisodeId }: UpNextListProps) {
   return (
     <aside className="min-w-0">
-      <h2 className="text-sm font-bold tracking-tight">Up next</h2>
-      <p className="mt-1 text-xs text-ink-muted">{journeyTitle}</p>
+      <h2 className="text-sm font-bold tracking-tight">{journeyTitle}</h2>
+      <p className="mt-1 text-xs text-ink-muted">
+        {episodes.length} {episodes.length === 1 ? "Episode" : "Episodes"}
+      </p>
       <ul className="mt-3 space-y-2 lg:max-h-[70vh] lg:overflow-y-auto lg:pr-1">
         {episodes.map((episode) => {
           const active = episode.id === activeEpisodeId;
@@ -29,7 +31,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                     : "border-border bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.05]"
                 }`}
               >
-                <span className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
+                <span className="relative aspect-4/3 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
                   {episode.posterUrl || coverUrl ? (
                     <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="96px" className="object-cover" />
                   ) : (

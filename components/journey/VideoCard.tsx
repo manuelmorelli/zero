@@ -19,7 +19,7 @@ export function VideoCard({ video }: VideoCardProps) {
       href={`/journeys/${journeyId}/episodes/${episodeId}`}
       className="group block transition-transform duration-300 hover:-translate-y-1"
     >
-      <div className="relative aspect-video overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]">
+      <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]">
         {coverUrl ? (
           <Image
             src={coverUrl}
@@ -34,7 +34,7 @@ export function VideoCard({ video }: VideoCardProps) {
         <div className="absolute inset-0 bg-bg/40 transition-colors group-hover:bg-bg/25" />
         <span className="absolute inset-0 grid place-items-center">
           <span className="grid h-12 w-12 place-items-center rounded-full border border-white/20 bg-bg/50 backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
-            <PlayIcon className="h-4 w-4 translate-x-[1px] fill-current" />
+            <PlayIcon className="h-4 w-4 translate-x-[1px] fill-current text-ember" />
           </span>
         </span>
         <CategoryIcon category={category} className="absolute left-2.5 top-2.5 h-7 w-7" />

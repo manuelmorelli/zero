@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Compass, Flame, Video as VideoIcon, Star, ArrowRight, Sparkles, UserPlus, HelpCircle } from "lucide-react";
+import { Compass, Flame, Video as VideoIcon, Star, ArrowRight, Sparkles, UserPlus, HelpCircle, History, Play } from "lucide-react";
+import type { ContinueJourneyItem } from "@/lib/discovery/continueJourneys";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { MomentJourneyCard } from "@/components/journey/MomentJourneyCard";
 import { VideoCard } from "@/components/journey/VideoCard";
@@ -54,9 +55,9 @@ export default async function Home() {
     needsOnboarding = userInterests.length === 0;
   }
 
-  // "Continue Your Journey" non si mostra più qui (si sposterà sulla home del Profilo), ma
-  // l'elenco resta calcolato: serve a escludere dalle righe di scoperta i Journey che l'utente
-  // sta già seguendo passo passo.
+  // "Continue Watching": riga in cima alla Home (sotto l'Hero) per chi ha già un avanzamento
+  // salvato su almeno un Journey. Serve anche a escludere dalle righe di scoperta i Journey che
+  // l'utente sta già seguendo passo passo, per non proporglieli due volte.
   const continueJourneys = await getContinueJourneys(session);
   const excludeFromDiscovery = continueJourneys.map((item) => item.journeyId);
 
@@ -74,15 +75,15 @@ export default async function Home() {
   ] = await Promise.all([
     getFollowedCreatorsStories({ userId }),
     getOwnStory({ userId }),
-    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, interests: userInterests }),
+    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: 4, interests: userInterests }),
     getRecommendedCreators({ userId, interests: userInterests }),
     getJourneyCountsByCategory(),
     getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: 10, interests: userInterests }),
-    getLatestVideos({ limit: 10, interests: userInterests }),
-    getTopJourneys({ limit: 10, interests: userInterests }),
+    getLatestVideos({ limit: 4, interests: userInterests }),
+    getTopJourneys({ limit: 4, interests: userInterests }),
     // Nessuna personalizzazione: "Discovering Now" mostra tutti i Journey in Discovery Phase a
     // chiunque, loggato o no, indipendentemente da interessi o creator seguiti (08_Algorithm.md).
-    getDiscoveringNowJourneys(10),
+    getDiscoveringNowJourneys(4),
     getHeroJourneys(4),
   ]);
 
@@ -91,11 +92,11 @@ export default async function Home() {
   // torna automaticamente ai dati reali non appena ce ne sono abbastanza, nessuna struttura da toccare.
   // "Journeys of the Moment" mostra solo 4 Journey in Home: il resto si vede in "View all".
   const displayedMomentJourneys = (momentJourneys.length > 0 ? momentJourneys : DEMO_JOURNEYS).slice(0, 4);
-  const displayedLatestVideos = latestVideos.length > 0 ? latestVideos : DEMO_LATEST_VIDEOS;
-  const displayedTopJourneys = topJourneys.length > 0 ? topJourneys : DEMO_TOP_JOURNEYS;
-  const displayedDiscoveringNow = discoveringNow.length > 0 ? discoveringNow : DEMO_DISCOVERING_NOW;
+  const displayedLatestVideos = (latestVideos.length > 0 ? latestVideos : DEMO_LATEST_VIDEOS).slice(0, 4);
+  const displayedTopJourneys = (topJourneys.length > 0 ? topJourneys : DEMO_TOP_JOURNEYS).slice(0, 4);
+  const displayedDiscoveringNow = (discoveringNow.length > 0 ? discoveringNow : DEMO_DISCOVERING_NOW).slice(0, 4);
   const displayedStories = creatorStories.length > 0 ? creatorStories : DEMO_STORIES;
-  const displayedRecommendedJourneys = recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS.slice(0, 5);
+  const displayedRecommendedJourneys = (recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS).slice(0, 4);
   const displayedRecommendedCreators = recommendedCreators.length > 0 ? recommendedCreators : DEMO_CREATORS;
   const heroSlides: HeroSlide[] =
     heroJourneys.length > 0
@@ -115,6 +116,8 @@ export default async function Home() {
       {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
       <Hero slides={heroSlides} stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
 
+      {userId && continueJourneys.length > 0 && <ContinueWatching journeys={continueJourneys} />}
+
       <div id="discover">
         <DiscoveringNow journeys={displayedDiscoveringNow} />
         <LatestVideos videos={displayedLatestVideos} />
@@ -129,6 +132,65 @@ export default async function Home() {
       <FinalCta />
       <SiteFooter />
     </main>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* CONTINUE WATCHING — riprendi da dove hai lasciato                   */
+/* ------------------------------------------------------------------ */
+
+function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
+  return (
+    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <Reveal>
+        <SectionHeading
+          icon={<History className="h-6 w-6" aria-hidden="true" />}
+          title="Continue Watching"
+          subtitle="Pick up where you left off."
+        />
+      </Reveal>
+
+      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {journeys.map((item, index) => (
+          <Reveal key={item.journeyId} as="li" delayMs={index * 70}>
+            <Link
+              href={item.episodeId ? `/journeys/${item.journeyId}/episodes/${item.episodeId}` : `/journeys/${item.journeyId}`}
+              className="group block transition-transform duration-300 hover:-translate-y-1"
+            >
+              <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]">
+                {item.coverUrl ? (
+                  <Image
+                    src={item.coverUrl}
+                    alt={item.title}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
+                )}
+                <div className="absolute inset-0 bg-bg/30 transition-colors group-hover:bg-bg/15" />
+                <span className="absolute left-2.5 top-2.5 rounded-full border border-ember/30 bg-bg/70 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-ember backdrop-blur-md">
+                  Continue watching
+                </span>
+                <span className="absolute inset-0 grid place-items-center">
+                  <span className="grid h-12 w-12 place-items-center rounded-full border border-white/20 bg-bg/50 backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
+                    <Play className="h-4 w-4 translate-x-[1px] fill-current text-ember" aria-hidden="true" />
+                  </span>
+                </span>
+              </div>
+
+              <h3 className="mt-3 truncate text-base font-semibold transition-colors group-hover:text-ember">
+                {item.episodeTitle ?? item.title}
+              </h3>
+              <p className="mt-1 truncate text-xs text-ink-muted">
+                {item.title} · {item.creatorName}
+              </p>
+            </Link>
+          </Reveal>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -148,7 +210,7 @@ function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {journeys.map((journey, index) => (
           <Reveal key={journey.id} as="li" delayMs={index * 70}>
             <JourneyCard
@@ -188,7 +250,7 @@ function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestV
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {videos.map((video, index) => (
           <Reveal key={video.episodeId} as="li" delayMs={index * 70}>
             <VideoCard video={video} />
@@ -242,7 +304,7 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {journeys.map((journey, index) => (
           <Reveal key={journey.id} as="li" delayMs={index * 70}>
             <JourneyCard
@@ -282,7 +344,7 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {journeys.map((journey, index) => (
           <Reveal key={journey.id} as="li" delayMs={index * 70}>
             <JourneyCard journey={journey} />
