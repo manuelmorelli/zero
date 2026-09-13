@@ -1,9 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Compass, Flame, Video as VideoIcon, Star, ArrowRight, Sparkles, UserPlus, HelpCircle, History, Play, ShieldCheck } from "lucide-react";
+import { Compass, Video as VideoIcon, Star, ArrowRight, Sparkles, Shuffle, HelpCircle, History, Play, ShieldCheck } from "lucide-react";
 import type { ContinueJourneyItem } from "@/lib/discovery/continueJourneys";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
-import { MomentJourneyCard } from "@/components/journey/MomentJourneyCard";
 import { VideoCard } from "@/components/journey/VideoCard";
 import { Avatar } from "@/components/common/Avatar";
 import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
@@ -24,7 +23,7 @@ import {
   DEMO_DISCOVERING_NOW,
 } from "@/lib/demo/demoContent";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
-import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
+import { getWildcardsToFollow } from "@/lib/discovery/wildcardCreators";
 import { getFollowedCreatorsStories, getOwnStory } from "@/lib/discovery/stories";
 import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
@@ -66,9 +65,8 @@ export default async function Home() {
     creatorStories,
     ownStory,
     recommendedJourneys,
-    recommendedCreators,
+    wildcardsToFollow,
     categoryCounts,
-    momentJourneys,
     latestVideos,
     topJourneys,
     discoveringNow,
@@ -77,9 +75,8 @@ export default async function Home() {
     getFollowedCreatorsStories({ userId }),
     getOwnStory({ userId }),
     getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: 4, interests: userInterests }),
-    getRecommendedCreators({ userId, interests: userInterests }),
+    getWildcardsToFollow(5),
     getJourneyCountsByCategory(),
-    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: 10, interests: userInterests }),
     getLatestVideos({ limit: 4, interests: userInterests }),
     getTopJourneys({ limit: 4, interests: userInterests }),
     // Nessuna personalizzazione: "Discovering Now" mostra tutti i Journey in Discovery Phase a
@@ -91,14 +88,12 @@ export default async function Home() {
   // DEMO DATA - replace when real data available: placeholder realistici per le sezioni
   // ancora vuote (nessun dato reale sufficiente), per una demo visiva completa. Ogni sezione
   // torna automaticamente ai dati reali non appena ce ne sono abbastanza, nessuna struttura da toccare.
-  // "Journeys of the Moment" mostra solo 4 Journey in Home: il resto si vede in "View all".
-  const displayedMomentJourneys = (momentJourneys.length > 0 ? momentJourneys : DEMO_JOURNEYS).slice(0, 4);
   const displayedLatestVideos = (latestVideos.length > 0 ? latestVideos : DEMO_LATEST_VIDEOS).slice(0, 4);
   const displayedTopJourneys = (topJourneys.length > 0 ? topJourneys : DEMO_TOP_JOURNEYS).slice(0, 4);
   const displayedDiscoveringNow = (discoveringNow.length > 0 ? discoveringNow : DEMO_DISCOVERING_NOW).slice(0, 4);
   const displayedStories = creatorStories.length > 0 ? creatorStories : DEMO_STORIES;
   const displayedRecommendedJourneys = (recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS).slice(0, 4);
-  const displayedRecommendedCreators = recommendedCreators.length > 0 ? recommendedCreators : DEMO_CREATORS;
+  const displayedWildcardsToFollow = wildcardsToFollow.length > 0 ? wildcardsToFollow : DEMO_CREATORS;
   const heroSlides: HeroSlide[] =
     heroJourneys.length > 0
       ? heroJourneys.map((journey) => ({
@@ -120,14 +115,13 @@ export default async function Home() {
       {userId && continueJourneys.length > 0 && <ContinueWatching journeys={continueJourneys} />}
 
       <div id="discover">
+        <RecommendedJourneys journeys={displayedRecommendedJourneys} />
         <DiscoveringNow journeys={displayedDiscoveringNow} />
-        <LatestVideos videos={displayedLatestVideos} />
-        <JourneysOfTheMoment journeys={displayedMomentJourneys} />
         <TopJourneys journeys={displayedTopJourneys} />
+        <LatestVideos videos={displayedLatestVideos} />
+        <WildcardsToFollow creators={displayedWildcardsToFollow} />
       </div>
 
-      <RecommendedJourneys journeys={displayedRecommendedJourneys} />
-      <RecommendedCreators creators={displayedRecommendedCreators} />
       <Categories countByCategory={categoryCounts} />
       <HowItWorksCta />
       <FinalCta />
@@ -279,33 +273,6 @@ function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestV
 }
 
 /* ------------------------------------------------------------------ */
-/* JOURNEYS OF THE MOMENT                                               */
-/* ------------------------------------------------------------------ */
-
-function JourneysOfTheMoment({ journeys }: { journeys: JourneyCardData[] }) {
-  return (
-    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
-      <Reveal>
-        <SectionHeading
-          icon={<Flame className="h-6 w-6" aria-hidden="true" />}
-          title="Journeys of the Moment"
-          subtitle="The most followed and impactful journeys right now."
-          viewAllHref="/discover/moment"
-        />
-      </Reveal>
-
-      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {journeys.map((journey, index) => (
-          <Reveal key={journey.id} as="li" delayMs={index * 70}>
-            <MomentJourneyCard journey={journey} rank={index + 1} />
-          </Reveal>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /* TOP JOURNEYS                                                         */
 /* ------------------------------------------------------------------ */
 
@@ -374,18 +341,20 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* CREATOR CONSIGLIATI                                                 */
+/* WILDCARDS TO FOLLOW — creator dietro il pick Wildcard stabile di      */
+/* ogni categoria (lib/discovery/wildcardCreators.ts), sostituisce la   */
+/* vecchia riga "Creators to follow" (raccomandazione personalizzata,    */
+/* ora coperta da "Recommended for you")                                */
 /* ------------------------------------------------------------------ */
 
-function RecommendedCreators({ creators }: { creators: CreatorSearchResult[] }) {
+function WildcardsToFollow({ creators }: { creators: CreatorSearchResult[] }) {
   return (
     <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
       <Reveal>
         <SectionHeading
-          icon={<UserPlus className="h-6 w-6" aria-hidden="true" />}
-          title="Creators to follow"
-          subtitle="People documenting journeys like the ones you follow."
-          viewAllHref="/discover/creators"
+          icon={<Shuffle className="h-6 w-6" aria-hidden="true" />}
+          title="Wildcards to follow"
+          subtitle="A random pick from each category, refreshed daily."
         />
       </Reveal>
 

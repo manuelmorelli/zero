@@ -294,6 +294,7 @@ model Journey {
   progresses  JourneyProgress[]
   analyticsSnapshots Analytics[]
   linkedByUpdates Update[]
+  wildcardPicks WildcardPick[]
 
   @@index([creatorId, order])
   @@map("journeys")
@@ -726,6 +727,19 @@ model Follow {
 
   @@unique([followerId, followingId])
   @@map("follows")
+}
+
+// Pick "Wildcard" stabile per categoria, pagina /journeys (lib/discovery/wildcard.ts): una sola
+// riga per categoria, ricalcolata pigramente alla lettura se più vecchia di 24 ore (stesso
+// principio del Journey Score: niente cron, il ricalcolo avviene solo alla prossima visita utile).
+model WildcardPick {
+  id        String   @id @default(uuid())
+  category  String   @unique
+  journeyId String
+  journey   Journey  @relation(fields: [journeyId], references: [id])
+  pickedAt  DateTime @default(now())
+
+  @@map("wildcard_picks")
 }
 
 // ------------------------------------------------------------

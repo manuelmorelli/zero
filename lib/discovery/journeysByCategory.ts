@@ -3,6 +3,7 @@ import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { getStableWildcardPicks } from "@/lib/discovery/wildcard";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 
 export type JourneyCategoryRow = {
@@ -44,12 +45,15 @@ export async function getJourneysByCategory(): Promise<JourneyCategoryRow[]> {
     byCategory.set(journey.category, list);
   }
 
+  const wildcardPicks = await getStableWildcardPicks(
+    new Map(Array.from(byCategory.entries()).map(([category, list]) => [category, list.map((journey) => ({ id: journey.id }))]))
+  );
+
   const rows: JourneyCategoryRow[] = [];
   for (const category of JOURNEY_CATEGORIES) {
     const list = byCategory.get(category);
     if (!list || list.length === 0) continue;
 
-    const wildcard = list[Math.floor(Math.random() * list.length)]!;
     rows.push({
       category,
       slug: categoryToSlug(category),
@@ -61,7 +65,7 @@ export async function getJourneysByCategory(): Promise<JourneyCategoryRow[]> {
         journeyScore: scoreById.get(journey.id),
         creator: { displayName: journey.creator.displayName },
       })),
-      wildcardJourneyId: wildcard.id,
+      wildcardJourneyId: wildcardPicks.get(category) ?? null,
     });
   }
   return rows;
