@@ -65,7 +65,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
       </div>
 
-      <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-[calc(4.43%+2rem)] md:pt-6 md:pb-12">
+      <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto_auto] md:gap-x-8 md:gap-y-3 md:px-[calc(4.43%+2rem)] md:pt-6 md:pb-12">
         <div className="max-w-lg md:col-start-1 md:row-start-1">
           <p className="text-hero-eyebrow uppercase tracking-[0.42em] text-ink-muted">
             Every <span className="text-ember">journey</span> starts from
@@ -88,7 +88,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
           </p>
         </div>
 
-        {/* Bottoni + avatar/Updates — la citazione a destra si allinea a questa riga */}
+        {/* Bottoni: riga propria, sopra gli Update, non più condivisa con la card a destra. */}
         <div className="max-w-lg md:col-start-1 md:row-start-2">
           <div className="flex flex-wrap gap-3">
             <ButtonPrimary href="#discover">
@@ -97,9 +97,12 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
             </ButtonPrimary>
             <ButtonSecondary href="/register">Create Your Journey</ButtonSecondary>
           </div>
+        </div>
 
+        {/* Avatar/Updates — la card del Journey (o citazione) a destra si allinea a questa riga. */}
+        <div className="max-w-lg md:col-start-1 md:row-start-3">
           {ownStory || stories.length > 0 ? (
-            <div className="mt-4 flex gap-1.5 overflow-x-auto pb-1">
+            <div className="flex gap-1.5 overflow-x-auto pb-1">
               {ownStory && (
                 <button
                   type="button"
@@ -163,7 +166,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
               )}
             </div>
           ) : (
-            <div className="mt-4 flex items-center gap-4">
+            <div className="flex items-center gap-4">
               <div className="flex -space-x-2.5">
                 {creators.map((name) => (
                   <Avatar
@@ -182,9 +185,9 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
           )}
         </div>
 
-        {/* Card sopra la foto, allineata alla riga dei bottoni: Journey reale se disponibile
+        {/* Card sopra la foto, allineata alla riga degli Update: Journey reale se disponibile
          * (cliccabile, porta alla sua pagina), altrimenti la citazione demo. */}
-        <div className="relative flex md:col-start-2 md:row-start-2 md:justify-end md:self-start">
+        <div className="relative flex md:col-start-2 md:row-start-3 md:justify-end md:self-start">
           <div className="w-full md:max-w-[22rem]">
             <HeroSlideCard slide={slide} />
             <div className="mt-2.5 flex items-center gap-2 md:justify-end">
