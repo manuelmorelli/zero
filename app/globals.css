@@ -17,12 +17,50 @@
 
   /* Un'unica famiglia di font, pesi diversi (da Design System) */
   --font-sans: var(--font-inter);
+
+  /* Manopola "tutto il resto" (spazi/layout): stesso valore usato sotto su html,
+   * in una sola variabile per non farli mai più andare fuori sincrono. */
+  --layout-scale: 0.9;
+  /* Manopola dedicata solo al testo, indipendente da --layout-scale.
+   * Il valore "neutro" (che riproduce l'aspetto attuale) è 0.9, non 1: la formula sotto
+   * annulla del tutto la riduzione di --layout-scale, quindi con 1 il testo tornerebbe
+   * alla taglia originale di Tailwind (più grande di oggi). 0.9 è solo il punto di partenza:
+   * da qui in poi questa manopola è comunque indipendente da --layout-scale. */
+  --text-scale: 0.9;
+
+  /* Token testo di Tailwind ridefiniti per annullare l'effetto di --layout-scale
+   * su html e dipendere invece solo da --text-scale (valori di partenza presi da
+   * node_modules/tailwindcss/theme.css). Le variabili di interlinea (--text-*--line-height)
+   * non servono: sono rapporti unitless, già proporzionali al font-size del testo. */
+  --text-xs: calc(0.75rem / var(--layout-scale) * var(--text-scale));
+  --text-sm: calc(0.875rem / var(--layout-scale) * var(--text-scale));
+  --text-base: calc(1rem / var(--layout-scale) * var(--text-scale));
+  --text-lg: calc(1.125rem / var(--layout-scale) * var(--text-scale));
+  --text-xl: calc(1.25rem / var(--layout-scale) * var(--text-scale));
+  --text-2xl: calc(1.5rem / var(--layout-scale) * var(--text-scale));
+  --text-3xl: calc(1.875rem / var(--layout-scale) * var(--text-scale));
+  --text-4xl: calc(2.25rem / var(--layout-scale) * var(--text-scale));
+  --text-5xl: calc(3rem / var(--layout-scale) * var(--text-scale));
+  --text-6xl: calc(3.75rem / var(--layout-scale) * var(--text-scale));
+  --text-7xl: calc(4.5rem / var(--layout-scale) * var(--text-scale));
+  --text-8xl: calc(6rem / var(--layout-scale) * var(--text-scale));
+  --text-9xl: calc(8rem / var(--layout-scale) * var(--text-scale));
+
+  /* Taglie su misura per i testi della Hero (components/landing/Hero.tsx) che non
+   * corrispondono a nessuna taglia standard di Tailwind. Stessa formula sopra: seguono
+   * --text-scale insieme al resto, ma ognuna resta modificabile per conto proprio. */
+  --text-hero-eyebrow: calc(0.77rem / var(--layout-scale) * var(--text-scale));
+  --text-hero-headline: calc(1.65rem / var(--layout-scale) * var(--text-scale));
+  --text-hero-subhead: calc(0.96rem / var(--layout-scale) * var(--text-scale));
+  --text-hero-caption: calc(0.65rem / var(--layout-scale) * var(--text-scale));
+  --text-hero-tag: calc(0.6rem / var(--layout-scale) * var(--text-scale));
 }
 
 html {
-  /* Riduzione globale della scala del sito (~15%): tutte le unità rem di Tailwind
-   * (spaziature, dimensioni testo) si restringono di conseguenza in automatico. */
-  font-size: 90%;
+  /* Manopola "tutto il resto" (spazi/layout): tutte le unità rem di Tailwind
+   * (spaziature, dimensioni non testuali) si restringono di conseguenza in automatico.
+   * Il testo non ne risente più: vedi --text-scale sopra. */
+  font-size: calc(var(--layout-scale) * 100%);
 }
 
 body {

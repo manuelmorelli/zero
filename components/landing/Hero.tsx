@@ -67,7 +67,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
 
       <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto] md:gap-x-8 md:gap-y-3 md:px-[calc(4.43%+2rem)] md:pt-6 md:pb-12">
         <div className="max-w-lg md:col-start-1 md:row-start-1">
-          <p className="text-[0.77rem] uppercase tracking-[0.42em] text-ink-muted">
+          <p className="text-hero-eyebrow uppercase tracking-[0.42em] text-ink-muted">
             Every <span className="text-ember">journey</span> starts from
           </p>
           <Image
@@ -78,11 +78,11 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
             unoptimized
             className="mt-1 w-72 origin-left scale-x-95 sm:w-80 lg:w-96"
           />
-          <p className="mt-[0.675rem] max-w-[19ch] text-[1.65rem] leading-tight font-semibold text-balance">
+          <p className="mt-[0.675rem] max-w-[19ch] text-hero-headline leading-tight font-semibold text-balance">
             Because the destination is only part of{" "}
             <span className="text-ember">the story.</span>
           </p>
-          <p className="mt-2 max-w-sm text-[0.96rem] leading-relaxed text-ink-muted">
+          <p className="mt-2 max-w-sm text-hero-subhead leading-relaxed text-ink-muted">
             Every journey has a beginning, every step has a story, and every story can inspire
             someone to start their own.
           </p>
@@ -120,7 +120,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
                       )}
                     </span>
                   </span>
-                  <span className="max-w-11 truncate text-[0.65rem] text-ink-muted">You</span>
+                  <span className="max-w-11 truncate text-hero-caption text-ink-muted">You</span>
                 </button>
               )}
               {stories.slice(0, 6).map((story, index) => (
@@ -144,7 +144,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
                       )}
                     </span>
                   </span>
-                  <span className="max-w-11 truncate text-[0.65rem] text-ink-muted">
+                  <span className="max-w-11 truncate text-hero-caption text-ink-muted">
                     {story.creatorName}
                   </span>
                 </button>
@@ -158,7 +158,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
                   <span className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-2 text-ink-muted transition-colors hover:text-ember">
                     &rarr;
                   </span>
-                  <span className="text-[0.65rem] text-ink-muted">View all</span>
+                  <span className="text-hero-caption text-ink-muted">View all</span>
                 </button>
               )}
             </div>
@@ -169,7 +169,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
                   <Avatar
                     key={name}
                     name={name}
-                    className="h-9 w-9 border-2 border-bg bg-surface-2 text-[0.65rem]"
+                    className="h-9 w-9 border-2 border-bg bg-surface-2 text-hero-caption"
                   />
                 ))}
               </div>
@@ -233,7 +233,7 @@ function HeroSlideCard({ slide }: { slide: HeroSlide }) {
       <div className="rounded-xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-md">
         <Quote className="h-3.5 w-3.5 text-ember" aria-hidden="true" />
         <p className="mt-2 text-xs leading-relaxed text-ink/90">{slide.quote}</p>
-        <p className="mt-2 text-[0.65rem] text-ink-muted">&mdash; {slide.author}</p>
+        <p className="mt-2 text-hero-caption text-ink-muted">&mdash; {slide.author}</p>
       </div>
     );
   }
@@ -244,10 +244,10 @@ function HeroSlideCard({ slide }: { slide: HeroSlide }) {
       className="block rounded-xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-md transition-colors hover:border-ember/40"
     >
       {slide.category && (
-        <p className="text-[0.6rem] uppercase tracking-[0.2em] text-ember">{slide.category}</p>
+        <p className="text-hero-tag uppercase tracking-[0.2em] text-ember">{slide.category}</p>
       )}
       <p className="mt-1.5 text-sm leading-snug font-semibold text-ink">{slide.title}</p>
-      <p className="mt-1.5 text-[0.65rem] text-ink-muted">by {slide.creatorName}</p>
+      <p className="mt-1.5 text-hero-caption text-ink-muted">by {slide.creatorName}</p>
     </Link>
   );
 }
