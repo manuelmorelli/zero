@@ -1,7 +1,7 @@
 ---
 title: Project History
 doc_id: 92-project-history
-version: "1.8"
+version: "1.9"
 status: living
 related_docs:
   - 01_Vision
@@ -247,3 +247,15 @@ Una richiesta quasi innocua — togliere due bottoncini in alto a destra nella D
 Il capitolo si chiude tornando sulla Hero della Home, già "smessa di fingere" nel Capitolo 17, per darle ora anche una forma — angoli arrotondati e margine laterale, in stile Netflix. Il primo tentativo sembra corretto nel codice ma uno screenshot mostra una foto che pare "non stare nel contenitore": non un bug di rendering, si scopre, ma un browser zoomato al 33% che rende invisibili un margine e un arrotondamento in realtà presenti e misurabili — verificato riproducendo lo stesso zoom con uno screenshot automatico invece di limitarsi a rileggere il CSS. Dentro lo stesso controllo emerge però un difetto vero, non un'illusione: l'header restava appoggiato sopra la foto senza nessuno stacco. La card viene quindi spostata più in basso, sotto l'header, mantenendo la stessa altezza di prima — un aggiustamento affinato a piccoli passi, percentuale dopo percentuale, fino a quando testo e la card della citazione a destra, rimasti agganciati al vecchio bordo a piena larghezza, non vengono riallineati al nuovo perimetro più stretto della foto.
 
 Chiude la sessione una riflessione che guarda oltre il singolo ritocco: le scritte del sito e tutto il resto (spazi, bottoni, card) sono oggi controllate dalla stessa identica manopola — la riduzione al 90% nata nel Capitolo 16 — perché entrambe usano la stessa unità di misura relativa alla dimensione del testo della pagina. Cambiare una senza muovere l'altra richiede separarle in due sistemi indipendenti, una modifica architetturale più che visiva: il lavoro viene descritto con precisione tecnica e affidato a una nuova sessione dedicata, invece di aprirlo di corsa in coda a una sessione già lunga.
+
+---
+
+## Capitolo 21 — Una riga che si specchiava in un'altra, e una Wildcard troppo nervosa
+
+Il capitolo comincia con una domanda innocente su tre righe della Home che sembravano ripetere lo stesso contenuto — "Journeys of the Moment", "Top Journeys" e "Latest Videos" — e su cosa distinguesse davvero l'una dall'altra. La risposta rivela un'asimmetria che nessuno aveva notato: due criteri reali (data di pubblicazione per "Latest Videos", Journey Score per "Top Journeys"), non tre. "Journeys of the Moment" non aveva mai avuto una logica propria — richiamava sotto al cofano la stessa identica funzione di "Recommended for you", solo con un numero massimo diverso. Il nome suggeriva un criterio legato all'attualità che nel codice semplicemente non esisteva.
+
+Interrogata sulla Wildcard della pagina Journeys — la card che porta a un Journey scelto a caso in coda a ogni riga di categoria — la stessa sessione scopre un secondo difetto, più sottile: il pick veniva ricalcolato a ogni singolo caricamento della pagina, non una volta al giorno. Ricaricare la pagina cinque volte di fila poteva mostrare cinque Wildcard diverse — un dettaglio piccolo ma percepibile come "nervoso" invece che intenzionale.
+
+Il piano approvato risolve entrambi in un solo intervento: la riga duplicata viene eliminata (con essa la sua pagina "View all" gemella, ormai priva di contenuto proprio), la Home riordinata, e "Creators to follow" sostituita da una nuova riga, "Wildcards to follow", che mostra i creator dietro il pick Wildcard di ciascuna categoria invece dei loro Journey. La Wildcard stessa diventa stabile per 24 ore, salvata in una nuova tabella (`WildcardPick`) e ricalcolata pigramente solo alla prima lettura dopo la scadenza — lo stesso principio già in uso per il Journey Score, nessun servizio in background da far girare. Due domande sono state lasciate deliberatamente aperte per ora, invece di deciderle da soli: le due pagine "View all" orfane (una eliminata, l'altra lasciata online ma senza più un link diretto dalla Home) e cosa fare se lo stesso creator vince la Wildcard in due categorie (risposto: non si ripete).
+
+La parte più istruttiva della sessione, però, non era nel piano: dopo aver aggiunto la nuova tabella al database e rigenerato il client Prisma, il server di sviluppo già acceso da ore continuava a fallire con un errore che sembrava contraddire l'evidenza — il modello generato conteneva sicuramente la tabella nuova, verificato interrogandola direttamente fuori da Next.js. La causa non era il database né il codice, ma la cache di build di Turbopack: teneva in memoria una versione precedente del client, sopravvissuta persino a un riavvio completo del processo. Solo cancellando la cache (`.next`) e ripartendo da zero il sintomo è scomparso — un secondo promemoria, dopo quello del Capitolo 19, che un errore può indicare la causa sbagliata se ci si ferma al primo indizio plausibile.
