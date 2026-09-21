@@ -35,7 +35,7 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ☐ Player episodio: titolo sotto al video da ricentrare e rivedere nelle dimensioni; posizionamento del tasto Trusty da rivedere.
 
-☐ Pagina "Come funziona"/Algorithm: le sezioni vanno riordinate — oggi la spiegazione dell'algoritmo è in fondo alla pagina, Manuel la vuole come prima cosa che si legge.
+☑ Pagina "Come funziona"/Algorithm: sezioni riordinate, l'Algoritmo è ora la prima cosa che si legge dopo il titolo (prima era in fondo alla pagina). Fatto nel Punto 4 dell'allineamento (Algoritmo e Discovery, 2026-09-21), verificato di nuovo nel Punto 5 (`app/(site)/how-it-works/page.tsx`, sezione con `id="algorithm"` subito dopo l'intestazione). Questa riga non era stata aggiornata quando il lavoro è stato fatto altrove, causa di un rischio di duplicazione.
 
 ## Player
 
