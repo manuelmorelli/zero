@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.47"
+version: "1.48"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -41,7 +41,7 @@ Confronto con le funzionalità definite in `12_MVP_Features.md`:
 | Esplorazione (profilo pubblico, ricerca, scoperta) | ✅ Fatto — profilo pubblico funzionante e allineato al design di riferimento Lovable (Hero con copertina/avatar/anello/location/Trust Score, tab Overview/Journeys fissi in scroll, sezione Focus collegata agli interessi reali, feed fotografico con Like, sidebar About, anteprima Messaggi), vedi `97_Lovable_Redesign_Checklist.md`; navigazione per categoria fatta (`/categories`); Ricerca base fatta (`/search`, Journey e Creator) |
 | Community (seguire creator, Community Premium) | 🟡 Parziale — Follow fatto (pulsante su Profilo e Pagina Journey, conteggio reale); Community Premium ancora da fare (vedi Roadmap, Fase 4) |
 | Updates | ✅ Fatto — tutti e 5 i formati (testo, foto, video, sondaggio, domanda) dal pulsante "+" globale; anteprima come cerchi cliccabili nella Hero della Home (solo per chi ha fatto login, subito dopo i bottoni Explore/Create — non più una riga a sé sotto la Hero), massimo 6 mostrati + "View all", visualizzatore a schermo intero, reazioni e scadenza automatica (24h, pulizia lazy senza cron job) |
-| Dashboard (Updates, analisi base, Community Premium) | 🟡 Parziale — Dashboard come hub centrale del Journey (statistiche, Publish/Unpublish, Archive) e gestione Updates fatti (placeholder "Analytics — coming soon" per i numeri non ancora reali); allineamento preciso al design di riferimento Lovable non ancora fatto, vedi `97_Lovable_Redesign_Checklist.md` Fase 5; analisi reali e Community Premium ancora da fare (vedi Roadmap, Fase 4) |
+| Dashboard (Updates, analisi base, Community Premium) | 🟡 Parziale — Dashboard come hub centrale del Journey (statistiche, Publish/Unpublish, Archive) e gestione Updates fatti; pannello "Private Stats" con numeri reali (Total views, tasso di completamento, Completions, Interactions), calcolati dal database, nessun dato finto — corretto in questa voce il 2026-09-20 (Punto 2 allineamento): non è più un placeholder, ma resta un pannello base, senza storico né suddivisione per fonte di ricavo; Community Premium ancora da fare (vedi Roadmap, Fase 4) |
 | Messaggistica (conversazioni uno a uno) | ✅ Fatto — sbloccata da un follow in una sola direzione (non serve il follow reciproco), pulsante flottante dedicato con finestra di risposta rapida sul posto (senza cambiare pagina), aggiornamento della chat aperta ogni 15s |
 
 In sintesi: il percorso di creazione e gestione lato Creator (Journey → Capitoli → Episodi, con modifica, Publish/Unpublish e riordino via drag & drop) è completo e verificato end-to-end, senza alcun intervento necessario sul database. Il Profilo pubblico esiste ora in versione minima (nome, bio, Journey pubblicati, con Follow). Follow è fatto ed è la base per il resto della Discovery (Recommended Journeys, Feed, Updates e Creator consigliati, tutti fatti). La navigazione per categoria (`/categories`) è fatta come pagina a sé, ed è ora riproposta anche in Home. "Recommended for you", "Creator consigliati", "From creators you follow" (Feed), la riga di Updates in stile Stories e "Categories" sono ora in Home con dati reali. La Ricerca base (`/search`, Journey e Creator) è fatta. Il sistema Updates (tutti i formati dal pulsante "+", scadenza automatica a 24h, visualizzatore Stories in Home) è completo. La Messaggistica privata (conversazioni uno a uno, solo testo) è fatta, appoggiata sul Follow universale. Manca ancora tutto ciò che riguarda video reali, Community Premium/Analytics e la preparazione al lancio pubblico — vedi "Roadmap" più sotto.
@@ -250,7 +250,7 @@ Tutto il lavoro di base del prodotto: autenticazione, creazione e gestione dei J
 
 Il redesign secondo il prototipo grafico Lovable è **in corso**, non concluso — stato dettagliato e sempre aggiornato in `97_Lovable_Redesign_Checklist.md` (una prima versione richiedeva correzioni di precisione significative, vedi "Ultimo task completato"); vedi anche `98_Product_Review.md` per il dettaglio delle voci minori di rifinitura non legate al redesign.
 
-- 🟡 **Creator Dashboard** — hub centrale del Journey (statistiche, Manage, Publish/Unpublish, Archive, storico Journey archiviati) e gestione Updates fatti; il restyling preciso secondo il riferimento Lovable (selettore Journey a griglia, drag & drop capitoli/episodi, pannello statistiche esatto) è la Fase 5 di `97_Lovable_Redesign_Checklist.md`, **fatta** in 4 round (17-18 agosto); resta solo da verificare dal vivo con una sessione autenticata reale (mai riuscita finora, vedi 97); i numeri reali di Analytics restano da fare, vedi Fase 4 di questa roadmap.
+- 🟡 **Creator Dashboard** — hub centrale del Journey (statistiche, Manage, Publish/Unpublish, Archive, storico Journey archiviati) e gestione Updates fatti; il restyling preciso secondo il riferimento Lovable (selettore Journey a griglia, drag & drop capitoli/episodi, pannello statistiche esatto) è la Fase 5 di `97_Lovable_Redesign_Checklist.md`, **fatta** in 4 round (17-18 agosto); resta solo da verificare dal vivo con una sessione autenticata reale (mai riuscita finora, vedi 97); i numeri base di Analytics (Total views, tasso di completamento, Completions, Interactions) sono reali, vedi Fase 4 di questa roadmap per il resto (cruscotto più approfondito, legato ai ricavi).
 - ✅ **Profile Page** — allineamento preciso al riferimento Lovable (anello decorativo sull'avatar, card poster, popup di modifica reali) fatto, Fase 3 di `97_Lovable_Redesign_Checklist.md`.
 - ✅ **Journey Page** — unificata in un'unica pagina (hero + episodi), allineamento preciso al riferimento Lovable (pannello vetro nell'header) fatto, vedi `97_Lovable_Redesign_Checklist.md`.
 - 🟡 **Updates Page** — sistema completo (tutti i formati) fatto in Fase 1; la riga di cerchi ora vive dentro la Hero della Home, non più come sezione a sé; cancellazione con conferma nativa aggiunta (2026-08-22, dal visualizzatore stesso); contatore caratteri ancora non fatto.
@@ -281,7 +281,7 @@ Non ancora iniziata. Community Premium e l'analisi di base fanno parte dell'MVP 
 
 - ⬜ **Community Premium** — non iniziato.
 - ⬜ **Stripe Integration** — non collegato (vedi `.env.example`).
-- ⬜ **Analytics** — non iniziato.
+- 🟡 **Analytics** — pannello base reale fatto (Total views, tasso di completamento, Completions, Interactions, in `lib/dashboard/creatorStats.ts` e `PrivateStatsPanel.tsx`), corretto qui il 2026-09-20 (Punto 2 allineamento); resta da fare un cruscotto più approfondito (storico, suddivisione per fonte di ricavo) quando ci saranno ricavi reali da mostrare — per scelta di prodotto deve restare intuitivo per il creator e semplice da costruire, non rincorrere la complessità dei concorrenti (cohort analysis, previsione abbandono).
 - ⬜ **Creator Insights** — non iniziato.
 - ⬜ **Monetization Dashboard** — non iniziato.
 
