@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { isAlgorithmicRankingUnlocked } from "@/lib/discovery/algorithmUnlock";
 
 export type TopJourneyItem = {
   id: string;
@@ -34,6 +35,7 @@ export async function getTopJourneys({
     orderBy: { publishedAt: "desc" },
   });
   await ensureFreshJourneyScores(candidateIds.map((journey) => journey.id));
+  const rankingUnlocked = await isAlgorithmicRankingUnlocked();
 
   const journeys = await prisma.journey.findMany({
     where: { id: { in: candidateIds.map((journey) => journey.id) } },
@@ -46,18 +48,23 @@ export async function getTopJourneys({
     },
   });
 
-  const sorted = journeys
-    .map((journey) => ({
-      id: journey.id,
-      title: journey.title,
-      coverUrl: journey.coverUrl,
-      category: journey.category,
-      creatorName: journey.creator.displayName,
-      followersCount: journey.creator.user._count.followers,
-      episodesCount: journey.chapters.reduce((sum, chapter) => sum + chapter._count.episodes, 0),
-      journeyScore: journey.journeyScore,
-    }))
-    .sort((a, b) => b.journeyScore - a.journeyScore);
+  // Sotto ALGORITHMIC_RANKING_MIN_PUBLISHED_JOURNEYS il catalogo è troppo piccolo perché un
+  // ranking per punteggio significhi qualcosa (vedi lib/discovery/algorithmUnlock.ts): si mostra
+  // invece l'ordine cronologico, come "Discovering Now".
+  const rankedJourneys = rankingUnlocked
+    ? [...journeys].sort((a, b) => b.journeyScore - a.journeyScore)
+    : [...journeys].sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
+
+  const sorted = rankedJourneys.map((journey) => ({
+    id: journey.id,
+    title: journey.title,
+    coverUrl: journey.coverUrl,
+    category: journey.category,
+    creatorName: journey.creator.displayName,
+    followersCount: journey.creator.user._count.followers,
+    episodesCount: journey.chapters.reduce((sum, chapter) => sum + chapter._count.episodes, 0),
+    journeyScore: journey.journeyScore,
+  }));
 
   if (interests.length === 0) return withResolvedCoverUrls(sorted.slice(0, limit));
 

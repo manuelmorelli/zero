@@ -3,6 +3,7 @@ import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { getFollowedCreatorIds, getOwnCreatorId, getFollowedCategories } from "@/lib/discovery/follows";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { isAlgorithmicRankingUnlocked } from "@/lib/discovery/algorithmUnlock";
 
 type JourneyWithCreator = Awaited<ReturnType<typeof findPublishedJourneys>>[number];
 
@@ -42,6 +43,7 @@ export async function getRecommendedJourneys({
 
   const selected: JourneyWithCreator[] = [];
   const selectedIds = new Set<string>();
+  const rankingUnlocked = await isAlgorithmicRankingUnlocked();
 
   const followedCategories = followedCreatorIds.length > 0
     ? await getFollowedCategories(followedCreatorIds)
@@ -54,7 +56,7 @@ export async function getRecommendedJourneys({
       excludedJourneyIds: excludeJourneyIds,
       categories: candidateCategories,
     });
-    for (const journey of sortByJourneyScoreDesc(categoryMatches)) {
+    for (const journey of sortJourneys(categoryMatches, rankingUnlocked)) {
       if (selected.length >= limit) break;
       selected.push(journey);
       selectedIds.add(journey.id);
@@ -66,7 +68,7 @@ export async function getRecommendedJourneys({
       excludedCreatorIds,
       excludedJourneyIds: [...excludeJourneyIds, ...selectedIds],
     });
-    for (const journey of sortByJourneyScoreDesc(popular)) {
+    for (const journey of sortJourneys(popular, rankingUnlocked)) {
       if (selected.length >= limit) break;
       selected.push(journey);
     }
@@ -100,8 +102,14 @@ async function findPublishedJourneys(filters: {
 // "Spinta extra" del Journey Score (08_Algorithm.md): dentro il gruppo già selezionato per
 // categoria/popolarità (la garanzia di base non cambia), l'ordine finale non premia più solo i
 // follower ma il punteggio reale — completamento, continuità ed engagement pesano di più.
-function sortByJourneyScoreDesc(journeys: JourneyWithCreator[]): JourneyWithCreator[] {
-  return [...journeys].sort((a, b) => b.journeyScore - a.journeyScore);
+// Sotto ALGORITHMIC_RANKING_MIN_PUBLISHED_JOURNEYS (lib/discovery/algorithmUnlock.ts) il catalogo
+// è troppo piccolo perché quel punteggio significhi qualcosa: si ordina per data invece.
+function sortJourneys(journeys: JourneyWithCreator[], rankingUnlocked: boolean): JourneyWithCreator[] {
+  return [...journeys].sort((a, b) =>
+    rankingUnlocked
+      ? b.journeyScore - a.journeyScore
+      : (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0)
+  );
 }
 
 function toJourneyCardData(journey: JourneyWithCreator): JourneyCardData {
