@@ -1,12 +1,13 @@
 ---
 title: Product Backlog
 doc_id: 94-product-backlog
-version: "1.8"
+version: "1.9"
 status: living
 related_docs:
   - 08_Algorithm
   - 10_Monetization
   - 93_Project_Alignment_Recap
+  - 95_Video_Scaling_Future_Option
   - 98_Product_Review
 ---
 
@@ -86,8 +87,8 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ## Infrastruttura & costi
 
-☐ [In pausa — Manuel sta valutando opzioni esternamente, 2026-09-21] Rivedere compressione/distribuzione video e storage. Nota emersa aprendo il punto: la promessa pubblica su "Know the Algorithm. Know Zero." ("mai compresso") è già tecnicamente imprecisa oggi — esiste già una versione "light" adattiva via Cloudflare Stream (`Episode.lightVideoStatus`, vedi `EpisodePlayer.tsx`), l'originale resta solo come fallback. Se si introduce/rivede la compressione, va comunque riscritto quel testo pubblico. Manuel valuta altre opzioni prima di decidere la direzione — riprendere quando torna con un aggiornamento.
+☐ [In pausa, decisione presa 2026-09-21] Rivedere compressione/distribuzione video e storage. Nota emersa aprendo il punto: la promessa pubblica su "Know the Algorithm. Know Zero." ("mai compresso") è già tecnicamente imprecisa oggi — esiste già una versione "light" adattiva via Cloudflare Stream (`Episode.lightVideoStatus`, vedi `EpisodePlayer.tsx`), l'originale resta solo come fallback. Se si introduce/rivede la compressione, va comunque riscritto quel testo pubblico. Manuel aveva portato un documento con un'architettura alternativa fai-da-te (R2 + Cloudflare Cache + FFmpeg su server dedicato, niente Cloudflare Stream) pensata per uno scenario futuro a ~1.000 utenti registrati — **non un piano attivo**: oggi Zero non ha ancora traffico video reale, quindi il problema di costo che risolve non esiste ancora, e aspettare non comporta nessun lavoro perso (l'originale resta comunque su R2 in entrambi gli scenari). Documento completo salvato in `95_Video_Scaling_Future_Option.md`. Segnale per riprendere: crescita continua della spesa Cloudflare Stream legata ai minuti di video consegnati, da controllare periodicamente man mano che arrivano utenti reali.
 
-☐ Introdurre una soglia di dimensione oltre la quale i file caricati vengono compressi automaticamente, più hard limit di caricamento più severi rispetto agli attuali (oggi: 8MB massimo per le immagini, nessuna compressione — dichiarato esplicitamente in "How it works").
+☑ Compressione automatica delle foto caricate, interamente nel browser prima dell'upload (nessun costo, nessuna nuova dipendenza): sopra 2MB la foto viene ridimensionata (lato più lungo max 2000px) e ricompressa come JPEG (qualità 0.82). Limite massimo assoluto alzato da 8MB a 20MB, ora che la compressione gestisce i file pesanti da sola. Nuovo `lib/compressImage.ts` usato dai flussi senza ritaglio (poster episodio in `EpisodeForm.tsx`, poster/foto Update in `QuickUploadButton.tsx`); `lib/cropImage.ts` (avatar, copertina profilo, copertina Journey) esteso con lo stesso limite di dimensione. Non riguarda i video, gestiti a parte (vedi `95_Video_Scaling_Future_Option.md`).
 
 ☐ Verificare se esiste un limite di tempo per utenti/sessioni inattive (sessione di login vs account dormienti — da chiarire con Manuel quale dei due). Controllato 2026-09-15: `lib/auth.ts` non ha configurazione esplicita, usa i default di Better Auth.

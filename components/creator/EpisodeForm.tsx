@@ -11,6 +11,7 @@ import {
 } from "@/lib/actions/episode";
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
+import { compressImageIfNeeded } from "@/lib/compressImage";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { readVideoDuration } from "@/lib/media/readVideoDuration";
 import { formatDuration } from "@/lib/format/duration";
@@ -80,19 +81,20 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
 
     setPosterProgress(0);
     try {
+      const uploadFile = await compressImageIfNeeded(file);
       const result = await createEpisodePosterUploadUrl(
         episode ? episode.id : journeyId,
         episode ? "episode" : "journey",
-        file.type
+        uploadFile.type
       );
       if ("error" in result) {
         setPosterError(result.error);
         setPosterProgress(null);
         return;
       }
-      await uploadFileWithProgress(result.uploadUrl, file, setPosterProgress);
+      await uploadFileWithProgress(result.uploadUrl, uploadFile, setPosterProgress);
       setPosterKey(result.key);
-      setPosterPreview(URL.createObjectURL(file));
+      setPosterPreview(URL.createObjectURL(uploadFile));
     } catch {
       setPosterError("Upload failed. Please try again.");
     } finally {

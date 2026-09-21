@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createQuickPosterUploadUrl, createQuickVideoUploadUrl, quickComposeEpisode } from "@/lib/actions/episode";
 import { createUpdateMediaUploadUrl, publishUpdate } from "@/lib/actions/update";
 import { uploadFileWithProgress } from "@/lib/upload";
+import { compressImageIfNeeded } from "@/lib/compressImage";
 import { readVideoDuration } from "@/lib/media/readVideoDuration";
 import { captureVideoFrame } from "@/lib/media/captureVideoFrame";
 import { ALLOWED_VIDEO_TYPES, MAX_UPDATE_VIDEO_DURATION_SEC, MAX_UPDATE_VIDEO_SIZE_BYTES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
@@ -366,7 +367,7 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
     if (frame) setPosterFromBlob(frame);
   }
 
-  function handlePosterFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePosterFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
@@ -381,11 +382,12 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
     }
 
     setError(null);
-    setPosterFile(file);
+    const compressed = await compressImageIfNeeded(file);
+    setPosterFile(compressed);
     setPosterBlob(null);
     setPosterPreviewUrl((current) => {
       if (current) URL.revokeObjectURL(current);
-      return URL.createObjectURL(file);
+      return URL.createObjectURL(compressed);
     });
   }
 
@@ -771,15 +773,16 @@ function UpdateFormStep({
 
     setUploadProgress(0);
     try {
-      const result = await createUpdateMediaUploadUrl(kind === "IMAGE" ? "image" : "video", file.type);
+      const uploadFile = kind === "IMAGE" ? await compressImageIfNeeded(file) : file;
+      const result = await createUpdateMediaUploadUrl(kind === "IMAGE" ? "image" : "video", uploadFile.type);
       if ("error" in result) {
         setUploadError(result.error);
         setUploadProgress(null);
         return;
       }
-      await uploadFileWithProgress(result.uploadUrl, file, setUploadProgress);
+      await uploadFileWithProgress(result.uploadUrl, uploadFile, setUploadProgress);
       setMediaKey(result.key);
-      setMediaPreviewUrl(URL.createObjectURL(file));
+      setMediaPreviewUrl(URL.createObjectURL(uploadFile));
     } catch {
       setUploadError("Upload failed. Please try again.");
       setUploadProgress(null);
