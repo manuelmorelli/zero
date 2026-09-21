@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Hls from "hls.js";
 import { useEffect, useRef, useState } from "react";
-import { Maximize, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Maximize, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { saveEpisodeProgress } from "@/lib/actions/progress";
 import { formatDuration as formatTime } from "@/lib/format/duration";
 import { Avatar } from "@/components/common/Avatar";
@@ -17,6 +17,7 @@ const RESUME_THRESHOLD_SEC = 5;
 // video esatto: evita che un buffering finale o un secondo mancante impediscano di segnarlo.
 const COMPLETION_FRACTION = 0.95;
 const SAVE_INTERVAL_MS = 15_000;
+const SKIP_BACK_SEC = 15;
 
 type EpisodePlayerProps = {
   journeyId: string;
@@ -254,10 +255,23 @@ export function EpisodePlayer({
             <div className="mt-2 flex items-center gap-3 text-xs text-ink-muted">
               <button type="button" onClick={toggle} aria-label={playing ? "Pause" : "Play"} className="text-ink">
                 {playing ? (
-                  <Pause className="h-4 w-4 fill-current" aria-hidden="true" />
+                  <Pause className="h-5 w-5 fill-current" aria-hidden="true" />
                 ) : (
-                  <Play className="h-4 w-4 fill-current" aria-hidden="true" />
+                  <Play className="h-5 w-5 fill-current" aria-hidden="true" />
                 )}
+              </button>
+              <button
+                type="button"
+                aria-label={`Back ${SKIP_BACK_SEC} seconds`}
+                onClick={() => {
+                  if (!videoRef.current) return;
+                  const next = Math.max(0, videoRef.current.currentTime - SKIP_BACK_SEC);
+                  videoRef.current.currentTime = next;
+                  setTime(next);
+                }}
+                className="text-ink"
+              >
+                <RotateCcw className="h-5 w-5" aria-hidden="true" />
               </button>
               <span className="tabular-nums">
                 {formatTime(time)} / {formatTime(duration)}
@@ -273,7 +287,7 @@ export function EpisodePlayer({
                   }}
                   className="text-ink"
                 >
-                  {muted ? <VolumeX className="h-4 w-4" aria-hidden="true" /> : <Volume2 className="h-4 w-4" aria-hidden="true" />}
+                  {muted ? <VolumeX className="h-5 w-5" aria-hidden="true" /> : <Volume2 className="h-5 w-5" aria-hidden="true" />}
                 </button>
                 <input
                   type="range"
@@ -304,7 +318,7 @@ export function EpisodePlayer({
                   }}
                   className="text-ink"
                 >
-                  <Maximize className="h-4 w-4" aria-hidden="true" />
+                  <Maximize className="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
             </div>

@@ -39,7 +39,7 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ## Player
 
-☐ Aggiungere un tasto "salta indietro 15 secondi" nel player video degli episodi.
+☑ Tasto "salta indietro 15 secondi" nel player video degli episodi, subito a destra del Play/Pause (icona `RotateCcw`), implementato in `components/journey/EpisodePlayer.tsx`.
 
 ## Moderazione
 
