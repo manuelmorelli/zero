@@ -1,13 +1,14 @@
 ---
 title: Monetization
 doc_id: 10-monetization
-version: "3.1"
+version: "4.0"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
   - 02_Mission
   - 04_Product_Principles
   - 07_Creator_Experience
+  - 93_Project_Alignment_Recap
 ---
 
 # Monetization
@@ -56,29 +57,37 @@ Ogni creator decide quali strumenti utilizzare.
 
 Nessuna funzionalità di monetizzazione è obbligatoria.
 
-## Fonti di monetizzazione
+## Fonti di monetizzazione e ordine di attivazione
 
-Zero monetizza attraverso:
+Zero attiva le fonti di monetizzazione in ordine di priorità, non tutte insieme. L'ordine riflette sia l'importanza economica per Zero e per i creator sia la semplicità di costruzione:
 
-- Community Premium;
-- Pubblicità contestuale;
-- Workshop;
-- Eventi;
-- Prodotti digitali;
-- Servizi professionali;
-- Tips e donazioni.
+1. **Pubblicità contestuale** — prima fonte, sia per Zero sia per i creator, attiva fin dal lancio.
+2. **Tips e donazioni**.
+3. **Community Premium, eventi/workshop, consulenze 1:1, prodotti digitali** — stesso gruppo, stesso meccanismo economico (il creator incassa un pagamento diretto da un utente), costruiti insieme.
+
+Le sponsorizzazioni dei creator (vedi sezione dedicata più sotto) non seguono questo ordine di costruzione: non richiedono sviluppo prioritario, solo una regola di trasparenza.
 
 Nuove fonti di ricavo potranno essere introdotte mantenendo gli stessi principi descritti in questo documento.
 
 ## Commissioni
 
-Zero applica una commissione esclusivamente sulle transazioni effettuate attraverso la piattaforma.
+Le percentuali variano in base al meccanismo economico della fonte: non è un'unica percentuale fissa per tutto.
 
-Le percentuali e le modalità operative sono definite a livello di business e possono evolvere nel tempo senza modificare i principi descritti in questo documento.
+| Fonte | Quota creator | Quota Zero | Cadenza di pagamento |
+|---|---|---|---|
+| Pubblicità contestuale | 60% | 40% | Mensile, soglia minima di pagamento ~100 (valuta locale) |
+| Tips e donazioni | 90% | 10% | Mensile, soglia minima ~100 |
+| Community Premium, eventi/workshop, consulenze 1:1, prodotti digitali | 90% | 10% | Mensile, soglia minima ~100 |
+| Marketplace sponsorizzazioni creator-brand (intermediato da Zero) | 100% del compenso pattuito | 10% trattenuto dal brand, non dal creator | Alla chiusura dell'accordo |
+| Sponsorizzazioni dirette creator-brand (accordo fuori piattaforma) | 100% del compenso pattuito | Zero non trattiene nulla | Non gestito da Zero |
+
+Queste percentuali sono un punto di partenza e possono evolvere nel tempo senza modificare i principi descritti in questo documento. I dettagli fiscali specifici per paese (soglie di reporting, IVA su prodotti digitali, differenze tra Unione Europea, Svizzera e resto del mondo) sono trattati nell'audit legale (`91_Legal_Audit_And_Roadmap.md`), non in questo documento.
 
 ## Pubblicità contestuale
 
-La pubblicità rappresenta una delle fonti di ricavo della piattaforma, soprattutto nelle prime fasi di crescita di Zero.
+La pubblicità rappresenta la prima fonte di ricavo della piattaforma, attiva fin dal lancio.
+
+A differenza delle altre fonti, qui Zero non trattiene una quota da un pagamento del creator: è Zero a incassare dagli inserzionisti in base alle visualizzazioni generate dai contenuti, e a girare al creator la quota indicata nella tabella sopra.
 
 Gli annunci devono essere pertinenti al contesto di navigazione, alla categoria del Journey e agli interessi dell'utente, con l'obiettivo di risultare utili e non invasivi.
 
@@ -95,6 +104,15 @@ In particolare:
 - deve integrarsi nell'esperienza della piattaforma senza interrompere inutilmente la navigazione.
 
 L'obiettivo è creare un sistema pubblicitario sostenibile per la piattaforma e utile per gli utenti, mantenendo sempre al centro la qualità dell'esperienza.
+
+## Sponsorizzazioni dei creator
+
+Un creator può accettare di promuovere il prodotto di un'azienda in cambio di un pagamento diretto, indipendente dalla pubblicità automatica gestita da Zero.
+
+- Se l'accordo avviene fuori dalla piattaforma (creator e brand si mettono d'accordo da soli), Zero non tocca il pagamento e non trattiene nulla. L'unico obbligo è che il contenuto sia dichiarato in modo visibile come sponsorizzato.
+- Se l'accordo avviene tramite un marketplace interno che mette in contatto creator e brand (idea futura, non ancora costruita — vedi `94_Product_Backlog.md`), Zero trattiene una commissione solo dal brand, non dal creator.
+
+In entrambi i casi, la sponsorizzazione non deve influenzare il ranking del Journey, coerente con la regola generale di questo documento.
 
 ## Regole
 

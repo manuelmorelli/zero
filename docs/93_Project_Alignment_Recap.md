@@ -30,7 +30,7 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 | 0 | Fotografia generale | ✅ Chiuso (2026-09-17) |
 | 1 | Prodotto e esperienza utente | ✅ Chiuso (2026-09-20) |
 | 2 | Esperienza Creator | ✅ Chiuso (2026-09-20) |
-| 3 | Monetizzazione (Business Model) | ⬜ Da fare |
+| 3 | Monetizzazione (Business Model) | ✅ Chiuso (2026-09-21) |
 | 4 | Algoritmo e Discovery | ⬜ Da fare |
 | 5 | Trust & Safety (Trust Score + moderazione contenuti) | ⬜ Da fare |
 | 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ⬜ Da fare |
@@ -158,3 +158,45 @@ Manuel ha confermato (in questa stessa sessione) che questo lavoro è reale e vo
 ### Stato del punto
 
 Chiuso il 2026-09-20, confermato da Manuel. Riepilogo esportato in `Desktop\Zero - Punti Chiusi\Punto 2 - Esperienza Creator.md`.
+
+## Punto 3 — Monetizzazione (Business Model)
+
+### Situazione di partenza
+
+`docs/10_Monetization.md` conteneva solo principi generali, nessun numero: testuale, "le percentuali... sono definite a livello di business" — mai decise davvero. Nessuna fonte di ricavo era costruita, incluse quelle segnate solo come "Coming soon" nelle pagine reali del prodotto (Community Premium, pubblicità, Stripe/Payouts).
+
+### Decisioni prese in questo punto
+
+- **Ordine di attivazione delle fonti** (non tutte insieme): 1) pubblicità contestuale, 2) tips/donazioni, 3) Community Premium + eventi/workshop + consulenze 1:1 + prodotti digitali (stesso gruppo, stesso meccanismo).
+- **Percentuali**: pubblicità 60% creator / 40% Zero; tips e gruppo 3 al 90% creator / 10% Zero; marketplace sponsorizzazioni 10% trattenuto solo dal brand; sponsorizzazioni dirette creator-brand fuori piattaforma non toccate da Zero (100% creator, solo obbligo di dichiararle visibilmente).
+- **Pagamenti ai creator**: cadenza mensile (non ogni 15 giorni: raddoppierebbe i costi fissi di ogni bonifico, e nessun concorrente studiato paga più spesso del mese), soglia minima di pagamento ~100 nella valuta locale. Dettagli fiscali per paese (Unione Europea, Svizzera, resto del mondo) rimandati al Punto 6 legale.
+- **Chiarito "prodotti digitali"** (parola presente nei documenti ma mai definita): file/accessi vendibili illimitatamente senza spedizione fisica (e-book, corsi, template, guide scaricabili) — confermato da Manuel, unito nello stesso gruppo economico di consulenze 1:1 ed eventi/workshop.
+- **Sponsorizzazioni brand-creator**: distinzione tra accordo privato (Zero non trattiene nulla, solo tag "contenuto sponsorizzato" obbligatoria) e futuro marketplace interno stile TikTok Creator Marketplace (Zero trattiene commissione solo dal brand, non dal creator) — collega e attiva le idee già presenti in backlog (sezione sponsor, marketplace UGC).
+- Meccanismo tecnico dei pagamenti (Stripe Connect: Standard/Express/Custom) discusso solo a livello concettuale, decisione rimandata al Punto 7 (costruzione), non blocca le percentuali decise qui.
+
+Tutto scritto in `docs/10_Monetization.md` (versione 4.0). Le voci ancora da costruire sono registrate in `docs/94_Product_Backlog.md`.
+
+### Ricerca di mercato aggiornata rilevante per questo punto
+
+- **Split pubblicitario di riferimento**: YouTube paga 55% al creator / 45% alla piattaforma, invariato dal 2007, uguale per canali piccoli e grandi — Zero parte da 60/40, leggermente più generoso verso i creator per compensare la mancanza di rete propria nella fase iniziale.
+- **Pagamenti YouTube**: mensili, soglia minima 100$, pagamento tra il 21 e il 26 del mese — modello di riferimento diretto per la cadenza scelta da Zero.
+- **Commissioni su tips/abbonamenti dei concorrenti diretti**: Ko-fi 0% (piano gratuito), Buy Me a Coffee 5%, Passes 10%, Substack/Patreon ~10% (12-15% con le commissioni di pagamento incluse), OnlyFans 20% fisso — il 10% scelto da Zero è in linea con la fascia bassa/onesta del mercato.
+- **Sponsorizzazioni brand-creator**: TikTok Creator Marketplace trattiene circa il 10% dal brand e zero dal creator — stesso schema scelto da Zero per il futuro marketplace interno.
+- **Obblighi di trasparenza (FTC, USA)**: ogni collegamento materiale tra brand e creator va dichiarato in modo visibile e non ambiguo ("#ad" esplicito, non "#collab"); le sanzioni nel 2026 sono salite fino a oltre 50.000$ a violazione — rafforza la scelta di rendere obbligatoria la tag sponsorizzata fin da subito, anche prima di costruire il marketplace.
+- **Normativa fiscale USA aggiornata** (incerta al Punto 2): il 1099-K è tornato alla soglia storica di 20.000$ e 200 transazioni — meno burocrazia automatica per i creator piccoli rispetto a quanto temuto.
+- **Reti pubblicitarie adatte a una piattaforma piccola**: esistono alternative concrete a Google AdSense pensate per publisher piccoli o contenuti video (Media.net, Ezoic/Humix, Primis), compatibili con l'approccio "contestuale, non invasivo" già scritto nel documento.
+
+### Punti di forza per un investitore
+
+- Modello di monetizzazione ora concreto e citabile (percentuali, ordine, cadenza), non solo un principio dichiarato — colma esattamente la debolezza più visibile individuata al Punto 0.
+- Split pubblicitario più generoso di YouTube verso i creator: argomento di acquisizione concreto per attrarre creator da altre piattaforme.
+- Coerenza mantenuta con il principio "il pagamento non compra visibilità" anche nelle nuove regole su pubblicità e sponsorizzazioni.
+- Approccio disciplinato sui costi: cadenza di pagamento e soglie scelte guardando ai costi reali di ogni transazione, non per copiare la concorrenza senza motivo.
+
+### Nota aperta, non risolta in questo punto
+
+Manuel ha chiesto se, a un incasso pubblicitario lordo di 1 milione, il 40% trattenuto da Zero basterebbe a sostenere la piattaforma. Risposta onesta: dipende dai costi operativi reali (hosting, sviluppo, team) che non sono ancora stimati con numeri veri — argomento di competenza del Punto 9 (Business Plan/Piano Finanziario), dove si costruiranno proiezioni con numeri reali invece che risposte a intuito. Segnato qui per non perderlo.
+
+### Stato del punto
+
+Chiuso il 2026-09-21, confermato da Manuel. Riepilogo da esportare in `Desktop\Zero - Punti Chiusi\Punto 3 - Monetizzazione.md`.
