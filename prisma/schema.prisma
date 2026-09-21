@@ -243,6 +243,9 @@ model Creator {
   displayName  String
   description  String?
   trustLevel   Int           @default(0)
+  // Video/card di presentazione da caricare per attivare il Trust Score (lib/profile/trustScore.ts).
+  // Null finché non lo carica: il Trust Score resta disattivato (nessun badge) fino ad allora.
+  presentationVideoUrl String?
   status       CreatorStatus @default(ACTIVE)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

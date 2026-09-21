@@ -14,19 +14,20 @@ import { prisma } from "@/lib/prisma";
 const MIN_SAMPLE_SIZE = 5;
 
 const FOLLOWERS_CAP = 500;
-const LIKES_PER_EPISODE_CAP = 20;
 const RECENCY_WINDOW_DAYS = 60;
 const TARGET_EPISODES_PER_MONTH = 4;
 
 /** Un punteggio più vecchio di 24 ore va ricalcolato alla prossima lettura (nessun cron job). */
 const SCORE_STALE_AFTER_MS = 24 * 60 * 60 * 1000;
 
+// Il vecchio peso "like" (5%) è stato tolto da qui: il click (ora "Trusty") non misura più la
+// qualità del singolo episodio, ma alimenta il Trust Score del creator (lib/profile/trustScore.ts).
+// Il 5% liberato è andato al completamento, già il segnale dominante.
 const WEIGHTS = {
-  completion: 0.45,
+  completion: 0.5,
   continuity: 0.25,
   engagement: 0.15,
   followers: 0.1,
-  likes: 0.05,
 } as const;
 
 type ScoreInput = {
@@ -92,24 +93,15 @@ async function computeJourneyScores(inputs: ScoreInput[]): Promise<Map<string, n
   });
   const episodeIds = episodes.map((episode) => episode.id);
 
-  const [progress, likeCounts] = await Promise.all([
+  const progress =
     episodeIds.length > 0
-      ? prisma.episodeProgress.findMany({
+      ? await prisma.episodeProgress.findMany({
           where: { episodeId: { in: episodeIds } },
           select: { userId: true, episodeId: true, completedAt: true },
         })
-      : Promise.resolve([]),
-    episodeIds.length > 0
-      ? prisma.like.groupBy({
-          by: ["targetId"],
-          where: { targetType: "EPISODE", targetId: { in: episodeIds } },
-          _count: { _all: true },
-        })
-      : Promise.resolve([]),
-  ]);
+      : [];
 
   const episodeToJourney = new Map(episodes.map((episode) => [episode.id, episode.journeyId]));
-  const likesByEpisode = new Map(likeCounts.map((row) => [row.targetId, row._count._all]));
 
   const episodesByJourney = new Map<string, { id: string; createdAt: Date }[]>();
   for (const episode of episodes) {
@@ -163,19 +155,11 @@ async function computeJourneyScores(inputs: ScoreInput[]): Promise<Map<string, n
 
     const followersScore = (Math.min(input.followersCount, FOLLOWERS_CAP) / FOLLOWERS_CAP) * 100;
 
-    const totalLikes = journeyEpisodes.reduce(
-      (sum, episode) => sum + (likesByEpisode.get(episode.id) ?? 0),
-      0
-    );
-    const likesPerEpisode = totalEpisodes > 0 ? totalLikes / totalEpisodes : 0;
-    const likesScore = (Math.min(likesPerEpisode, LIKES_PER_EPISODE_CAP) / LIKES_PER_EPISODE_CAP) * 100;
-
     const score =
       completionScore * WEIGHTS.completion +
       continuityScore * WEIGHTS.continuity +
       engagementScore * WEIGHTS.engagement +
-      followersScore * WEIGHTS.followers +
-      likesScore * WEIGHTS.likes;
+      followersScore * WEIGHTS.followers;
 
     scores.set(input.journeyId, Math.round(Math.max(0, Math.min(score, 100))));
   }

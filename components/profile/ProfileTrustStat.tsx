@@ -11,7 +11,7 @@ import { useDismiss } from "@/hooks/useDismiss";
  * Profilo e la barra Overview/Journeys sotto vivono in "stacking context" diversi, quindi un
  * pannello ancorato localmente finiva coperto dai bottoni della barra. Il portal lo rende sempre
  * sopra a tutto il resto della pagina. */
-export function ProfileTrustStat({ score }: { score: number }) {
+export function ProfileTrustStat({ score }: { score: number | null }) {
   const [open, setOpen] = useState(false);
   const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
   const triggerRef = useRef<HTMLLIElement>(null);
@@ -41,14 +41,14 @@ export function ProfileTrustStat({ score }: { score: number }) {
         className="w-full transition duration-300 hover:scale-110 hover:brightness-125"
         aria-expanded={open}
       >
-        <p className="text-sm font-bold tracking-tight text-ember md:text-base">{score}</p>
+        <p className="text-sm font-bold tracking-tight text-ember md:text-base">{score ?? "—"}</p>
         <p className="text-[0.6rem] font-medium uppercase tracking-wider text-ink-muted">Trust Score</p>
       </button>
       {open &&
         coords &&
         createPortal(
           <span ref={panelRef} className="fixed z-[70]" style={{ top: coords.top, left: coords.left }}>
-            <TrustScorePanel onClose={() => setOpen(false)} />
+            <TrustScorePanel onClose={() => setOpen(false)} active={score !== null} />
           </span>,
           document.body
         )}

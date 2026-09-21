@@ -16,7 +16,7 @@ type ProfileHeroProps = {
   username: string | null;
   location: string | null;
   joinedAt: Date;
-  trustScore: number;
+  trustScore: number | null;
   journeysCount: number;
   followersCount: number;
   followingCount: number;

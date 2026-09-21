@@ -115,14 +115,7 @@ export default async function PublicProfilePage({
     ? await getCreatorActiveStory({ creatorId: creator.id, viewerId: session?.user.id ?? null })
     : null;
 
-  const trustScore = computeTrustScore(
-    creator ? await getCreatorTrustInputs(creator.id, followersCount) : {
-      followersCount,
-      averageJourneyScore: 0,
-      hasLiveJourney: false,
-      confirmedReportsCount: 0,
-    }
-  );
+  const trustScore = creator ? computeTrustScore(await getCreatorTrustInputs(creator.id, followersCount)) : null;
 
   let feedItems = null;
   let isDemoFeed = false;

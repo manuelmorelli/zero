@@ -8,7 +8,7 @@ import { saveEpisodeProgress } from "@/lib/actions/progress";
 import { formatDuration as formatTime } from "@/lib/format/duration";
 import { Avatar } from "@/components/common/Avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
-import { LikeButton } from "@/components/journey/LikeButton";
+import { TrustyButton } from "@/components/journey/TrustyButton";
 import { ShareButton } from "@/components/common/ShareButton";
 
 // Sotto questa quota non vale la pena riprendere da dove si era arrivati (praticamente l'inizio).
@@ -23,7 +23,7 @@ type EpisodePlayerProps = {
   journeyTitle: string;
   journeyCategory: string | null;
   creator: { userId: string; displayName: string };
-  trustScore: number;
+  trustScore: number | null;
   episode: {
     id: string;
     title: string;
@@ -71,6 +71,10 @@ export function EpisodePlayer({
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // Trusty si sblocca solo a fine visione (stessa soglia usata per segnare l'episodio completato,
+  // COMPLETION_FRACTION), non da subito come il vecchio like — resta sbloccato anche se poi si
+  // torna indietro nel video.
+  const [trustyUnlocked, setTrustyUnlocked] = useState(initialCompleted);
 
   useEffect(() => {
     function handleFullscreenChange() {
@@ -173,7 +177,13 @@ export function EpisodePlayer({
                 : "block h-auto max-h-[70vh] w-auto max-w-full"
             }
             onClick={toggle}
-            onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
+            onTimeUpdate={(event) => {
+              const video = event.currentTarget;
+              setTime(video.currentTime);
+              if (!trustyUnlocked && video.duration > 0 && video.currentTime / video.duration >= COMPLETION_FRACTION) {
+                setTrustyUnlocked(true);
+              }
+            }}
             onLoadedMetadata={(event) => {
               setDuration(event.currentTarget.duration);
               const video = event.currentTarget;
@@ -202,6 +212,7 @@ export function EpisodePlayer({
               if (intervalRef.current) clearInterval(intervalRef.current);
               intervalRef.current = null;
               completedRef.current = true;
+              setTrustyUnlocked(true);
               save();
             }}
           />
@@ -322,14 +333,15 @@ export function EpisodePlayer({
             <Avatar name={creator.displayName} className="h-7 w-7 text-[0.65rem]" />
             <span className="truncate">{creator.displayName}</span>
           </Link>
-          <TrustScoreBadge score={trustScore} />
+          {trustScore !== null && <TrustScoreBadge score={trustScore} />}
           <div className="ml-auto flex items-center gap-4">
-            <LikeButton
+            <TrustyButton
               targetType="EPISODE"
               targetId={episode.id}
               initialLikeCount={initialLikeCount}
               initialIsLiked={initialIsLiked}
               isLoggedIn={isLoggedIn}
+              unlocked={trustyUnlocked}
             />
             <ShareButton
               path={`/journeys/${journeyId}/episodes/${episode.id}`}

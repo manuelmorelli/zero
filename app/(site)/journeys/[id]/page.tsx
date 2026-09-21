@@ -107,7 +107,7 @@ export default async function PublicJourneyPage({
                     <Avatar name={journey.creator.displayName} className="h-7 w-7 text-[0.65rem]" />
                     <span className="truncate">{journey.creator.displayName}</span>
                   </Link>
-                  <TrustScoreBadge score={trustScore} />
+                  {trustScore !== null && <TrustScoreBadge score={trustScore} />}
                   <span className="inline-flex items-center gap-1.5">
                     <ListVideo className="h-3.5 w-3.5" aria-hidden="true" />
                     {flatEpisodes.length} {flatEpisodes.length === 1 ? "Episode" : "Episodes"}

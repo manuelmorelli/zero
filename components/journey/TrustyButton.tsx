@@ -6,21 +6,28 @@ import { toggleLike } from "@/lib/actions/like";
 import { formatCompactNumber } from "@/lib/utils";
 import type { LikeTargetType } from "@/generated/prisma/client";
 
-type LikeButtonProps = {
+// Rinominato da "Like" a "Trusty" nell'interfaccia: il dato sotto resta lo stesso modello `Like`
+// (nessuna migrazione, nessun rischio) — cambia solo cosa vede l'utente e a cosa serve il segnale.
+// Non misura più la qualità dell'episodio (rimosso da lib/scoring/journeyScore.ts): alimenta invece
+// il Trust Score del creator con un contributo piccolo e cappato (lib/profile/trustScore.ts).
+type TrustyButtonProps = {
   targetType: LikeTargetType;
   targetId: string;
   initialLikeCount: number;
   initialIsLiked: boolean;
   isLoggedIn: boolean;
+  /** Sbloccato solo quando l'episodio è stato guardato fino alla fine (vedi EpisodePlayer). */
+  unlocked: boolean;
 };
 
-export function LikeButton({
+export function TrustyButton({
   targetType,
   targetId,
   initialLikeCount,
   initialIsLiked,
   isLoggedIn,
-}: LikeButtonProps) {
+  unlocked,
+}: TrustyButtonProps) {
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [isPending, startTransition] = useTransition();
@@ -29,7 +36,7 @@ export function LikeButton({
     return (
       <Link
         href="/login"
-        aria-label="Log in to like"
+        aria-label="Log in to react with Trusty"
         className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
       >
         <ThumbsUpIcon className="h-3.5 w-3.5" />
@@ -56,10 +63,13 @@ export function LikeButton({
     <button
       type="button"
       onClick={handleClick}
-      disabled={isPending}
+      disabled={isPending || !unlocked}
       aria-pressed={isLiked}
-      aria-label={isLiked ? "Unlike" : "Like"}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
+      aria-label={
+        unlocked ? (isLiked ? "Remove Trusty" : "Give Trusty") : "Watch to the end to unlock Trusty"
+      }
+      title={unlocked ? undefined : "Watch to the end to unlock Trusty"}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
         isLiked
           ? "border-ember/40 bg-ember/10 text-ember"
           : "border-border text-ink-muted hover:border-ink-muted hover:text-ink"
