@@ -31,7 +31,7 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 | 1 | Prodotto e esperienza utente | ✅ Chiuso (2026-09-20) |
 | 2 | Esperienza Creator | ✅ Chiuso (2026-09-20) |
 | 3 | Monetizzazione (Business Model) | ✅ Chiuso (2026-09-21) |
-| 4 | Algoritmo e Discovery | ⬜ Da fare |
+| 4 | Algoritmo e Discovery | ✅ Chiuso (2026-09-21) |
 | 5 | Trust & Safety (Trust Score + moderazione contenuti) | ⬜ Da fare |
 | 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ⬜ Da fare |
 | 7 | Infrastruttura tecnica (readiness) | ⬜ Da fare |
@@ -200,3 +200,37 @@ Manuel ha chiesto se, a un incasso pubblicitario lordo di 1 milione, il 40% trat
 ### Stato del punto
 
 Chiuso il 2026-09-21, confermato da Manuel. Riepilogo da esportare in `Desktop\Zero - Punti Chiusi\Punto 3 - Monetizzazione.md`.
+
+## Punto 4 — Algoritmo e Discovery
+
+### Situazione di partenza
+
+`docs/08_Algorithm.md` è risultato, per la prima volta in questa iniziativa, già allineato al codice reale senza scostamenti da correggere: Discovery Phase (15 giorni), Journey Score (completamento 50% / continuità 25% / fruizione 15% / follower cappati 10%, con soglia minima di 5 spettatori distinti sotto la quale completamento ed engagement restano a zero) e Trust Level erano tutti implementati esattamente come documentato. Restavano però due debolezze concrete: con pochissimi Journey pubblicati (5 pubblicati, 22 in bozza al momento della decisione) le sezioni "intelligenti" della Home (Top Journeys, Recommended) rischiavano di ordinare quasi solo per follower/continuità, sembrando arbitrarie; e il principio "il pagamento non influenza il ranking", già vero nel codice fin dal Punto 1, non era mai stato reso visibile pubblicamente da nessuna parte.
+
+### Decisioni prese in questo punto
+
+- **Soglia cronologico-vs-algoritmo**: sotto **100 Journey pubblicati**, le sezioni Top Journeys e Recommended ordinano per data di pubblicazione invece che per Journey Score. Decisione presa e già implementata in una sessione parallela dedicata al backlog prodotto (`lib/discovery/algorithmUnlock.ts`, usato da `lib/discovery/topJourneys.ts` e `lib/discovery/recommendedJourneys.ts`), registrata qui per completezza. Soglia scartata: 20 (con "Top Journeys" che mostra 8-10 posizioni, sotto 100 il "Top" finirebbe per mostrare quasi l'intero catalogo). Motivata da due casi storici: YouTube ha usato solo il conteggio visualizzazioni dal 2005 al 2012, favorendo clickbait/gaming, corretto solo a scala enorme; Patreon in 13 anni non ha mai costruito una vera discovery interna, ci lavora solo dal 2026. Nessuna delle due piattaforme ha risolto bene e in fretta questo problema — una soglia alta è la scelta prudente, non debole.
+- **Principio anti-pagamento reso pubblico per la prima volta**: nuova card nella pagina `/how-it-works`, dentro la sezione Algoritmo — "Paying doesn't get you seen more. On Zero, a Journey rises only because people actually watch and love it, never because someone paid for it."
+- **Pagina "Come funziona" riordinata e restyled**: la sezione Algoritmo è ora la prima cosa che si legge dopo il titolo (prima era in fondo alla pagina, voce già in backlog). Design visivo allineato a `what-is-zero/page.tsx` (badge sopra il titolo, sfondo sfumato, titolo con gradiente, card con icone, pulsanti finali) per coerenza site-wide.
+- **Mix 80/20 degli Update in Home**: confermato invariato da Manuel, comportamento preesistente già corretto in `08_Algorithm.md`, nessuna decisione nuova necessaria.
+
+### Nota di processo
+
+Durante questo punto due chat hanno lavorato per un tratto sullo stesso argomento in parallelo: questa (allineamento, Punto 4) e un'altra dedicata al backlog prodotto (`docs/94_Product_Backlog.md`), perché la soglia cronologico-vs-algoritmo era registrata in entrambi i documenti senza che nessuno dei due segnalasse il collegamento. Risolto coordinando le due sessioni in diretta; per il futuro, le voci di `94` che sono decisioni strategiche (non semplice esecuzione) restano bloccate finché non arriva il punto di allineamento corrispondente, invece di essere prese in carico liberamente.
+
+### Ricerca di mercato aggiornata rilevante per questo punto
+
+- **Trasparenza algoritmica (UE, Digital Services Act art. 27)**: le micro-imprese (meno di 10 dipendenti, meno di 2M€ di fatturato/bilancio) sono esenti da questo obbligo — Zero non avrebbe alcun vincolo legale oggi. Il fatto che Zero scelga comunque di spiegare pubblicamente il proprio algoritmo va oltre quanto richiesto per legge — argomento pulito per un dossier investitori, non solo compliance.
+- **TikTok 2026**: i segnali di qualità principali sono ormai completion rate e watch time, con i "like" pesati sempre meno — stessa direzione già presa da Zero (completamento al 50% del Journey Score, Trusty ridotto al 2% del Trust Level). Convalida indipendente di scelte già fatte al Punto 2.
+- **Tendenza 2026 verso feed cronologici e controllo utente** (Bluesky in particolare: feed "Following" puramente cronologico, "marketplace di algoritmi" al posto di un ranking nascosto unico): conferma che l'approccio "cronologico finché i dati sono pochi" è allineato a una direzione di mercato reale, non solo un ripiego tecnico in attesa di dati.
+- Nessuno standard di settore su "quanti utenti/contenuti servono prima che un algoritmo funzioni bene" — dipende dai dati disponibili, non è un numero scritto da nessuna parte: la soglia dei 100 Journey resta una scelta di prodotto di Zero, non un valore preso da uno studio esterno.
+
+### Punti di forza per un investitore
+
+- Motore di ranking reale e già testato nel codice (non solo descritto), con un meccanismo di protezione dai dati insufficienti sia a livello di singolo Journey (soglia 5 spettatori) sia ora a livello di intero catalogo (soglia 100 Journey pubblicati) — scelta prudente, sostenuta da precedenti storici concreti (YouTube, Patreon), non arbitraria.
+- Principio "il pagamento non compra visibilità" ora visibile pubblicamente agli utenti, non solo vero nel codice — coerenza tra quello che Zero dichiara e quello che fa, rafforzata rispetto ai Punti 0-1.
+- Trasparenza sull'algoritmo scelta volontariamente, oltre l'obbligo legale minimo (Zero è esente come micro-impresa dal DSA europeo).
+
+### Stato del punto
+
+Chiuso il 2026-09-21, confermato da Manuel. Riepilogo da esportare in `Desktop\Zero - Punti Chiusi\Punto 4 - Algoritmo e Discovery.md`.
