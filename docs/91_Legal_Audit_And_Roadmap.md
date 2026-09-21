@@ -78,16 +78,26 @@ lancio, o correggere il testo o implementare Stripe.
 Un utente può caricare: foto e video (episodi dei Journey, foto/video degli
 Update), testo (bio, contenuti di testo negli Update, messaggi 1:1).
 
-- **Segnalazione contenuti**: il modello `Report` esiste nello schema
-  (`prisma/schema.prisma`, con `targetType`: USER/CREATOR/JOURNEY/UPDATE/
-  COMMENT) ma **non è collegato a nessuna funzione utente reale oggi**.
-  L'unico punto del codice che lo usa è `lib/profile/trustScore.ts`, e solo
-  in lettura (`prisma.report.count(...)`) per calcolare il Trust Score di
-  un creator — presuppone che righe `Report` esistano già, ma **non esiste
-  nel codice alcun modo per un utente di crearne una** (nessun form, nessun
-  pulsante "segnala", nessuna server action di creazione).
-- Non esiste quindi oggi alcun meccanismo utilizzabile per segnalare una
-  violazione di copyright o un contenuto inappropriato.
+- **Segnalazione contenuti**: costruita nel Punto 5 dell'allineamento
+  (Trust & Safety, 2026-09-21). Pulsante "Report" (`components/common/
+  ReportButton.tsx`) su pagina Journey e su profilo utente — non sulle
+  Update, escluse volutamente da Manuel perché spariscono da sole entro
+  24h. Scrive nel modello `Report` già esistente
+  (`lib/actions/report.ts`), con una mail di avviso a
+  `ADMIN_NOTIFICATION_EMAIL` (via Resend, oggi disattivato: l'avviso resta
+  visibile solo nei log del server finché Resend non viene riattivato).
+  Nessun pannello di gestione: le segnalazioni si vedono/chiudono da
+  Prisma Studio.
+- **Primo filtro automatico**, costruito nello stesso punto
+  (`lib/moderation.ts`): controlla testo e immagini appena caricati
+  tramite l'endpoint di moderazione di OpenAI, prima ancora che
+  arrivi una segnalazione. Copre bio, titoli/descrizioni di Journey/
+  Episodi, testo delle Update, e le immagini caricate, non ancora i
+  video. Codice pronto ma inattivo: la chiamata in sé è gratuita, ma
+  creare la chiave OpenAI richiede comunque una carta di credito e un
+  primo acquisto minimo (circa 5 dollari), non un account gratuito come
+  Neon/R2/Resend. Manuel ha deciso (2026-09-21) di rimandare questa
+  spesa a quando ci saranno utenti reali: vedi `docs/94_Product_Backlog.md`.
 
 ---
 
@@ -150,10 +160,10 @@ Da tracciare e aggiornare man mano che si decide/implementa:
 - [ ] Quando Stripe verrà collegato: rivedere se Purchase/Tip/Payment
       vanno anonimizzati invece che cancellati alla cancellazione
       dell'account (vedi sezione 5).
-- [ ] Decidere se implementare un controllo età minima in registrazione.
-- [ ] Decidere se collegare il modello `Report` a una funzione reale
-      (pulsante "segnala" su contenuti/profili) prima del lancio, o
-      rimandarlo dichiarandolo esplicitamente nei Termini.
+- [ ] Decidere se implementare un controllo età minima in registrazione
+      (rimandato al Punto 6 dell'allineamento).
+- [x] Collegare il modello `Report` a una funzione reale — fatto nel
+      Punto 5 dell'allineamento (2026-09-21), vedi sezione 4 sopra.
 - [ ] Allineare il testo su Stripe in `/how-it-works` allo stato reale
       (Stripe non è collegato oggi).
 - [ ] Quando Neon/R2/Resend/Stripe verranno effettivamente collegati,
@@ -173,3 +183,12 @@ Da tracciare e aggiornare man mano che si decide/implementa:
   giornaliero per la cancellazione definitiva completa (media R2
   compresi). Pagamenti (Purchase/Tip/Payment) cancellati anch'essi per
   ora — da rivedere quando Stripe sarà collegato davvero.
+- 2026-09-21 — Punto 5 dell'allineamento (Trust & Safety): collegata la
+  segnalazione contenuti (modello `Report` già esistente) a un pulsante
+  reale su Journey e profilo, aggiunto un primo filtro automatico su
+  testo/immagini (OpenAI, codice pronto ma tenuto spento perché
+  attivarlo richiede una spesa reale, minima ma vera, non solo un
+  account gratuito), e scritto contenuto vero per Community Guidelines
+  e Copyright & Report
+  Content (prima erano pagine "Coming soon"). Controllo età minima
+  confermato ancora rimandato al Punto 6.

@@ -1,7 +1,7 @@
 ---
 title: Product Backlog
 doc_id: 94-product-backlog
-version: "1.9"
+version: "2.0"
 status: living
 related_docs:
   - 08_Algorithm
@@ -27,9 +27,9 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ☑ Revisione Trust Score, implementata in `lib/profile/trustScore.ts`: eliminata la base automatica di 30 punti. Il punteggio si attiva solo se `Creator.presentationVideoUrl` è valorizzato (video/card di presentazione) — altrimenti nessun badge mostrato, non uno zero. Formula attivata: presentazione 10% (fissa) + Trusty 2% (media per episodio, cappata) + follower 20% (cappati, invariato) + qualità 58% (media Journey Score, era 40%) + Journey live 10% (invariato) − 10 per report confermato (invariato). Dettagli e motivazione in `docs/08_Algorithm.md`, sezione "Trust Level".
 
-☐ [Aperto — non fa parte di questo lavoro] Manca ancora **l'interfaccia per caricare il video/card di presentazione**: lo schema (`Creator.presentationVideoUrl`) esiste ma nessuna UI lo valorizza. **Collocazione decisa (2026-09-21):** Home personale, nello spazio tra la bio e "Journey in progress". Resta da pianificare la costruzione vera e propria (formato video o card statica, upload flow) prima di costruire. Finché non è pronta, il Trust Score resta disattivato per tutti i creator esistenti, incluso Manuel stesso.
+☑ Interfaccia per caricare il video di presentazione, costruita nel Punto 5 dell'allineamento (Trust & Safety, 2026-09-21): nuova card "Who I am" nella Home personale, stesso stile visivo della card Bio, terza colonna nella stessa riga di bio + Journey in progress. Upload diretto a R2 (`lib/actions/creatorPresentation.ts`, stesso meccanismo del video degli episodi), visibile a chi visita solo se il video esiste già, sempre visibile al proprietario per poterlo caricare. Attiva per la prima volta il Trust Score appena caricato.
 
-**Dipendenza cross-chat**: quando l'iniziativa di allineamento arriverà al Punto 4 (Algoritmo) o al Punto 5 (Trust & Safety), va aggiornata con questo nuovo modello, non con quello vecchio a base 30 (già segnalato lì come punto di forza esistente).
+**Dipendenza cross-chat**: quando l'iniziativa di allineamento arriverà al Punto 4 (Algoritmo), va aggiornata con questo nuovo modello, non con quello vecchio a base 30 (già segnalato lì come punto di forza esistente).
 
 ## UI da rivedere
 
@@ -43,7 +43,11 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ## Moderazione
 
-☐ [Bassa priorità] Segnalazioni + revisione manuale (Report) — retrocesso in fondo alla lista, nessuna azione richiesta ora.
+☑ Segnalazioni contenuti, costruite nel Punto 5 dell'allineamento (Trust & Safety, 2026-09-21): pulsante "Report" su pagina Journey e su profilo (non sulle Update, escluse volutamente da Manuel perché sono contenuto effimero, sparisce da solo entro 24h). Scrive nel modello `Report` già esistente nello schema; mail di avviso a `ADMIN_NOTIFICATION_EMAIL` (via Resend, oggi disattivato: l'avviso resta visibile solo nei log del server finché Resend non viene riattivato). Nessun pannello di gestione: le segnalazioni si vedono/chiudono da Prisma Studio.
+
+☑ Primo filtro automatico su testo e immagini appena caricati, costruito nello stesso punto: usa l'endpoint di moderazione di OpenAI (`lib/moderation.ts`, nessuna libreria aggiuntiva). Copre bio, titoli/descrizioni di Journey/Episodi, testo delle Update, e le immagini caricate (copertine, foto profilo, foto delle Update), non ancora i video. Codice pronto, ma finché `OPENAI_API_KEY` non è configurata non blocca nulla, stesso principio già in uso per Resend prima del collegamento.
+
+☐ [Attivazione rimandata, decisione presa 2026-09-21] Il controllo automatico in sé non ha un costo per chiamata, ma creare la chiave OpenAI richiede comunque collegare una carta di credito e un primo acquisto minimo di crediti (circa 5 dollari): non è gratuito come Neon/R2/Resend all'iscrizione. Manuel ha deciso di rimandare questa spesa a quando ci saranno utenti reali, coerente con la regola generale di non attivare servizi a pagamento prima del necessario. Per attivarlo: creare un account su platform.openai.com, collegare una carta, fare l'acquisto minimo, generare una API key, e aggiungerla come `OPENAI_API_KEY` in `.env`.
 
 ## Registrazione & Sicurezza account
 

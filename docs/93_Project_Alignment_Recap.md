@@ -1,7 +1,7 @@
 ---
 title: Project Alignment Recap
 doc_id: 93-project-alignment-recap
-version: "0.2"
+version: "0.3"
 status: living
 related_docs:
   - 99_Current_Project_Status
@@ -32,7 +32,7 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 | 2 | Esperienza Creator | ✅ Chiuso (2026-09-20) |
 | 3 | Monetizzazione (Business Model) | ✅ Chiuso (2026-09-21) |
 | 4 | Algoritmo e Discovery | ✅ Chiuso (2026-09-21) |
-| 5 | Trust & Safety (Trust Score + moderazione contenuti) | ⬜ Da fare |
+| 5 | Trust & Safety (Trust Score + moderazione contenuti) | ✅ Chiuso (2026-09-21) |
 | 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ⬜ Da fare |
 | 7 | Infrastruttura tecnica (readiness) | ⬜ Da fare |
 | 8 | Piano di lancio | ⬜ Da fare |
@@ -234,3 +234,39 @@ Durante questo punto due chat hanno lavorato per un tratto sullo stesso argoment
 ### Stato del punto
 
 Chiuso il 2026-09-21, confermato da Manuel. Riepilogo da esportare in `Desktop\Zero - Punti Chiusi\Punto 4 - Algoritmo e Discovery.md`.
+
+## Punto 5 — Trust & Safety (Trust Score + moderazione contenuti)
+
+### Situazione di partenza
+
+Il Trust Score era già stato rivisto in una sessione parallela (vedi Punto 2): formula pronta in `lib/profile/trustScore.ts`, ma disattivata per ogni creator esistente, incluso Manuel, perché mancava un'interfaccia per caricare il video di presentazione che la attiva. Sul fronte moderazione, il modello `Report` esisteva nello schema del database ma era usato solo in lettura dal Trust Score: nessun utente poteva davvero segnalare nulla, nessun pulsante da nessuna parte. Le pagine Community Guidelines e Copyright & Report Content erano ancora placeholder "Coming soon", e non esisteva alcun controllo automatico sui contenuti caricati.
+
+### Decisioni prese e costruite in questo punto
+
+- **Segnalazioni contenuti**: pulsante "Report" aggiunto a pagina Journey e a profilo utente, non alle Update (escluse volutamente da Manuel perché sono contenuto effimero, sparisce da solo entro 24 ore). Scrive nel modello `Report` già esistente (`lib/actions/report.ts`), con una mail di avviso a un indirizzo amministratore. Nessun pannello di gestione: le segnalazioni si vedono e si chiudono da Prisma Studio, coerente con il volume atteso oggi.
+- **Video di presentazione**: nuova card "Who I am" nella Home personale del creator, stesso stile visivo della card Bio, inserita come terza colonna nella stessa riga di bio e Journey in progress. Upload diretto su Cloudflare R2 con lo stesso meccanismo già usato per i video degli episodi. Attiva per la prima volta il Trust Score appena caricato.
+- **Primo filtro automatico** su testo e immagini appena caricati (`lib/moderation.ts`), tramite l'endpoint di moderazione di OpenAI: copre bio, titoli e descrizioni di Journey ed Episodi, testo delle Update, e le immagini caricate (copertine, foto profilo, foto delle Update), non ancora i video. Codice pronto e collegato ovunque serve, ma tenuto spento: creare la chiave OpenAI richiede una carta di credito reale e un primo acquisto minimo di crediti (circa 5 dollari), non un account gratuito come Neon, R2 o Resend. Scoperto durante questo punto, corretto subito a Manuel dopo una prima informazione imprecisa. Manuel ha deciso di rimandare questa spesa, minima ma vera, a quando ci saranno utenti reali sulla piattaforma.
+- **Community Guidelines e Copyright & Report Content**: contenuto vero scritto al posto delle due pagine "Coming soon", in inglese come il resto del sito. Spiegano le regole della community, l'obbligo di dichiarare le sponsorizzazioni già deciso al Punto 3, come funziona il pulsante Report, e cosa copre (e non copre ancora) il filtro automatico.
+- **Controllo età minima**: discusso e confermato che resta di competenza del Punto 6 (Legale), non di questo punto.
+
+### Correzione di processo emersa durante il punto
+
+Manuel ha corretto ripetutamente l'uso del trattino come punteggiatura nei testi scritti in questa sessione (pagine Community Guidelines, Copyright, e la pagina "Come funziona"/algoritmo del Punto 4, che usava lo stesso stile). Corretto ovunque trovato, con virgole, parentesi o frasi separate. Regola salvata in memoria per non ripeterlo nelle prossime sessioni.
+
+### Ricerca aggiornata rilevante per questo punto
+
+- **Obblighi europei (Digital Services Act, art. 27)**: le micro imprese restano esenti dagli obblighi più pesanti, ma non del tutto: da luglio 2025 esistono linee guida UE sulla protezione dei minori online applicabili anche a piattaforme piccole, e un meccanismo minimo di "segnala e rimuovi" resta una buona pratica attesa anche dalle micro imprese.
+- **Leggi USA sull'età minima (2026)**: il quadro è cambiato molto rispetto a quanto noto ai punti precedenti. Florida vieta account social sotto i 14 anni; Virginia, Nebraska e Mississippi richiedono verifica età o consenso dei genitori sotto i 16-18 anni (la legge della Virginia è bloccata da un giudice per ora, ma la direzione è chiara). Rilevante per il Punto 6, non deciso qui.
+- **Strumenti di moderazione per piattaforme piccole**: esistono servizi pensati apposta per chi non ha un team dedicato (Hive, Sightengine, l'endpoint di OpenAI usato qui). Il modello comune è un primo filtro automatico gratuito o quasi, seguito da revisione umana solo sui casi dubbi, esattamente l'approccio scelto in questo punto.
+- **Section 230 (USA)**: la protezione legale delle piattaforme per i contenuti caricati dagli utenti resta in vigore ma sotto pressione crescente nel 2026 (cause legali, proposte di riforma). Non blocca nulla oggi, ma rafforza l'idea che avere un meccanismo minimo di segnalazione è una buona pratica difensiva.
+- **Crediti cloud** (refresh di routine): nessuna novità rispetto a quanto già confermato ai punti precedenti, Cloudflare, Google, AWS e Microsoft restano tutti attivi e gratuiti all'iscrizione.
+
+### Punti di forza per un investitore
+
+- Meccanismo di segnalazione e primo filtro automatico costruiti prima che servissero davvero (zero utenti esterni oggi), non rincorsi dopo un problema reale.
+- Trust Score finalmente attivabile dai creator, non più bloccato da un pezzo di interfaccia mancante.
+- Onestà mantenuta anche sui limiti: il filtro automatico copre testo e immagini ma non ancora i video, dichiarato chiaramente nella pagina pubblica invece di sovrapromettere.
+
+### Stato del punto
+
+Chiuso il 2026-09-21, confermato da Manuel. Riepilogo da esportare in `Desktop\Zero - Punti Chiusi\Punto 5 - Trust & Safety.md`. Il Punto 6 (Legale) parte in una chat nuova, come da metodo concordato.
