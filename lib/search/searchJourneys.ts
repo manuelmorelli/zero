@@ -4,17 +4,38 @@ import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { toSearchWords } from "@/lib/search/queryWords";
+import type { JourneyCategory } from "@/lib/constants/categories";
+import { JOURNEY_DATE_PRESETS, type JourneyDatePreset } from "@/lib/constants/journeyDatePresets";
 
 type JourneyWithCreator = Awaited<ReturnType<typeof findMatchingJourneys>>[number];
+
+const DATE_PRESET_DAYS: Record<JourneyDatePreset, number> = {
+  today: 1,
+  week: 7,
+  month: 30,
+  year: 365,
+};
+
+export type JourneySearchFilters = {
+  category?: JourneyCategory;
+  datePreset?: JourneyDatePreset;
+};
 
 /**
  * Ricerca indipendente per tipo "Journey": punto di estensione futuro per altri
  * tipi di risultato (Categories, Workshop, Eventi, ...) senza toccare questo file.
  * Ogni tipo di ricerca vive nel proprio modulo sotto lib/search/ e viene composto
  * dal chiamante (app/search/page.tsx), stesso pattern già usato in lib/discovery/.
+ *
+ * `query` può essere vuota se sono presenti dei `filters`: si naviga per categoria/data senza
+ * per forza scrivere del testo, come i filtri di YouTube usati anche senza una ricerca testuale.
  */
-export async function searchJourneys(query: string, limit = 12): Promise<JourneyCardData[]> {
-  const journeys = await findMatchingJourneys(query);
+export async function searchJourneys(
+  query: string,
+  filters: JourneySearchFilters = {},
+  limit = 12
+): Promise<JourneyCardData[]> {
+  const journeys = await findMatchingJourneys(query, filters);
   const selected = rankByRelevance(journeys, query).slice(0, limit);
 
   // Il badge del punteggio si mostra solo per i Journey già PUBLISHED: quelli in Discovery Phase
@@ -30,12 +51,16 @@ export async function searchJourneys(query: string, limit = 12): Promise<Journey
   return withResolvedCoverUrls(items);
 }
 
-async function findMatchingJourneys(query: string) {
+async function findMatchingJourneys(query: string, filters: JourneySearchFilters) {
   const words = toSearchWords(query);
   return prisma.journey.findMany({
     where: {
       status: { in: LIVE_JOURNEY_STATUSES },
       deletedAt: null,
+      ...(filters.category ? { category: filters.category } : {}),
+      ...(filters.datePreset
+        ? { publishedAt: { gte: new Date(Date.now() - DATE_PRESET_DAYS[filters.datePreset] * 24 * 60 * 60 * 1000) } }
+        : {}),
       // Ogni parola della query deve comparire da qualche parte (titolo, storia, categoria o
       // tag), non necessariamente tutte nello stesso campo: così "burnout creativo" trova anche
       // un titolo tipo "il mio burnout da lavoro creativo", non solo la frase esatta.
@@ -53,6 +78,7 @@ async function findMatchingJourneys(query: string) {
       })),
     },
     include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
+    orderBy: { publishedAt: "desc" },
     take: 50,
   });
 }

@@ -1,4 +1,5 @@
 import { SearchForm } from "@/components/search/SearchForm";
+import { SearchFilters } from "@/components/search/SearchFilters";
 import { JourneyCard } from "@/components/journey/JourneyCard";
 import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
 import { PersonResultCard } from "@/components/profile/PersonResultCard";
@@ -6,18 +7,34 @@ import { searchJourneys } from "@/lib/search/searchJourneys";
 import { searchCreators } from "@/lib/search/searchCreators";
 import { searchPeople } from "@/lib/search/searchPeople";
 import { promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
+import { JOURNEY_CATEGORIES, type JourneyCategory } from "@/lib/constants/categories";
+import { JOURNEY_DATE_PRESETS, type JourneyDatePreset } from "@/lib/constants/journeyDatePresets";
 
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string | string[] }>;
+  searchParams: Promise<{ q?: string | string[]; category?: string | string[]; date?: string | string[] }>;
 }) {
-  const { q } = await searchParams;
+  const { q, category: categoryParam, date: dateParam } = await searchParams;
   const query = (Array.isArray(q) ? q[0] : q)?.trim() ?? "";
+  const category = (Array.isArray(categoryParam) ? categoryParam[0] : categoryParam) ?? "";
+  const date = (Array.isArray(dateParam) ? dateParam[0] : dateParam) ?? "";
+
+  const journeyFilters = {
+    category: (JOURNEY_CATEGORIES as readonly string[]).includes(category)
+      ? (category as JourneyCategory)
+      : undefined,
+    datePreset: (JOURNEY_DATE_PRESETS as readonly string[]).includes(date)
+      ? (date as JourneyDatePreset)
+      : undefined,
+  };
+  const hasJourneyFilters = journeyFilters.category !== undefined || journeyFilters.datePreset !== undefined;
 
   await promoteExpiredDiscoveryJourneys();
-  const [journeys, creators] = query
-    ? await Promise.all([searchJourneys(query), searchCreators(query)])
+  // I filtri Journey (categoria/data) funzionano anche senza testo, come su YouTube — solo
+  // Creators/People restano legati a una vera ricerca testuale.
+  const [journeys, creators] = query || hasJourneyFilters
+    ? await Promise.all([searchJourneys(query, journeyFilters), query ? searchCreators(query) : Promise.resolve([])])
     : [[], []];
   // "People" cerca chiunque si sia registrato, non solo chi ha pubblicato un Journey (quello
   // resta "Creators" sopra) — coerente col Follow universale, si può seguire chiunque.
@@ -30,12 +47,15 @@ export default async function SearchPage({
         <div className="mt-4 max-w-md">
           <SearchForm defaultValue={query} />
         </div>
+        <SearchFilters defaultQuery={query} defaultCategory={category} defaultDatePreset={date} />
 
-        {!query && <p className="mt-10 text-sm text-ink-muted">Search for a Journey or a creator.</p>}
+        {!query && !hasJourneyFilters && (
+          <p className="mt-10 text-sm text-ink-muted">Search for a Journey or a creator, or filter by category and date.</p>
+        )}
 
-        {query && journeys.length === 0 && creators.length === 0 && people.length === 0 && (
+        {(query || hasJourneyFilters) && journeys.length === 0 && creators.length === 0 && people.length === 0 && (
           <p className="mt-10 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
-            {`No results for "${query}".`}
+            {query ? `No results for "${query}".` : "No Journeys match these filters."}
           </p>
         )}
 
