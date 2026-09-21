@@ -33,7 +33,7 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ## UI da rivedere
 
-☐ Player episodio: titolo sotto al video da ricentrare e rivedere nelle dimensioni; posizionamento del tasto Trusty da rivedere.
+☑ Player episodio: blocco titolo sotto al video ora allineato al bordo sinistro della card video (prima era allineato al bordo della pagina, più a sinistra della card perché il video, essendo più stretto del contenitore, viene centrato). Trusty e Share spostati dalla riga in basso a una riga in alto, alla stessa altezza di "Episode N", allineati a destra e ingranditi (~25%); il blocco testo a sinistra reso più compatto (meno spazio tra le righe). Implementato in `components/journey/EpisodePlayer.tsx`.
 
 ☑ Pagina "Come funziona"/Algorithm: sezioni riordinate, l'Algoritmo è ora la prima cosa che si legge dopo il titolo (prima era in fondo alla pagina). Fatto nel Punto 4 dell'allineamento (Algoritmo e Discovery, 2026-09-21), verificato di nuovo nel Punto 5 (`app/(site)/how-it-works/page.tsx`, sezione con `id="algorithm"` subito dopo l'intestazione). Questa riga non era stata aggiornata quando il lavoro è stato fatto altrove, causa di un rischio di duplicazione.
 
