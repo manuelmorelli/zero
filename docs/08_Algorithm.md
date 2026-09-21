@@ -99,7 +99,7 @@ Punteggio 0-100 calcolato per ogni Journey pubblicato, usato **solo** dalle sezi
 
 Combina, con pesi diversi:
 
-- **completamento** (peso maggiore) — quota di spettatori che hanno visto almeno il 90% degli episodi del Journey; conta a **fasce**, non linearmente, e l'effetto (mai la percentuale in sé) è l'unica cosa che filtra nel ranking:
+- **completamento** (peso maggiore, 50%) — quota di spettatori che hanno visto almeno il 90% degli episodi del Journey; conta a **fasce**, non linearmente, e l'effetto (mai la percentuale in sé) è l'unica cosa che filtra nel ranking:
 
   | Completamento | Effetto |
   |---|---|
@@ -110,18 +110,27 @@ Combina, con pesi diversi:
   | 90%+ | Super Hero Level (massimo) |
 
   Queste fasce non sono mai visibili al creator: nessuna barra di progresso "sei al 40%, ti manca il 10%" — è un meccanismo silenzioso, per evitare la pressione da metriche tipica di altri social;
-- **continuità di pubblicazione** — quanto di recente e con che regolarità il creator pubblica nuovi episodi;
-- **tempo di fruizione reale** — quanto in profondità gli spettatori procedono nel Journey, calcolato sui dati reali di visione (`EpisodeProgress`);
-- **follower** — cappati a una soglia fissa: oltre quella soglia, averne di più non alza ulteriormente il punteggio, per non ricreare la stessa dinamica "vince chi ha più follower" di altri social;
-- **like** — segnale di qualità, ma con un peso volutamente basso (5%): Zero non è un social basato su like o views.
+- **continuità di pubblicazione** (25%) — quanto di recente e con che regolarità il creator pubblica nuovi episodi;
+- **tempo di fruizione reale** (15%) — quanto in profondità gli spettatori procedono nel Journey, calcolato sui dati reali di visione (`EpisodeProgress`);
+- **follower** (10%) — cappati a una soglia fissa: oltre quella soglia, averne di più non alza ulteriormente il punteggio, per non ricreare la stessa dinamica "vince chi ha più follower" di altri social.
+
+Il reagire "Trusty" su un episodio (vedi sotto) non entra più in questo punteggio: non misura la qualità del singolo episodio, alimenta invece il Trust Level del creator.
 
 Il Journey Score si ricalcola **al massimo una volta al giorno** per Journey, non ad ogni richiesta: nessun servizio in background dedicato, il ricalcolo avviene come effetto collaterale della normale lettura di Discovery quando il valore salvato ha più di 24 ore.
 
 ## Trust Level
 
-Punteggio 0-100 del creator (mostrato come "Trust Score" sul Profilo pubblico). Sale con la continuità di pubblicazione e con la qualità dei propri Journey (media del loro Journey Score), oltre che con i follower, cappati con lo stesso principio del Journey Score.
+Punteggio 0-100 del creator (mostrato come "Trust Score" sul Profilo pubblico). **Si attiva solo dopo aver caricato il video/card di presentazione** per diventare creator: prima di quel momento non esiste alcun punteggio (nessun badge mostrato, non uno zero). Non c'è più nessuna base automatica gratuita.
 
-Scende **solo** per segnalazioni confermate manualmente (modello `Report`, già presente nello schema): nessun rilevamento automatico di bot, crescita follower artificiale o manipolazione delle metriche — esplicitamente fuori scope per questa fase del prodotto.
+Una volta attivato, combina:
+
+- **presentazione** (10%) — fissa, ottenuta caricando il video/card di presentazione;
+- **qualità** (58%) — media del Journey Score dei Journey pubblicati del creator;
+- **follower** (20%) — cappati con lo stesso principio del Journey Score;
+- **Journey pubblicato** (10%) — bonus fisso se il creator ha almeno un Journey pubblicato o in Discovery Phase;
+- **Trusty** (2%) — media di reazioni "Trusty" per episodio pubblicato, cappata: un peso deliberatamente piccolo, perché la fiducia si costruisce con continuità e qualità dimostrate, non con un bottone (vedi "Trust First").
+
+Scende **solo** per segnalazioni confermate manualmente (modello `Report`, già presente nello schema, −10 punti per segnalazione confermata): nessun rilevamento automatico di bot, crescita follower artificiale o manipolazione delle metriche — esplicitamente fuori scope per questa fase del prodotto.
 
 ## Feed Updates
 
