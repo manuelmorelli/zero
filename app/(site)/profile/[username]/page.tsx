@@ -185,7 +185,7 @@ export default async function PublicProfilePage({
 
       <ProfileTabs basePath={`/profile/${username}`} activeTab={activeTab} />
 
-      <div className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+      <div className="mx-auto max-w-[1400px] px-5 py-4 md:px-[calc(4.43%+2rem)]">
         {activeTab === "overview" && (
           <>
             {/* 1. Journey in corso + Bio */}

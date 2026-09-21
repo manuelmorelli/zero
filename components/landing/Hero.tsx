@@ -39,7 +39,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
   const slide = slides[active] ?? slides[0]!;
 
   return (
-    <section className="relative overflow-hidden md:mt-[3.85rem]">
+    <section className="relative overflow-hidden md:mt-[calc(3.85rem+0.5cm)]">
       {/* Foto cinematografica: come oggi angoli vivi/piena larghezza su mobile, come una card
        * (angoli arrotondati + margine laterale) da desktop in su, stile Netflix — stessa altezza
        * di prima, cambia solo la forma del contenitore. Da desktop in su la sezione è spostata in

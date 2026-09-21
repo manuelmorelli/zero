@@ -50,8 +50,10 @@ export function ProfileHero({
   const joinedLabel = joinedAt.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
   return (
-    <section className="relative isolate w-full">
-      <div className="absolute inset-x-0 top-0 -z-10 h-[22rem] overflow-hidden sm:h-[26rem] md:h-[29rem]">
+    <section className="relative isolate w-full md:mt-[calc(3.85rem+0.5cm)]">
+      {/* Foto di copertina: piena larghezza su mobile, come una card (angoli arrotondati +
+       * margine laterale) da desktop in su — stesso trattamento della foto in Hero della Home. */}
+      <div className="absolute inset-x-0 top-0 -z-10 h-[22rem] overflow-hidden sm:h-[26rem] md:inset-x-[4.43%] md:h-[29rem] md:rounded-2xl">
         {coverUrl ? (
           <FadeImage src={coverUrl} alt="" fill sizes="100vw" quality={90} className="object-cover" preload />
         ) : (
@@ -64,7 +66,7 @@ export function ProfileHero({
         <div className="cover-fade absolute inset-x-0 bottom-0 h-32 sm:h-40 md:h-48" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[1400px] px-5 md:px-8">
+      <div className="relative z-10 mx-auto max-w-[1400px] px-5 md:px-[calc(4.43%+2rem)]">
         <div className="pt-[calc(7.5rem+0.9cm)] sm:pt-[calc(11rem+0.9cm)] md:pt-[calc(12rem+0.9cm)]">
           <div className="flex items-end gap-4">
             <ProfileAvatarStory

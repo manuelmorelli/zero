@@ -34,8 +34,8 @@ export function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled ? "border-b border-border bg-bg/40 backdrop-blur-md" : "bg-transparent"
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-300 ${
+        scrolled ? "border-border bg-bg/60 backdrop-blur-lg" : "border-transparent bg-transparent"
       }`}
     >
       <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-1.5 md:grid-cols-[1fr_auto_1fr] md:px-8">
