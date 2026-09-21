@@ -27,13 +27,13 @@ export function AuthStatus() {
       <>
         <Link
           href="/login"
-          className="hidden text-sm font-medium text-ink-muted hover:text-ink transition-colors sm:block"
+          className="hidden text-[15.5px] font-medium text-ink-muted hover:text-ink transition-colors sm:block"
         >
           Sign In
         </Link>
         <Link
           href="/register"
-          className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg hover:bg-ink-muted transition-colors"
+          className="rounded-full bg-ink px-5 py-2.5 text-[15.5px] font-semibold text-bg hover:bg-ink-muted transition-colors"
         >
           Get Started
         </Link>
@@ -45,11 +45,11 @@ export function AuthStatus() {
     <>
       <Link
         href={`/profile/${data.user.id}`}
-        className="hidden text-sm font-medium text-ink-muted hover:text-ink transition-colors sm:block"
+        className="hidden text-[15.5px] font-medium text-ink-muted hover:text-ink transition-colors sm:block"
       >
         Hi, {data.user.name}
       </Link>
-      <SignOutButton className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-ink hover:border-ink-muted transition-colors" />
+      <SignOutButton className="rounded-full border border-border px-5 py-2.5 text-[15.5px] font-semibold text-ink hover:border-ink-muted transition-colors" />
     </>
   );
 }

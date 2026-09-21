@@ -52,7 +52,7 @@ export function Header() {
             <Link
               key={link.label}
               href={link.href}
-              className="text-sm text-ink transition-colors hover:text-ember"
+              className="text-[15.5px] text-ink transition-colors hover:text-ember"
             >
               {link.label}
             </Link>
@@ -65,7 +65,7 @@ export function Header() {
             aria-label="Search"
             className="text-ink-muted transition-colors hover:text-ink"
           >
-            <SearchIcon className="h-4 w-4" />
+            <SearchIcon className="h-[18px] w-[18px]" />
           </Link>
           <AuthStatus />
         </div>
