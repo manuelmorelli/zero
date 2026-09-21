@@ -11,6 +11,7 @@ import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { formatDuration } from "@/lib/format/duration";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { ShareButton } from "@/components/common/ShareButton";
+import { ReportButton } from "@/components/common/ReportButton";
 import { Avatar } from "@/components/common/Avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
 import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
@@ -149,6 +150,7 @@ export default async function PublicJourneyPage({
                   linkedJourneyId={journey.id}
                   className="grid h-9 w-9 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ink-muted hover:text-ember"
                 />
+                {!isOwnJourney && session && <ReportButton targetType="JOURNEY" targetId={journey.id} />}
               </div>
             </div>
           </div>

@@ -10,6 +10,7 @@ import { notifyQuestionAnswered } from "@/lib/notifications";
 import {
   deleteImage,
   deleteVideo,
+  getImagePlaybackUrl,
   getImageUploadUrl,
   getVideoSize,
   getVideoUploadUrl,
@@ -17,6 +18,7 @@ import {
   newVideoKey,
 } from "@/lib/r2";
 import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
+import { moderateImageUrl, moderateText, MODERATION_REJECTION_MESSAGE } from "@/lib/moderation";
 import { ALLOWED_VIDEO_TYPES, MAX_UPDATE_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import {
@@ -121,6 +123,10 @@ export async function shareToUpdate(params: {
   if (!content) return { error: "Nothing to share." };
   if (content.length > UPDATE_TEXT_MAX_LENGTH) return { error: "Keep it under 500 characters." };
 
+  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  const shareModeration = await moderateText(content);
+  if (shareModeration.flagged) return { error: MODERATION_REJECTION_MESSAGE };
+
   if (params.linkedJourneyId) await assertPubliclyVisibleJourney(params.linkedJourneyId);
   if (params.linkedEpisodeId) await assertPubliclyVisibleEpisode(params.linkedEpisodeId);
 
@@ -187,6 +193,10 @@ export async function publishUpdate(
     return { error: "Keep it under 500 characters.", done: false };
   }
 
+  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  const textModeration = await moderateText(content);
+  if (textModeration.flagged) return { error: MODERATION_REJECTION_MESSAGE, done: false };
+
   if (type === "IMAGE" || type === "VIDEO") {
     const rawMediaKey = formData.get("mediaKey");
     if (typeof rawMediaKey !== "string" || !rawMediaKey) {
@@ -203,6 +213,16 @@ export async function publishUpdate(
       if (size > MAX_UPDATE_VIDEO_SIZE_BYTES) {
         await deleteVideo(mediaKey);
         return { error: "Video is too large (max 100MB).", done: false };
+      }
+    }
+    // Il filtro automatico copre solo le foto per ora: un video richiederebbe un'analisi per
+    // fotogrammi, più complessa (vedi lib/moderation.ts) — primo filtro, non soluzione completa.
+    if (type === "IMAGE") {
+      const mediaPlaybackUrl = await getImagePlaybackUrl(mediaKey);
+      const mediaModeration = await moderateImageUrl(mediaPlaybackUrl);
+      if (mediaModeration.flagged) {
+        await deleteImage(mediaKey);
+        return { error: MODERATION_REJECTION_MESSAGE, done: false };
       }
     }
   }

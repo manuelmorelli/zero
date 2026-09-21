@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma";
 import { requireSession, getCurrentSession } from "@/lib/session";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { requestAccountDeletion, reactivateAccount } from "@/lib/account/deletion";
+import { deleteImage, getImagePlaybackUrl } from "@/lib/r2";
+import { moderateImageUrl, moderateText, MODERATION_REJECTION_MESSAGE } from "@/lib/moderation";
 
 const AccountSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters long.").max(100),
@@ -44,6 +46,20 @@ export async function updateAccount(
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
+  }
+
+  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  const bioModeration = await moderateText(parsed.data.bio);
+  if (bioModeration.flagged) return { error: MODERATION_REJECTION_MESSAGE };
+
+  for (const key of [parsed.data.avatarKey, parsed.data.coverKey]) {
+    if (!key) continue;
+    const playbackUrl = await getImagePlaybackUrl(key);
+    const imageModeration = await moderateImageUrl(playbackUrl);
+    if (imageModeration.flagged) {
+      await deleteImage(key);
+      return { error: MODERATION_REJECTION_MESSAGE };
+    }
   }
 
   try {

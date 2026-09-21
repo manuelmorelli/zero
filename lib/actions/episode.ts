@@ -10,6 +10,7 @@ import {
   copyImage,
   deleteImage,
   deleteVideo,
+  getImagePlaybackUrl,
   getImageUploadUrl,
   getVideoSize,
   getVideoUploadUrl,
@@ -19,6 +20,7 @@ import {
 import { deleteLightVideo, startLightVideoEncoding } from "@/lib/stream";
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
+import { moderateImageUrl, moderateText, MODERATION_REJECTION_MESSAGE } from "@/lib/moderation";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewEpisode } from "@/lib/notifications";
 import { autoPublishDraftJourney, nextJourneyOrder } from "@/lib/actions/journey";
@@ -195,6 +197,19 @@ async function insertEpisode(
 
   const sizeError = await assertVideoWithinLimit(data.videoKey || undefined);
   if (sizeError) return { error: sizeError };
+
+  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  const moderation = await moderateText(`${data.title}\n${data.caption ?? ""}`);
+  if (moderation.flagged) return { error: MODERATION_REJECTION_MESSAGE };
+
+  if (data.posterKey) {
+    const posterPlaybackUrl = await getImagePlaybackUrl(data.posterKey);
+    const posterModeration = await moderateImageUrl(posterPlaybackUrl);
+    if (posterModeration.flagged) {
+      await deleteImage(data.posterKey);
+      return { error: MODERATION_REJECTION_MESSAGE };
+    }
+  }
 
   const lastEpisode = await prisma.episode.findFirst({
     where: { journeyId: journey.id, chapterId, deletedAt: null },
@@ -390,6 +405,10 @@ export async function updateEpisode(
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
+  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  const moderation = await moderateText(`${parsed.data.title}\n${parsed.data.caption ?? ""}`);
+  if (moderation.flagged) return { error: MODERATION_REJECTION_MESSAGE };
+
   const newVideoKeyValue = parsed.data.videoKey || null;
   const replacesVideo = newVideoKeyValue !== episode.videoKey;
   if (replacesVideo) {
@@ -399,6 +418,14 @@ export async function updateEpisode(
 
   const newPosterKeyValue = parsed.data.posterKey || null;
   const replacesPoster = newPosterKeyValue !== null && newPosterKeyValue !== episode.posterKey;
+  if (replacesPoster) {
+    const posterPlaybackUrl = await getImagePlaybackUrl(newPosterKeyValue);
+    const posterModeration = await moderateImageUrl(posterPlaybackUrl);
+    if (posterModeration.flagged) {
+      await deleteImage(newPosterKeyValue);
+      return { error: MODERATION_REJECTION_MESSAGE };
+    }
+  }
 
   const published = formData.get("published") === "on";
   // Stessa regola di insertEpisode: niente Published senza un video reale.

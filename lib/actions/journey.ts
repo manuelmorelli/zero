@@ -9,8 +9,9 @@ import { requireCreator } from "@/lib/creator";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { DISCOVERY_PHASE_DAYS, PUBLICLY_REACHABLE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewJourney } from "@/lib/notifications";
-import { deleteImage, deleteVideo, getImageUploadUrl, newImageKey } from "@/lib/r2";
+import { deleteImage, deleteVideo, getImagePlaybackUrl, getImageUploadUrl, newImageKey } from "@/lib/r2";
 import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
+import { moderateImageUrl, moderateText, MODERATION_REJECTION_MESSAGE } from "@/lib/moderation";
 
 async function requireOwnedJourney(journeyId: string) {
   const { creator } = await requireCreator();
@@ -86,6 +87,10 @@ export async function createJourney(
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
+  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  const moderation = await moderateText(`${parsed.data.title}\n${parsed.data.description ?? ""}`);
+  if (moderation.flagged) return { error: MODERATION_REJECTION_MESSAGE };
+
   const journey = await prisma.journey.create({
     data: {
       creatorId: creator.id,
@@ -122,8 +127,21 @@ export async function updateJourney(
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
+  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  const moderation = await moderateText(`${parsed.data.title}\n${parsed.data.description ?? ""}`);
+  if (moderation.flagged) return { error: MODERATION_REJECTION_MESSAGE };
+
   const newCoverKey = parsed.data.coverKey || null;
   const replacesCover = newCoverKey !== null && newCoverKey !== journey.coverUrl;
+
+  if (replacesCover) {
+    const coverPlaybackUrl = await getImagePlaybackUrl(newCoverKey);
+    const coverModeration = await moderateImageUrl(coverPlaybackUrl);
+    if (coverModeration.flagged) {
+      await deleteImage(newCoverKey);
+      return { error: MODERATION_REJECTION_MESSAGE };
+    }
+  }
 
   await prisma.journey.update({
     where: { id: journey.id },

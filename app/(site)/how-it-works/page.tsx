@@ -37,7 +37,7 @@ const questions = [
   },
   {
     q: "Can I become a creator?",
-    a: "Yes. Create a creator profile and publish your first Journey — in the first version you can have one active Journey at a time.",
+    a: "Yes. Create a creator profile and publish your first Journey (in the first version you can have one active Journey at a time).",
   },
   {
     q: "Is my data safe?",
@@ -48,14 +48,14 @@ const questions = [
 type Bullet = { icon: LucideIcon; text: string };
 
 const uploadTips: Bullet[] = [
-  { icon: FileVideo, text: "Export as MP4 — it works everywhere and keeps quality high." },
+  { icon: FileVideo, text: "Export as MP4, it works everywhere and keeps quality high." },
   {
     icon: UploadCloud,
-    text: "Upload your original file, not a copy you already posted somewhere else — every re-upload loses a little quality.",
+    text: "Upload your original file, not a copy you already posted somewhere else (every re-upload loses a little quality).",
   },
   {
     icon: Maximize,
-    text: "Keep your original resolution (1080p or higher) — Zero never compresses or replaces your original file, it always stays exactly as you uploaded it.",
+    text: "Keep your original resolution (1080p or higher). Zero never compresses or replaces your original file, it always stays exactly as you uploaded it.",
   },
 ];
 
@@ -115,7 +115,7 @@ export default function HowItWorksPage() {
             </p>
             <p>
               If people finish your episodes and come back for the next one, more people get to see
-              you. Followers help a little, but only up to a point — after that, having more
+              you. Followers help a little, but only up to a point. After that, having more
               doesn&apos;t push you higher.
             </p>
             <p>
@@ -179,8 +179,8 @@ export default function HowItWorksPage() {
               <h2 className="text-base font-bold tracking-tight">Publishing isn&apos;t the end</h2>
               <p className="mt-4 text-sm leading-relaxed text-ink-muted">
                 On Zero, publishing an episode isn&apos;t final. Found a mistake, or want to make it
-                better? You can swap the video for a new one — it keeps its spot in your Journey, and
-                all its likes and views. Other apps make you delete everything and start from zero
+                better? You can swap the video for a new one (it keeps its spot in your Journey, and
+                all its likes and views). Other apps make you delete everything and start from zero
                 views. Zero doesn&apos;t.
               </p>
             </section>

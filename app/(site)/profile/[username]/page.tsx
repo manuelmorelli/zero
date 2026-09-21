@@ -1,17 +1,20 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { prisma } from "@/lib/prisma";
 import { getViewerSession } from "@/lib/session";
-import { getImagePlaybackUrl } from "@/lib/r2";
+import { getImagePlaybackUrl, getVideoPlaybackUrl } from "@/lib/r2";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { ContentCard } from "@/components/profile/ContentCard";
 import { ShareButton } from "@/components/common/ShareButton";
+import { ReportButton } from "@/components/common/ReportButton";
 import { JourneyCardMenu } from "@/components/profile/JourneyCardMenu";
 import { Reveal } from "@/components/common/Reveal";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileTabs, type ProfileTab } from "@/components/profile/ProfileTabs";
 import { FeaturedJourneySection } from "@/components/profile/FeaturedJourneySection";
 import { AboutCard } from "@/components/profile/AboutCard";
+import { PresentationVideoCard } from "@/components/profile/PresentationVideoCard";
 import { MessageButton } from "@/components/profile/MessageButton";
 import { EditProfileButton } from "@/components/profile/EditProfileButton";
 import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
@@ -117,6 +120,23 @@ export default async function PublicProfilePage({
 
   const trustScore = creator ? computeTrustScore(await getCreatorTrustInputs(creator.id, followersCount)) : null;
 
+  // Video di presentazione (attiva il Trust Score sopra, vedi lib/profile/trustScore.ts): un
+  // visitatore che non ne ha mai caricato uno non vede la card, il proprietario la vede sempre
+  // per poterlo aggiungere la prima volta.
+  const presentationVideoUrl = creator?.presentationVideoUrl
+    ? await getVideoPlaybackUrl(creator.presentationVideoUrl)
+    : null;
+  const showPresentationCard = isOwnProfile || presentationVideoUrl !== null;
+
+  const overviewCards: ReactNode[] = [];
+  if (featuredJourney) overviewCards.push(<FeaturedJourneySection key="featured" journey={featuredJourney} />);
+  overviewCards.push(<AboutCard key="about" name={user.name} bio={user.bio} interests={user.interests} />);
+  if (showPresentationCard) {
+    overviewCards.push(
+      <PresentationVideoCard key="presentation" videoUrl={presentationVideoUrl} isOwnProfile={isOwnProfile} />
+    );
+  }
+
   let feedItems = null;
   let isDemoFeed = false;
   if (activeTab === "overview" && creator) {
@@ -178,6 +198,7 @@ export default async function PublicProfilePage({
                 isLoggedIn={isLoggedIn}
               />
               {canMessageUser && <MessageButton userId={user.id} />}
+              {isLoggedIn && <ReportButton targetType="USER" targetId={user.id} />}
             </>
           )
         }
@@ -188,16 +209,19 @@ export default async function PublicProfilePage({
       <div className="mx-auto max-w-[1400px] px-5 py-4 md:px-[calc(4.43%+2rem)]">
         {activeTab === "overview" && (
           <>
-            {/* 1. Journey in corso + Bio */}
+            {/* 1. Journey in corso + Bio + Presentazione */}
             <Reveal>
-              {featuredJourney ? (
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,34%)_minmax(0,32%)] lg:justify-between">
-                  <FeaturedJourneySection journey={featuredJourney} />
-                  <AboutCard name={user.name} bio={user.bio} interests={user.interests} />
-                </div>
+              {overviewCards.length === 1 ? (
+                <div className="max-w-md">{overviewCards}</div>
               ) : (
-                <div className="max-w-md">
-                  <AboutCard name={user.name} bio={user.bio} interests={user.interests} />
+                <div
+                  className={`grid gap-4 lg:justify-between ${
+                    overviewCards.length === 3
+                      ? "lg:grid-cols-[minmax(0,30%)_minmax(0,30%)_minmax(0,30%)]"
+                      : "lg:grid-cols-[minmax(0,34%)_minmax(0,32%)]"
+                  }`}
+                >
+                  {overviewCards}
                 </div>
               )}
             </Reveal>
