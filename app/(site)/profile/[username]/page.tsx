@@ -8,6 +8,7 @@ import { FollowButton } from "@/components/profile/FollowButton";
 import { ContentCard } from "@/components/profile/ContentCard";
 import { ShareButton } from "@/components/common/ShareButton";
 import { ReportButton } from "@/components/common/ReportButton";
+import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
 import { JourneyCardMenu } from "@/components/profile/JourneyCardMenu";
 import { Reveal } from "@/components/common/Reveal";
 import { ProfileHero } from "@/components/profile/ProfileHero";
@@ -222,56 +223,57 @@ export default async function PublicProfilePage({
               )}
             </Reveal>
 
-            {/* 2. Recent Episodes */}
+            {/* 2. Recent Episodes: riga a scorrimento laterale stile Netflix, non una griglia —
+                 circa 4 card visibili alla volta sui monitor desktop, il resto si scopre
+                 scorrendo (stesso componente HorizontalScrollRow di Journeys/Journeyers). */}
             <Reveal delayMs={40} className="mt-6 block">
-              <section>
-                <h2 className="text-base font-bold tracking-tight">Recent Episodes</h2>
-
-                {episodeFeedItems.length > 0 ? (
-                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {episodeFeedItems.map((item, index) => (
-                      <Reveal key={item.episodeId} delayMs={index * 60}>
-                        <ContentCard
-                          href={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
-                          imageUrl={item.coverUrl}
-                          imageAlt={item.title}
-                          title={item.title}
-                          category={item.category}
-                          trust={item.journeyScore !== undefined ? Math.round(item.journeyScore) : undefined}
-                          isVideo
-                          emptyMessage={
-                            isDemoFeed ? (
-                              <span
-                                className={`text-sm font-semibold leading-snug ${DEMO_MESSAGE_COLORS[index % DEMO_MESSAGE_COLORS.length]}`}
-                              >
-                                {item.caption}
-                              </span>
-                            ) : undefined
-                          }
-                          menu={
-                            !isDemoFeed ? (
-                              <ShareButton
-                                path={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
-                                label={item.title}
-                                updateCaption={
-                                  isOwnProfile
-                                    ? `New episode: ${item.title}`
-                                    : `Check out this episode by ${user.name}: ${item.title}`
-                                }
-                                linkedEpisodeId={item.episodeId}
-                              />
-                            ) : undefined
-                          }
-                        />
-                      </Reveal>
-                    ))}
-                  </div>
-                ) : (
+              {episodeFeedItems.length > 0 ? (
+                <HorizontalScrollRow title="Recent Episodes">
+                  {episodeFeedItems.map((item, index) => (
+                    <ContentCard
+                      key={item.episodeId}
+                      className="w-56 shrink-0 sm:w-72 lg:w-80"
+                      href={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
+                      imageUrl={item.coverUrl}
+                      imageAlt={item.title}
+                      title={item.title}
+                      category={item.category}
+                      trust={item.journeyScore !== undefined ? Math.round(item.journeyScore) : undefined}
+                      isVideo
+                      emptyMessage={
+                        isDemoFeed ? (
+                          <span
+                            className={`text-sm font-semibold leading-snug ${DEMO_MESSAGE_COLORS[index % DEMO_MESSAGE_COLORS.length]}`}
+                          >
+                            {item.caption}
+                          </span>
+                        ) : undefined
+                      }
+                      menu={
+                        !isDemoFeed ? (
+                          <ShareButton
+                            path={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
+                            label={item.title}
+                            updateCaption={
+                              isOwnProfile
+                                ? `New episode: ${item.title}`
+                                : `Check out this episode by ${user.name}: ${item.title}`
+                            }
+                            linkedEpisodeId={item.episodeId}
+                          />
+                        ) : undefined
+                      }
+                    />
+                  ))}
+                </HorizontalScrollRow>
+              ) : (
+                <section>
+                  <h2 className="text-base font-bold tracking-tight">Recent Episodes</h2>
                   <p className="mt-4 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
                     {`${user.name} hasn't shared any episode yet.`}
                   </p>
-                )}
-              </section>
+                </section>
+              )}
             </Reveal>
 
             {/* 3. Published Journeys (anteprima, "View all" -> tab Journeys) */}

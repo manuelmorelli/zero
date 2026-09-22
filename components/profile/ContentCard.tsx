@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FadeImage } from "@/components/common/FadeImage";
 import { ShieldCheck, Play } from "lucide-react";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
+import { cn } from "@/lib/utils";
 
 type ContentCardProps = {
   href: string;
@@ -9,6 +10,9 @@ type ContentCardProps = {
   imageAlt: string;
   title: string;
   category?: string | null;
+  /** Larghezza della card: fissa nelle righe a scorrimento laterale (es. "w-56 shrink-0
+   * sm:w-72 lg:w-80"), assente nelle griglie che la calcolano da sole. */
+  className?: string;
   /** Badge assoluto in alto a sinistra sulla foto, es. "Discovery"/"Archived". */
   status?: string;
   /** Journey Score (0-100, lib/scoring/journeyScore.ts): per i Journey è il proprio; per gli
@@ -37,6 +41,7 @@ export function ContentCard({
   imageAlt,
   title,
   category,
+  className,
   status,
   trust,
   menu,
@@ -44,10 +49,10 @@ export function ContentCard({
   isVideo,
 }: ContentCardProps) {
   return (
-    <div className="group relative block transition-transform duration-300 hover:-translate-y-1">
+    <div className={cn("group relative block transition-transform duration-300 hover:-translate-y-1", className)}>
       <Link
         href={href}
-        className="relative block aspect-4/3 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
+        className="relative block aspect-4/5 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
       >
         {imageUrl ? (
           <FadeImage
@@ -79,7 +84,7 @@ export function ContentCard({
           </span>
         )}
 
-        <div className="absolute inset-x-0 bottom-0 p-3">
+        <div className="absolute inset-x-0 bottom-[10%] p-3">
           {category && (
             <span className="inline-block rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
               {category}
