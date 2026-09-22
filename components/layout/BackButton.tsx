@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 const STACK_KEY = "zero-nav-stack";
 const MAX_STACK = 50;
@@ -74,9 +75,9 @@ export function BackButton({ className }: { className?: string }) {
     <button
       type="button"
       onClick={() => router.back()}
-      className={`text-sm font-medium text-ember transition-colors hover:text-ink ${className ?? ""}`}
+      className={`inline-flex items-center gap-1 text-sm font-medium text-ember transition-colors hover:text-ink ${className ?? ""}`}
     >
-      ← Back
+      <ArrowLeft className="h-5 w-5" /> Back
     </button>
   );
 }
