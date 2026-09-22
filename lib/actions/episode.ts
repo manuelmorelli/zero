@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireCreator } from "@/lib/creator";
+import { requireCreator, getPublishReadiness, publishGateMessage } from "@/lib/creator";
 import {
   copyImage,
   deleteImage,
@@ -193,6 +193,11 @@ async function insertEpisode(
   // non basta): niente pubblicazioni silenziose di contenuto vuoto.
   if (published && !data.videoKey) {
     return { error: "Add a video before publishing this episode." };
+  }
+
+  if (published) {
+    const readiness = await getPublishReadiness();
+    if (!readiness.ready) return { error: publishGateMessage(readiness.missing) };
   }
 
   const sizeError = await assertVideoWithinLimit(data.videoKey || undefined);
@@ -431,6 +436,13 @@ export async function updateEpisode(
   // Stessa regola di insertEpisode: niente Published senza un video reale.
   if (published && !newVideoKeyValue) {
     return { error: "Add a video before publishing this episode." };
+  }
+
+  // Il controllo scatta solo quando l'episodio passa da non pubblicato a pubblicato per la
+  // prima volta: modificare un episodio già live non deve mai bloccarsi per questo motivo.
+  if (published && !episode.publishedAt) {
+    const readiness = await getPublishReadiness();
+    if (!readiness.ready) return { error: publishGateMessage(readiness.missing) };
   }
 
   await prisma.episode.update({

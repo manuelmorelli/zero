@@ -128,13 +128,24 @@ export default async function PublicProfilePage({
     : null;
   const showPresentationCard = isOwnProfile || presentationVideoUrl !== null;
 
+  // Bio e video di presentazione condividono un'unica card (richiesto da Manuel, 2026-09-22):
+  // AboutCard resta usata da sola solo quando il video non compare affatto (visitatore su un
+  // profilo senza ancora un video di presentazione).
   const overviewCards: ReactNode[] = [];
   if (featuredJourney) overviewCards.push(<FeaturedJourneySection key="featured" journey={featuredJourney} />);
-  overviewCards.push(<AboutCard key="about" name={user.name} bio={user.bio} interests={user.interests} />);
   if (showPresentationCard) {
     overviewCards.push(
-      <PresentationVideoCard key="presentation" videoUrl={presentationVideoUrl} isOwnProfile={isOwnProfile} />
+      <PresentationVideoCard
+        key="about-presentation"
+        videoUrl={presentationVideoUrl}
+        isOwnProfile={isOwnProfile}
+        name={user.name}
+        bio={user.bio}
+        interests={user.interests}
+      />
     );
+  } else {
+    overviewCards.push(<AboutCard key="about" name={user.name} bio={user.bio} interests={user.interests} />);
   }
 
   let feedItems = null;
@@ -209,18 +220,12 @@ export default async function PublicProfilePage({
       <div className="mx-auto max-w-[1400px] px-5 py-4 md:px-[calc(4.43%+2rem)]">
         {activeTab === "overview" && (
           <>
-            {/* 1. Journey in corso + Bio + Presentazione */}
+            {/* 1. Journey in corso + card Bio/Presentazione (unica, vedi sopra) */}
             <Reveal>
               {overviewCards.length === 1 ? (
                 <div className="max-w-md">{overviewCards}</div>
               ) : (
-                <div
-                  className={`grid gap-4 lg:justify-between ${
-                    overviewCards.length === 3
-                      ? "lg:grid-cols-[minmax(0,30%)_minmax(0,30%)_minmax(0,30%)]"
-                      : "lg:grid-cols-[minmax(0,34%)_minmax(0,32%)]"
-                  }`}
-                >
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,34%)_minmax(0,50%)] lg:justify-between">
                   {overviewCards}
                 </div>
               )}

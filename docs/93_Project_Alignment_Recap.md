@@ -304,6 +304,14 @@ Prima di iniziare, verificato che nessun'altra sessione in parallelo stesse lavo
 - Content Policy dettagliata (28 categorie) integrata prima del lancio pubblico, non dopo un incidente: stessa logica già mostrata al Punto 5 con segnalazioni e filtro automatico, costruiti in anticipo.
 - Nessun banner cookie necessario, un dettaglio piccolo ma concreto che mostra un prodotto pensato per non raccogliere più dati del necessario, coerente con il principio di trasparenza già mostrato ai Punti 0-1 e 4.
 
+### Decisione aggiuntiva emersa nello stesso punto: requisiti per diventare creator
+
+Discutendo dove far leggere le Community Guidelines, è emerso un ripensamento più grande: **diventare creator non deve più essere completamente automatico e senza requisiti**. Prima, chiunque poteva pubblicare un Journey/Episodio senza mai aver compilato il profilo, caricato un video di presentazione o letto le regole. Decisione di Manuel: tutti e tre insieme diventano obbligatori prima di poter pubblicare per la prima volta — profilo compilato (nome utente, foto, bio), video di presentazione, accettazione delle Community Guidelines (scrollando fino in fondo alla pagina). **Riguarda solo chi vuole diventare creator, mai i visitatori/spettatori**, che restano liberi di guardare e condividere senza account, confermato coerente con YouTube da una ricerca aggiornata nella stessa sessione. Nessun grandfathering: vale anche per gli account creator già esistenti, incluso quello di Manuel.
+
+Questo corregge (con decisione esplicita, non per svista) il principio "diventare creator è automatico" registrato dopo il Punto 2: resta vero che non c'è una schermata di iscrizione separata dietro un bottone, ma ora pubblicare per la prima volta richiede di aver completato questi tre passaggi.
+
+Durante la stessa discussione, sistemato anche un piccolo problema di UX trovato per strada: il banner "Pick your interests" in Home spariva per sempre dopo la prima chiusura (localStorage), anche per chi non aveva mai scelto un interesse — ora usa sessionStorage e torna a comparire a ogni nuovo login finché gli interessi non vengono davvero scelti.
+
 ### Stato del punto
 
 Lavoro svolto e verificato (tipo-check del progetto pulito, migrazione del database applicata) il 2026-09-22. In attesa di conferma esplicita di Manuel per la chiusura.

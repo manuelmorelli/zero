@@ -163,6 +163,43 @@ del consenso dei genitori. Non retroattivo: gli account creati prima hanno
 
 ---
 
+## 7. Requisiti per diventare creator
+
+**Implementato il 2026-09-22 (Punto 6 dell'allineamento).** Prima non esisteva alcun
+requisito: `requireCreator()` (`lib/creator.ts`) crea il profilo Creator al volo e
+chiunque poteva pubblicare un Journey/Episodio senza aver mai compilato il profilo,
+caricato un video di presentazione o letto le regole della piattaforma.
+
+Ora, prima di poter pubblicare per la prima volta (Dashboard o flusso rapido "+"),
+`getPublishReadiness()` (`lib/creator.ts`) verifica tre requisiti insieme, tutti
+obbligatori:
+
+- **Profilo compilato**: nome utente, foto profilo e bio, tutti e tre valorizzati.
+- **Video di presentazione**: `Creator.presentationVideoUrl` valorizzato (stesso
+  campo che attiva il Trust Score, vedi sezione Trust & Safety del Punto 5).
+- **Community Guidelines accettate**: nuovo campo `Creator.guidelinesAcceptedAt`,
+  valorizzato solo dopo che l'utente ha scrollato fino in fondo alla pagina
+  `/community-guidelines` e spuntato la casella di accettazione
+  (`components/common/GuidelinesAcceptance.tsx`).
+
+Se manca anche un solo requisito, la pubblicazione viene bloccata con un messaggio
+che elenca esattamente cosa manca (non un errore generico). Il controllo scatta solo
+al momento in cui un contenuto diventa davvero pubblico (`publishJourney`,
+`insertEpisode`/`createEpisode`/il flusso rapido, e `updateEpisode` solo alla prima
+pubblicazione di un episodio, mai su una modifica di contenuto già pubblicato):
+salvare in Bozza resta sempre libero.
+
+**Riguarda solo chi vuole diventare creator**, mai i visitatori/spettatori: guardare,
+condividere un link, restano completamente liberi senza account, coerente con
+YouTube (ricerca aggiornata 2026: like/commenti/iscrizioni richiedono login, guardare
+e condividere no).
+
+**Nessun grandfathering**: la regola vale anche per gli account creator già
+esistenti (creati prima di questa funzione), incluso quello di Manuel — non è stato
+marcato "già accettato" retroattivamente per nessuno.
+
+---
+
 ## Roadmap — cosa manca prima del lancio pubblico
 
 Da tracciare e aggiornare man mano che si decide/implementa:
@@ -198,6 +235,9 @@ Da tracciare e aggiornare man mano che si decide/implementa:
       produzione, verificare se cambia il tipo di dato inviato ai
       fornitori (es. Stripe riceverebbe dati di pagamento) e aggiornare
       Privacy Policy di conseguenza.
+- [x] Requisiti per diventare creator (profilo compilato, video di
+      presentazione, Community Guidelines accettate) — implementato
+      2026-09-22 (Punto 6), vedi sezione 7 sopra.
 
 ---
 
@@ -231,4 +271,8 @@ Da tracciare e aggiornare man mano che si decide/implementa:
   account reali dal Punto 0 (2026-09-17), scostamento mai corretto qui
   finora. Deciso di non correggere il testo su Stripe in
   `/how-it-works` (descrive lo stato a piattaforma online, non il
-  prototipo di oggi).
+  prototipo di oggi). Più avanti nella stessa sessione, aggiunti i
+  requisiti per diventare creator (profilo compilato, video di
+  presentazione, Community Guidelines accettate, tutti obbligatori
+  insieme prima di poter pubblicare, nessun grandfathering) — vedi
+  sezione 7.

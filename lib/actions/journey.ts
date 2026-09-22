@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireCreator } from "@/lib/creator";
+import { requireCreator, getPublishReadiness, publishGateMessage } from "@/lib/creator";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { DISCOVERY_PHASE_DAYS, PUBLICLY_REACHABLE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewJourney } from "@/lib/notifications";
@@ -177,6 +177,11 @@ export async function publishJourney(
 
   if (journey.status !== "DRAFT") {
     return { error: "Only a Draft Journey can be published." };
+  }
+
+  const readiness = await getPublishReadiness();
+  if (!readiness.ready) {
+    return { error: publishGateMessage(readiness.missing) };
   }
 
   const issues: string[] = [];

@@ -1,4 +1,7 @@
 import { HighlightedText } from "@/components/common/HighlightedText";
+import { GuidelinesAcceptance } from "@/components/common/GuidelinesAcceptance";
+import { getViewerSession } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = {
   title: "Community Guidelines",
@@ -78,27 +81,42 @@ const notAllowedGroups: Group[] = [
   },
 ];
 
-export default function CommunityGuidelinesPage() {
+export default async function CommunityGuidelinesPage() {
+  const session = await getViewerSession();
+  const isLoggedIn = Boolean(session);
+  const creator = session
+    ? await prisma.creator.findUnique({
+        where: { userId: session.user.id },
+        select: { guidelinesAcceptedAt: true },
+      })
+    : null;
+  const initialAccepted = Boolean(creator?.guidelinesAcceptedAt);
+
   return (
     <main>
-      <div className="mx-auto max-w-2xl px-6 pb-16 pt-24">
-        <h1 className="text-2xl font-extrabold tracking-tight">Community Guidelines</h1>
-        <p className="mt-2 text-sm text-ink-muted">
+      <div className="mx-auto max-w-2xl px-6 pb-10 pt-14">
+        <h1 className="whitespace-nowrap text-[clamp(2rem,6vw,3.75rem)] font-black leading-[0.9] tracking-tight">
+          Community{" "}
+          <span className="bg-gradient-to-br from-ember to-ember/50 bg-clip-text text-transparent">
+            Guidelines
+          </span>
+        </h1>
+        <p className="mt-3 text-sm text-ink-muted">
           Zero only works if people can trust what they see here. These are the rules that keep it that way.
         </p>
 
-        <div className="mt-8 space-y-8">
+        <div className="mt-5 space-y-5">
           <section>
-            <h2 className="text-[1.15rem] font-bold tracking-tight text-ember">Not allowed on Zero</h2>
+            <h2 className="text-[1.3rem] font-bold tracking-tight text-ember">Not allowed on Zero</h2>
 
-            <div className="mt-3 rounded-xl border border-danger/30 bg-danger/10 p-4">
+            <div className="mt-2 rounded-xl border border-danger/30 bg-danger/10 p-3.5">
               <p className="text-sm font-bold text-danger">Zero tolerance, immediate action</p>
               <p className="mt-1 text-sm leading-relaxed text-ink">
                 These are never allowed, with no exceptions. We remove the content immediately, suspend or
                 permanently ban the account on the first confirmed case, and report it to the relevant
                 authorities when the law requires it.
               </p>
-              <ul className="mt-2 space-y-1.5">
+              <ul className="mt-1.5 space-y-1">
                 {zeroTolerance.map((item) => (
                   <li key={item} className="text-sm leading-relaxed text-ink">
                     • {item}
@@ -107,30 +125,32 @@ export default function CommunityGuidelinesPage() {
               </ul>
             </div>
 
-            <div className="mt-6 space-y-5">
+            <div className="mt-4 space-y-3">
               {notAllowedGroups.map((group) => (
                 <div key={group.title}>
-                  <h3 className="text-[1.01rem] font-bold tracking-tight text-ember">{group.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-ink">
+                  <h3 className="text-[1.14rem] font-bold tracking-tight text-ember">{group.title}</h3>
+                  <p className="mt-0.5 text-sm leading-relaxed text-ink">
                     <HighlightedText text={group.body} />
                   </p>
                 </div>
               ))}
             </div>
 
-            <p className="mt-6 text-sm leading-relaxed text-ink">
+            <p className="mt-4 text-sm leading-relaxed text-ink">
               <HighlightedText text={noEngagementBaitNote} />
             </p>
           </section>
 
           {simpleSections.map((section) => (
             <section key={section.title}>
-              <h2 className="text-[1.15rem] font-bold tracking-tight text-ember">{section.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-ink">
+              <h2 className="text-[1.3rem] font-bold tracking-tight text-ember">{section.title}</h2>
+              <p className="mt-1 text-sm leading-relaxed text-ink">
                 <HighlightedText text={section.body} />
               </p>
             </section>
           ))}
+
+          <GuidelinesAcceptance isLoggedIn={isLoggedIn} initialAccepted={initialAccepted} />
         </div>
       </div>
     </main>
