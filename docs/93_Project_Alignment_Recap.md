@@ -33,7 +33,7 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 | 3 | Monetizzazione (Business Model) | ✅ Chiuso (2026-09-21) |
 | 4 | Algoritmo e Discovery | ✅ Chiuso (2026-09-21) |
 | 5 | Trust & Safety (Trust Score + moderazione contenuti) | ✅ Chiuso (2026-09-21) |
-| 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | 🔶 In corso, lavoro svolto, in attesa di conferma di Manuel |
+| 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ✅ Chiuso (2026-09-22) |
 | 7 | Infrastruttura tecnica (readiness) | ⬜ Da fare |
 | 8 | Piano di lancio | ⬜ Da fare |
 | 9 | Business Plan / Dossier investitori (Mercato, Team, Trazione, Piano Finanziario, la Richiesta) | ⬜ Da fare |
@@ -324,4 +324,4 @@ Provando il nuovo requisito del video di presentazione, Manuel ha caricato un vi
 
 ### Stato del punto
 
-Lavoro svolto e verificato (tipo-check del progetto pulito, migrazione del database applicata) il 2026-09-22. In attesa di conferma esplicita di Manuel per la chiusura.
+Chiuso il 2026-09-22, confermato da Manuel dopo un controllo finale diretto nel codice (campo `dateOfBirth` e blocco server-side in `lib/auth.ts`, `getPublishReadiness()` in `lib/creator.ts`, riquadro rosso delle tre categorie a tolleranza zero nelle Community Guidelines, migrazione applicata su Neon). Riepilogo esportato in `Desktop\Zero - Punti Chiusi\Punto 6 - Legale.md`. Il Punto 7 (Infrastruttura tecnica) parte in questa stessa chat, come da indicazione di Manuel di procedere più velocemente sui punti restanti.
