@@ -39,11 +39,28 @@ export default function RegisterPage() {
 /* FORM                                                                 */
 /* ------------------------------------------------------------------ */
 
+const MINIMUM_AGE_YEARS = 16;
+
+function isOldEnough(dateOfBirth: Date, minimumAge: number): boolean {
+  const now = new Date();
+  const cutoff = new Date(now.getFullYear() - minimumAge, now.getMonth(), now.getDate());
+  return dateOfBirth <= cutoff;
+}
+
+function maxDateOfBirth(): string {
+  const now = new Date();
+  const year = now.getFullYear() - MINIMUM_AGE_YEARS;
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
@@ -57,11 +74,17 @@ function RegisterForm() {
       return;
     }
 
+    if (!isOldEnough(new Date(dateOfBirth), MINIMUM_AGE_YEARS)) {
+      setError(`You must be at least ${MINIMUM_AGE_YEARS} years old to create a Zero account.`);
+      return;
+    }
+
     setLoading(true);
     const { error: signUpError } = await authClient.signUp.email({
       name,
       email,
       password,
+      dateOfBirth: new Date(dateOfBirth),
       callbackURL: "/onboarding",
     });
     setLoading(false);
@@ -104,6 +127,16 @@ function RegisterForm() {
         value={email}
         onChange={setEmail}
         autoComplete="email"
+        required
+      />
+      <Field
+        label="Date of birth"
+        id="dateOfBirth"
+        type="date"
+        value={dateOfBirth}
+        onChange={setDateOfBirth}
+        autoComplete="bday"
+        max={maxDateOfBirth()}
         required
       />
       <PasswordField
@@ -151,6 +184,7 @@ type FieldProps = {
   autoComplete?: string;
   required?: boolean;
   minLength?: number;
+  max?: string;
 };
 
 function Field({
@@ -162,6 +196,7 @@ function Field({
   autoComplete,
   required,
   minLength,
+  max,
 }: FieldProps) {
   return (
     <div>
@@ -177,6 +212,7 @@ function Field({
         autoComplete={autoComplete}
         required={required}
         minLength={minLength}
+        max={max}
         className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
       />
     </div>

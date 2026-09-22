@@ -1,9 +1,18 @@
 import { betterAuth } from "better-auth";
+import { APIError } from "better-auth/api";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 import { recordDevEmailLink } from "@/lib/devEmailLog";
+
+const MINIMUM_AGE_YEARS = 16;
+
+function isOldEnough(dateOfBirth: Date, minimumAge: number): boolean {
+  const now = new Date();
+  const cutoff = new Date(now.getFullYear() - minimumAge, now.getMonth(), now.getDate());
+  return dateOfBirth <= cutoff;
+}
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -45,6 +54,27 @@ export const auth = betterAuth({
       // Riusa emailVerification.sendVerificationEmail sopra per confermare il nuovo indirizzo
       // (stesso link "/verify-email", vedi Settings > Password & Security).
       enabled: true,
+    },
+    additionalFields: {
+      dateOfBirth: {
+        type: "date",
+        required: true,
+        input: true,
+      },
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          const dateOfBirth = (user as { dateOfBirth?: Date }).dateOfBirth;
+          if (!dateOfBirth || !isOldEnough(new Date(dateOfBirth), MINIMUM_AGE_YEARS)) {
+            throw new APIError("BAD_REQUEST", {
+              message: `You must be at least ${MINIMUM_AGE_YEARS} years old to create a Zero account.`,
+            });
+          }
+        },
+      },
     },
   },
   plugins: [nextCookies()],

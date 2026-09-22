@@ -31,10 +31,14 @@ lancio).
 | Foto di copertina | `users.coverUrl` (chiave file su R2) | — | Pubblica |
 | Località | `users.location` | In chiaro | Pubblica (mostrata su `ProfileHero`) |
 | Interessi (categorie scelte in Onboarding) | `users.interests` | In chiaro | Pubblica (mostrata su `AboutCard`) |
-| Data di nascita | **Non esiste nello schema** | — | — |
+| Data di nascita | `users.dateOfBirth` | In chiaro | Solo interna (mai mostrata pubblicamente) |
 | IP e User-Agent di login | `sessions.ipAddress`, `sessions.userAgent` (gestito da Better Auth) | In chiaro | Solo interna |
 
-Nessun campo data di nascita/età esiste nel database (`prisma/schema.prisma`).
+Campo `dateOfBirth` aggiunto il 2026-09-22 (Punto 6 dell'allineamento): richiesto in
+registrazione per far rispettare l'età minima di 16 anni, controllo lato server in
+`lib/auth.ts` (`databaseHooks.user.create.before`, blocca la creazione dell'account
+sotto i 16 anni) oltre al controllo lato client nel modulo. Null per gli account creati
+prima di questa regola, non applicata retroattivamente.
 
 ---
 
@@ -42,17 +46,18 @@ Nessun campo data di nascita/età esiste nel database (`prisma/schema.prisma`).
 
 | Servizio | Dato inviato | Stato |
 |---|---|---|
-| Neon (Postgres) | Tutti i dati sopra (è il database primario) | Configurato ma non ancora collegato (placeholder in `.env`) |
-| Cloudflare R2 | File binari (foto profilo/copertina, video episodi, media degli Update) via `lib/r2.ts` | Configurato ma non ancora collegato |
-| Resend | Email di reset password e verifica email (indirizzo email + nome utente), via `lib/email.ts` | Configurato ma non ancora collegato; senza `RESEND_API_KEY` il contenuto viene solo stampato in console (dev) |
-| Stripe | **Nessuno**: nessuna chiamata Stripe nel codice, solo campo `stripeId` nello schema (`Payment.stripeId`) mai popolato da codice reale | Non implementato |
+| Neon (Postgres) | Tutti i dati sopra (è il database primario) | **Collegato con account reale**, usato nei test end-to-end (corretto 2026-09-17, la voce precedente "placeholder" era superata) |
+| Cloudflare R2 | File binari (foto profilo/copertina, video episodi, media degli Update) via `lib/r2.ts` | **Collegato con account reale** (corretto 2026-09-17) |
+| Resend | Email di reset password e verifica email (indirizzo email + nome utente), via `lib/email.ts` | **Collegato con account reale** (corretto 2026-09-17); resta da fare solo il passaggio "da test a produzione" (dominio email verificato) |
+| Stripe | **Nessuno**: nessuna chiamata Stripe nel codice, solo campo `stripeId` nello schema (`Payment.stripeId`) mai popolato da codice reale | Non implementato, per scelta: collegato solo appena prima del lancio online (Punto 7) |
 
-**Nota importante per la Privacy Policy**: la pagina `/how-it-works`
-(`app/how-it-works/page.tsx`) contiene oggi il testo "payments go through
+**Nota sulla pagina `/how-it-works`**: contiene il testo "payments go through
 Stripe only and your data is never shared with third parties without your
-consent" — è una dichiarazione di prodotto/marketing, non riflette codice
-funzionante (i pagamenti non sono implementati). Da allineare prima del
-lancio, o correggere il testo o implementare Stripe.
+consent", che descrive lo stato a piattaforma online (Stripe collegato),
+non lo stato attuale di prototipo. Decisione di Manuel (Punto 6, 2026-09-22):
+**non correggere**, perché Zero è ancora un prototipo non online — il testo
+diventerà vero nel momento in cui la piattaforma andrà online con Stripe già
+collegato ("a tre click dall'online"), non prima.
 
 ---
 
@@ -145,10 +150,16 @@ dietro conferma esplicita.
 
 ## 6. Minori
 
-**Non esiste oggi nessun controllo sull'età minima per registrarsi.** Il
-flusso di registrazione (`emailAndPassword` in `lib/auth.ts`) richiede solo
-email, password e verifica email; non è previsto nessun campo data di
-nascita né nel form né nello schema del database.
+**Età minima di 16 anni, implementata il 2026-09-22 (Punto 6 dell'allineamento).**
+Il modulo di registrazione (`app/register/page.tsx`) chiede la data di
+nascita e blocca l'invio sotto i 16 anni lato client; il controllo reale è
+lato server in `lib/auth.ts` (`databaseHooks.user.create.before`), che
+rifiuta la creazione dell'account indipendentemente dal client. Controllo
+"a dichiarazione" (l'utente scrive la propria data), non con documento
+d'identità: proporzionato per una piattaforma di queste dimensioni, in
+linea con l'età di base fissata dal GDPR (Art. 8) per evitare la gestione
+del consenso dei genitori. Non retroattivo: gli account creati prima hanno
+`dateOfBirth` null.
 
 ---
 
@@ -160,16 +171,33 @@ Da tracciare e aggiornare man mano che si decide/implementa:
 - [ ] Quando Stripe verrà collegato: rivedere se Purchase/Tip/Payment
       vanno anonimizzati invece che cancellati alla cancellazione
       dell'account (vedi sezione 5).
-- [ ] Decidere se implementare un controllo età minima in registrazione
-      (rimandato al Punto 6 dell'allineamento).
+- [x] Controllo età minima in registrazione — implementato 2026-09-22
+      (Punto 6 dell'allineamento), vedi sezione 6 sopra.
 - [x] Collegare il modello `Report` a una funzione reale — fatto nel
       Punto 5 dell'allineamento (2026-09-21), vedi sezione 4 sopra.
-- [ ] Allineare il testo su Stripe in `/how-it-works` allo stato reale
-      (Stripe non è collegato oggi).
-- [ ] Quando Neon/R2/Resend/Stripe verranno effettivamente collegati,
-      aggiornare la sezione "Servizi terzi" sopra da "configurato ma non
-      collegato" a "attivo", e verificare se cambia il tipo di dato inviato
-      (es. Stripe riceverebbe dati di pagamento).
+- [x] Testo su Stripe in `/how-it-works` — deciso di **non correggerlo**
+      (Punto 6, 2026-09-22): descrive lo stato a piattaforma online, non
+      il prototipo di oggi, e diventerà vero quando Stripe sarà collegato.
+- [x] Privacy Policy, Termini di Servizio, Cookie Policy — contenuto vero
+      scritto il 2026-09-22 (Punto 6), sostituisce le pagine "Coming soon".
+      Nessun banner cookie necessario: Zero usa solo cookie tecnici.
+- [x] Content Policy dettagliata (28 categorie di contenuto vietato/limitato,
+      da un documento scritto da Manuel) integrata nelle Community
+      Guidelines pubbliche, 2026-09-22, con evidenza grafica per le
+      categorie a tolleranza zero (minori, incitamento alla violenza,
+      autolesionismo/suicidio). Stessa base testuale da usare per le
+      istruzioni del filtro automatico (`lib/moderation.ts`) quando verrà
+      riattivato.
+- [ ] Nessun canale di contatto reale oggi (`/contact` è ancora "Coming
+      soon"): Privacy Policy e Termini rimandano al Report per richieste
+      sui dati, da collegare a un indirizzo vero prima del lancio.
+- [ ] Nessuna entità legale registrata dietro Zero oggi: i Termini di
+      Servizio lo dichiarano esplicitamente, da aggiornare con il nome
+      dell'entità e la giurisdizione prima del lancio.
+- [ ] Quando Neon/R2/Resend/Stripe verranno effettivamente collegati in
+      produzione, verificare se cambia il tipo di dato inviato ai
+      fornitori (es. Stripe riceverebbe dati di pagamento) e aggiornare
+      Privacy Policy di conseguenza.
 
 ---
 
@@ -192,3 +220,15 @@ Da tracciare e aggiornare man mano che si decide/implementa:
   e Copyright & Report
   Content (prima erano pagine "Coming soon"). Controllo età minima
   confermato ancora rimandato al Punto 6.
+- 2026-09-22 — Punto 6 dell'allineamento (Legale): aggiunto il campo
+  `dateOfBirth` e il controllo età minima 16 anni in registrazione
+  (client + server, `lib/auth.ts`); scritto contenuto vero per Privacy
+  Policy, Termini di Servizio e Cookie Policy (prima "Coming soon");
+  integrata nelle Community Guidelines una Content Policy dettagliata
+  a 28 categorie fornita da Manuel, con evidenza grafica per le
+  categorie a tolleranza zero. Corretta anche questa pagina: Neon/R2/
+  Resend erano già segnati "non collegati", in realtà collegati con
+  account reali dal Punto 0 (2026-09-17), scostamento mai corretto qui
+  finora. Deciso di non correggere il testo su Stripe in
+  `/how-it-works` (descrive lo stato a piattaforma online, non il
+  prototipo di oggi).

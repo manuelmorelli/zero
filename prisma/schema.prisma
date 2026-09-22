@@ -134,6 +134,10 @@ model User {
   coverUrl      String? // foto di copertina del Profilo pubblico
   bio           String?
   location      String?
+  // Data di nascita, richiesta in registrazione dal Punto 6 (Legale) dell'allineamento
+  // per far rispettare l'età minima di 16 anni (vedi lib/auth.ts). Null per gli account
+  // creati prima di questa regola (non retroattiva). Mai mostrata pubblicamente.
+  dateOfBirth   DateTime?
   // Categorie scelte durante l'Onboarding (stessa lista fissa di JOURNEY_CATEGORIES,
   // vedi lib/constants/categories.ts). Vuoto = Onboarding non ancora completato.
   interests     String[]      @default([])

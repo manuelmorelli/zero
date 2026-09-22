@@ -33,7 +33,7 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 | 3 | Monetizzazione (Business Model) | ✅ Chiuso (2026-09-21) |
 | 4 | Algoritmo e Discovery | ✅ Chiuso (2026-09-21) |
 | 5 | Trust & Safety (Trust Score + moderazione contenuti) | ✅ Chiuso (2026-09-21) |
-| 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ⬜ Da fare |
+| 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | 🔶 In corso, lavoro svolto, in attesa di conferma di Manuel |
 | 7 | Infrastruttura tecnica (readiness) | ⬜ Da fare |
 | 8 | Piano di lancio | ⬜ Da fare |
 | 9 | Business Plan / Dossier investitori (Mercato, Team, Trazione, Piano Finanziario, la Richiesta) | ⬜ Da fare |
@@ -270,3 +270,40 @@ Manuel ha corretto ripetutamente l'uso del trattino come punteggiatura nei testi
 ### Stato del punto
 
 Chiuso il 2026-09-21, confermato da Manuel. Riepilogo da esportare in `Desktop\Zero - Punti Chiusi\Punto 5 - Trust & Safety.md`. Il Punto 6 (Legale) parte in una chat nuova, come da metodo concordato.
+
+## Punto 6 — Legale (Privacy, Termini, Cookie)
+
+### Situazione di partenza
+
+Le pagine Privacy Policy, Termini di Servizio e Cookie Policy esistevano solo come "Coming soon", vuote. Le Community Guidelines (scritte al Punto 5) dichiaravano già "almeno 16 anni per creare un account", ma senza nessun controllo reale: il modulo di registrazione non chiedeva data di nascita, nessun blocco. `91_Legal_Audit_And_Roadmap.md` aveva anche una correzione mai fatta: segnava Neon/R2/Resend come "non collegati", mentre in realtà lo erano già dal Punto 0 (2026-09-17), stesso tipo di scostamento documenti/codice già visto ai Punti 1 e 2.
+
+### Decisioni prese e costruite in questo punto
+
+- **Età minima**: aggiunto il campo `dateOfBirth` al modello `User` e al modulo di registrazione. Controllo a doppio livello: lato client (messaggio immediato) e lato server in `lib/auth.ts` (`databaseHooks.user.create.before`), che blocca davvero la creazione dell'account sotto i 16 anni, non aggirabile. Controllo "a dichiarazione" (l'utente scrive la sua data), non con documento d'identità: proporzionato per una piattaforma di queste dimensioni. Soglia di 16 scelta perché coincide con l'età di base del GDPR europeo per gestire da soli i propri dati, evitando la complessità del consenso dei genitori richiesto sotto quella soglia. Non retroattivo: gli account già esistenti restano con data di nascita vuota.
+- **Privacy Policy, Termini di Servizio, Cookie Policy**: contenuto vero scritto per tutte e tre, basato sui dati reali mappati in `91_Legal_Audit_And_Roadmap.md`. Dichiarano onestamente anche i limiti attuali: nessuna entità legale ancora registrata dietro Zero, nessun canale di contatto reale ancora collegato (`/contact` resta "Coming soon", le richieste sui dati passano dal Report per ora).
+- **Cookie Policy senza banner**: confermato dalla ricerca che, usando solo cookie tecnici (sessione di login, nessun tracciamento pubblicitario/analytics), la legge europea non richiede un banner "accetta i cookie". Scelta di trasparenza comunque mantenuta: la pagina elenca comunque nome e scopo di ogni cookie.
+- **Content Policy dettagliata**: Manuel ha fornito un documento con 28 categorie di contenuto da vietare o limitare (nudità/sessualizzazione, violenza, odio, autolesionismo, disturbi alimentari, droghe, challenge pericolose, cyberbullismo, gossip/drama, propaganda politica, disinformazione, deepfake, truffe, pseudo-esperti, fuffa motivazionale, ostentazione di lusso, repost senza valore, spam, canali faceless/anonimi, AI che finge di essere umana). Integrata nelle Community Guidelines pubbliche (stessa pagina, non una nuova, come fanno YouTube/TikTok/Instagram), raggruppata in blocchi tematici leggibili invece che come lista piatta. Le tre categorie a tolleranza zero (sessualizzazione minori, incitamento alla violenza, autolesionismo/suicidio) sono in un riquadro rosso visivamente distinto dal resto, per farle risaltare come richiesto da Manuel. Questa stessa lista diventerà la base scritta delle istruzioni per il filtro automatico (`lib/moderation.ts`) quando sarà riattivato.
+- **Testo su Stripe in `/how-it-works` non corretto**: Manuel ha confermato che resta così di proposito. Descrive lo stato della piattaforma quando sarà online con Stripe già collegato ("a tre click dall'online"), non lo stato di prototipo di oggi, e diventerà vero nel momento del lancio, non prima.
+- **Correzione emersa durante il punto**: `91_Legal_Audit_And_Roadmap.md` segnava ancora Neon/R2/Resend come "configurato ma non ancora collegato". Corretto: sono collegati con account reali dal 2026-09-17 (Punto 0), lo scostamento non era mai stato riportato in questo documento specifico.
+
+### Nota di processo
+
+Prima di iniziare, verificato che nessun'altra sessione in parallelo stesse lavorando sugli stessi file (chiesto direttamente all'altra sessione attiva, che lavorava solo su `EpisodePlayer.tsx`): nessuna sovrapposizione.
+
+### Ricerca di mercato/normativa aggiornata rilevante per questo punto
+
+- **Età minima (aggiornamento 2026)**: il GDPR europeo fissa la soglia base a 16 anni per il consenso al trattamento dati (Art. 8), con gli Stati membri liberi di abbassarla fino a un minimo di 13; scendere sotto i 16 richiederebbe gestire il consenso dei genitori, complessità che Zero evita restando a 16. Il COPPA statunitense fissa 13 anni. Confronto con leggi più recenti e severe (Florida vieta social sotto i 14; Virginia, Nebraska, Mississippi richiedono verifica età o consenso genitori sotto i 16-18; Australia vieta account social sotto i 16 con multe fino a 50 milioni di dollari australiani per le piattaforme inadempienti): tutte più restrittive di quanto Zero abbia scelto, confermando che 16 anni con controllo a dichiarazione è una soglia prudente ma non eccessiva per una piattaforma di queste dimensioni.
+- **Privacy Policy GDPR + CCPA**: la pratica raccomandata per una startup piccola è una sola informativa privacy globale che rispetti lo standard più severo tra i due (GDPR), invece di due documenti separati — approccio seguito qui. Il CCPA californiano si applica solo sopra soglie di fatturato (~26,6 milioni di dollari) o 100.000 utenti californiani/anno, molto lontane dai numeri attuali di Zero, ma includere già ora i diritti CCPA nella Privacy Policy non costa nulla e evita di doverla riscrivere più avanti.
+- **Cookie tecnici ed esenzione dal consenso (GDPR/ePrivacy)**: confermato che i cookie strettamente necessari al funzionamento del servizio (sessione di login, sicurezza) sono l'unica categoria esente dall'obbligo di consenso, a patto di non essere usati per tracciamento o pubblicità — esattamente il caso di Zero oggi. Resta comunque raccomandata la trasparenza tramite una pagina dedicata, anche senza banner.
+- **Crediti cloud**: nessuna novità rispetto ai punti precedenti (refresh di routine, nessuna ricerca aggiuntiva necessaria essendo già stata aggiornata due volte nella stessa giornata ai Punti 4 e 5).
+
+### Punti di forza per un investitore
+
+- Zero applica una soglia d'età più prudente rispetto a quanto richiesto dalla maggior parte delle normative studiate, senza però ricorrere alla complessità di una verifica documentale sproporzionata per la fase attuale.
+- Privacy Policy e Termini scritti sui dati reali del codice, non un modello generico scaricato online: riflettono esattamente cosa fa la piattaforma oggi, inclusi i suoi limiti dichiarati apertamente (nessuna entità legale ancora registrata, nessun canale di contatto reale).
+- Content Policy dettagliata (28 categorie) integrata prima del lancio pubblico, non dopo un incidente: stessa logica già mostrata al Punto 5 con segnalazioni e filtro automatico, costruiti in anticipo.
+- Nessun banner cookie necessario, un dettaglio piccolo ma concreto che mostra un prodotto pensato per non raccogliere più dati del necessario, coerente con il principio di trasparenza già mostrato ai Punti 0-1 e 4.
+
+### Stato del punto
+
+Lavoro svolto e verificato (tipo-check del progetto pulito, migrazione del database applicata) il 2026-09-22. In attesa di conferma esplicita di Manuel per la chiusura.
