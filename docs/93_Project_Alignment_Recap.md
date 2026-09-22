@@ -34,9 +34,13 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 | 4 | Algoritmo e Discovery | ✅ Chiuso (2026-09-21) |
 | 5 | Trust & Safety (Trust Score + moderazione contenuti) | ✅ Chiuso (2026-09-21) |
 | 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ✅ Chiuso (2026-09-22) |
-| 7 | Infrastruttura tecnica (readiness) | ⬜ Da fare |
-| 8 | Piano di lancio | ⬜ Da fare |
+| 7 | Struttura pagine Creator Economy (Community Premium, Prodotti/Servizi, Workshop/Eventi — le "Strumenti" mai costruiti di `07_Creator_Experience.md`) | ⬜ Da fare |
+| 8 | AI sulla piattaforma (nuovo, mai discusso prima, portato da Manuel da una conversazione separata con Claude) | ⬜ Da fare |
 | 9 | Business Plan / Dossier investitori (Mercato, Team, Trazione, Piano Finanziario, la Richiesta) | ⬜ Da fare |
+| 10 | Infrastruttura tecnica e pagamenti (hosting, sicurezza, test, monitoraggio, Stripe Connect reale) | ⬜ Da fare |
+| 11 | Piano di lancio | ⬜ Da fare |
+
+**Riordino deciso il 2026-09-22** (sostituisce l'elenco originale a 10 punti): i Punti 7-9 originali (Infrastruttura tecnica, Piano di lancio, Business Plan) sono stati riorganizzati in 5 punti. Motivo: prima chiarire come guadagnano i creator con le loro skills (pagine/strumenti mancanti) prima di costruire il meccanismo tecnico dei pagamenti dietro; il Business Plan non dipende dall'infrastruttura pronta e viene prima per chiarire quali pezzi di infrastruttura contano davvero per un investitore; il Piano di lancio resta per ultimo perché dipende da tutto il resto.
 
 ## Punto 0 — Fotografia generale
 
