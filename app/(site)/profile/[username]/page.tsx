@@ -26,6 +26,7 @@ import { getFeaturedJourney } from "@/lib/profile/featuredJourney";
 import { PUBLICLY_REACHABLE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { DEMO_FEED_ITEMS } from "@/lib/demo/demoProfile";
+import { findUserByUsernameOrId } from "@/lib/profile/findUserByUsernameOrId";
 
 /** Quante Published Journeys mostrare in anteprima nell'Overview prima del link "View all"
  * verso la tab Journeys (che resta la lista completa, archiviati compresi). */
@@ -34,15 +35,6 @@ const PUBLISHED_JOURNEYS_PREVIEW_COUNT = 5;
 /** Colori alternati per le scritte motivazionali del feed demo (DEMO_FEED_ITEMS), per non usare
  * solo l'ember su tutte e tre le card. */
 const DEMO_MESSAGE_COLORS = ["text-ember", "text-ink", "text-ink-muted"];
-
-// L'username non è ancora impostabile da UI: come fallback temporaneo si accetta
-// anche l'id dell'utente nello stesso segmento di rotta, finché non esiste una
-// gestione reale degli username. Nessuna nuova regola di business introdotta.
-async function findUserByUsernameOrId(usernameOrId: string) {
-  const byUsername = await prisma.user.findUnique({ where: { username: usernameOrId } });
-  if (byUsername) return byUsername;
-  return prisma.user.findUnique({ where: { id: usernameOrId } });
-}
 
 function parseTab(value: string | undefined): ProfileTab {
   if (value === "journeys") return value;
@@ -202,12 +194,7 @@ export default async function PublicProfilePage({
             </>
           ) : (
             <>
-              <FollowButton
-                userId={user.id}
-                initialFollowersCount={followersCount}
-                initialIsFollowing={isFollowing}
-                isLoggedIn={isLoggedIn}
-              />
+              <FollowButton userId={user.id} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} />
               {canMessageUser && <MessageButton userId={user.id} />}
               {isLoggedIn && <ReportButton targetType="USER" targetId={user.id} />}
             </>
@@ -215,7 +202,11 @@ export default async function PublicProfilePage({
         }
       />
 
-      <ProfileTabs basePath={`/profile/${username}`} activeTab={activeTab} />
+      <ProfileTabs
+        basePath={`/profile/${username}`}
+        activeTab={activeTab}
+        actions={!isOwnProfile && creator ? <CreatorEconomyLinks username={username} /> : undefined}
+      />
 
       <div className="mx-auto max-w-[1400px] px-5 py-4 md:px-[calc(4.43%+2rem)]">
         {activeTab === "overview" && (
@@ -387,5 +378,22 @@ export default async function PublicProfilePage({
         )}
       </div>
     </main>
+  );
+}
+
+/** Bozza visiva (Punto 7 dell'allineamento, "Struttura pagine Creator Economy"): due punti di
+ * ingresso verso le pagine Membership/Shop, nessun pagamento reale dietro per ora. */
+function CreatorEconomyLinks({ username }: { username: string }) {
+  const linkClassName =
+    "shrink-0 rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-4 py-2 text-sm text-white opacity-70 backdrop-blur-md transition-colors hover:opacity-100";
+  return (
+    <>
+      <Link href={`/profile/${username}/membership`} className={linkClassName}>
+        Become a Member
+      </Link>
+      <Link href={`/profile/${username}/shop`} className={linkClassName}>
+        Shop
+      </Link>
+    </>
   );
 }

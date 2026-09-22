@@ -125,7 +125,6 @@ export default async function PublicJourneyPage({
                 {!isOwnJourney && (
                   <FollowButton
                     userId={journey.creator.userId}
-                    initialFollowersCount={followersCount}
                     initialIsFollowing={isFollowing}
                     isLoggedIn={Boolean(session)}
                   />
