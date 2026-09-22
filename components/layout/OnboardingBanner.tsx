@@ -13,20 +13,24 @@ function dismissKey(userId: string) {
 
 /**
  * Invito non invasivo a completare l'Onboarding, mostrato al posto del vecchio redirect
- * forzato dalla Home (vedi 00-project-context.md, sezione "Onboarding"): resta dismissibile
- * e ricordato per utente via localStorage, non riappare più dopo la chiusura.
+ * forzato dalla Home (vedi 00-project-context.md, sezione "Onboarding"): resta dismissibile,
+ * ma solo per la sessione del browser corrente (sessionStorage, non localStorage) — riappare
+ * al prossimo login finché l'utente non ha davvero scelto almeno un interesse (il chiamante
+ * lo renderizza solo quando needsOnboarding è vero, vedi app/(site)/page.tsx), invece di
+ * sparire per sempre dopo una sola chiusura.
  */
 export function OnboardingBanner({ userId }: OnboardingBannerProps) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    setVisible(window.localStorage.getItem(dismissKey(userId)) !== "1");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setVisible(window.sessionStorage.getItem(dismissKey(userId)) !== "1");
   }, [userId]);
 
   if (!visible) return null;
 
   function dismiss() {
-    window.localStorage.setItem(dismissKey(userId), "1");
+    window.sessionStorage.setItem(dismissKey(userId), "1");
     setVisible(false);
   }
 

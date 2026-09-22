@@ -39,17 +39,17 @@ const sections: Section[] = [
 export default function CookiesPage() {
   return (
     <main>
-      <div className="mx-auto max-w-2xl px-6 pb-16 pt-24">
-        <h1 className="text-2xl font-extrabold tracking-tight">Cookie Policy</h1>
-        <p className="mt-2 text-sm text-ink-muted">
+      <div className="mx-auto max-w-2xl px-6 pb-10 pt-14">
+        <h1 className="text-5xl font-black leading-[0.9] tracking-tight sm:text-6xl">Cookie Policy</h1>
+        <p className="mt-3 text-sm text-ink-muted">
           What cookies Zero uses, and why that list is short.
         </p>
 
-        <div className="mt-8 space-y-8">
+        <div className="mt-5 space-y-4">
           {sections.map((section) => (
             <section key={section.title}>
-              <h2 className="text-[1.15rem] font-bold tracking-tight text-ember">{section.title}</h2>
-              <div className="mt-2 space-y-2">
+              <h2 className="text-[1.3rem] font-bold tracking-tight text-ember">{section.title}</h2>
+              <div className="mt-1 space-y-1.5">
                 {section.body.map((paragraph) => (
                   <p key={paragraph} className="text-sm leading-relaxed text-ink">
                     <HighlightedText text={paragraph} />

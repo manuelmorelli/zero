@@ -64,7 +64,7 @@ function BulletList({ items }: { items: Bullet[] }) {
   return (
     <ul className="mt-4 space-y-3">
       {items.map(({ icon: Icon, text }) => (
-        <li key={text} className="flex gap-3 text-sm leading-relaxed text-ink-muted">
+        <li key={text} className="flex gap-3 text-sm leading-relaxed text-ink">
           <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-ember/30 bg-ember/10 text-ember">
             <Icon className="h-3.5 w-3.5" aria-hidden="true" />
           </span>
@@ -78,7 +78,7 @@ function BulletList({ items }: { items: Bullet[] }) {
 export default function WhatIsZeroPage() {
   return (
     <div className="min-h-screen bg-bg text-ink">
-      <main className="relative mx-auto max-w-3xl px-5 pb-16 pt-24 md:px-8 md:pt-28">
+      <main className="relative mx-auto max-w-3xl px-5 pb-10 pt-16 md:px-8 md:pt-20">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[28rem] w-[46rem] -translate-x-1/2 rounded-full bg-ember/10 blur-[120px]"
@@ -96,7 +96,7 @@ export default function WhatIsZeroPage() {
           </h1>
         </Reveal>
 
-        <div className="mt-8 space-y-5">
+        <div className="mt-5 space-y-3">
           {paragraphs.map((text) =>
             highlighted.has(text) ? (
               <p
@@ -106,7 +106,7 @@ export default function WhatIsZeroPage() {
                 {text}
               </p>
             ) : (
-              <p key={text.slice(0, 40)} className="text-[0.95rem] leading-relaxed text-ink-muted">
+              <p key={text.slice(0, 40)} className="text-[0.95rem] leading-relaxed text-ink">
                 {text}
               </p>
             )
@@ -119,7 +119,7 @@ export default function WhatIsZeroPage() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <Reveal>
             <section className="h-full rounded-2xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] p-5">
               <h2 className="text-base font-bold tracking-tight">What makes Zero different</h2>
@@ -135,7 +135,7 @@ export default function WhatIsZeroPage() {
         </div>
 
         <Reveal>
-          <p className="mt-8 text-sm text-ink-muted">
+          <p className="mt-5 text-sm text-ink">
             Curious how the algorithm actually decides what to show?{" "}
             <Link href="/how-it-works#algorithm" className="font-semibold text-ember hover:text-ember/80">
               Know the Algorithm. Know Zero.
@@ -143,7 +143,7 @@ export default function WhatIsZeroPage() {
           </p>
         </Reveal>
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-5 flex flex-wrap gap-3">
           <ButtonPrimary href="/">Explore Journeys</ButtonPrimary>
           <ButtonSecondary href="/dashboard">Create Your Journey</ButtonSecondary>
         </div>
