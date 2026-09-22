@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toggleLike } from "@/lib/actions/like";
 import { formatCompactNumber } from "@/lib/utils";
@@ -39,7 +40,7 @@ export function TrustyButton({
         aria-label="Log in to react with Trusty"
         className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
       >
-        <ThumbsUpIcon className="h-3.5 w-3.5" />
+        <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
         {formatCompactNumber(likeCount)}
       </Link>
     );
@@ -60,42 +61,35 @@ export function TrustyButton({
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={isPending || !unlocked}
-      aria-pressed={isLiked}
-      aria-label={
-        unlocked ? (isLiked ? "Remove Trusty" : "Give Trusty") : "Watch to the end to unlock Trusty"
-      }
-      title={unlocked ? undefined : "Watch to the end to unlock Trusty"}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-        isLiked
-          ? "border-ember/40 bg-ember/10 text-ember"
-          : "border-border text-ink-muted hover:border-ink-muted hover:text-ink"
-      }`}
-    >
-      <ThumbsUpIcon className="h-3.5 w-3.5" filled={isLiked} />
-      {formatCompactNumber(likeCount)}
-    </button>
+    <span className="group relative inline-block">
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={isPending || !unlocked}
+        aria-pressed={isLiked}
+        aria-label={
+          unlocked ? (isLiked ? "Remove Trusty" : "Give Trusty") : "Watch to the end to unlock Trusty"
+        }
+        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+          isLiked
+            ? "border-ember/40 bg-ember/10 text-ember"
+            : "border-border text-ink-muted hover:border-ink-muted hover:text-ink"
+        }`}
+      >
+        <ShieldCheck className="h-3.5 w-3.5" fill={isLiked ? "currentColor" : "none"} aria-hidden="true" />
+        {formatCompactNumber(likeCount)}
+      </button>
+      <TrustyTooltip locked={!unlocked} />
+    </span>
   );
 }
 
-function ThumbsUpIcon({ className, filled }: { className?: string; filled?: boolean }) {
+function TrustyTooltip({ locked }: { locked: boolean }) {
   return (
-    <svg
-      viewBox="0 0 20 20"
-      fill={filled ? "currentColor" : "none"}
-      stroke="currentColor"
-      strokeWidth={1.6}
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 8.5H4.5a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1H7m0-8v8m0-8 2.4-4.8a1.2 1.2 0 0 1 1.35-.65c.9.2 1.5 1.05 1.35 1.96L11.5 8.5h3.02c.98 0 1.72.9 1.53 1.86l-.9 4.5a1.8 1.8 0 0 1-1.77 1.64H7"
-      />
-    </svg>
+    <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-48 -translate-x-1/2 rounded-lg border border-border bg-surface px-3 py-2 text-center text-[0.7rem] leading-snug text-ink-muted opacity-0 shadow-lg transition-opacity md:group-hover:block md:group-hover:opacity-100">
+      {locked
+        ? "Watch the episode to the end to unlock Trusty."
+        : "Give a Trusty when you trust this content, it helps build the creator's Trust Score."}
+    </span>
   );
 }

@@ -14,8 +14,8 @@ type UpNextListProps = {
 export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, activeEpisodeId }: UpNextListProps) {
   return (
     <aside className="min-w-0">
-      <h2 className="text-sm font-bold tracking-tight">{journeyTitle}</h2>
-      <p className="mt-1 text-xs text-ink-muted">
+      <h2 className="text-[1.06rem] font-bold tracking-tight">{journeyTitle}</h2>
+      <p className="mt-1 text-[0.91rem] text-ember">
         {episodes.length} {episodes.length === 1 ? "Episode" : "Episodes"}
       </p>
       <ul className="mt-3 space-y-2 lg:max-h-[70vh] lg:overflow-y-auto lg:pr-1">
@@ -39,18 +39,18 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                   )}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[0.6rem] tracking-[0.18em] text-ink-muted uppercase">
+                  <span className="block text-[0.73rem] tracking-[0.18em] text-ember uppercase">
                     Episode {episode.number}
                   </span>
                   <span
-                    className={`mt-0.5 block truncate text-[0.8rem] font-semibold transition-colors ${
+                    className={`mt-0.5 block truncate text-[0.97rem] font-semibold transition-colors ${
                       active ? "text-ink" : "group-hover:text-ember"
                     }`}
                   >
                     {episode.title}
                   </span>
                   {episode.progress?.completedAt && (
-                    <span className="mt-0.5 block text-[0.65rem] text-ink-muted">Completed</span>
+                    <span className="mt-0.5 block text-[0.79rem] text-ink-muted">Completed</span>
                   )}
                 </span>
               </Link>

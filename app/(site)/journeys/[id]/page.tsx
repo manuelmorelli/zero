@@ -148,7 +148,7 @@ export default async function PublicJourneyPage({
                       : `Check out this Journey by ${journey.creator.displayName}: ${journey.title}`
                   }
                   linkedJourneyId={journey.id}
-                  className="grid h-9 w-9 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ink-muted hover:text-ember"
+                  className="grid h-9 w-9 place-items-center rounded-full border border-border text-ember transition-opacity hover:opacity-80"
                 />
                 {!isOwnJourney && session && <ReportButton targetType="JOURNEY" targetId={journey.id} />}
               </div>

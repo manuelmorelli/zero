@@ -1,5 +1,6 @@
 "use client";
 
+import { Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { TrustScorePanel } from "@/components/common/TrustScorePanel";
@@ -41,8 +42,13 @@ export function ProfileTrustStat({ score }: { score: number | null }) {
         className="w-full transition duration-300 hover:scale-110 hover:brightness-125"
         aria-expanded={open}
       >
-        <p className="text-sm font-bold tracking-tight text-ember md:text-base">{score ?? "—"}</p>
-        <p className="text-[0.6rem] font-medium uppercase tracking-wider text-ink-muted">Trust Score</p>
+        <span className="relative mx-auto grid h-8 w-8 place-items-center md:h-9 md:w-9">
+          <Shield className="absolute inset-0 h-full w-full text-ember" strokeWidth={1.5} aria-hidden="true" />
+          <span className="relative text-[0.65rem] font-bold tracking-tight text-ember md:text-xs">
+            {score ?? "—"}
+          </span>
+        </span>
+        <p className="mt-0.5 text-[0.6rem] font-medium uppercase tracking-wider text-ink-muted">Trust Score</p>
       </button>
       {open &&
         coords &&

@@ -326,53 +326,51 @@ export function EpisodePlayer({
           </div>
         )}
         </div>
-        <div>
-          <div className="flex items-start justify-between gap-3">
-            <p className="text-[0.6rem] tracking-[0.22em] text-ink-muted uppercase">
-              Episode {episode.number}
-              {journeyCategory ? ` · ${journeyCategory}` : ""}
-            </p>
-            <div className="flex items-center gap-1.5 scale-125 origin-top-right">
-              <TrustyButton
-                targetType="EPISODE"
-                targetId={episode.id}
-                initialLikeCount={initialLikeCount}
-                initialIsLiked={initialIsLiked}
-                isLoggedIn={isLoggedIn}
-                unlocked={trustyUnlocked}
-              />
-              <ShareButton
-                path={`/journeys/${journeyId}/episodes/${episode.id}`}
-                label={episode.title}
-                updateCaption={
-                  isOwnContent
-                    ? `New episode: ${episode.title}`
-                    : `Check out this episode by ${creator.displayName}: ${episode.title}`
-                }
-                linkedEpisodeId={episode.id}
-                className="text-ink-muted transition-colors hover:text-ember"
-              />
-            </div>
+        <div className="relative">
+          <div className="absolute right-0 top-0 flex items-center gap-1.5 scale-125 origin-top-right">
+            <TrustyButton
+              targetType="EPISODE"
+              targetId={episode.id}
+              initialLikeCount={initialLikeCount}
+              initialIsLiked={initialIsLiked}
+              isLoggedIn={isLoggedIn}
+              unlocked={trustyUnlocked}
+            />
+            <ShareButton
+              path={`/journeys/${journeyId}/episodes/${episode.id}`}
+              label={episode.title}
+              updateCaption={
+                isOwnContent
+                  ? `New episode: ${episode.title}`
+                  : `Check out this episode by ${creator.displayName}: ${episode.title}`
+              }
+              linkedEpisodeId={episode.id}
+              className="text-ember transition-opacity hover:opacity-80"
+            />
           </div>
+          <p className="pr-24 text-[0.66rem] leading-none tracking-[0.22em] text-ember uppercase">
+            Episode {episode.number}
+            {journeyCategory ? ` · ${journeyCategory}` : ""}
+          </p>
           <h1 className="mt-1 text-xl font-bold leading-tight tracking-tight md:text-2xl">
             {episode.title}
           </h1>
-          <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-ink-muted">
             <Link href={`/journeys/${journeyId}`} className="transition-colors hover:text-ember">
               {journeyTitle}
             </Link>
             <span aria-hidden="true">·</span>
             <Link
               href={`/profile/${creator.userId}`}
-              className="flex min-w-0 items-center gap-2 transition-colors hover:text-ember"
+              className="flex min-w-0 items-center gap-1.5 transition-colors hover:text-ember"
             >
-              <Avatar name={creator.displayName} className="h-7 w-7 text-[0.65rem]" />
+              <Avatar name={creator.displayName} className="h-6 w-6 text-[0.6rem]" />
               <span className="truncate">{creator.displayName}</span>
             </Link>
             {trustScore !== null && <TrustScoreBadge score={trustScore} />}
           </div>
           {episode.caption && (
-            <p className="mt-2 whitespace-pre-wrap text-sm text-ink-muted">{episode.caption}</p>
+            <p className="mt-1 whitespace-pre-wrap text-sm text-ember">{episode.caption}</p>
           )}
         </div>
       </div>
