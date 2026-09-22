@@ -51,9 +51,15 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ## Registrazione & Sicurezza account
 
-☐ [Da Punto 1 allineamento] Bloccare l'iscrizione a chi ha meno di 16 anni — oggi nessun controllo età in registrazione. Da definire come verificare l'età in modo credibile (semplice dichiarazione vs verifica più robusta).
+☑ [Da Punto 1 allineamento] Bloccare l'iscrizione a chi ha meno di 16 anni — implementato al Punto 6 dell'allineamento (Legale, 2026-09-22): campo `dateOfBirth`, controllo a dichiarazione (non verifica documentale) sia lato client sia lato server (`lib/auth.ts`, `databaseHooks.user.create.before`), non aggirabile. Non retroattivo: account creati prima restano con data di nascita vuota.
 
-☐ [Da Punto 1 allineamento] Raccogliere solo il minimo indispensabile di dati personali in registrazione, per ridurre il rischio legale (GDPR e simili) — da rivedere quali campi sono oggi realmente necessari.
+☐ [Da Punto 1 allineamento] Raccogliere solo il minimo indispensabile di dati personali in registrazione, per ridurre il rischio legale (GDPR e simili) — da rivedere quali campi sono oggi realmente necessari. Non toccato dal lavoro sull'età minima sopra: resta aperto.
+
+## Diventare creator
+
+☑ Requisiti obbligatori per pubblicare per la prima volta, implementati al Punto 6 dell'allineamento (Legale, 2026-09-22): profilo compilato (nome utente, foto profilo, bio), video di presentazione caricato, Community Guidelines accettate (checkbox sbloccata solo dopo aver scrollato fino in fondo alla pagina). `getPublishReadiness()` in `lib/creator.ts`, controllato in `publishJourney`/`insertEpisode`/`updateEpisode` solo al momento della prima pubblicazione vera (mai sul salvataggio in Bozza, mai su una modifica di contenuto già pubblicato). Nessun grandfathering per gli account creator già esistenti. Corregge con decisione esplicita il principio "diventare creator è automatico" registrato dopo il Punto 2 — resta vero che non c'è una schermata di iscrizione separata, ma ora richiede questi tre passaggi prima del primo publish.
+
+☑ Player video condiviso (`components/common/VideoPlayer.tsx`) tra episodi e video di presentazione, e card "Who I am" del profilo ridisegnata: Bio e video di presentazione ora nella stessa card orizzontale (Bio a sinistra, video a destra, stessa altezza della card "In Progress" tramite lo stretch della griglia). Dettagli completi in `93_Project_Alignment_Recap.md`, Punto 6.
 
 ## Navigazione
 
