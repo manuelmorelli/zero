@@ -69,10 +69,12 @@ collegato ("a tre click dall'online"), non prima.
   quindi valgono i default di Better Auth).
 - Sessioni salvate anche lato server in `sessions` (id, userId, token,
   scadenza, ipAddress, userAgent).
-- **localStorage**: un solo uso trovato, `components/layout/OnboardingBanner.tsx`
-  — salva solo se il banner "completa il tuo profilo" è stato chiuso
-  (`onboarding-banner-dismissed:<userId>`), nessun dato personale, nessun
-  tracking.
+- **sessionStorage**: un solo uso trovato, `components/layout/OnboardingBanner.tsx`
+  — salva solo se il banner "scegli i tuoi interessi" è stato chiuso per la
+  sessione corrente (`onboarding-banner-dismissed:<userId>`, cambiato da
+  localStorage a sessionStorage il 2026-09-22 per farlo ricomparire ad ogni
+  nuovo login finché gli interessi non vengono scelti), nessun dato
+  personale, nessun tracking.
 - Nessun sistema di analytics/tracking di terze parti (Google Analytics,
   Meta Pixel, ecc.) trovato nel codice.
 

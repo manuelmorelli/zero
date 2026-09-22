@@ -312,6 +312,16 @@ Questo corregge (con decisione esplicita, non per svista) il principio "diventar
 
 Durante la stessa discussione, sistemato anche un piccolo problema di UX trovato per strada: il banner "Pick your interests" in Home spariva per sempre dopo la prima chiusura (localStorage), anche per chi non aveva mai scelto un interesse — ora usa sessionStorage e torna a comparire a ogni nuovo login finché gli interessi non vengono davvero scelti.
 
+### Effetto collaterale: video di presentazione e player video ridisegnati
+
+Provando il nuovo requisito del video di presentazione, Manuel ha caricato un video di prova e trovato diversi problemi di visualizzazione nella card "Who I am" del proprio profilo, sistemati con una serie di iterazioni nella stessa sessione:
+
+- **Player video condiviso**: nuovo componente `components/common/VideoPlayer.tsx` con la stessa dimensione "di default" (naturale, fino al 70% dell'altezza schermo) e la stessa barra di controllo (play/pausa, avanzamento, indietro 15s, volume, schermo intero) usata dai video dei Journey. `components/journey/EpisodePlayer.tsx` è stato rifattorizzato per usarlo internamente, tenendo per sé solo la logica specifica degli episodi (salvataggio progressi, ripresa posizione, sblocco Trusty, HLS) — **nota per chi riprende in mano `EpisodePlayer.tsx`**: è stato toccato anche da questa sessione (allineamento), non solo dalla sessione parallela che lavorava sul layout di Trusty/Share citata sopra.
+- **Card "Who I am" ridisegnata più volte**: da un ritaglio verticale 9/16 (troppo alto, sproporzionato rispetto alle card vicine) a un riquadro orizzontale 4/3 in stile "poster" (come le card di Recent Episodes), con titolo sovrapposto e ritaglio del video (`object-cover`) per riempirlo sempre, play/volume/schermo intero come pulsanti fuori dal riquadro invece che sovrapposti al video.
+- **Bio e video di presentazione incorporati in un'unica card orizzontale** (Bio a sinistra, video a destra) invece di due card separate: la card ora eredita l'altezza vera della card "In Progress" (Journey in evidenza) tramite lo stretch di default della griglia, non una propria proporzione fissa (che con larghezze di colonna diverse avrebbe dato altezze diverse).
+- **Vista a schermo intero**: cliccando il tasto Maximize si apre un modale con lo stesso `VideoPlayer` condiviso, dimensione naturale come i Journey; la X di chiusura è sull'angolo della card del video ingrandito, non della pagina intera.
+- **Formato video consigliato**: orizzontale (telefono sdraiato), soggetto centrato con un po' di margine — l'anteprima piccola ritaglia sempre per riempire il riquadro 4/3, un video verticale perderebbe gran parte dell'inquadratura in quel contesto.
+
 ### Stato del punto
 
 Lavoro svolto e verificato (tipo-check del progetto pulito, migrazione del database applicata) il 2026-09-22. In attesa di conferma esplicita di Manuel per la chiusura.
