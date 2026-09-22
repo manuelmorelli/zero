@@ -1,7 +1,7 @@
 ---
 title: Project Alignment Recap
 doc_id: 93-project-alignment-recap
-version: "0.3"
+version: "0.4"
 status: living
 related_docs:
   - 99_Current_Project_Status
@@ -34,7 +34,7 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 | 4 | Algoritmo e Discovery | ✅ Chiuso (2026-09-21) |
 | 5 | Trust & Safety (Trust Score + moderazione contenuti) | ✅ Chiuso (2026-09-21) |
 | 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ✅ Chiuso (2026-09-22) |
-| 7 | Struttura pagine Creator Economy (Community Premium, Prodotti/Servizi, Workshop/Eventi — le "Strumenti" mai costruiti di `07_Creator_Experience.md`) | ⬜ Da fare |
+| 7 | Struttura pagine Creator Economy (Community Premium, Prodotti/Servizi, Workshop/Eventi — le "Strumenti" mai costruiti di `07_Creator_Experience.md`) | ✅ Chiuso (2026-09-22) |
 | 8 | AI sulla piattaforma (nuovo, mai discusso prima, portato da Manuel da una conversazione separata con Claude) | ⬜ Da fare |
 | 9 | Business Plan / Dossier investitori (Mercato, Team, Trazione, Piano Finanziario, la Richiesta) | ⬜ Da fare |
 | 10 | Infrastruttura tecnica e pagamenti (hosting, sicurezza, test, monitoraggio, Stripe Connect reale) | ⬜ Da fare |
@@ -329,3 +329,18 @@ Provando il nuovo requisito del video di presentazione, Manuel ha caricato un vi
 ### Stato del punto
 
 Chiuso il 2026-09-22, confermato da Manuel dopo un controllo finale diretto nel codice (campo `dateOfBirth` e blocco server-side in `lib/auth.ts`, `getPublishReadiness()` in `lib/creator.ts`, riquadro rosso delle tre categorie a tolleranza zero nelle Community Guidelines, migrazione applicata su Neon). Riepilogo esportato in `Desktop\Zero - Punti Chiusi\Punto 6 - Legale.md`. Il Punto 7 (Infrastruttura tecnica) parte in questa stessa chat, come da indicazione di Manuel di procedere più velocemente sui punti restanti.
+
+## Punto 7 — Struttura pagine Creator Economy
+
+### Situazione di partenza
+
+Le "Strumenti" del creator previste in `07_Creator_Experience.md` (Community Premium, prodotti/servizi, workshop/eventi) non erano mai state costruite: solo testo "Coming soon" nelle pagine reali. Community Premium (`membership`) e Shop (prodotti digitali) costruite in una sessione precedente della stessa giornata (commit `2ec8702`), restavano da fare Workshop/Evento e Consulenza 1:1.
+
+### Decisioni prese e costruite in questo punto
+
+- **Workshop/Evento e Consulenza 1:1** costruite direttamente nel codice reale di Zero (non su Lovable: crediti quasi esauriti), stesso stile e pattern già stabilito da Membership/Shop: bozze visive, dati di esempio, pulsante disattivato "Coming soon", nessun pagamento reale. Nuove pagine `app/(site)/profile/[username]/workshops/page.tsx` e `.../consulting/page.tsx`. Aggiunti i relativi punti di ingresso nella pagina profilo (`CreatorEconomyLinks`), commit `3ea4a14`.
+- **Idea emersa e rimandata al Punto 8**: Manuel ha proposto, invece di pagine statiche, un assistente AI a cui il creator può chiedere in linguaggio naturale di costruire i propri strumenti (es. "crea un evento workshop per il 23 febbraio e invita i miei follower"), riconoscendo lo stile del sito ed eseguendo azioni vere (non solo suggerire testo). Riconosciuto come l'argomento del Punto 8 ("AI sulla piattaforma"), non una rifinitura del Punto 7: richiede un collegamento a un servizio AI vero (costo minimo reale, stesso ostacolo già incontrato con il filtro di moderazione OpenAI) e scelte di sicurezza (conferma prima di azioni che coinvolgono altre persone, es. notificare i follower). Idea salvata, da riprendere quando si aprirà il Punto 8. Resta aperta anche la domanda se le pagine statiche costruite ora (Membership/Shop/Workshop/Consulenza) diventeranno superflue una volta pronto l'assistente.
+
+### Stato del punto
+
+Chiuso il 2026-09-22, confermato da Manuel. Il Punto 8 (AI sulla piattaforma) parte in una chat nuova, come da metodo concordato.
