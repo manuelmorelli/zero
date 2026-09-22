@@ -57,7 +57,7 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ## Navigazione
 
-☐ [Vago, da chiarire] Tasto "indietro" del sito: i bug concreti trovati finora sono stati risolti, ma la sensazione d'uso resta "macchinosa" per Manuel. Da chiarire con lui cosa esattamente non convince prima di poterlo considerare davvero chiuso.
+☑ Tasto "indietro" del sito: la sensazione "macchinosa" segnalata da Manuel è stata chiarita (2026-09-22). Causa trovata: `BackButton.tsx` tiene la sua memoria delle pagine visitate in `sessionStorage`, ma quella memoria si azzera a ogni caricamento completo della pagina — non solo un refresh manuale, ma anche i ricaricamenti automatici che il sito fa durante le sessioni di sviluppo quando il codice viene modificato. Per questo il problema sembrava capitare "sempre, da qualsiasi pagina": succedeva quasi solo mentre si lavorava al progetto insieme, non nell'uso normale. Testato dal vivo con un percorso guidato (Home → Journey → episodio → Indietro → Indietro): funziona correttamente. Comportamento residuo — un utente reale che ricarica manualmente una pagina profonda perde il pulsante "Indietro" — validato con Manuel come accettabile, nessuna modifica al codice necessaria.
 
 ## Business futuro (idee, nessun piano richiesto ora)
 
