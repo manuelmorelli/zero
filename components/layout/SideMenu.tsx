@@ -15,6 +15,7 @@ const NAV_LINKS: NavLink[] = [
   { label: "What is Zero", href: "/what-is-zero" },
   { label: "Algorithm", href: "/how-it-works" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Community Guidelines", href: "/community-guidelines" },
 ];
 
 const FOOTER_LINKS: NavLink[] = [
@@ -23,7 +24,6 @@ const FOOTER_LINKS: NavLink[] = [
   { label: "Terms of Service", href: "/terms" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Cookie Policy", href: "/cookies" },
-  { label: "Community Guidelines", href: "/community-guidelines" },
   { label: "Copyright & Report content", href: "/copyright" },
 ];
 
@@ -143,7 +143,7 @@ export function SideMenu() {
                       key={link.label}
                       href={link.href}
                       onClick={close}
-                      className="text-xs text-ink-faint transition-colors hover:text-ink-muted"
+                      className="text-xs text-ink-muted transition-colors hover:text-ink"
                     >
                       {link.label}
                     </Link>

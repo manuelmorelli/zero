@@ -1,3 +1,5 @@
+import { HighlightedText } from "@/components/common/HighlightedText";
+
 export const metadata = {
   title: "Community Guidelines",
   description: "The rules that keep Zero a place people can trust: real Journeys, respectful community, no shortcuts.",
@@ -6,7 +8,7 @@ export const metadata = {
 type Group = { title: string; body: string };
 
 const noEngagementBaitNote =
-  "Zero has no comments and no ordinary like button (Trusty unlocks only at the end of an episode), and the algorithm isn't built to reward engagement bait, so rules built around gaming those mechanics don't apply here.";
+  "Zero has no comments and no ordinary like button (Trusty unlocks only at the end of an episode), and **the algorithm isn't built to reward engagement bait**, so rules built around gaming those mechanics don't apply here.";
 
 const zeroTolerance: string[] = [
   "Sexual content involving minors, in any form, including content generated or manipulated with AI.",
@@ -17,11 +19,11 @@ const zeroTolerance: string[] = [
 const simpleSections: Group[] = [
   {
     title: "Real People. Real Journeys. Real Experience.",
-    body: "Don't fabricate a story, misrepresent who you are, or pass off someone else's Journey as your own. A video doesn't need to show a face every time, but the author must be a real person or project, tied to an actual experience, skill, or creation.",
+    body: "Don't fabricate a story, misrepresent who you are, or pass off someone else's Journey as your own. A video doesn't need to show a face every time, but **the author must be a real person or project**, tied to an actual experience, skill, or creation.",
   },
   {
     title: "Disclose sponsorships",
-    body: "If a Journey or Episode is sponsored, or you've been paid or given something of value to feature a product or brand, say so clearly and visibly. It's the one rule tied directly to how Zero makes money. See the Monetization section of How It Works.",
+    body: "If a Journey or Episode is sponsored, or you've been paid or given something of value to feature a product or brand, **say so clearly and visibly.** It's the one rule tied directly to how Zero makes money. See the Monetization section of How It Works.",
   },
   {
     title: "Copyright and legal content",
@@ -29,22 +31,26 @@ const simpleSections: Group[] = [
   },
   {
     title: "Minimum age",
-    body: "You must be at least 16 years old to create an account on Zero. We ask for your date of birth when you sign up and won't create an account below that age.",
+    body: "**You must be at least 16 years old to create an account on Zero.** We ask for your date of birth when you sign up and won't create an account below that age.",
   },
   {
     title: "Reporting something",
-    body: "If you see a Journey, a profile, or anything else that breaks these guidelines, use the Report button where you found it. It goes straight to our team for review, no public callout needed.",
+    body: "If you see a Journey, a profile, or anything else that breaks these guidelines, **use the Report button** where you found it. It goes straight to our team for review, no public callout needed.",
   },
   {
     title: "What happens when guidelines are broken",
-    body: "Depending on severity: a warning, removal of the specific content, or suspension of the account. Confirmed reports against a creator also reduce their Trust Score, on top of any other action taken.",
+    body: "Depending on severity: a warning, removal of the specific content, or **suspension of the account.** Confirmed reports against a creator also reduce their Trust Score, on top of any other action taken.",
   },
 ];
 
 const notAllowedGroups: Group[] = [
   {
     title: "Sexual content and nudity",
-    body: "Pornography and sexually explicit content, nudity used to sexualize the body (lingerie, topless, deliberately sexualized poses or framing, fetish content), and thirst traps built mainly to generate sexual attention aren't allowed. Sexual deepfakes and non-consensual intimate images are never allowed.",
+    body: "Pornography and sexually explicit content, nudity used to sexualize the body (lingerie, topless, deliberately sexualized poses or framing, fetish content), and thirst traps built mainly to generate sexual attention aren't allowed. **Sexual deepfakes and non-consensual intimate images are never allowed.**",
+  },
+  {
+    title: "Political content",
+    body: "Zero isn't built for political campaigns, party activism, or content designed to polarize or mobilize people politically. **Journalism, news, geopolitics, history, and analysis are welcome** when the goal is to inform and document, not to push propaganda.",
   },
   {
     title: "Violence, hate, and dangerous behavior",
@@ -61,10 +67,6 @@ const notAllowedGroups: Group[] = [
   {
     title: "Harassment and harmful drama",
     body: "Cyberbullying, public humiliation, revenge content, and targeted harassment of a person aren't allowed. Gossip and drama built mainly to create conflict, humiliation, or toxic entertainment don't belong on Zero either.",
-  },
-  {
-    title: "Political content",
-    body: "Zero isn't built for political campaigns, party activism, or content designed to polarize or mobilize people politically. Journalism, news, geopolitics, history, and analysis are welcome when the goal is to inform and document, not to push propaganda.",
   },
   {
     title: "Misleading advice and empty status",
@@ -87,7 +89,7 @@ export default function CommunityGuidelinesPage() {
 
         <div className="mt-8 space-y-8">
           <section>
-            <h2 className="text-base font-bold tracking-tight">Not allowed on Zero</h2>
+            <h2 className="text-base font-bold tracking-tight text-ember">Not allowed on Zero</h2>
 
             <div className="mt-3 rounded-xl border border-danger/30 bg-danger/10 p-4">
               <p className="text-sm font-bold text-danger">Zero tolerance, immediate action</p>
@@ -108,19 +110,25 @@ export default function CommunityGuidelinesPage() {
             <div className="mt-6 space-y-5">
               {notAllowedGroups.map((group) => (
                 <div key={group.title}>
-                  <h3 className="text-sm font-bold tracking-tight">{group.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-ink-muted">{group.body}</p>
+                  <h3 className="text-sm font-bold tracking-tight text-ember">{group.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-ink">
+                    <HighlightedText text={group.body} />
+                  </p>
                 </div>
               ))}
             </div>
 
-            <p className="mt-6 text-sm leading-relaxed text-ink-muted">{noEngagementBaitNote}</p>
+            <p className="mt-6 text-sm leading-relaxed text-ink">
+              <HighlightedText text={noEngagementBaitNote} />
+            </p>
           </section>
 
           {simpleSections.map((section) => (
             <section key={section.title}>
-              <h2 className="text-base font-bold tracking-tight">{section.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-ink-muted">{section.body}</p>
+              <h2 className="text-base font-bold tracking-tight text-ember">{section.title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-ink">
+                <HighlightedText text={section.body} />
+              </p>
             </section>
           ))}
         </div>
