@@ -48,7 +48,7 @@ export default function CookiesPage() {
         <div className="mt-8 space-y-8">
           {sections.map((section) => (
             <section key={section.title}>
-              <h2 className="text-base font-bold tracking-tight text-ember">{section.title}</h2>
+              <h2 className="text-[1.15rem] font-bold tracking-tight text-ember">{section.title}</h2>
               <div className="mt-2 space-y-2">
                 {section.body.map((paragraph) => (
                   <p key={paragraph} className="text-sm leading-relaxed text-ink">

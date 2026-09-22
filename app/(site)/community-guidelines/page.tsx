@@ -89,7 +89,7 @@ export default function CommunityGuidelinesPage() {
 
         <div className="mt-8 space-y-8">
           <section>
-            <h2 className="text-base font-bold tracking-tight text-ember">Not allowed on Zero</h2>
+            <h2 className="text-[1.15rem] font-bold tracking-tight text-ember">Not allowed on Zero</h2>
 
             <div className="mt-3 rounded-xl border border-danger/30 bg-danger/10 p-4">
               <p className="text-sm font-bold text-danger">Zero tolerance, immediate action</p>
@@ -110,7 +110,7 @@ export default function CommunityGuidelinesPage() {
             <div className="mt-6 space-y-5">
               {notAllowedGroups.map((group) => (
                 <div key={group.title}>
-                  <h3 className="text-sm font-bold tracking-tight text-ember">{group.title}</h3>
+                  <h3 className="text-[1.01rem] font-bold tracking-tight text-ember">{group.title}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-ink">
                     <HighlightedText text={group.body} />
                   </p>
@@ -125,7 +125,7 @@ export default function CommunityGuidelinesPage() {
 
           {simpleSections.map((section) => (
             <section key={section.title}>
-              <h2 className="text-base font-bold tracking-tight text-ember">{section.title}</h2>
+              <h2 className="text-[1.15rem] font-bold tracking-tight text-ember">{section.title}</h2>
               <p className="mt-2 text-sm leading-relaxed text-ink">
                 <HighlightedText text={section.body} />
               </p>
