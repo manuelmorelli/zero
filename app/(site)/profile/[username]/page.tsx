@@ -383,8 +383,8 @@ export default async function PublicProfilePage({
   );
 }
 
-/** Bozza visiva (Punto 7 dell'allineamento, "Struttura pagine Creator Economy"): due punti di
- * ingresso verso le pagine Membership/Shop, nessun pagamento reale dietro per ora. */
+/** Bozza visiva (Punto 7 dell'allineamento, "Struttura pagine Creator Economy"): quattro punti di
+ * ingresso verso le pagine Membership/Shop/Workshops/Consulting, nessun pagamento reale dietro per ora. */
 function CreatorEconomyLinks({ username }: { username: string }) {
   const linkClassName =
     "shrink-0 rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-4 py-2 text-sm text-white opacity-70 backdrop-blur-md transition-colors hover:opacity-100";
@@ -395,6 +395,12 @@ function CreatorEconomyLinks({ username }: { username: string }) {
       </Link>
       <Link href={`/profile/${username}/shop`} className={linkClassName}>
         Shop
+      </Link>
+      <Link href={`/profile/${username}/workshops`} className={linkClassName}>
+        Workshops
+      </Link>
+      <Link href={`/profile/${username}/consulting`} className={linkClassName}>
+        1:1 Consulting
       </Link>
     </>
   );
