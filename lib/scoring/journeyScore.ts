@@ -187,9 +187,12 @@ function computeContinuityScore(episodeDates: Date[], publishedAt: Date | null, 
   const daysSinceLastEpisode = (now - lastEpisodeAt) / (24 * 60 * 60 * 1000);
   const recencyScore = Math.max(0, 1 - daysSinceLastEpisode / RECENCY_WINDOW_DAYS);
 
+  // Il minimo è 1 mese, non 1 giorno: appena dopo la pubblicazione del primo episodio il tempo
+  // trascorso è troppo poco per dire quanto spesso il creator pubblica davvero (altrimenti un solo
+  // episodio del primo giorno darebbe già il punteggio di frequenza massimo).
   const firstEpisodeAt = Math.min(...episodeDates.map((date) => date.getTime()));
   const since = publishedAt ?? new Date(firstEpisodeAt);
-  const monthsSincePublished = Math.max((now - since.getTime()) / (30 * 24 * 60 * 60 * 1000), 1 / 30);
+  const monthsSincePublished = Math.max((now - since.getTime()) / (30 * 24 * 60 * 60 * 1000), 1);
   const episodesPerMonth = episodeDates.length / monthsSincePublished;
   const frequencyScore = Math.min(episodesPerMonth / TARGET_EPISODES_PER_MONTH, 1);
 

@@ -124,13 +124,15 @@ Punteggio 0-100 del creator (mostrato come "Trust Score" sul Profilo pubblico). 
 
 Una volta attivato, combina:
 
-- **presentazione** (10%) — fissa, ottenuta caricando il video/card di presentazione;
-- **qualità** (58%) — media del Journey Score dei Journey pubblicati del creator;
-- **follower** (20%) — cappati con lo stesso principio del Journey Score;
-- **Journey pubblicato** (10%) — bonus fisso se il creator ha almeno un Journey pubblicato o in Discovery Phase;
-- **Trusty** (2%) — media di reazioni "Trusty" per episodio pubblicato, cappata: un peso deliberatamente piccolo, perché la fiducia si costruisce con continuità e qualità dimostrate, non con un bottone (vedi "Trust First").
+- **presentazione** (5%) — fissa, ottenuta caricando il video/card di presentazione;
+- **qualità** (50%) — media del Journey Score dei Journey pubblicati del creator;
+- **follower** (15%) — cappati con lo stesso principio del Journey Score;
+- **Journey pubblicato** (5%) — bonus fisso se il creator ha almeno un Journey pubblicato o in Discovery Phase;
+- **Trusty** (25%) — per ogni episodio con almeno 5 completamenti distinti (`EpisodeProgress.completedAt` valorizzato), quota di quei completatori che hanno anche cliccato "Trusty"; la media di questa quota sugli episodi con abbastanza dati, cappata al 25%. Un episodio senza almeno 5 completamenti reali non conta né in positivo né in negativo — evita che pochi amici bastino a portare il Trusty al massimo. Il click è verificato anche lato server: non si può dare Trusty su un episodio che non si è davvero completato, a prescindere dal bottone in interfaccia.
 
-Scende **solo** per segnalazioni confermate manualmente (modello `Report`, già presente nello schema, −10 punti per segnalazione confermata): nessun rilevamento automatico di bot, crescita follower artificiale o manipolazione delle metriche — esplicitamente fuori scope per questa fase del prodotto.
+**Tetto per esperienza**: sotto i 10 episodi pubblicati (published + discovery, su tutti i Journey del creator), il punteggio finale viene scalato in proporzione al numero di episodi pubblicati (es. con 2 episodi, il massimo raggiungibile è il 20% del punteggio pieno) — anche se tutte le altre metriche fossero perfette. Impedisce che un creator nuovo arrivi al 100% con pochissimo contenuto pubblicato.
+
+Scende **solo** per segnalazioni confermate manualmente (modello `Report`, già presente nello schema, −10 punti per segnalazione confermata, applicati dopo lo scaling per esperienza): nessun rilevamento automatico di bot, crescita follower artificiale o manipolazione delle metriche — esplicitamente fuori scope per questa fase del prodotto.
 
 ## Feed Updates
 

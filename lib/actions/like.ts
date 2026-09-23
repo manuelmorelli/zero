@@ -18,6 +18,15 @@ export async function toggleLike(
   if (existing) {
     await prisma.like.delete({ where: { id: existing.id } });
   } else {
+    if (targetType === "EPISODE") {
+      const progress = await prisma.episodeProgress.findUnique({
+        where: { userId_episodeId: { userId: session.user.id, episodeId: targetId } },
+        select: { completedAt: true },
+      });
+      if (!progress?.completedAt) {
+        return { error: "Devi finire l'episodio prima di poterlo dare come Trusty." };
+      }
+    }
     await prisma.like.create({ data: { userId: session.user.id, targetType, targetId } });
   }
 
