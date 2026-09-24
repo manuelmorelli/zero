@@ -1,7 +1,7 @@
 ---
 title: Project Alignment Recap
 doc_id: 93-project-alignment-recap
-version: "0.4"
+version: "0.5"
 status: living
 related_docs:
   - 99_Current_Project_Status
@@ -35,7 +35,7 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 | 5 | Trust & Safety (Trust Score + moderazione contenuti) | ✅ Chiuso (2026-09-21) |
 | 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ✅ Chiuso (2026-09-22) |
 | 7 | Struttura pagine Creator Economy (Community Premium, Prodotti/Servizi, Workshop/Eventi — le "Strumenti" mai costruiti di `07_Creator_Experience.md`) | ✅ Chiuso (2026-09-22) |
-| 8 | AI sulla piattaforma (nuovo, mai discusso prima, portato da Manuel da una conversazione separata con Claude) | ⬜ Da fare |
+| 8 | AI sulla piattaforma (nuovo, mai discusso prima, portato da Manuel da una conversazione separata con Claude) | 🟡 In corso — discussione chiusa, costruzione da fare |
 | 9 | Business Plan / Dossier investitori (Mercato, Team, Trazione, Piano Finanziario, la Richiesta) | ⬜ Da fare |
 | 10 | Infrastruttura tecnica e pagamenti (hosting, sicurezza, test, monitoraggio, Stripe Connect reale) | ⬜ Da fare |
 | 11 | Piano di lancio | ⬜ Da fare |
@@ -345,3 +345,36 @@ Le "Strumenti" del creator previste in `07_Creator_Experience.md` (Community Pre
 ### Stato del punto
 
 Chiuso il 2026-09-22, confermato da Manuel. Il Punto 8 (AI sulla piattaforma) parte in una chat nuova, come da metodo concordato.
+
+## Punto 8 — AI sulla piattaforma
+
+### Situazione di partenza
+
+Idea nata a chiusura del Punto 7 (vedi sopra): un assistente a cui il creator chiede in linguaggio naturale di costruire i propri strumenti (es. "crea un evento workshop per il 23 febbraio e invita tutti i miei follower a partecipare"), capace di eseguire azioni vere sulla piattaforma, non solo suggerire testo. Prima di iniziare, verificato che nessun'altra sessione in parallelo stesse lavorando su aree collegate (chiesto direttamente a `zero-0b`, che risultava ferma su una modifica di stile già committata, `bf89ec1`): nessuna sovrapposizione.
+
+### Decisioni prese in questo punto (solo discussione, nessun codice ancora scritto)
+
+- **Niente AI locale, per ora**: né un modello sui server di Zero (conviene solo sopra i 50.000$/anno di spesa o 5-10 milioni di token al giorno, lontanissimo dai volumi attuali), né un modello nel browser del creator (i modelli abbastanza piccoli per girarci hanno ancora un tasso di errore reale — circa 1 esecuzione su 3 — quando devono eseguire un'azione precisa, non solo chiacchierare).
+- **Gemini (Google AI Studio) come servizio scelto**: piano gratuito vero, nessuna carta di credito richiesta, a differenza del filtro moderazione OpenAI del Punto 5. Account Google creato apposta per Zero, separato da quello personale di Manuel, per tenere l'infrastruttura del progetto scollegata dall'identità personale fin da ora (stessa logica già seguita per gli altri servizi). Chiave `GEMINI_API_KEY` salvata in `.env` (mai su Git), segnaposto documentato in `.env.example`.
+- **Ambito dell'AI, i "mattoncini"**: l'assistente può creare solo dentro i quattro modelli già presenti in `prisma/schema.prisma` ma mai collegati a nulla (`Workshop`, `Event`, `DigitalProduct`, `PersonalService`, vedi sezione "WORKSHOP / EVENT / DIGITAL PRODUCT / PERSONAL SERVICE"). Nessun tipo di contenuto nuovo inventato dall'AI. Dentro questi quattro, libertà piena su come vengono riempiti e presentati: un creator di hiking e uno di finanza useranno lo stesso "mattoncino" Workshop in modo completamente diverso, senza bisogno di campi diversi per ogni nicchia.
+- **Nuova sezione "Community" nella Dashboard del creator**: emersa parlando di dove l'AI dovrebbe scrivere i suoi risultati — oggi non esiste nessun posto dove il creator gestisce (modifica, cancella, vede l'elenco) ciò che crea, solo la vetrina pubblica. La sezione ospiterà sia la creazione a mano (form vuoto) sia quella assistita dall'AI (richiesta in linguaggio naturale → bozza pre-compilata nello stesso form → conferma del creator prima di salvare).
+- **Pulsante "Pubblica"** per ogni elemento, stesso pattern già usato per i Journey: solo da quel momento appare nella pagina pubblica Subscribe, che smette di mostrare gli esempi finti (`shopItems`, `workshops`, `consultingSessions` hardcoded in `membership/page.tsx`) e mostra dati veri.
+- **Pulsante separato "Avvisa i tuoi follower"**, visibile solo dopo la pubblicazione, mai automatico: riusa il sistema di notifiche già esistente (gratis, nessun cron). Applica la regola di sicurezza concordata fin dall'inizio della discussione — nessuna azione dell'AI verso altre persone senza una conferma esplicita del creator.
+- **Accesso**: tutta la zona di creazione/gestione (AI e manuale) resta visibile solo al creator proprietario della pagina, mai a chi si abbona o segue — stesso confine già esistente tra Dashboard privata e profilo pubblico.
+- **Le pagine statiche costruite al Punto 7 restano**, come modalità manuale accanto all'AI, non vengono sostituite.
+
+### Ricerca aggiornata rilevante per questo punto
+
+- **Gemini API, piano gratuito 2026**: modelli Flash/Flash-Lite, nessuna carta di credito, circa 1.500 richieste al giorno — sufficiente per il volume atteso. Contropartita: sul piano gratuito Google può usare gli input per migliorare i propri modelli, accettabile per un prototipo senza dati sensibili di terzi.
+- **OpenRouter (modelli gratuiti aggregati)**: alternativa valida solo per test, limiti troppo stretti per produzione (~20 richieste/minuto, 200/giorno, nessuna garanzia di continuità).
+- **Claude (Anthropic) come riferimento di costo**: Haiku 4.5 a 1$/milione di token in ingresso e 5$ in uscita — economico ma richiede comunque una carta collegata dal primo euro, stesso ostacolo già visto con OpenAI al Punto 5.
+- **Self-hosting di un modello proprio**: conviene solo sopra i 50.000$/anno di spesa AI o 5-10 milioni di token/giorno per un modello da 70 miliardi di parametri; sotto quella soglia un ingegnere dedicato a farlo girare costa più della bolletta che si vorrebbe risparmiare.
+- **Modelli piccoli nel browser (WebGPU/WebLLM)**: tecnologia reale e in crescita nel 2026, ma i modelli abbastanza leggeri da girarci (0,5-3 miliardi di parametri) hanno un tasso di successo di circa il 63% per singola esecuzione di un'azione precisa senza un addestramento dedicato — troppo inaffidabile per scrivere davvero sul database.
+
+### Nota di processo
+
+Durante la discussione, Manuel ha comunicato l'acquisto del dominio reale del progetto, **zerojourneys.com**, registrato su Cloudflare — fatto slegato dal Punto 8 in sé, salvato in memoria per i Punti 10/11 (Infrastruttura, Lancio). Emerso anche un piccolo disallineamento tra `docs/93` e `docs/99_Current_Project_Status.md`, quest'ultimo ancora fermo su "Creator Economy non iniziata" nonostante il Punto 7 avesse già costruito le bozze visive: corretto nella stessa sessione.
+
+### Stato del punto
+
+Discussione chiusa, decisioni prese, **nessun codice ancora scritto**. La costruzione tecnica (CRUD reale sui quattro modelli, sezione Community, integrazione Gemini, pulsante Avvisa i follower) parte in una chat nuova dedicata, con il piano completo consegnato a Manuel per non perdere nessun dettaglio deciso qui.
