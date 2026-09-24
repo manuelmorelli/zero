@@ -34,11 +34,11 @@ export function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-300 ${
-        scrolled ? "border-border bg-bg/60 backdrop-blur-lg" : "border-transparent bg-transparent"
+      className={`fixed inset-x-0 top-0 z-50 border-b backdrop-blur-lg transition-[background-color,border-color] duration-300 ${
+        scrolled ? "border-border bg-bg/60" : "border-white/5 bg-bg/25"
       }`}
     >
-      <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-1.5 md:grid-cols-[1fr_auto_1fr] md:px-8">
+      <div className="mx-auto grid h-[3.85rem] max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 md:grid-cols-[1fr_auto_1fr] md:px-8">
         <div className="-ml-5 flex min-w-0 items-center gap-3 md:-ml-8">
           <SideMenu />
           <BackButton />

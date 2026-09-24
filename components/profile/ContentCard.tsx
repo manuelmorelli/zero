@@ -52,7 +52,7 @@ export function ContentCard({
     <div className={cn("group relative block transition-transform duration-300 hover:-translate-y-1", className)}>
       <Link
         href={href}
-        className="relative block aspect-4/5 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
+        className="relative block aspect-4/5 overflow-hidden rounded-xl border border-border shadow-[0_20px_40px_-22px_oklch(0.769_0.155_70.5_/_35%)] transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-16px_rgba(226,145,77,0.5)]"
       >
         {imageUrl ? (
           <FadeImage
@@ -70,6 +70,10 @@ export function ContentCard({
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-transparent" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_oklch(0.769_0.155_70.5_/_28%),_transparent_65%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        />
         {status && (
           <span className="absolute left-2.5 top-2.5 rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
             {status}

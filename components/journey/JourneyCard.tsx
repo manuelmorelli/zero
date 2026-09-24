@@ -43,7 +43,7 @@ export function JourneyCard({ journey, className, style, badge, footer }: Journe
   return (
     <div className={className} style={style}>
       <Link href={`/journeys/${id}`} className="group block transition-transform duration-300 hover:-translate-y-1">
-        <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]">
+        <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-border shadow-[0_20px_40px_-22px_oklch(0.769_0.155_70.5_/_35%)] transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-16px_rgba(226,145,77,0.5)]">
           {badge && <div className="absolute right-3 top-3 z-10">{badge}</div>}
 
           {coverUrl ? (
@@ -58,6 +58,12 @@ export function JourneyCard({ journey, className, style, badge, footer }: Journe
             <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-transparent" />
+          {/* Glow al passaggio del mouse (esperimento "design più vivo"): pure CSS, opacità 0
+           * finché non si è sopra la card. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_oklch(0.769_0.155_70.5_/_28%),_transparent_65%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+          />
           <CategoryIcon category={category} className="absolute left-2.5 top-2.5" />
 
           <div className="absolute inset-x-0 bottom-0 p-3">

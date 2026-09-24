@@ -19,7 +19,7 @@ export function VideoCard({ video }: VideoCardProps) {
       href={`/journeys/${journeyId}/episodes/${episodeId}`}
       className="group block transition-transform duration-300 hover:-translate-y-1"
     >
-      <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]">
+      <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-border shadow-[0_20px_40px_-22px_oklch(0.769_0.155_70.5_/_35%)] transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-16px_rgba(226,145,77,0.5)]">
         {coverUrl ? (
           <Image
             src={coverUrl}
@@ -32,6 +32,12 @@ export function VideoCard({ video }: VideoCardProps) {
           <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-transparent" />
+        {/* Glow al passaggio del mouse (esperimento "design più vivo"): pure CSS, opacità 0
+         * finché non si è sopra la card. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_oklch(0.769_0.155_70.5_/_28%),_transparent_65%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        />
         <span className="absolute inset-0 grid place-items-center">
           <span className="grid h-12 w-12 place-items-center rounded-full border border-white/20 bg-bg/50 backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
             <PlayIcon className="h-4 w-4 translate-x-[1px] fill-current text-ember" />

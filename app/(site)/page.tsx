@@ -110,7 +110,18 @@ export default async function Home() {
   return (
     <main>
       {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
-      <Hero slides={heroSlides} stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
+
+      {/* La Hero e il resto della pagina condividono un unico sfondo continuo invece di due
+       * blocchi separati: questo bagliore vive fuori dalla sezione Hero (che ha overflow-hidden)
+       * e si estende ben oltre la sua fine, così la Hero è una "finestra" appoggiata sopra, non
+       * un blocco a sé — niente più cucitura netta ai lati/in fondo alla foto. */}
+      <div className="relative md:pt-[calc(3.85rem+1cm)]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+32rem)] bg-[radial-gradient(ellipse_70%_50%_at_18%_10%,_oklch(0.769_0.155_70.5_/_24%),_transparent_62%),radial-gradient(ellipse_65%_55%_at_85%_50%,_oklch(0.769_0.155_70.5_/_20%),_transparent_62%),radial-gradient(ellipse_85%_60%_at_50%_48%,_oklch(0.769_0.155_70.5_/_15%),_transparent_70%)]"
+        />
+        <Hero slides={heroSlides} stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
+      </div>
 
       {userId && continueJourneys.length > 0 && <ContinueWatching journeys={continueJourneys} />}
 

@@ -13,8 +13,12 @@ export function CreatorResultCard({ creator }: CreatorResultCardProps) {
   return (
     <Link
       href={`/profile/${username ?? id}`}
-      className="group block rounded-xl border border-border bg-surface p-4 transition-all duration-300 hover:-translate-y-1 hover:border-ember/40 hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]"
+      className="group relative block overflow-hidden rounded-xl border border-border bg-surface p-4 shadow-[0_20px_40px_-22px_oklch(0.769_0.155_70.5_/_35%)] transition-all duration-300 hover:-translate-y-1 hover:border-ember/40 hover:shadow-[0_20px_40px_-16px_rgba(226,145,77,0.5)]"
     >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_oklch(0.769_0.155_70.5_/_20%),_transparent_65%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      />
       <Avatar
         name={name}
         avatarUrl={avatarUrl}

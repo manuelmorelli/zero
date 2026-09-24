@@ -39,7 +39,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
   const slide = slides[active] ?? slides[0]!;
 
   return (
-    <section className="relative overflow-hidden md:mt-[calc(3.85rem+0.5cm)]">
+    <section className="relative overflow-hidden">
       {/* Foto cinematografica: come oggi angoli vivi/piena larghezza su mobile, come una card
        * (angoli arrotondati + margine laterale) da desktop in su, stile Netflix — stessa altezza
        * di prima, cambia solo la forma del contenitore. Da desktop in su la sezione è spostata in
@@ -54,15 +54,21 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
             fill
             sizes="100vw"
             preload={index === 0}
-            className={`object-cover transition-opacity duration-1000 ${
+            className={`animate-[kenburns_14s_ease-in-out_infinite_alternate] object-cover transition-opacity duration-1000 ${
               index === active ? "opacity-100" : "opacity-0"
             }`}
           />
         ))}
+        {/* Trattamento cinematografico: color grade caldo leggero, grana pellicola più marcata
+         * che nel resto del sito. Niente più barre "letterbox": leggevano come un difetto di
+         * layout (card troppo grande/foto troppo piccola), non come scelta stilistica. */}
+        <div className="absolute inset-0 mix-blend-overlay bg-gradient-to-br from-ember/25 via-transparent to-black/30" aria-hidden="true" />
+        <div className="hero-grain absolute inset-0" aria-hidden="true" />
+
         <div className="absolute inset-0 bg-bg/65 md:bg-bg/10" />
         <div className="absolute inset-0 bg-gradient-to-r from-bg from-5% via-bg/70 to-transparent md:from-bg/55 md:from-10% md:via-bg/20 md:via-45%" />
         <div className="absolute inset-y-0 left-0 hidden w-32 bg-gradient-to-r from-bg/40 to-transparent md:block" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
+        <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
       </div>
 
       <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto_auto] md:gap-x-8 md:gap-y-3 md:px-[calc(4.43%+2rem)] md:pt-6 md:pb-12">

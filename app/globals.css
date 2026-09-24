@@ -5,7 +5,10 @@
   --color-bg: oklch(0.15 0.008 250);
   --color-surface: oklch(0.21 0.008 250);
   --color-surface-2: oklch(0.26 0.008 250);
-  --color-border: oklch(1 0 0 / 14%);
+  /* Ammorbidita da 14% a 9% (esperimento "design più vivo"): stesso token riusato in tutto il
+   * sito (card, pannelli, input...), qui si risolve alla radice l'aspetto "a blocchi" per tutte
+   * le pagine in un colpo solo, senza toccare ogni singolo componente. */
+  --color-border: oklch(1 0 0 / 9%);
   --color-ink: oklch(1 0 0);
   --color-ink-muted: oklch(0.78 0.005 250);
   /* Terzo livello di testo attenuato: il riferimento non lo prevede, derivato mantenendo la stessa tonalità di ink-muted ma più scuro */
@@ -92,6 +95,21 @@ body {
   );
 }
 
+/* Profondità ambientale diffusa su tutto il sito (esperimento "design più vivo"): sostituisce lo
+ * sfondo piatto a tinta unica con un leggerissimo respiro di colore, fissato al viewport (non
+ * scorre con la pagina) così è coerente ovunque senza doverlo ripetere pagina per pagina. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 45% at 12% -5%, oklch(0.769 0.155 70.5 / 16%), transparent 60%),
+    radial-gradient(ellipse 55% 45% at 100% 105%, oklch(0.769 0.155 70.5 / 13%), transparent 60%);
+  animation: aurora-drift 34s ease-in-out infinite;
+}
+
 /* Righe scorrevoli stile Netflix: scrollbar nascosta, lo scroll resta utilizzabile */
 .no-scrollbar {
   scrollbar-width: none;
@@ -111,6 +129,57 @@ body::before {
   opacity: 0.035;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Esperimento "design più vivo" (ramo design-wow-experiment): due animazioni pure CSS
+ * riusate da Hero (glow di sfondo) e ButtonPrimary (sweep di luce), referenziate via le
+ * utility arbitrarie di Tailwind (animate-[...]) invece di nuove classi custom. */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate(0%, 0%) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate(6%, -4%) scale(1.12);
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-160%);
+  }
+  55% {
+    transform: translateX(160%);
+  }
+  100% {
+    transform: translateX(160%);
+  }
+}
+
+/* Zoom lentissimo e continuo ("Ken Burns"), usato sulla foto/video della Hero per un tocco
+ * cinematografico: nessun jump quando il ciclo riparte perché alternate va avanti e indietro. */
+@keyframes kenburns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.14);
+  }
+}
+
+/* Grana pellicola più marcata della texture globale (usata solo sulla foto/video della Hero per
+ * il tocco cinematografico): stesso rumore SVG di body::before, opacità più alta. */
+.hero-grain {
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  /* SVG di rumore volutamente diverso da quello di body::before (baseFrequency/dimensioni
+   * leggermente diverse): un bundler di questo progetto (vedi AGENTS.md, "non è il Next.js che
+   * conosci") elimina in silenzio in build una regola con background-image a stringa identica a
+   * un'altra già presente nel CSS, anche con selettore diverso — bug scoperto con questo esperimento. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='hn'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23hn)'/%3E%3C/svg%3E");
 }
 
 @media (prefers-reduced-motion: reduce) {
