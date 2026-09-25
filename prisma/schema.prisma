@@ -118,6 +118,8 @@ enum NotificationType {
   EVENT
   NEW_EPISODE
   NEW_JOURNEY
+  DIGITAL_PRODUCT
+  PERSONAL_SERVICE
 }
 
 // ------------------------------------------------------------
@@ -159,6 +161,10 @@ model User {
   notifyNewJourney       Boolean @default(true)
   notifyQuestionAnswered Boolean @default(true)
   notifyNewFollower      Boolean @default(true)
+  // Un solo interruttore per tutti e 4 i tipi di "mattoncini" Community (Workshop, Evento,
+  // Prodotto Digitale, Consulenza 1:1, vedi Punto 8 dell'allineamento) invece di quattro
+  // separati: sono la stessa famiglia di contenuto agli occhi di chi riceve la notifica.
+  notifyNewOffering      Boolean @default(true)
 
   sessions  Session[]
   accounts  Account[]
@@ -173,6 +179,8 @@ model User {
   tipsSent           Tip[]
   notifications      Notification[]
   reports            Report[]
+  workshopRsvps      WorkshopRsvp[]
+  eventRsvps         EventRsvp[]
   journeyProgresses  JourneyProgress[]
   episodeProgresses  EpisodeProgress[]
   likes              Like[]
@@ -567,7 +575,15 @@ model Workshop {
   creator     Creator       @relation(fields: [creatorId], references: [id])
   title       String
   description String?
-  price       Decimal       @db.Money
+  // Interruttore "Gratuito" (Punto 8 dell'allineamento, richiesto da Manuel il 2026-09-25): se
+  // true, price resta null e il workshop mostra un pulsante "Partecipo" reale (WorkshopRsvp)
+  // invece del prezzo/pagamento, che resta "Coming soon" finché Stripe non è collegato.
+  isFree      Boolean       @default(false)
+  price       Decimal?      @db.Money // null se isFree = true
+  // Quando si svolge davvero il workshop — distinto da presaleReleaseAt (quando si aprono le
+  // prevendite), campo mancante nello schema originale, aggiunto per permettere all'AI/al
+  // creator di indicare una data reale (es. "il 23 febbraio").
+  startsAt    DateTime?
   status      ListingStatus @default(DRAFT)
   presaleReleaseAt DateTime?
   createdAt   DateTime      @default(now())
@@ -576,6 +592,7 @@ model Workshop {
 
   purchases     Purchase[]
   discountCodes DiscountCode[]
+  rsvps         WorkshopRsvp[]
 
   @@map("workshops")
 }
@@ -586,7 +603,9 @@ model Event {
   creator     Creator       @relation(fields: [creatorId], references: [id])
   title       String
   description String?
-  price       Decimal       @db.Money
+  isFree      Boolean       @default(false)
+  price       Decimal?      @db.Money // null se isFree = true
+  startsAt    DateTime?
   status      ListingStatus @default(DRAFT)
   presaleReleaseAt DateTime?
   createdAt   DateTime      @default(now())
@@ -595,8 +614,36 @@ model Event {
 
   purchases     Purchase[]
   discountCodes DiscountCode[]
+  rsvps         EventRsvp[]
 
   @@map("events")
+}
+
+// Iscrizione reale (non un pagamento) a un Workshop/Evento gratuito: chi ha cliccato "Partecipo".
+// FK dedicate separate invece di una tabella unica polimorfica, stesso principio già scelto per
+// Purchase (vedi intestazione del file) — Workshop ed Event restano due modelli distinti.
+model WorkshopRsvp {
+  id         String   @id @default(uuid())
+  workshopId String
+  workshop   Workshop @relation(fields: [workshopId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@unique([workshopId, userId])
+  @@map("workshop_rsvps")
+}
+
+model EventRsvp {
+  id        String   @id @default(uuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, userId])
+  @@map("event_rsvps")
 }
 
 model DigitalProduct {
@@ -606,7 +653,9 @@ model DigitalProduct {
   title       String
   description String?
   price       Decimal       @db.Money
-  fileUrl     String
+  // Null finché il creator non carica il file (stesso principio di Journey.coverUrl): la riga
+  // nasce in Bozza senza file, il file si aggiunge dopo tramite updateCommunityListing.
+  fileUrl     String?
   status      ListingStatus @default(DRAFT)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt

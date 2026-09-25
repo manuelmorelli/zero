@@ -1,70 +1,78 @@
-type ModerationResult = { flagged: boolean; categories: string[] };
+import { callGemini, parseGeminiJson, type GeminiInputPart } from "@/lib/ai/gemini";
 
-type ModerationInput =
-  | { type: "text"; text: string }
-  | { type: "image_url"; image_url: string };
+type ModerationResult = { flagged: boolean; categories: string[] };
 
 export const MODERATION_REJECTION_MESSAGE =
   "This content doesn't meet our community guidelines. Please review and try again.";
 
 /**
- * Primo filtro automatico su testo e immagini appena caricati, tramite l'endpoint di moderazione
- * gratuito di OpenAI (`omni-moderation-latest`, gestisce sia testo sia immagini in una sola
- * chiamata — nessuna libreria aggiuntiva, solo fetch). Se OPENAI_API_KEY non è ancora configurata,
- * non blocca nulla: stesso principio già in uso in lib/email.ts prima che Resend fosse collegato,
- * permette di continuare a lavorare in locale prima di creare l'account OpenAI.
+ * Primo filtro automatico su testo e immagini appena caricati. Passato da OpenAI a Gemini il
+ * 2026-09-25 (Punto 8 dell'allineamento): stessa funzione, stesso comportamento "fail open" (un
+ * problema del servizio non deve impedire di pubblicare contenuto legittimo), ma senza il blocco
+ * della carta di credito che teneva OpenAI spenta — GEMINI_API_KEY è già configurata e gratuita,
+ * quindi la moderazione si attiva per la prima volta su tutta la piattaforma da questa modifica.
  *
- * Copre solo testo e immagini: i video non sono ancora controllati (servirebbe un'analisi per
- * fotogrammi, più complessa) — primo filtro, non soluzione completa.
+ * Copre solo testo e immagini, mai i video (decisione di Manuel, 2026-09-25: "troppa roba" — non
+ * riproporre l'idea).
  */
-async function moderate(input: ModerationInput): Promise<ModerationResult> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return { flagged: false, categories: [] };
+const MODERATION_SYSTEM_INSTRUCTION = `You are the automated content moderation filter for Zero, a platform where creators share real personal life journeys (health, recovery, habits, relationships, and similar topics).
 
-  let response: Response;
-  try {
-    response = await fetch("https://api.openai.com/v1/moderations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "omni-moderation-latest",
-        input: [
-          input.type === "text"
-            ? { type: "text", text: input.text }
-            : { type: "image_url", image_url: { url: input.image_url } },
-        ],
-      }),
-    });
-  } catch (error) {
-    console.error("[moderation] OpenAI moderation request failed", error);
-    return { flagged: false, categories: [] };
-  }
+Flag content ONLY if it clearly falls into one of these categories:
+- sexual content involving minors
+- sexual or pornographic content
+- incitement to violence, or graphic/gratuitous violence
+- hate speech targeting a protected group
+- promotion or glorification of self-harm or suicide
+- harassment or bullying targeting a real, identifiable person
 
-  if (!response.ok) {
-    // Un problema temporaneo del servizio di moderazione non deve impedire di pubblicare
-    // contenuto legittimo: si registra l'errore e si lascia passare.
-    console.error(`[moderation] OpenAI moderation request failed: ${response.status}`);
-    return { flagged: false, categories: [] };
-  }
+Do NOT flag: ordinary personal storytelling, difficult topics discussed respectfully (illness, grief, addiction recovery, mental health), strong opinions, or content that merely mentions a sensitive topic without promoting it.
 
-  const data = await response.json();
-  const result = data.results?.[0];
-  if (!result?.flagged) return { flagged: false, categories: [] };
+Reply only with the requested JSON, nothing else.`;
 
-  const categories = Object.entries(result.categories ?? {})
-    .filter(([, value]) => value)
-    .map(([key]) => key);
-  return { flagged: true, categories };
+const MODERATION_RESPONSE_SCHEMA = {
+  type: "object",
+  properties: {
+    flagged: { type: "boolean" },
+    categories: { type: "array", items: { type: "string" } },
+  },
+  required: ["flagged", "categories"],
+};
+
+async function moderate(input: GeminiInputPart[]): Promise<ModerationResult> {
+  const result = await callGemini({
+    input,
+    systemInstruction: MODERATION_SYSTEM_INSTRUCTION,
+    responseSchema: MODERATION_RESPONSE_SCHEMA,
+  });
+  if ("error" in result) return { flagged: false, categories: [] };
+
+  const parsed = parseGeminiJson<ModerationResult>(result.text);
+  if (!parsed) return { flagged: false, categories: [] };
+  return { flagged: Boolean(parsed.flagged), categories: parsed.categories ?? [] };
 }
 
 export async function moderateText(text: string | undefined | null): Promise<ModerationResult> {
   if (!text || !text.trim()) return { flagged: false, categories: [] };
-  return moderate({ type: "text", text });
+  return moderate([{ type: "text", text }]);
 }
 
 export async function moderateImageUrl(imageUrl: string): Promise<ModerationResult> {
-  return moderate({ type: "image_url", image_url: imageUrl });
+  let response: Response;
+  try {
+    response = await fetch(imageUrl);
+  } catch (error) {
+    console.error("[moderation] failed to fetch image", error);
+    return { flagged: false, categories: [] };
+  }
+  if (!response.ok) {
+    console.error(`[moderation] failed to fetch image: ${response.status}`);
+    return { flagged: false, categories: [] };
+  }
+
+  const mimeType = response.headers.get("content-type") ?? "image/jpeg";
+  const buffer = Buffer.from(await response.arrayBuffer());
+  return moderate([
+    { type: "text", text: "Moderate this image against the community guidelines." },
+    { type: "image", data: buffer.toString("base64"), mime_type: mimeType },
+  ]);
 }

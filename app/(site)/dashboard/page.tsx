@@ -88,6 +88,12 @@ export default async function CreatorDashboardPage() {
             </div>
             <div className="flex items-center gap-3">
               <Link
+                href="/dashboard/community"
+                className="rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-5 py-2.5 text-sm font-semibold text-ink backdrop-blur-md transition-colors hover:from-ember/15"
+              >
+                Community
+              </Link>
+              <Link
                 href="/dashboard/journeys/new"
                 className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
               >

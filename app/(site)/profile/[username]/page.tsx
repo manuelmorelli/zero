@@ -28,6 +28,7 @@ import { PUBLICLY_REACHABLE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } 
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { DEMO_FEED_ITEMS } from "@/lib/demo/demoProfile";
 import { findUserByUsernameOrId } from "@/lib/profile/findUserByUsernameOrId";
+import { FreeEventsSection, type FreeEventItem } from "@/components/profile/FreeEventsSection";
 
 /** Quante Published Journeys mostrare in anteprima nell'Overview prima del link "View all"
  * verso la tab Journeys (che resta la lista completa, archiviati compresi). */
@@ -78,6 +79,52 @@ export default async function PublicProfilePage({
   const session = await getViewerSession();
   const isOwnProfile = session?.user.id === user.id;
   const isLoggedIn = Boolean(session);
+
+  // Iniziative gratuite (Punto 8 dell'allineamento, 2026-09-25): sul profilo pubblico, non dentro
+  // Subscribe — sono contenuto pubblico come i Journey, non un'offerta a pagamento.
+  const freeEvents: FreeEventItem[] = creator
+    ? await (async () => {
+        const [freeWorkshops, freeEventRows] = await Promise.all([
+          prisma.workshop.findMany({
+            where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE", isFree: true },
+            orderBy: { startsAt: "asc" },
+            include: {
+              _count: { select: { rsvps: true } },
+              rsvps: session ? { where: { userId: session.user.id }, select: { id: true } } : false,
+            },
+          }),
+          prisma.event.findMany({
+            where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE", isFree: true },
+            orderBy: { startsAt: "asc" },
+            include: {
+              _count: { select: { rsvps: true } },
+              rsvps: session ? { where: { userId: session.user.id }, select: { id: true } } : false,
+            },
+          }),
+        ]);
+
+        return [
+          ...freeWorkshops.map((item) => ({
+            kind: "workshop" as const,
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            startsAt: item.startsAt ? item.startsAt.toISOString() : null,
+            going: Array.isArray(item.rsvps) && item.rsvps.length > 0,
+            rsvpCount: item._count.rsvps,
+          })),
+          ...freeEventRows.map((item) => ({
+            kind: "event" as const,
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            startsAt: item.startsAt ? item.startsAt.toISOString() : null,
+            going: Array.isArray(item.rsvps) && item.rsvps.length > 0,
+            rsvpCount: item._count.rsvps,
+          })),
+        ];
+      })()
+    : [];
 
   // User.avatarUrl/coverUrl salvano la chiave R2, non un URL pubblico: si risolve in un
   // link temporaneo a ogni caricamento pagina, stesso pattern già usato per i video (lib/r2.ts).
@@ -222,6 +269,12 @@ export default async function PublicProfilePage({
                 </div>
               )}
             </Reveal>
+
+            {freeEvents.length > 0 && (
+              <Reveal delayMs={20} className="mt-6 block">
+                <FreeEventsSection items={freeEvents} isLoggedIn={isLoggedIn} />
+              </Reveal>
+            )}
 
             {/* 2. Recent Episodes: riga a scorrimento laterale stile Netflix, non una griglia —
                  circa 4 card visibili alla volta sui monitor desktop, il resto si scopre

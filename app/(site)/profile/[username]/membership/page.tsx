@@ -1,14 +1,11 @@
 import { notFound } from "next/navigation";
 import {
   Check,
-  ClipboardList,
-  Download,
   FileText,
   Lock,
   Map,
   MapPin,
   MessageCircle,
-  Phone,
   Play,
   Video,
   type LucideIcon,
@@ -16,6 +13,7 @@ import {
 import { findUserByUsernameOrId } from "@/lib/profile/findUserByUsernameOrId";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { FadeImage } from "@/components/common/FadeImage";
+import { prisma } from "@/lib/prisma";
 
 /** Bozza visiva (nessun pagamento reale): Punto 7 dell'allineamento, "Struttura pagine Creator
  * Economy". Un solo livello di abbonamento mensile per l'intero profilo del creator (non per
@@ -50,94 +48,18 @@ type OfferingCard = {
   ctaLabel: string;
 };
 
-const shopItems: OfferingCard[] = [
-  {
-    icon: FileText,
-    title: "The recovery guide",
-    description: "A practical PDF with the exact exercises used in this Journey.",
-    meta: "PDF guide",
-    price: "€12",
-    ctaLabel: "Buy",
-  },
-  {
-    icon: ClipboardList,
-    title: "Weekly reset template",
-    description: "A ready-to-use printable template to plan and track your week.",
-    meta: "Template",
-    price: "€7",
-    ctaLabel: "Buy",
-  },
-  {
-    icon: Map,
-    title: "Route map and guide",
-    description: "The exact routes and timing, mapped out for you to follow.",
-    meta: "Map",
-    price: "€5",
-    ctaLabel: "Buy",
-  },
-  {
-    icon: Download,
-    title: "90-day checklist",
-    description: "A step-by-step printable checklist to keep momentum.",
-    meta: "Checklist",
-    price: "€4",
-    ctaLabel: "Buy",
-  },
-];
+/** Punto 8 dell'allineamento (2026-09-25): queste tre vetrine mostravano dati finti, sostituiti
+ * con Workshop/Event a pagamento, Prodotto Digitale e Consulenza 1:1 reali (creati dalla pagina
+ * Dashboard > Community). I Workshop/Eventi gratuiti non compaiono qui: sono contenuto pubblico
+ * mostrato direttamente sul profilo (vedi FreeEventsSection), non un'offerta a pagamento. */
+function formatEventMeta(startsAt: Date | null): string {
+  if (!startsAt) return "Date to be announced";
+  return startsAt.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+}
 
-const workshops: OfferingCard[] = [
-  {
-    icon: Video,
-    title: "Getting started: the first 30 days",
-    description: "A live online session walking through the exact steps to begin this Journey.",
-    meta: "Live online · Feb 23, 2026",
-    price: "€15",
-    ctaLabel: "Reserve",
-  },
-  {
-    icon: MapPin,
-    title: "In-person meetup",
-    description: "A small group meetup to share progress and answer questions face to face.",
-    meta: "In person · Mar 8, 2026",
-    price: "€20",
-    ctaLabel: "Reserve",
-  },
-  {
-    icon: Video,
-    title: "Q&A and troubleshooting",
-    description: "Bring your questions, live online, recorded for anyone who can't attend.",
-    meta: "Live online · Mar 15, 2026",
-    price: "€10",
-    ctaLabel: "Reserve",
-  },
-];
-
-const consultingSessions: OfferingCard[] = [
-  {
-    icon: MessageCircle,
-    title: "Quick question",
-    description: "A short call to get unstuck on one specific question.",
-    meta: "15 min",
-    price: "€10",
-    ctaLabel: "Book a call",
-  },
-  {
-    icon: Video,
-    title: "1:1 video call",
-    description: "A focused video session to talk through your situation in depth.",
-    meta: "30 min",
-    price: "€35",
-    ctaLabel: "Book a call",
-  },
-  {
-    icon: Phone,
-    title: "Deep dive session",
-    description: "Extended time to go through a full plan, step by step.",
-    meta: "60 min",
-    price: "€60",
-    ctaLabel: "Book a call",
-  },
-];
+function formatPrice(price: unknown): string {
+  return `€${Number(price)}`;
+}
 
 export default async function MembershipPage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
@@ -145,6 +67,66 @@ export default async function MembershipPage({ params }: { params: Promise<{ use
   if (!user || user.deletedAt) notFound();
 
   const avatarUrl = user.avatarUrl ? await getImagePlaybackUrl(user.avatarUrl) : null;
+
+  const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
+
+  const [paidWorkshops, paidEvents, digitalProducts, personalServices] = creator
+    ? await Promise.all([
+        prisma.workshop.findMany({
+          where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE", isFree: false },
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.event.findMany({
+          where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE", isFree: false },
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.digitalProduct.findMany({
+          where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE" },
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.personalService.findMany({
+          where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE" },
+          orderBy: { createdAt: "desc" },
+        }),
+      ])
+    : [[], [], [], []];
+
+  const shopItems: OfferingCard[] = digitalProducts.map((item) => ({
+    icon: FileText,
+    title: item.title,
+    description: item.description ?? "",
+    meta: "Digital product",
+    price: formatPrice(item.price),
+    ctaLabel: "Buy",
+  }));
+
+  const workshopsAndEvents: OfferingCard[] = [
+    ...paidWorkshops.map((item) => ({
+      icon: Video,
+      title: item.title,
+      description: item.description ?? "",
+      meta: `Workshop · ${formatEventMeta(item.startsAt)}`,
+      price: formatPrice(item.price),
+      ctaLabel: "Reserve",
+    })),
+    ...paidEvents.map((item) => ({
+      icon: MapPin,
+      title: item.title,
+      description: item.description ?? "",
+      meta: `Event · ${formatEventMeta(item.startsAt)}`,
+      price: formatPrice(item.price),
+      ctaLabel: "Reserve",
+    })),
+  ];
+
+  const consultingSessions: OfferingCard[] = personalServices.map((item) => ({
+    icon: MessageCircle,
+    title: item.title,
+    description: item.description ?? "",
+    meta: "1:1 Service",
+    price: formatPrice(item.price),
+    ctaLabel: "Book a call",
+  }));
 
   return (
     <main>
@@ -237,7 +219,7 @@ export default async function MembershipPage({ params }: { params: Promise<{ use
         <OfferingSection
           title="Workshops & Events"
           description="Live sessions and meetups, booked individually."
-          items={workshops}
+          items={workshopsAndEvents}
         />
 
         <OfferingSection
@@ -266,34 +248,40 @@ function OfferingSection({
       <h2 className="text-base font-bold tracking-tight text-ink">{title}</h2>
       <p className="mt-1 text-sm text-ink-muted">{description}</p>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {items.map((item) => {
-          const Icon = item.icon;
-          return (
-            <div key={item.title} className="flex flex-col overflow-hidden rounded-xl border border-border bg-surface">
-              <div className="flex aspect-video items-center justify-center border-b border-border bg-surface-2">
-                <Icon className="h-8 w-8 text-ink-faint" aria-hidden="true" />
-              </div>
-              <div className="flex flex-1 flex-col p-3.5">
-                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-ink-faint">{item.meta}</p>
-                <p className="mt-1 text-sm font-semibold leading-snug text-ink">{item.title}</p>
-                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-muted">{item.description}</p>
-                <div className="mt-auto flex items-center justify-between gap-2 pt-3">
-                  <span className="text-base font-bold text-ink">{item.price}</span>
-                  <button
-                    type="button"
-                    disabled
-                    title="Coming soon: payments aren't connected yet"
-                    className="cursor-not-allowed rounded-full bg-surface-2 px-3.5 py-1.5 text-xs font-semibold text-ink-faint"
-                  >
-                    {item.ctaLabel}
-                  </button>
+      {items.length === 0 ? (
+        <p className="mt-4 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
+          Nothing here yet.
+        </p>
+      ) : (
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div key={item.title} className="flex flex-col overflow-hidden rounded-xl border border-border bg-surface">
+                <div className="flex aspect-video items-center justify-center border-b border-border bg-surface-2">
+                  <Icon className="h-8 w-8 text-ink-faint" aria-hidden="true" />
+                </div>
+                <div className="flex flex-1 flex-col p-3.5">
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-ink-faint">{item.meta}</p>
+                  <p className="mt-1 text-sm font-semibold leading-snug text-ink">{item.title}</p>
+                  <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-muted">{item.description}</p>
+                  <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+                    <span className="text-base font-bold text-ink">{item.price}</span>
+                    <button
+                      type="button"
+                      disabled
+                      title="Coming soon: payments aren't connected yet"
+                      className="cursor-not-allowed rounded-full bg-surface-2 px-3.5 py-1.5 text-xs font-semibold text-ink-faint"
+                    >
+                      {item.ctaLabel}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

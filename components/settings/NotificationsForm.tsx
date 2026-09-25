@@ -8,6 +8,7 @@ type NotificationsFormProps = {
   notifyNewEpisode: boolean;
   notifyNewJourney: boolean;
   notifyQuestionAnswered: boolean;
+  notifyNewOffering: boolean;
 };
 
 const TOGGLES: Array<{ name: keyof NotificationsFormProps; label: string; description: string }> = [
@@ -25,6 +26,11 @@ const TOGGLES: Array<{ name: keyof NotificationsFormProps; label: string; descri
     name: "notifyQuestionAnswered",
     label: "Answers to your questions",
     description: "When someone answers a question you posted as an Update.",
+  },
+  {
+    name: "notifyNewOffering",
+    label: "New Community offerings",
+    description: "When a creator you follow publishes a Workshop, Event, Digital Product or 1:1 Service.",
   },
 ];
 

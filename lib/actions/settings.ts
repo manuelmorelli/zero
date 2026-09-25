@@ -92,6 +92,7 @@ const NotificationPreferencesSchema = z.object({
   notifyNewEpisode: z.coerce.boolean(),
   notifyNewJourney: z.coerce.boolean(),
   notifyQuestionAnswered: z.coerce.boolean(),
+  notifyNewOffering: z.coerce.boolean(),
 });
 
 /** Settings > Notifications: quali eventi generano una notifica per l'utente (lib/notifications.ts
@@ -106,6 +107,7 @@ export async function updateNotificationPreferences(
     notifyNewEpisode: formData.has("notifyNewEpisode"),
     notifyNewJourney: formData.has("notifyNewJourney"),
     notifyQuestionAnswered: formData.has("notifyQuestionAnswered"),
+    notifyNewOffering: formData.has("notifyNewOffering"),
   });
   if (!parsed.success) {
     return { error: "Invalid data." };

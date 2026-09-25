@@ -23,7 +23,7 @@ async function pruneOldNotifications(userId: string): Promise<void> {
   });
 }
 
-type FollowerPreferenceField = "notifyNewEpisode" | "notifyNewJourney";
+type FollowerPreferenceField = "notifyNewEpisode" | "notifyNewJourney" | "notifyNewOffering";
 
 async function notifyFollowers(params: {
   creatorId: string;
@@ -95,6 +95,29 @@ export async function notifyNewJourney(params: {
     content: `${params.creatorName} published a new Journey: ${params.journeyTitle}`,
     link: `/journeys/${params.journeyId}`,
     preferenceField: "notifyNewJourney",
+  });
+}
+
+/**
+ * Un Workshop/Evento/Prodotto Digitale/Consulenza appena pubblicato (Punto 8 dell'allineamento):
+ * a differenza di notifyNewJourney/notifyNewEpisode, non parte mai da sola alla pubblicazione — va
+ * chiamata solo dal pulsante esplicito "Notify your followers" (lib/actions/communityListing.ts),
+ * con conferma dell'utente prima, mai in automatico verso altre persone.
+ */
+export async function notifyFollowersOfCommunityListing(params: {
+  creatorId: string;
+  creatorName: string;
+  notificationType: NotificationType;
+  listingLabel: string;
+  title: string;
+  link: string;
+}): Promise<void> {
+  await notifyFollowers({
+    creatorId: params.creatorId,
+    type: params.notificationType,
+    content: `${params.creatorName} published a new ${params.listingLabel}: ${params.title}`,
+    link: params.link,
+    preferenceField: "notifyNewOffering",
   });
 }
 

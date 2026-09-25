@@ -10,6 +10,7 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { VIDEO_EXTENSIONS } from "@/lib/constants/video";
 import { IMAGE_EXTENSIONS } from "@/lib/constants/image";
+import { DIGITAL_PRODUCT_EXTENSIONS } from "@/lib/constants/file";
 
 const bucket = process.env.R2_BUCKET_NAME!;
 
@@ -78,6 +79,27 @@ export async function deleteImage(key: string): Promise<void> {
  * Journey appena creato la stessa copertina già scelta per il suo primo episodio — una copia
  * vera e propria, non la stessa chiave condivisa, così cancellare in seguito l'una non spezza
  * l'altra (episodio e Journey hanno cicli di vita indipendenti). */
+// File scaricabile di un Prodotto Digitale (PDF/ZIP/EPUB): stesso pattern di newImageKey/
+// getImageUploadUrl, ma non passa mai per un player o un tag <img>, solo per un link di download
+// una volta che l'acquisto è reale (Stripe, non ancora collegato — oggi resta "Coming soon").
+export function newFileKey(contentType: string): string {
+  return `digital-products/${randomUUID()}.${DIGITAL_PRODUCT_EXTENSIONS[contentType]}`;
+}
+
+export async function getFileUploadUrl(key: string, contentType: string): Promise<string> {
+  const command = new PutObjectCommand({ Bucket: bucket, Key: key, ContentType: contentType });
+  return getSignedUrl(s3, command, { expiresIn: 300 });
+}
+
+export async function getFilePlaybackUrl(key: string): Promise<string> {
+  const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+  return getSignedUrl(s3, command, { expiresIn: 3600 });
+}
+
+export async function deleteFile(key: string): Promise<void> {
+  await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key })).catch(() => {});
+}
+
 export async function copyImage(sourceKey: string, destPrefix: string): Promise<string> {
   const extension = sourceKey.split(".").pop();
   const destKey = `${destPrefix}/${randomUUID()}${extension ? `.${extension}` : ""}`;

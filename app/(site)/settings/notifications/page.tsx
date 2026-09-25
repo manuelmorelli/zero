@@ -6,7 +6,12 @@ export default async function SettingsNotificationsPage() {
   const { user } = await requireSession();
   const preferences = await prisma.user.findUniqueOrThrow({
     where: { id: user.id },
-    select: { notifyNewEpisode: true, notifyNewJourney: true, notifyQuestionAnswered: true },
+    select: {
+      notifyNewEpisode: true,
+      notifyNewJourney: true,
+      notifyQuestionAnswered: true,
+      notifyNewOffering: true,
+    },
   });
 
   return (
@@ -20,6 +25,7 @@ export default async function SettingsNotificationsPage() {
             notifyNewEpisode={preferences.notifyNewEpisode}
             notifyNewJourney={preferences.notifyNewJourney}
             notifyQuestionAnswered={preferences.notifyQuestionAnswered}
+            notifyNewOffering={preferences.notifyNewOffering}
           />
         </div>
       </div>
