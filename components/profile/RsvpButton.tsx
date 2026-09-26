@@ -23,9 +23,9 @@ export function RsvpButton({ kind, id, initialGoing, isLoggedIn }: RsvpButtonPro
     return (
       <Link
         href="/login"
-        className="rounded-full border border-border px-3.5 py-1.5 text-xs font-semibold text-ink-muted transition-colors hover:border-ink-muted"
+        className="shrink-0 whitespace-nowrap rounded-full border border-border px-3.5 py-1.5 text-xs font-semibold text-ink-muted transition-colors hover:border-ink-muted"
       >
-        Log in to RSVP
+        Log in
       </Link>
     );
   }
@@ -46,7 +46,7 @@ export function RsvpButton({ kind, id, initialGoing, isLoggedIn }: RsvpButtonPro
       type="button"
       onClick={handleClick}
       disabled={pending}
-      className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
+      className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
         going ? "border border-ember/40 text-ember" : "bg-ember text-white hover:bg-ember/90"
       }`}
     >
