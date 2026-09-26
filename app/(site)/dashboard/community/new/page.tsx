@@ -1,8 +1,9 @@
 import { requireCreator } from "@/lib/creator";
+import { firstNameOf } from "@/lib/format/firstName";
 import { NewCommunityListingClient } from "@/components/creator/NewCommunityListingClient";
 
 export default async function NewCommunityListingPage() {
-  await requireCreator();
+  const { user } = await requireCreator();
 
   return (
     <main>
@@ -13,7 +14,7 @@ export default async function NewCommunityListingPage() {
         </p>
 
         <div className="mt-8">
-          <NewCommunityListingClient />
+          <NewCommunityListingClient creatorFirstName={firstNameOf(user.name)} />
         </div>
       </div>
     </main>

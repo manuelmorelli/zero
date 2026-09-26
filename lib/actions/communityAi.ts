@@ -1,6 +1,7 @@
 "use server";
 
 import { requireCreator } from "@/lib/creator";
+import { firstNameOf } from "@/lib/format/firstName";
 import { continueCommunityDraftChat, type CommunityDraftTurnResult } from "@/lib/ai/communityDraft";
 
 const MAX_MESSAGE_LENGTH = 500;
@@ -12,10 +13,15 @@ export async function sendCommunityAiMessage(
   message: string,
   previousInteractionId: string | null
 ): Promise<CommunityDraftTurnResult> {
-  await requireCreator();
+  const { user } = await requireCreator();
 
   const trimmed = message.trim().slice(0, MAX_MESSAGE_LENGTH);
   if (!trimmed) return { error: "Write a message first." };
 
-  return continueCommunityDraftChat({ message: trimmed, previousInteractionId, today: new Date() });
+  return continueCommunityDraftChat({
+    message: trimmed,
+    previousInteractionId,
+    today: new Date(),
+    creatorFirstName: firstNameOf(user.name),
+  });
 }

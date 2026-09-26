@@ -8,7 +8,7 @@ import { COMMUNITY_LISTING_LABELS, COMMUNITY_LISTING_TYPES, type CommunityListin
 
 type Mode = "choose" | "manual-pick-type" | "manual-form" | "ai-chat" | "ai-form";
 
-export function NewCommunityListingClient() {
+export function NewCommunityListingClient({ creatorFirstName }: { creatorFirstName: string | null }) {
   const [mode, setMode] = useState<Mode>("choose");
   const [type, setType] = useState<CommunityListingType | null>(null);
   const [draft, setDraft] = useState<CommunityListingDraft | null>(null);
@@ -77,6 +77,7 @@ export function NewCommunityListingClient() {
       <div>
         <BackButton onClick={() => setMode("choose")} />
         <CommunityAiChat
+          creatorFirstName={creatorFirstName}
           onDraftReady={(pending) => {
             setType(pending.type);
             setDraft(pending.draft);

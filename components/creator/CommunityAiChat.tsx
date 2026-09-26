@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Send, Sparkles } from "lucide-react";
 import { sendCommunityAiMessage } from "@/lib/actions/communityAi";
 import { COMMUNITY_LISTING_LABELS, type CommunityListingType } from "@/lib/constants/communityListing";
@@ -10,22 +10,38 @@ type ChatMessage = { role: "user" | "assistant"; text: string };
 
 type PendingDraft = { type: CommunityListingType; draft: CommunityListingDraft };
 
-const WELCOME_MESSAGE: ChatMessage = {
-  role: "assistant",
-  text: "Tell me what you'd like to create — a workshop, an event, a digital product or a 1:1 service. I'll draft it for you to review, I never save anything on my own.",
-};
+function welcomeMessage(creatorFirstName: string | null): ChatMessage {
+  const greeting = creatorFirstName ? `Hi ${creatorFirstName}!` : "Hi!";
+  return {
+    role: "assistant",
+    text: `${greeting} What would you like to create today? A workshop, an event, a digital product or a 1:1 service. Describe it in your own words and I'll prepare a draft for you to check.`,
+  };
+}
 
 /** Assistente "personale" della pagina Community (Punto 8 dell'allineamento, 2026-09-25): una vera
  * chat, non un singolo box — Manuel l'ha chiesta così esplicitamente ("facile, intuitivo,
  * futuristico"). Dietro le quinte resta comunque semplice: ogni turno è una singola chiamata a
  * Gemini (lib/ai/communityDraft.ts), nessuno storico salvato da Zero (lo tiene Gemini via
  * interactionId). Quando la bozza è pronta, il creator la apre nel modulo vero e la conferma lui. */
-export function CommunityAiChat({ onDraftReady }: { onDraftReady: (pending: PendingDraft) => void }) {
-  const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE]);
+export function CommunityAiChat({
+  creatorFirstName,
+  onDraftReady,
+}: {
+  creatorFirstName: string | null;
+  onDraftReady: (pending: PendingDraft) => void;
+}) {
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [welcomeMessage(creatorFirstName)]);
   const [input, setInput] = useState("");
   const [interactionId, setInteractionId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [readyDraft, setReadyDraft] = useState<PendingDraft | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Scende da solo all'ultimo messaggio (e all'indicatore "Thinking…"), come in ogni app di chat.
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (container) container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+  }, [messages, pending, readyDraft]);
 
   async function handleSend() {
     const message = input.trim();
@@ -34,7 +50,6 @@ export function CommunityAiChat({ onDraftReady }: { onDraftReady: (pending: Pend
     setMessages((current) => [...current, { role: "user", text: message }]);
     setInput("");
     setPending(true);
-    setReadyDraft(null);
 
     const result = await sendCommunityAiMessage(message, interactionId);
 
@@ -46,7 +61,8 @@ export function CommunityAiChat({ onDraftReady }: { onDraftReady: (pending: Pend
 
     setInteractionId(result.interactionId);
     setMessages((current) => [...current, { role: "assistant", text: result.reply }]);
-    if (result.readyToFill && result.draft) {
+    // Una risposta senza bozza non cancella quella precedente: il pulsante resta finché ce n'è una.
+    if (result.draft) {
       setReadyDraft({ type: result.draft.type, draft: result.draft });
     }
     setPending(false);
@@ -59,7 +75,7 @@ export function CommunityAiChat({ onDraftReady }: { onDraftReady: (pending: Pend
         <span className="text-sm font-semibold text-ink">Create with AI</span>
       </div>
 
-      <div className="flex max-h-80 flex-col gap-3 overflow-y-auto px-4 py-4">
+      <div ref={scrollRef} className="flex max-h-80 flex-col gap-3 overflow-y-auto px-4 py-4">
         {messages.map((message, index) => (
           <div
             key={index}
