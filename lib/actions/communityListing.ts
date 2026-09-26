@@ -13,12 +13,14 @@ import {
   listingSupportsFree,
   listingHasDate,
   listingHasFile,
+  listingDetailPath,
   type CommunityListingType,
 } from "@/lib/constants/communityListing";
 import { notifyFollowersOfCommunityListing } from "@/lib/notifications";
 import { ALLOWED_DIGITAL_PRODUCT_TYPES } from "@/lib/constants/file";
-import { deleteFile, getFileUploadUrl, newFileKey } from "@/lib/r2";
-import { moderateText, MODERATION_REJECTION_MESSAGE } from "@/lib/moderation";
+import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
+import { deleteFile, deleteImage, getFileUploadUrl, getImagePlaybackUrl, getImageUploadUrl, newFileKey, newImageKey } from "@/lib/r2";
+import { moderateImageUrl, moderateText, MODERATION_REJECTION_MESSAGE } from "@/lib/moderation";
 
 // I quattro modelli (Workshop/Event/DigitalProduct/PersonalService) sono quasi identici ma restano
 // tipi Prisma distinti: questo file li tratta in modo generico parametrizzato su `type` invece di
@@ -66,15 +68,19 @@ async function requireOwnedListing(type: CommunityListingType, id: string) {
     isFree?: boolean;
     startsAt?: Date | null;
     fileUrl?: string | null;
+    coverUrl?: string | null;
     status: "DRAFT" | "ACTIVE" | "SUSPENDED" | "ARCHIVED";
     deletedAt: Date | null;
     creator: { id: string; displayName: string; userId: string; user: { username: string | null } };
   };
 }
 
-function listingProfilePath(listing: { creator: { user: { username: string | null }; userId: string } }): string {
+/** La pagina "Community" del profilo (ex Subscribe, rinominata il 2026-09-26): qui vivono tutte le
+ * sezioni riassuntive (Free events, Shop, Workshops & Events, Consulting), da rinfrescare quando un
+ * elemento cambia stato. */
+function communityPagePath(listing: { creator: { user: { username: string | null }; userId: string } }): string {
   const handle = listing.creator.user.username ?? listing.creator.userId;
-  return `/profile/${handle}/membership`;
+  return `/profile/${handle}/community`;
 }
 
 const TitleDescriptionSchema = z.object({
@@ -175,12 +181,29 @@ export async function updateCommunityListing(
     data.fileUrl = fileKey;
   }
 
+  const coverKey = formData.get("coverKey");
+  const newCoverKey = typeof coverKey === "string" && coverKey ? coverKey : null;
+  const replacesCover = newCoverKey !== null && newCoverKey !== listing.coverUrl;
+
+  if (replacesCover) {
+    const coverPlaybackUrl = await getImagePlaybackUrl(newCoverKey);
+    const coverModeration = await moderateImageUrl(coverPlaybackUrl);
+    if (coverModeration.flagged) {
+      await deleteImage(newCoverKey);
+      return { error: MODERATION_REJECTION_MESSAGE };
+    }
+    data.coverUrl = newCoverKey;
+  }
+
   await getDelegate(ref.type).update({ where: { id: listing.id }, data });
 
-  // Il vecchio file resta orfano su R2 se non viene ripulito qui, stesso principio di
+  // Il vecchio file/copertina resta orfano su R2 se non viene ripulito qui, stesso principio di
   // updateJourney per la copertina (lib/actions/journey.ts).
   if (listingHasFile(ref.type) && typeof fileKey === "string" && fileKey && listing.fileUrl && fileKey !== listing.fileUrl) {
     await deleteFile(listing.fileUrl);
+  }
+  if (replacesCover && listing.coverUrl) {
+    await deleteImage(listing.coverUrl);
   }
 
   revalidatePath(`/dashboard/community/${ref.type}/${listing.id}`);
@@ -204,6 +227,26 @@ export async function createCommunityListingFileUploadUrl(
   return { uploadUrl, key };
 }
 
+/** URL temporaneo per caricare la copertina di un Workshop/Evento/Prodotto/Consulenza, dopo che la
+ * Bozza esiste già — stesso schema in due passaggi già usato per la copertina del Journey. Aggiunta
+ * il 2026-09-26 dopo test reale di Manuel: creare un evento senza poter caricare una foto sembrava
+ * incompleto. */
+export async function createCommunityListingCoverUploadUrl(
+  type: CommunityListingType,
+  listingId: string,
+  contentType: string
+): Promise<{ uploadUrl: string; key: string } | { error: string }> {
+  await requireOwnedListing(type, listingId);
+
+  if (!ALLOWED_IMAGE_TYPES.has(contentType)) {
+    return { error: "Unsupported image format." };
+  }
+
+  const key = newImageKey("community-covers", contentType);
+  const uploadUrl = await getImageUploadUrl(key, contentType);
+  return { uploadUrl, key };
+}
+
 export async function publishCommunityListing(
   _prevState: { error: string | null },
   formData: FormData
@@ -224,7 +267,7 @@ export async function publishCommunityListing(
 
   revalidatePath("/dashboard/community");
   revalidatePath(`/dashboard/community/${ref.type}/${listing.id}`);
-  revalidatePath(listingProfilePath(listing));
+  revalidatePath(communityPagePath(listing));
   if (listingSupportsFree(ref.type) && listing.isFree) {
     revalidatePath(`/profile/${listing.creator.user.username ?? listing.creator.userId}`);
   }
@@ -245,7 +288,7 @@ export async function unpublishCommunityListing(
 
   revalidatePath("/dashboard/community");
   revalidatePath(`/dashboard/community/${ref.type}/${listing.id}`);
-  revalidatePath(listingProfilePath(listing));
+  revalidatePath(communityPagePath(listing));
   if (listingSupportsFree(ref.type) && listing.isFree) {
     revalidatePath(`/profile/${listing.creator.user.username ?? listing.creator.userId}`);
   }
@@ -261,7 +304,7 @@ export async function deleteCommunityListing(formData: FormData): Promise<void> 
   if (listingHasFile(ref.type) && listing.fileUrl) await deleteFile(listing.fileUrl);
 
   revalidatePath("/dashboard/community");
-  revalidatePath(listingProfilePath(listing));
+  revalidatePath(communityPagePath(listing));
   if (listingSupportsFree(ref.type) && listing.isFree) {
     revalidatePath(`/profile/${listing.creator.user.username ?? listing.creator.userId}`);
   }
@@ -286,7 +329,7 @@ export async function notifyFollowersOfListingAction(
     notificationType: COMMUNITY_LISTING_NOTIFICATION_TYPE[ref.type],
     listingLabel: COMMUNITY_LISTING_LABELS[ref.type],
     title: listing.title,
-    link: listingProfilePath(listing),
+    link: listingDetailPath(ref.type, listing.id),
   });
 
   return { error: null };

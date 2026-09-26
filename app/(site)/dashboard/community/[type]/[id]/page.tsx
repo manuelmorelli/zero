@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
+import { getImagePlaybackUrl } from "@/lib/r2";
 import {
   COMMUNITY_LISTING_LABELS,
   COMMUNITY_LISTING_TYPES,
@@ -39,6 +40,9 @@ export default async function EditCommunityListingPage({
   const listing = await findListing(type, id);
   if (!listing || listing.creatorId !== creator.id || listing.deletedAt) notFound();
 
+  const coverKey = "coverUrl" in listing ? (listing.coverUrl as string | null) : null;
+  const coverPreviewUrl = coverKey ? await getImagePlaybackUrl(coverKey) : null;
+
   return (
     <main>
       <div className="mx-auto w-full max-w-lg px-6 pb-16 pt-24">
@@ -65,6 +69,7 @@ export default async function EditCommunityListingPage({
               price: listing.price === null ? null : Number(listing.price),
               startsAt: "startsAt" in listing && listing.startsAt ? listing.startsAt.toISOString() : null,
               fileUrl: "fileUrl" in listing ? (listing.fileUrl as string | null) : null,
+              coverUrl: coverPreviewUrl,
             }}
           />
         </div>

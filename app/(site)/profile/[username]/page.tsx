@@ -28,7 +28,8 @@ import { PUBLICLY_REACHABLE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } 
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { DEMO_FEED_ITEMS } from "@/lib/demo/demoProfile";
 import { findUserByUsernameOrId } from "@/lib/profile/findUserByUsernameOrId";
-import { FreeEventsSection, type FreeEventItem } from "@/components/profile/FreeEventsSection";
+import { FreeEventsSection } from "@/components/profile/FreeEventsSection";
+import { getFreeEventItems } from "@/lib/community/freeEvents";
 
 /** Quante Published Journeys mostrare in anteprima nell'Overview prima del link "View all"
  * verso la tab Journeys (che resta la lista completa, archiviati compresi). */
@@ -80,51 +81,10 @@ export default async function PublicProfilePage({
   const isOwnProfile = session?.user.id === user.id;
   const isLoggedIn = Boolean(session);
 
-  // Iniziative gratuite (Punto 8 dell'allineamento, 2026-09-25): sul profilo pubblico, non dentro
-  // Subscribe — sono contenuto pubblico come i Journey, non un'offerta a pagamento.
-  const freeEvents: FreeEventItem[] = creator
-    ? await (async () => {
-        const [freeWorkshops, freeEventRows] = await Promise.all([
-          prisma.workshop.findMany({
-            where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE", isFree: true },
-            orderBy: { startsAt: "asc" },
-            include: {
-              _count: { select: { rsvps: true } },
-              rsvps: session ? { where: { userId: session.user.id }, select: { id: true } } : false,
-            },
-          }),
-          prisma.event.findMany({
-            where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE", isFree: true },
-            orderBy: { startsAt: "asc" },
-            include: {
-              _count: { select: { rsvps: true } },
-              rsvps: session ? { where: { userId: session.user.id }, select: { id: true } } : false,
-            },
-          }),
-        ]);
-
-        return [
-          ...freeWorkshops.map((item) => ({
-            kind: "workshop" as const,
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            startsAt: item.startsAt ? item.startsAt.toISOString() : null,
-            going: Array.isArray(item.rsvps) && item.rsvps.length > 0,
-            rsvpCount: item._count.rsvps,
-          })),
-          ...freeEventRows.map((item) => ({
-            kind: "event" as const,
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            startsAt: item.startsAt ? item.startsAt.toISOString() : null,
-            going: Array.isArray(item.rsvps) && item.rsvps.length > 0,
-            rsvpCount: item._count.rsvps,
-          })),
-        ];
-      })()
-    : [];
+  // Iniziative gratuite (Punto 8 dell'allineamento, 2026-09-25): anteprima sul profilo pubblico
+  // (Manuel, 2026-09-26: "la card in home page personale non mi dispiace"), l'elenco completo vive
+  // nella pagina Community (ex Subscribe) insieme alle offerte a pagamento.
+  const freeEvents = creator ? await getFreeEventItems(creator.id, session?.user.id ?? null) : [];
 
   // User.avatarUrl/coverUrl salvano la chiave R2, non un URL pubblico: si risolve in un
   // link temporaneo a ogni caricamento pagina, stesso pattern già usato per i video (lib/r2.ts).
@@ -437,14 +397,15 @@ export default async function PublicProfilePage({
 }
 
 /** Bozza visiva (Punto 7 dell'allineamento, "Struttura pagine Creator Economy"): un solo punto di
- * ingresso verso la pagina Subscribe, che raccoglie al suo interno anche Shop, Workshop & Events
- * e 1:1 Consulting (deciso con Manuel il 2026-09-22: niente pagamento reale dietro per ora). */
+ * ingresso verso la pagina Community (ex Subscribe, rinominata il 2026-09-26 su richiesta di
+ * Manuel), che raccoglie al suo interno anche eventi gratuiti, Shop, Workshop & Events e 1:1
+ * Consulting (deciso con Manuel il 2026-09-22: niente pagamento reale dietro per ora). */
 function CreatorEconomyLinks({ username }: { username: string }) {
   const linkClassName =
     "shrink-0 rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-4 py-2 text-sm text-white opacity-70 backdrop-blur-md transition-colors hover:opacity-100";
   return (
-    <Link href={`/profile/${username}/membership`} className={linkClassName}>
-      Subscribe
+    <Link href={`/profile/${username}/community`} className={linkClassName}>
+      Community
     </Link>
   );
 }

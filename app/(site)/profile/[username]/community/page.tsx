@@ -1,3 +1,5 @@
+import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   Check,
@@ -14,16 +16,16 @@ import { findUserByUsernameOrId } from "@/lib/profile/findUserByUsernameOrId";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { FadeImage } from "@/components/common/FadeImage";
 import { prisma } from "@/lib/prisma";
+import { getViewerSession } from "@/lib/session";
+import { getFreeEventItems } from "@/lib/community/freeEvents";
+import { FreeEventsSection } from "@/components/profile/FreeEventsSection";
 
-/** Bozza visiva (nessun pagamento reale): Punto 7 dell'allineamento, "Struttura pagine Creator
- * Economy". Un solo livello di abbonamento mensile per l'intero profilo del creator (non per
- * singolo Journey, deciso con Manuel il 2026-09-22), che sbloccherebbe materiale pratico extra
- * (video, documenti, mappe) slegato da Journey/Episodi/Update, che restano sempre gratis.
- *
- * Aggiornamento 2026-09-22: "Subscribe" è ora l'unico punto di ingresso della Creator Economy sul
- * profilo (prima erano quattro pulsanti separati). Iscriversi sblocca l'accesso a questa pagina,
- * ma Shop/Workshop/Consulenza restano ognuno con il proprio prezzo a parte, non inclusi
- * nell'abbonamento: sono le "card cliccabili" che il creator crea in base a ciò che offre. */
+/** Pagina "Community" del profilo (ex "Subscribe", rinominata il 2026-09-26 su richiesta di
+ * Manuel: un follower deve poter vedere qui TUTTO quello che il creator organizza, gratis o a
+ * pagamento, non solo le offerte a pagamento). In cima resta l'abbonamento mensile a pagamento
+ * (Punto 7 dell'allineamento, "Struttura pagine Creator Economy", nessun pagamento reale ancora),
+ * sotto gli eventi gratuiti (stessa sezione mostrata in anteprima sul profilo principale) e le
+ * offerte a pagamento (Shop, Workshop & Events, 1:1 Consulting), tutte reali (Punto 8). */
 const MONTHLY_PRICE = "€9";
 
 const benefits = [
@@ -41,6 +43,9 @@ const insideItems = [
 
 type OfferingCard = {
   icon: LucideIcon;
+  id: string;
+  type: "workshop" | "event" | "digital_product" | "personal_service";
+  coverUrl: string | null;
   title: string;
   description: string;
   meta: string;
@@ -48,10 +53,6 @@ type OfferingCard = {
   ctaLabel: string;
 };
 
-/** Punto 8 dell'allineamento (2026-09-25): queste tre vetrine mostravano dati finti, sostituiti
- * con Workshop/Event a pagamento, Prodotto Digitale e Consulenza 1:1 reali (creati dalla pagina
- * Dashboard > Community). I Workshop/Eventi gratuiti non compaiono qui: sono contenuto pubblico
- * mostrato direttamente sul profilo (vedi FreeEventsSection), non un'offerta a pagamento. */
 function formatEventMeta(startsAt: Date | null): string {
   if (!startsAt) return "Date to be announced";
   return startsAt.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
@@ -61,7 +62,7 @@ function formatPrice(price: unknown): string {
   return `€${Number(price)}`;
 }
 
-export default async function MembershipPage({ params }: { params: Promise<{ username: string }> }) {
+export default async function CommunityPage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
   const user = await findUserByUsernameOrId(username);
   if (!user || user.deletedAt) notFound();
@@ -69,8 +70,9 @@ export default async function MembershipPage({ params }: { params: Promise<{ use
   const avatarUrl = user.avatarUrl ? await getImagePlaybackUrl(user.avatarUrl) : null;
 
   const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
+  const session = await getViewerSession();
 
-  const [paidWorkshops, paidEvents, digitalProducts, personalServices] = creator
+  const [paidWorkshops, paidEvents, digitalProducts, personalServices, freeEvents] = creator
     ? await Promise.all([
         prisma.workshop.findMany({
           where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE", isFree: false },
@@ -88,45 +90,62 @@ export default async function MembershipPage({ params }: { params: Promise<{ use
           where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE" },
           orderBy: { createdAt: "desc" },
         }),
+        getFreeEventItems(creator.id, session?.user.id ?? null),
       ])
-    : [[], [], [], []];
+    : [[], [], [], [], []];
 
-  const shopItems: OfferingCard[] = digitalProducts.map((item) => ({
-    icon: FileText,
-    title: item.title,
-    description: item.description ?? "",
-    meta: "Digital product",
-    price: formatPrice(item.price),
-    ctaLabel: "Buy",
-  }));
+  const shopItems: OfferingCard[] = await Promise.all(
+    digitalProducts.map(async (item) => ({
+      icon: FileText,
+      id: item.id,
+      type: "digital_product" as const,
+      coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
+      title: item.title,
+      description: item.description ?? "",
+      meta: "Digital product",
+      price: formatPrice(item.price),
+      ctaLabel: "Buy",
+    }))
+  );
 
-  const workshopsAndEvents: OfferingCard[] = [
-    ...paidWorkshops.map((item) => ({
+  const workshopsAndEvents: OfferingCard[] = await Promise.all([
+    ...paidWorkshops.map(async (item) => ({
       icon: Video,
+      id: item.id,
+      type: "workshop" as const,
+      coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
       description: item.description ?? "",
       meta: `Workshop · ${formatEventMeta(item.startsAt)}`,
       price: formatPrice(item.price),
       ctaLabel: "Reserve",
     })),
-    ...paidEvents.map((item) => ({
+    ...paidEvents.map(async (item) => ({
       icon: MapPin,
+      id: item.id,
+      type: "event" as const,
+      coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
       description: item.description ?? "",
       meta: `Event · ${formatEventMeta(item.startsAt)}`,
       price: formatPrice(item.price),
       ctaLabel: "Reserve",
     })),
-  ];
+  ]);
 
-  const consultingSessions: OfferingCard[] = personalServices.map((item) => ({
-    icon: MessageCircle,
-    title: item.title,
-    description: item.description ?? "",
-    meta: "1:1 Service",
-    price: formatPrice(item.price),
-    ctaLabel: "Book a call",
-  }));
+  const consultingSessions: OfferingCard[] = await Promise.all(
+    personalServices.map(async (item) => ({
+      icon: MessageCircle,
+      id: item.id,
+      type: "personal_service" as const,
+      coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
+      title: item.title,
+      description: item.description ?? "",
+      meta: "1:1 Service",
+      price: formatPrice(item.price),
+      ctaLabel: "Book a call",
+    }))
+  );
 
   return (
     <main>
@@ -151,8 +170,8 @@ export default async function MembershipPage({ params }: { params: Promise<{ use
               </div>
 
               <p className="mt-5 max-w-[48ch] text-sm leading-relaxed text-ink-muted">
-                Support {user.name.split(" ")[0]} and unlock extra material published only for members: bonus
-                videos, downloadable documents and practical guides.
+                Everything {user.name.split(" ")[0]} organizes, free and paid: upcoming events, exclusive
+                membership perks, workshops, digital products and 1:1 sessions.
               </p>
 
               <ul className="mt-5 space-y-2.5">
@@ -184,6 +203,12 @@ export default async function MembershipPage({ params }: { params: Promise<{ use
             </div>
           </div>
         </section>
+
+        {freeEvents.length > 0 && (
+          <div className="mt-10">
+            <FreeEventsSection items={freeEvents} isLoggedIn={Boolean(session)} />
+          </div>
+        )}
 
         <section className="mt-10">
           <h2 className="text-base font-bold tracking-tight text-ink">What&apos;s inside</h2>
@@ -233,7 +258,8 @@ export default async function MembershipPage({ params }: { params: Promise<{ use
 }
 
 /** Griglia di card riutilizzata per Shop/Workshop/Consulenza: ognuna è un'offerta indipendente
- * creata dal creator, con il proprio prezzo, non inclusa nell'abbonamento sopra. */
+ * creata dal creator, con il proprio prezzo, non inclusa nell'abbonamento sopra. Ogni card apre la
+ * sua pagina di dettaglio pubblica e condivisibile (2026-09-26, richiesto da Manuel). */
 function OfferingSection({
   title,
   description,
@@ -257,9 +283,17 @@ function OfferingSection({
           {items.map((item) => {
             const Icon = item.icon;
             return (
-              <div key={item.title} className="flex flex-col overflow-hidden rounded-xl border border-border bg-surface">
-                <div className="flex aspect-video items-center justify-center border-b border-border bg-surface-2">
-                  <Icon className="h-8 w-8 text-ink-faint" aria-hidden="true" />
+              <Link
+                key={item.id}
+                href={`/community/${item.type}/${item.id}`}
+                className="flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-ink-muted"
+              >
+                <div className="relative flex aspect-video items-center justify-center border-b border-border bg-surface-2">
+                  {item.coverUrl ? (
+                    <Image src={item.coverUrl} alt={item.title} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-cover" />
+                  ) : (
+                    <Icon className="h-8 w-8 text-ink-faint" aria-hidden="true" />
+                  )}
                 </div>
                 <div className="flex flex-1 flex-col p-3.5">
                   <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-ink-faint">{item.meta}</p>
@@ -267,17 +301,15 @@ function OfferingSection({
                   <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-muted">{item.description}</p>
                   <div className="mt-auto flex items-center justify-between gap-2 pt-3">
                     <span className="text-base font-bold text-ink">{item.price}</span>
-                    <button
-                      type="button"
-                      disabled
+                    <span
                       title="Coming soon: payments aren't connected yet"
                       className="cursor-not-allowed rounded-full bg-surface-2 px-3.5 py-1.5 text-xs font-semibold text-ink-faint"
                     >
                       {item.ctaLabel}
-                    </button>
+                    </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

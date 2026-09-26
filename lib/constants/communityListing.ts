@@ -36,3 +36,12 @@ export const COMMUNITY_LISTING_NOTIFICATION_TYPE: Record<CommunityListingType, N
 };
 
 export const MAX_LISTING_PRICE = 5000;
+
+/** Pagina di dettaglio pubblica e condivisibile di un singolo elemento (2026-09-26, richiesta da
+ * Manuel dopo che le notifiche portavano a una pagina generica dove l'elemento non si trovava
+ * facilmente): usata come link delle notifiche e del pulsante Condividi. Vive qui (non in
+ * lib/actions/communityListing.ts) perché quel file è "use server" — ogni sua funzione esportata
+ * deve essere un'azione async, questa è solo un helper sincrono di formattazione. */
+export function listingDetailPath(type: CommunityListingType, id: string): string {
+  return `/community/${type}/${id}`;
+}

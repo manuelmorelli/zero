@@ -68,7 +68,7 @@ export default async function CommunityDashboardPage() {
               <p className="text-[0.7rem] uppercase tracking-[0.18em] text-ember">Creator area</p>
               <h1 className="mt-1 text-xl font-bold tracking-tight">Community</h1>
               <p className="mt-1 text-sm text-ink-muted">
-                Workshops, Events, Digital Products and 1:1 Services you offer on your Subscribe page.
+                Workshops, Events, Digital Products and 1:1 Services you offer on your Community page.
               </p>
             </div>
             <Link

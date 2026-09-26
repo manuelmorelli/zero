@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState, useRef, useState } from "react";
-import { FileUp, Trash2 } from "lucide-react";
+import { FileUp, ImagePlus, Trash2 } from "lucide-react";
 import {
   createCommunityListing,
+  createCommunityListingCoverUploadUrl,
   createCommunityListingFileUploadUrl,
   deleteCommunityListing,
   updateCommunityListing,
@@ -16,7 +18,9 @@ import {
   type CommunityListingType,
 } from "@/lib/constants/communityListing";
 import { ALLOWED_DIGITAL_PRODUCT_TYPES, MAX_DIGITAL_PRODUCT_SIZE_BYTES } from "@/lib/constants/file";
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { uploadFileWithProgress } from "@/lib/upload";
+import { ImageCropper } from "@/components/common/ImageCropper";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +48,7 @@ type CommunityListingFormProps = {
     price: number | null;
     startsAt: string | null;
     fileUrl: string | null;
+    coverUrl: string | null;
   };
   initialDraft?: CommunityListingDraft;
 };
@@ -82,6 +87,13 @@ export function CommunityListingForm({ type, listing, initialDraft }: CommunityL
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
+  const [coverKey, setCoverKey] = useState("");
+  const [coverPreview, setCoverPreview] = useState(listing?.coverUrl ?? null);
+  const [coverError, setCoverError] = useState<string | null>(null);
+  const [coverProgress, setCoverProgress] = useState<number | null>(null);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
   const supportsFree = listingSupportsFree(type);
   const hasDate = listingHasDate(type);
   const hasFile = listingHasFile(type);
@@ -119,15 +131,85 @@ export function CommunityListingForm({ type, listing, initialDraft }: CommunityL
     }
   }
 
+  function handleCoverChosen(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setCoverError(null);
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      setCoverError("Unsupported image format (use JPG, PNG or WebP).");
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setCoverError(`Image is too large (max ${formatMB(MAX_IMAGE_SIZE_BYTES)}).`);
+      return;
+    }
+    setCropImageSrc(URL.createObjectURL(file));
+  }
+
+  async function handleCropConfirm(blob: Blob) {
+    setCropImageSrc(null);
+    if (!listing) return;
+
+    setCoverError(null);
+    setCoverProgress(0);
+    try {
+      const result = await createCommunityListingCoverUploadUrl(type, listing.id, blob.type);
+      if ("error" in result) {
+        setCoverError(result.error);
+        setCoverProgress(null);
+        return;
+      }
+      await uploadFileWithProgress(result.uploadUrl, blob, setCoverProgress);
+      setCoverKey(result.key);
+      setCoverPreview(URL.createObjectURL(blob));
+    } catch {
+      setCoverError("Upload failed. Please try again.");
+    } finally {
+      setCoverProgress(null);
+    }
+  }
+
   return (
     <>
       <form
         action={(formData) => {
           if (hasFile) formData.set("fileKey", fileKey);
+          formData.set("coverKey", coverKey);
           formAction(formData);
         }}
         className="space-y-4"
       >
+        {listing && (
+          <div>
+            <span className="text-sm font-medium text-ink-muted">Cover</span>
+            <div className="relative mt-1.5 aspect-video w-full max-w-xs overflow-hidden rounded-xl border border-border bg-surface-2">
+              {coverPreview ? (
+                <Image src={coverPreview} alt="" fill sizes="320px" className="object-cover" />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+              )}
+              <button
+                type="button"
+                onClick={() => coverInputRef.current?.click()}
+                aria-label="Change cover photo"
+                className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-black/0 text-[0.65rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
+              >
+                <ImagePlus className="h-4 w-4" aria-hidden="true" />
+                {coverProgress !== null ? `${coverProgress}%` : "Change"}
+              </button>
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleCoverChosen}
+                className="hidden"
+              />
+            </div>
+            {coverError && <p className="mt-1.5 text-xs text-danger">{coverError}</p>}
+          </div>
+        )}
         {listing ? (
           <>
             <input type="hidden" name="listingId" value={listing.id} />
@@ -267,7 +349,7 @@ export function CommunityListingForm({ type, listing, initialDraft }: CommunityL
           )}
           <button
             type="submit"
-            disabled={pending || fileProgress !== null}
+            disabled={pending || fileProgress !== null || coverProgress !== null}
             className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:cursor-not-allowed disabled:opacity-50"
           >
             {pending ? "Saving…" : listing ? "Save changes" : `Create ${COMMUNITY_LISTING_LABELS[type]}`}
@@ -275,13 +357,24 @@ export function CommunityListingForm({ type, listing, initialDraft }: CommunityL
         </div>
       </form>
 
+      {cropImageSrc && (
+        <ImageCropper
+          imageSrc={cropImageSrc}
+          title={`${COMMUNITY_LISTING_LABELS[type]} cover`}
+          aspect={16 / 9}
+          cropShape="rect"
+          onCancel={() => setCropImageSrc(null)}
+          onConfirm={handleCropConfirm}
+        />
+      )}
+
       {listing && (
         <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
           <DialogContent className="max-w-sm">
             <DialogHeader>
               <DialogTitle>Delete {COMMUNITY_LISTING_LABELS[type]}</DialogTitle>
               <DialogDescription>
-                {`"${listing.title}" will be removed for good, including from your public Subscribe page. This can't be undone.`}
+                {`"${listing.title}" will be removed for good, including from your public Community page. This can't be undone.`}
               </DialogDescription>
             </DialogHeader>
             <form action={deleteCommunityListing}>

@@ -584,6 +584,9 @@ model Workshop {
   // prevendite), campo mancante nello schema originale, aggiunto per permettere all'AI/al
   // creator di indicare una data reale (es. "il 23 febbraio").
   startsAt    DateTime?
+  // Chiave R2 della copertina (stesso pattern di Journey.coverUrl), aggiunta il 2026-09-26 dopo
+  // test reale di Manuel: creare un evento senza poter caricare una foto sembrava incompleto.
+  coverUrl    String?
   status      ListingStatus @default(DRAFT)
   presaleReleaseAt DateTime?
   createdAt   DateTime      @default(now())
@@ -606,6 +609,7 @@ model Event {
   isFree      Boolean       @default(false)
   price       Decimal?      @db.Money // null se isFree = true
   startsAt    DateTime?
+  coverUrl    String?
   status      ListingStatus @default(DRAFT)
   presaleReleaseAt DateTime?
   createdAt   DateTime      @default(now())
@@ -656,6 +660,7 @@ model DigitalProduct {
   // Null finché il creator non carica il file (stesso principio di Journey.coverUrl): la riga
   // nasce in Bozza senza file, il file si aggiunge dopo tramite updateCommunityListing.
   fileUrl     String?
+  coverUrl    String?
   status      ListingStatus @default(DRAFT)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -674,6 +679,7 @@ model PersonalService {
   title       String
   description String?
   price       Decimal       @db.Money
+  coverUrl    String?
   status      ListingStatus @default(DRAFT)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
