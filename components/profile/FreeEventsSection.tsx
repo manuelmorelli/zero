@@ -32,7 +32,7 @@ export function FreeEventsSection({ items, isLoggedIn }: { items: FreeEventItem[
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
               )}
-              <span className="absolute right-2 top-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+              <span className="absolute right-2 top-2 rounded-full border border-ember/20 bg-gradient-to-b from-ember/15 to-white/[0.02] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-emerald-500 backdrop-blur-md">
                 Free
               </span>
             </Link>

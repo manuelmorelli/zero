@@ -221,7 +221,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
                   {item.kind === "video" && <Play className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
                   {item.kind === "document" && <FileText className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
                   {item.kind === "map" && <Map className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
-                  <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-ink-muted">
+                  <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-ember/20 bg-gradient-to-b from-ember/15 to-white/[0.02] px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-ink-muted backdrop-blur-md">
                     <Lock className="h-3 w-3" aria-hidden="true" />
                     Locked
                   </span>

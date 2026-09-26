@@ -78,7 +78,7 @@ export default async function CommunityListingDetailPage({
             <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
           )}
           {isFree && (
-            <span className="absolute right-3 top-3 rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">
+            <span className="absolute right-3 top-3 rounded-full border border-ember/20 bg-gradient-to-b from-ember/15 to-white/[0.02] px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-emerald-500 backdrop-blur-md">
               Free
             </span>
           )}
