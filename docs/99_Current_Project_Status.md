@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.48"
+version: "1.49"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -145,7 +145,20 @@ Nessuna funzionalità in corso di implementazione al momento.
 
 ### Ultimo task completato
 
-**Video ottimizzati per connessioni lente — Cloudflare Stream (2026-09-07)**. Su richiesta di Manuel: generare automaticamente 1-2 versioni più leggere di ogni video caricato, servite a chi ha connessione lenta, senza mai toccare o sostituire il file originale caricato dal creator su R2. Prima di scrivere codice, discusso con Manuel un piano completo (come generarle tecnicamente, quando avviene la generazione, come il player sceglie quale versione servire, stima costi) — incluso il confronto con l'alternativa "Cloudflare Media Transformations", scartata perché limitata a output di massimo 60 secondi (adatta solo a brevi clip/anteprime, non a un episodio intero). Piano approvato ("vai"), poi implementato:
+**Punto 8 dell'allineamento: Community con creazione AI (2026-09-25 → 2026-09-27)**. Dettaglio completo della discussione e delle decisioni in `93_Project_Alignment_Recap.md` (Punto 8). Costruito e committato su `design-wow-experiment`:
+
+- **Sezione Community nella Dashboard** (`/dashboard/community`): CRUD reale per Workshop, Event, Digital product e 1:1 service (`lib/actions/communityListing.ts`), tutti partono come Bozza; copertina per ogni elemento; pulsante "Notify your followers" separato e mai automatico.
+- **Workshop/Event gratuiti** con RSVP reale ("Partecipo", tabelle `WorkshopRsvp`/`EventRsvp`), badge Free/Locked nello stile vetro del sito.
+- **"Subscribe" rinominata "Community"** (`app/(site)/profile/[username]/community/`): mostra tutto ciò che il creator organizza (eventi gratuiti in cima, poi Shop, Workshop & Events a pagamento, Consulenze) con dati veri e stato vuoto onesto; pagina di dettaglio pubblica e condivisibile `app/(site)/community/[type]/[id]/`.
+- **Chat "Create with AI"** (`components/creator/CommunityAiChat.tsx`, `lib/ai/communityDraft.ts`, Gemini `gemini-3.5-flash-lite`, gratis): conversazione libera come un'AI normale (Markdown, consigli, domande sui dettagli, descrizione completa); la bozza viene estratta dalla conversazione con una seconda chiamata e apre il modulo pre-compilato col pulsante "Fill the form with this", mai salvata da sola. Chat salvata nel browser per utente fino al logout (`lib/communityAiChatStorage.ts`); saluto per nome.
+- **"+" per allegati**: menu Photo / PDF document, max 3 file, caricati su R2 sotto `ai-images/{userId}/uploads/`, verificati lato server e letti davvero da Gemini (foto descritte, PDF trasformati in bozza). Le foto possono diventare copertina ("Use as cover").
+- **Creazione immagini AI ("Nano Banana") pronta ma SPENTA**: non inclusa nel piano gratuito Google (circa 0,034$ a immagine). Si accende con `GEMINI_IMAGE_GENERATION_ENABLED="true"` dopo aver attivato la fatturazione Google; tetto 5 immagini ogni 24 ore per creator (tabella `ai_image_generations`). La forma della risposta immagine non è ancora verificata dal vivo.
+- **Moderazione contenuti passata da OpenAI a Gemini** (`lib/moderation.ts`): attiva per la prima volta su tutta la piattaforma, testo e immagini (mai video).
+- **Correzioni collegate**: campo prezzo senza freccette, orario evento mostrato in ora locale (prima un'ora indietro), date passate spostate all'anno successivo nella bozza AI.
+
+**Da ricordare**: il login mostra "password sbagliata" anche quando il problema è del server (successo il 2026-09-26, server di sviluppo bloccato): in backlog `94_Product_Backlog.md`. Idea "Download as PDF" nella chat AI parcheggiata nello stesso backlog.
+
+Task precedente: **Video ottimizzati per connessioni lente — Cloudflare Stream (2026-09-07)**. Su richiesta di Manuel: generare automaticamente 1-2 versioni più leggere di ogni video caricato, servite a chi ha connessione lenta, senza mai toccare o sostituire il file originale caricato dal creator su R2. Prima di scrivere codice, discusso con Manuel un piano completo (come generarle tecnicamente, quando avviene la generazione, come il player sceglie quale versione servire, stima costi) — incluso il confronto con l'alternativa "Cloudflare Media Transformations", scartata perché limitata a output di massimo 60 secondi (adatta solo a brevi clip/anteprime, non a un episodio intero). Piano approvato ("vai"), poi implementato:
 
 - **Database**: tre campi nuovi su `Episode` (`lightVideoStatus`, `lightVideoId`, `lightVideoPlaybackUrl`, migrazione `20260907125348_episode_light_video`) — vedi `11_Database_Architecture.md`.
 - **`lib/stream.ts`**: avvio della creazione della versione leggera su Cloudflare Stream (a partire da un URL di lettura temporaneo del video già su R2, non un nuovo upload), cancellazione quando un video viene sostituito o l'episodio eliminato, verifica della firma dei webhook.
@@ -277,10 +290,11 @@ Iniziata: upload reale e player interno fatti (vedi "Funzionalità implementate"
 
 ### Phase 4 — Creator Economy
 
-Iniziata al Punto 7 dell'iniziativa di allineamento (`93_Project_Alignment_Recap.md`, chiuso 2026-09-22): bozze visive reali con dati di esempio, nessun pagamento collegato. Il Punto 8, in corso (discussione chiusa, costruzione da fare), sta progettando un assistente AI (Gemini) che aiuti il creator a compilarle invece di form vuoti.
+Iniziata al Punto 7 dell'iniziativa di allineamento (`93_Project_Alignment_Recap.md`, chiuso 2026-09-22) con bozze visive; resa reale al Punto 8 (2026-09-25/27): CRUD vero, pagina Community con dati veri, creazione assistita dall'AI (Gemini). Nessun pagamento ancora collegato.
 
-- 🟡 **Community Premium** — pagina "Subscribe" costruita (`app/(site)/profile/[username]/membership/page.tsx`), un solo livello di abbonamento mensile per profilo, pulsante disattivato "Coming soon" in attesa di Stripe.
-- 🟡 **Shop / Workshop & Events / 1:1 Consulting** — sezioni della stessa pagina Subscribe, card con dati di esempio scritti a mano nel file (non dal database), stesso pattern "Coming soon". Struttura dati reale già pronta in `prisma/schema.prisma` (`Workshop`, `Event`, `DigitalProduct`, `PersonalService`, `Purchase`) ma non ancora collegata a nessun CRUD.
+- 🟡 **Community Premium** — pagina rinominata da "Subscribe" a "Community" (`app/(site)/profile/[username]/community/`), un solo livello di abbonamento mensile per profilo, pulsante disattivato "Coming soon" in attesa di Stripe.
+- ✅ **Shop / Workshop & Events / 1:1 Consulting (senza pagamento)** — CRUD reale dalla Dashboard (`/dashboard/community`), dati veri dal database sulla pagina Community e su una pagina di dettaglio pubblica; Workshop/Event gratuiti con RSVP reale. Acquisti a pagamento ancora "Coming soon" in attesa di Stripe.
+- ✅ **Creazione con l'AI** — chat Gemini gratuita con allegati foto/PDF che prepara la bozza nel modulo; creazione immagini pronta ma spenta (a pagamento).
 - ⬜ **Stripe Integration** — non collegato (vedi `.env.example`).
 - 🟡 **Analytics** — pannello base reale fatto (Total views, tasso di completamento, Completions, Interactions, in `lib/dashboard/creatorStats.ts` e `PrivateStatsPanel.tsx`), corretto qui il 2026-09-20 (Punto 2 allineamento); resta da fare un cruscotto più approfondito (storico, suddivisione per fonte di ricavo) quando ci saranno ricavi reali da mostrare — per scelta di prodotto deve restare intuitivo per il creator e semplice da costruire, non rincorrere la complessità dei concorrenti (cohort analysis, previsione abbandono).
 - ⬜ **Creator Insights** — non iniziato.

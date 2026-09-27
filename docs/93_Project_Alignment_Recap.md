@@ -35,7 +35,7 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 | 5 | Trust & Safety (Trust Score + moderazione contenuti) | ✅ Chiuso (2026-09-21) |
 | 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ✅ Chiuso (2026-09-22) |
 | 7 | Struttura pagine Creator Economy (Community Premium, Prodotti/Servizi, Workshop/Eventi — le "Strumenti" mai costruiti di `07_Creator_Experience.md`) | ✅ Chiuso (2026-09-22) |
-| 8 | AI sulla piattaforma (nuovo, mai discusso prima, portato da Manuel da una conversazione separata con Claude) | 🟡 In corso — discussione chiusa, costruzione da fare |
+| 8 | AI sulla piattaforma (nuovo, mai discusso prima, portato da Manuel da una conversazione separata con Claude) | 🟢 Costruito (2026-09-25/27) — chiusura formale da confermare con Manuel |
 | 9 | Business Plan / Dossier investitori (Mercato, Team, Trazione, Piano Finanziario, la Richiesta) | ⬜ Da fare |
 | 10 | Infrastruttura tecnica e pagamenti (hosting, sicurezza, test, monitoraggio, Stripe Connect reale) | ⬜ Da fare |
 | 11 | Piano di lancio | ⬜ Da fare |
@@ -375,6 +375,21 @@ Idea nata a chiusura del Punto 7 (vedi sopra): un assistente a cui il creator ch
 
 Durante la discussione, Manuel ha comunicato l'acquisto del dominio reale del progetto, **zerojourneys.com**, registrato su Cloudflare — fatto slegato dal Punto 8 in sé, salvato in memoria per i Punti 10/11 (Infrastruttura, Lancio). Emerso anche un piccolo disallineamento tra `docs/93` e `docs/99_Current_Project_Status.md`, quest'ultimo ancora fermo su "Creator Economy non iniziata" nonostante il Punto 7 avesse già costruito le bozze visive: corretto nella stessa sessione.
 
+### Costruzione (2026-09-25 → 2026-09-27, più chat tecniche dedicate)
+
+Tutto costruito e committato sul branch `design-wow-experiment`. In ordine:
+
+1. **Fondamenta** (commit `fdc282b`): CRUD reale sui quattro modelli dalla nuova sezione `/dashboard/community`, tutto parte come Bozza; pulsante "Notify your followers" separato; Workshop/Event gratuiti con RSVP reale ("Partecipo"); pagina Subscribe con dati veri. Prima di scrivere codice, verificata dal vivo l'API Gemini: Google l'aveva cambiata (nuova "Interactions API"). Moderazione contenuti passata da OpenAI a Gemini, attiva per la prima volta su tutto il sito (testo e immagini, mai video).
+2. **Correzioni dopo test reale** (`aab91a2`, `1562ab4`, `1428c6a`): copertine per i quattro tipi, badge Free/Locked in stile vetro, pagina di dettaglio pubblica e condivisibile, card cliccabili, **"Subscribe" rinominata "Community"** (decisione di Manuel: un follower che clicca un evento gratuito non deve finire su una pagina di abbonamento). Card evento gratuito enorme corretta riallineandola alla griglia a 4 colonne esistente; da qui la regola "riusare componenti esistenti e chiedere in caso di dubbio di design".
+3. **Chat AI affidabile** (`c907513`): la bozza "promessa ma mai allegata" succedeva circa 6 volte su 7 perché Gemini mandava bozze incomplete; corretta rendendo la bozza completa o assente. Scorrimento automatico, benvenuto con il nome del creator (letto dal profilo, non "addestrato").
+4. **Chat come un'AI normale** (`b3f2468`): Manuel l'ha trovata robotica ("perché gli hai imposto dei limiti?"). Ora risponde liberamente (Markdown, consigli, domande sui dettagli, descrizioni complete) e la bozza viene estratta dalla conversazione con una seconda chiamata separata. Conversazione salvata nel browser fino al logout (scelta di Manuel), pulsante della bozza nascosto dopo una creazione confermata per evitare doppioni. Resta sul modello gratuito Flash-Lite ("vediamo se va bene, poi casomai Flash"). Campo prezzo senza freccette, orario evento corretto (era un'ora indietro).
+5. **Creazione immagini, pronta ma spenta** (`ae45645`): Nano Banana via API **non è gratuito** (circa 0,034$ a immagine; gratis è solo l'app Gemini usata a mano). Esplorate e scartate con Manuel: Cloudflare Workers AI, link a Gemini con incolla manuale, modelli cinesi (Zhipu CogView-3-Flash, non verificato). Decisione: struttura pronta con interruttore spento, tetto di 5 immagini ogni 24 ore per creator, "Use as cover" porta l'immagine nel modulo. Verificato dal vivo che Google risponde "limite 0 sul piano gratuito": manca solo la fatturazione.
+6. **"+" per allegati** (`32be1fb`, `be86459`): versione minima scelta da Manuel, solo foto e PDF (gratis in lettura), max 3 per messaggio, menu "Photo / PDF document" invece di aprire subito la cartella. Verificato dal vivo: foto descritta, PDF letto e trasformato in bozza. Word/Excel/video esclusi di proposito finché i creator non li chiedono.
+
+**Scartata**: un'AI cinese per la chat (DeepSeek), proposta da Manuel. Motivi: blocco del Garante Privacy italiano (gennaio 2025), API a pagamento, e il problema reale era il design della chat, non il modello.
+
+**Rimandato** (in `94_Product_Backlog.md`): pulsante "Download as PDF" nella chat; messaggio di errore onesto nel login.
+
 ### Stato del punto
 
-Discussione chiusa, decisioni prese, **nessun codice ancora scritto**. La costruzione tecnica (CRUD reale sui quattro modelli, sezione Community, integrazione Gemini, pulsante Avvisa i follower) parte in una chat nuova dedicata, con il piano completo consegnato a Manuel per non perdere nessun dettaglio deciso qui.
+Costruito e funzionante. Unica parte non attiva: la creazione immagini, da accendere quando Manuel attiverà la fatturazione Google. Resta da confermare con Manuel la chiusura formale del punto prima di aprire il Punto 9 (Business Plan) in una chat nuova.
