@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import ReactMarkdown, { type Components } from "react-markdown";
-import { Loader2, Send, Sparkles } from "lucide-react";
+import { Check, ImagePlus, Loader2, Send, Sparkles } from "lucide-react";
 import { sendCommunityAiMessage } from "@/lib/actions/communityAi";
 import { COMMUNITY_LISTING_LABELS } from "@/lib/constants/communityListing";
 import {
@@ -34,6 +35,11 @@ const MARKDOWN_COMPONENTS: Components = {
     </a>
   ),
 };
+
+// Stesso indirizzo stabile usato dal modulo per l'anteprima copertina (app/api/community-ai/image).
+function aiImageUrl(key: string): string {
+  return `/api/community-ai/image?key=${encodeURIComponent(key)}`;
+}
 
 /** Assistente AI della pagina Community (Punto 8 dell'allineamento): una chat libera come su
  * Gemini, che intanto prepara dietro le quinte una bozza (lib/ai/communityDraft.ts). La bozza non
@@ -77,6 +83,7 @@ export function CommunityAiChat({
 
     const conversation = chat.messages.filter((item) => !item.failed);
     const draftConversation = chat.messages.slice(chat.draftStartIndex).filter((item) => !item.failed);
+    const lastImageKey = [...chat.messages].reverse().find((item) => item.imageKey)?.imageKey ?? null;
 
     setChat((current) => ({ ...current, messages: [...current.messages, { role: "user", text: message }] }));
     setInput("");
@@ -87,6 +94,7 @@ export function CommunityAiChat({
       previousInteractionId: chat.interactionId,
       history: conversation,
       draftConversation,
+      lastImageKey,
     });
 
     if ("error" in result) {
@@ -98,7 +106,10 @@ export function CommunityAiChat({
       setChat((current) => ({
         ...current,
         interactionId: result.interactionId,
-        messages: [...current.messages, { role: "assistant", text: result.reply }],
+        messages: [
+          ...current.messages,
+          { role: "assistant", text: result.reply, ...(result.imageKey ? { imageKey: result.imageKey } : {}) },
+        ],
         // Una risposta senza bozza non cancella quella precedente: il pulsante resta finché ce n'è una.
         readyDraft: result.draft ? { type: result.draft.type, draft: result.draft } : current.readyDraft,
       }));
@@ -106,7 +117,7 @@ export function CommunityAiChat({
     setPending(false);
   }
 
-  const { readyDraft } = chat;
+  const { readyDraft, coverKey } = chat;
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] backdrop-blur-md">
@@ -125,6 +136,26 @@ export function CommunityAiChat({
                 : "bg-surface-2 text-ink"
             }`}
           >
+            {message.imageKey && (
+              <div className="mb-2">
+                <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border bg-surface-2">
+                  <Image src={aiImageUrl(message.imageKey)} alt="" fill sizes="320px" unoptimized className="object-cover" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setChat((current) => ({ ...current, coverKey: message.imageKey }))}
+                  disabled={coverKey === message.imageKey}
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted transition-colors hover:text-ink disabled:text-ember"
+                >
+                  {coverKey === message.imageKey ? (
+                    <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                  ) : (
+                    <ImagePlus className="h-3.5 w-3.5" aria-hidden="true" />
+                  )}
+                  {coverKey === message.imageKey ? "Cover selected" : "Use as cover"}
+                </button>
+              </div>
+            )}
             {message.role === "assistant" ? (
               <ReactMarkdown components={MARKDOWN_COMPONENTS}>{message.text}</ReactMarkdown>
             ) : (
@@ -144,7 +175,7 @@ export function CommunityAiChat({
         <div className="border-t border-border/60 px-4 py-3">
           <button
             type="button"
-            onClick={() => onDraftReady(readyDraft)}
+            onClick={() => onDraftReady({ ...readyDraft, draft: { ...readyDraft.draft, coverKey: coverKey ?? null } })}
             className="w-full rounded-full bg-ember px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-ember/90"
           >
             Fill the {COMMUNITY_LISTING_LABELS[readyDraft.type]} form with this

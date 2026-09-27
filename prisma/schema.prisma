@@ -191,6 +191,7 @@ model User {
   conversationsAsA   Conversation[]    @relation("ConversationsAsA")
   conversationsAsB   Conversation[]    @relation("ConversationsAsB")
   messagesSent       Message[]
+  aiImageGenerations AiImageGeneration[]
 
   @@map("users")
 }
@@ -636,6 +637,20 @@ model WorkshopRsvp {
 
   @@unique([workshopId, userId])
   @@map("workshop_rsvps")
+}
+
+// Immagini create dall'AI nella chat Community (Punto 8): una riga per immagine, serve per il
+// limite giornaliero per creator (costano circa 3 centesimi l'una, vedi lib/ai/communityImage.ts).
+// r2Key punta al file su R2 sotto "ai-images/{userId}/".
+model AiImageGeneration {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  r2Key     String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("ai_image_generations")
 }
 
 model EventRsvp {

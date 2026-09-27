@@ -36,7 +36,15 @@ export type CommunityListingDraft = {
   isFree: boolean;
   price: number | null;
   startsAt: string | null;
+  /** Immagine creata dall'AI nella chat e scelta con "Use as cover" (chiave R2 "ai-images/..."). */
+  coverKey?: string | null;
 };
+
+// Le immagini AI della chat si vedono tramite questo indirizzo stabile (link R2 rigenerato a ogni
+// richiesta, vedi app/api/community-ai/image/route.ts).
+function aiImageUrl(key: string): string {
+  return `/api/community-ai/image?key=${encodeURIComponent(key)}`;
+}
 
 type CommunityListingFormProps = {
   type: CommunityListingType;
@@ -91,8 +99,10 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const [coverKey, setCoverKey] = useState("");
-  const [coverPreview, setCoverPreview] = useState(listing?.coverUrl ?? null);
+  const [coverKey, setCoverKey] = useState(initialDraft?.coverKey ?? "");
+  const [coverPreview, setCoverPreview] = useState(
+    listing?.coverUrl ?? (initialDraft?.coverKey ? aiImageUrl(initialDraft.coverKey) : null)
+  );
   const [coverError, setCoverError] = useState<string | null>(null);
   const [coverProgress, setCoverProgress] = useState<number | null>(null);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
@@ -186,31 +196,42 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
         }}
         className="space-y-4"
       >
-        {listing && (
+        {(listing || coverPreview) && (
           <div>
             <span className="text-sm font-medium text-ink-muted">Cover</span>
             <div className="relative mt-1.5 aspect-video w-full max-w-xs overflow-hidden rounded-xl border border-border bg-surface-2">
               {coverPreview ? (
-                <Image src={coverPreview} alt="" fill sizes="320px" className="object-cover" />
+                <Image
+                  src={coverPreview}
+                  alt=""
+                  fill
+                  sizes="320px"
+                  unoptimized={coverPreview.startsWith("/api/")}
+                  className="object-cover"
+                />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
               )}
-              <button
-                type="button"
-                onClick={() => coverInputRef.current?.click()}
-                aria-label="Change cover photo"
-                className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-black/0 text-[0.65rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
-              >
-                <ImagePlus className="h-4 w-4" aria-hidden="true" />
-                {coverProgress !== null ? `${coverProgress}%` : "Change"}
-              </button>
-              <input
-                ref={coverInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleCoverChosen}
-                className="hidden"
-              />
+              {listing && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => coverInputRef.current?.click()}
+                    aria-label="Change cover photo"
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-black/0 text-[0.65rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
+                  >
+                    <ImagePlus className="h-4 w-4" aria-hidden="true" />
+                    {coverProgress !== null ? `${coverProgress}%` : "Change"}
+                  </button>
+                  <input
+                    ref={coverInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverChosen}
+                    className="hidden"
+                  />
+                </>
+              )}
             </div>
             {coverError && <p className="mt-1.5 text-xs text-danger">{coverError}</p>}
           </div>

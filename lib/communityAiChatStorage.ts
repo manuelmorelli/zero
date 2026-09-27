@@ -1,7 +1,13 @@
 import type { CommunityListingType } from "@/lib/constants/communityListing";
 import type { CommunityListingDraft } from "@/components/creator/CommunityListingForm";
 
-export type CommunityAiChatMessage = { role: "user" | "assistant"; text: string; failed?: boolean };
+export type CommunityAiChatMessage = {
+  role: "user" | "assistant";
+  text: string;
+  failed?: boolean;
+  /** Immagine creata dall'AI con questa risposta (chiave R2 "ai-images/..."). */
+  imageKey?: string;
+};
 
 export type CommunityAiPendingDraft = { type: CommunityListingType; draft: CommunityListingDraft };
 
@@ -11,6 +17,8 @@ export type StoredCommunityAiChat = {
   readyDraft: CommunityAiPendingDraft | null;
   /** Indice del primo messaggio dopo l'ultima creazione confermata: la bozza si estrae solo da lì. */
   draftStartIndex: number;
+  /** Immagine scelta con "Use as cover": va nel modulo insieme alla bozza. */
+  coverKey?: string | null;
 };
 
 // La chat "Crea con l'AI" resta salvata nel browser finché il creator non fa logout (decisione di
@@ -45,7 +53,7 @@ export function saveCommunityAiChat(userId: string, chat: StoredCommunityAiChat)
 export function markCommunityAiDraftUsed(userId: string): void {
   const chat = loadCommunityAiChat(userId);
   if (!chat) return;
-  saveCommunityAiChat(userId, { ...chat, readyDraft: null, draftStartIndex: chat.messages.length });
+  saveCommunityAiChat(userId, { ...chat, readyDraft: null, coverKey: null, draftStartIndex: chat.messages.length });
 }
 
 /** Al logout: cancella le chat di qualunque account salvate in questo browser. */

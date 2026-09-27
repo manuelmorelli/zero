@@ -19,7 +19,8 @@ import {
 import { notifyFollowersOfCommunityListing } from "@/lib/notifications";
 import { ALLOWED_DIGITAL_PRODUCT_TYPES } from "@/lib/constants/file";
 import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
-import { deleteFile, deleteImage, getFileUploadUrl, getImagePlaybackUrl, getImageUploadUrl, newFileKey, newImageKey } from "@/lib/r2";
+import { copyImage, deleteFile, deleteImage, getFileUploadUrl, getImagePlaybackUrl, getImageUploadUrl, newFileKey, newImageKey } from "@/lib/r2";
+import { isOwnAiImageKey } from "@/lib/ai/communityImage";
 import { moderateImageUrl, moderateText, MODERATION_REJECTION_MESSAGE } from "@/lib/moderation";
 
 // I quattro modelli (Workshop/Event/DigitalProduct/PersonalService) sono quasi identici ma restano
@@ -114,7 +115,7 @@ export async function createCommunityListing(
   _prevState: { error: string | null },
   formData: FormData
 ): Promise<{ error: string | null }> {
-  const { creator } = await requireCreator();
+  const { user, creator } = await requireCreator();
 
   const typeRaw = formData.get("type");
   if (!isListingType(typeRaw)) return { error: "Choose what you want to create." };
@@ -141,6 +142,16 @@ export async function createCommunityListing(
   };
   if (listingSupportsFree(type)) data.isFree = isFree;
   if (listingHasDate(type)) data.startsAt = parseStartsAt(formData.get("startsAt"));
+
+  // Alla creazione l'unica copertina possibile è un'immagine creata dall'AI nella chat ("Use as
+  // cover"): le altre si caricano dopo, quando la bozza esiste già. Viene copiata sotto
+  // community-covers, così cancellare la chat o la copertina non rompe l'altra.
+  const coverKey = formData.get("coverKey");
+  if (typeof coverKey === "string" && coverKey && isOwnAiImageKey(user.id, coverKey)) {
+    const coverModeration = await moderateImageUrl(await getImagePlaybackUrl(coverKey));
+    if (coverModeration.flagged) return { error: MODERATION_REJECTION_MESSAGE };
+    data.coverUrl = await copyImage(coverKey, "community-covers");
+  }
 
   const created = await getDelegate(type).create({ data });
 

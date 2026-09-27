@@ -67,6 +67,70 @@ export async function callGemini(params: GeminiCallParams): Promise<GeminiCallRe
   return { text, interactionId: data.id };
 }
 
+// Modello per creare/modificare immagini ("Nano Banana"): NON incluso nel piano gratuito di Google,
+// circa 0,034 dollari a immagine 1K (listino verificato il 2026-09-27). Usato solo se
+// GEMINI_IMAGE_GENERATION_ENABLED è attivo, vedi lib/ai/communityImage.ts.
+const GEMINI_IMAGE_MODEL = "gemini-3.1-flash-lite-image";
+
+type GeminiImageResult = { data: string; mimeType: string } | { error: string };
+
+type ImagePart = { type?: string; data?: string; mime_type?: string };
+
+// Forma della risposta ricavata dalla documentazione, non ancora verificata dal vivo (serve la
+// fatturazione attiva): cerchiamo l'immagine sia nei "steps" (come per il testo) sia in
+// "output_image", così la prima prova reale non si rompe per una differenza di forma.
+function findImagePart(data: {
+  steps?: { type: string; content?: ImagePart[] }[];
+  output_image?: ImagePart;
+  interaction?: { output_image?: ImagePart };
+}): ImagePart | undefined {
+  const fromSteps = (data.steps ?? [])
+    .flatMap((step) => step.content ?? [])
+    .find((part) => part.type === "image" && part.data);
+  return fromSteps ?? data.output_image ?? data.interaction?.output_image;
+}
+
+/** Crea un'immagine da una descrizione, oppure modifica `sourceImage` se passata. Come callGemini
+ * non lancia mai eccezioni: ogni problema torna come `{ error }`. */
+export async function generateGeminiImage(params: {
+  prompt: string;
+  sourceImage?: { data: string; mimeType: string };
+}): Promise<GeminiImageResult> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return { error: "AI assistant is not configured." };
+
+  const input: GeminiInputPart[] = [{ type: "text", text: params.prompt }];
+  if (params.sourceImage) {
+    input.push({ type: "image", data: params.sourceImage.data, mime_type: params.sourceImage.mimeType });
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(GEMINI_ENDPOINT, {
+      method: "POST",
+      headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: GEMINI_IMAGE_MODEL,
+        input,
+        // 16:9 come le copertine Community (ritaglio in CommunityListingForm).
+        response_format: { type: "image", mime_type: "image/jpeg", aspect_ratio: "16:9" },
+      }),
+    });
+  } catch (error) {
+    console.error("[gemini-image] request failed", error);
+    return { error: "Image creation is unavailable right now." };
+  }
+
+  if (!response.ok) {
+    console.error(`[gemini-image] request failed: ${response.status} ${await response.text().catch(() => "")}`);
+    return { error: "Image creation is unavailable right now." };
+  }
+
+  const image = findImagePart(await response.json());
+  if (!image?.data) return { error: "The AI didn't return an image." };
+  return { data: image.data, mimeType: image.mime_type ?? "image/jpeg" };
+}
+
 /** Interpreta il testo di risposta come JSON, atteso quando la chiamata usa `responseSchema`. */
 export function parseGeminiJson<T>(text: string): T | null {
   try {

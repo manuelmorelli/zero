@@ -70,6 +70,24 @@ export async function getImagePlaybackUrl(key: string): Promise<string> {
   return getSignedUrl(s3, command, { expiresIn: 3600 });
 }
 
+/** Carica su R2 un'immagine prodotta dal server (non dal browser): usata per le immagini create
+ * dall'AI nella chat Community (lib/ai/communityImage.ts). */
+export async function putImage(key: string, body: Buffer, contentType: string): Promise<void> {
+  await s3.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body, ContentType: contentType }));
+}
+
+/** Contenuto di un'immagine già su R2, per mandarla all'AI da modificare. */
+export async function getImageBytes(key: string): Promise<{ data: Buffer; contentType: string } | null> {
+  try {
+    const result = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    if (!result.Body) return null;
+    const bytes = await result.Body.transformToByteArray();
+    return { data: Buffer.from(bytes), contentType: result.ContentType ?? "image/jpeg" };
+  } catch {
+    return null;
+  }
+}
+
 export async function deleteImage(key: string): Promise<void> {
   await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key })).catch(() => {});
 }

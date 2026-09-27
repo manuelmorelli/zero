@@ -2,6 +2,7 @@
 
 import { requireCreator } from "@/lib/creator";
 import { firstNameOf } from "@/lib/format/firstName";
+import { isOwnAiImageKey } from "@/lib/ai/communityImage";
 import {
   continueCommunityDraftChat,
   type CommunityChatMessage,
@@ -26,21 +27,30 @@ function sanitizeHistory(raw: unknown): CommunityChatMessage[] {
 }
 
 /** Un turno della chat "Crea con l'AI" nella pagina Community — solo il creator proprietario può
- * usarla (requireCreator), nessuna scrittura sul database: restituisce solo testo/bozza al client,
- * che li mostra dentro CommunityListingForm per la conferma manuale. */
+ * usarla (requireCreator). Non salva mai la bozza: restituisce solo testo/bozza al client, che li
+ * mostra dentro CommunityListingForm per la conferma manuale. L'unica scrittura è il conteggio
+ * delle immagini AI create (limite giornaliero, lib/ai/communityImage.ts). */
 export async function sendCommunityAiMessage(params: {
   message: string;
   previousInteractionId: string | null;
   history: CommunityChatMessage[];
   draftConversation: CommunityChatMessage[];
+  lastImageKey: string | null;
 }): Promise<CommunityDraftTurnResult> {
   const { user } = await requireCreator();
 
   const trimmed = params.message.trim().slice(0, MAX_MESSAGE_LENGTH);
   if (!trimmed) return { error: "Write a message first." };
 
+  const lastImageKey =
+    typeof params.lastImageKey === "string" && isOwnAiImageKey(user.id, params.lastImageKey)
+      ? params.lastImageKey
+      : null;
+
   return continueCommunityDraftChat({
+    userId: user.id,
     message: trimmed,
+    lastImageKey,
     previousInteractionId: params.previousInteractionId,
     history: sanitizeHistory(params.history),
     draftConversation: sanitizeHistory(params.draftConversation),
