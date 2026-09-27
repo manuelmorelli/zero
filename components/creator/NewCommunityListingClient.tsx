@@ -5,10 +5,17 @@ import { ArrowLeft, Pencil, Sparkles } from "lucide-react";
 import { CommunityAiChat } from "@/components/creator/CommunityAiChat";
 import { CommunityListingForm, type CommunityListingDraft } from "@/components/creator/CommunityListingForm";
 import { COMMUNITY_LISTING_LABELS, COMMUNITY_LISTING_TYPES, type CommunityListingType } from "@/lib/constants/communityListing";
+import { markCommunityAiDraftUsed } from "@/lib/communityAiChatStorage";
 
 type Mode = "choose" | "manual-pick-type" | "manual-form" | "ai-chat" | "ai-form";
 
-export function NewCommunityListingClient({ creatorFirstName }: { creatorFirstName: string | null }) {
+export function NewCommunityListingClient({
+  userId,
+  creatorFirstName,
+}: {
+  userId: string;
+  creatorFirstName: string | null;
+}) {
   const [mode, setMode] = useState<Mode>("choose");
   const [type, setType] = useState<CommunityListingType | null>(null);
   const [draft, setDraft] = useState<CommunityListingDraft | null>(null);
@@ -77,6 +84,7 @@ export function NewCommunityListingClient({ creatorFirstName }: { creatorFirstNa
       <div>
         <BackButton onClick={() => setMode("choose")} />
         <CommunityAiChat
+          userId={userId}
           creatorFirstName={creatorFirstName}
           onDraftReady={(pending) => {
             setType(pending.type);
@@ -96,7 +104,11 @@ export function NewCommunityListingClient({ creatorFirstName }: { creatorFirstNa
           Review what the AI drafted below, change anything you like, then create it. Nothing is saved yet.
         </p>
         <h2 className="mb-4 text-base font-semibold text-ink">New {COMMUNITY_LISTING_LABELS[type]}</h2>
-        <CommunityListingForm type={type} initialDraft={draft} />
+        <CommunityListingForm
+          type={type}
+          initialDraft={draft}
+          onSubmitted={() => markCommunityAiDraftUsed(userId)}
+        />
       </div>
     );
   }

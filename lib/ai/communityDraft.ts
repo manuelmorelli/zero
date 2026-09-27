@@ -15,27 +15,65 @@ export type CommunityDraft = {
   startsAt: string | null;
 };
 
+export type CommunityChatMessage = { role: "user" | "assistant"; text: string };
+
 type RawDraft = Partial<Record<"type" | "title" | "description" | "startsAt", string>> & {
   isFree?: boolean;
   price?: number;
-};
-
-type DraftReplyPayload = {
-  reply: string;
-  draft?: RawDraft;
-  replyMentionsDraft?: boolean;
 };
 
 export type CommunityDraftTurnResult =
   | { reply: string; draft: CommunityDraft | null; interactionId: string }
   | { error: string };
 
-// "draft" viene prima di "reply" e, se presente, ha tipo/titolo/descrizione obbligatori: con i campi
-// tutti facoltativi Gemini mandava spesso una bozza monca (senza titolo) che veniva scartata, mentre
-// la risposta diceva "ho preparato la bozza" (verificato dal vivo il 2026-09-26).
-const DRAFT_RESPONSE_SCHEMA = {
+// La chat è una conversazione libera, come su Gemini (richiesta esplicita di Manuel il 2026-09-26:
+// "impostala come una AI normale"). La bozza non esce più dalla risposta stessa ma da un secondo
+// passaggio che legge la conversazione: così la risposta resta naturale e non vincolata a un
+// formato rigido, che era la causa principale dell'effetto "robot".
+function buildChatInstruction(today: Date, creatorFirstName: string | null): string {
+  const todayLabel = today.toISOString().slice(0, 10);
+  const nameLine = creatorFirstName
+    ? `The creator you're talking to is called ${creatorFirstName}. Use their name occasionally and naturally, not in every reply.\n\n`
+    : "";
+  return `You are the AI assistant on Zero, a platform where creators share their real journeys and build a community around them. You chat freely and naturally, like Gemini or ChatGPT would: answer any question, give ideas and honest advice (pricing, titles, audience, how to structure a session), and write good copy. Use Markdown (bold, bullet lists) when it helps readability.
+
+${nameLine}Today's date is ${todayLabel}.
+
+Your special skill here is helping the creator prepare something for their Community. Zero supports exactly four kinds:
+- Workshop: a live or online session, free or paid, with a date and time.
+- Event: an in-person or online event or meetup, free or paid, with a date and time.
+- Digital product: a downloadable file (guide, template, ebook), always paid, no date.
+- 1:1 service: consulting or coaching, always paid, no date.
+
+When the creator wants to create one of these:
+- Once you understand the kind and the topic, help complete it like a thoughtful collaborator: ask about the missing details one or two at a time (date and time, online or where, free or price, who it's for, what people will get or learn, duration).
+- Write a complete, engaging description for them (not a single line) and improve it as you learn more.
+- Suggest a price only if they ask for advice; never assume one.
+
+How the app works (describe nothing else): while you talk, Zero automatically prepares a draft from the conversation. A "Fill the form with this" button appears under the chat once the kind and topic are clear; it opens the real form pre-filled, where the creator reviews, changes and saves it themselves. You never save, publish or send anything yourself, and you have no other buttons, panels or previews. Right now you can't create images or read files: if asked, say so honestly.
+
+Reply in the same language the creator writes in.`;
+}
+
+const EXTRACTION_INSTRUCTION = `You read a conversation between a creator and an AI assistant on Zero and extract the Community listing being prepared, as JSON. Kinds: "workshop", "event", "digital_product", "personal_service".
+
+Rules:
+- First decide "hasDraft": true as soon as the kind AND a topic are known, even if date, price, place and other details are still missing (a draft is meant to be incomplete, the creator finishes it in the form). Example: "an event" + "a trail run on Mont Blanc" is enough. false only if the kind or the topic is still unknown.
+- When hasDraft is true, always include "draft".
+- If several listings were discussed, extract the most recent one.
+- title: short and specific, based on what the creator said or accepted. Never a placeholder like "New Event".
+- description: the most complete description available (use the assistant's proposed description if the creator didn't reject it), otherwise write a short one from the facts given. Plain text, no Markdown.
+- isFree: true only if the creator said it's free. price: only if the creator stated a price, never invent one.
+- startsAt: only for workshop/event, ISO 8601 (YYYY-MM-DDTHH:mm if a time was given, else YYYY-MM-DD), in the future.`;
+
+// Se presente, la bozza deve avere tipo/titolo/descrizione: con i campi tutti facoltativi Gemini
+// mandava bozze monche (senza titolo) che venivano scartate (verificato dal vivo il 2026-09-26).
+// "hasDraft" obbligatorio e prima della bozza: senza una decisione esplicita il modello tendeva a
+// non restituire nulla finché mancavano data o prezzo, e il pulsante compariva troppo tardi.
+const EXTRACTION_SCHEMA = {
   type: "object",
   properties: {
+    hasDraft: { type: "boolean" },
     draft: {
       type: "object",
       properties: {
@@ -48,52 +86,13 @@ const DRAFT_RESPONSE_SCHEMA = {
       },
       required: ["type", "title", "description"],
     },
-    reply: { type: "string" },
-    // Autodichiarazione scritta DOPO il testo: permette di accorgersi, in qualunque lingua, di una
-    // risposta che parla di bozza/pulsante senza allegare la bozza (vedi continueCommunityDraftChat).
-    replyMentionsDraft: { type: "boolean" },
   },
-  required: ["reply", "replyMentionsDraft"],
-  propertyOrdering: ["draft", "reply", "replyMentionsDraft"],
+  required: ["hasDraft"],
+  propertyOrdering: ["hasDraft", "draft"],
 };
 
-function buildSystemInstruction(today: Date, creatorFirstName: string | null): string {
-  const todayLabel = today.toISOString().slice(0, 10);
-  const nameLine = creatorFirstName
-    ? `The creator you're talking to is called ${creatorFirstName}. You may use their name occasionally and naturally, never in every reply.
-
-`
-    : "";
-  return `You are the Community assistant on Zero, a platform for creators. You help a creator turn a short natural-language request into a draft listing, which they will review and confirm themselves before anything is saved — you never save or publish anything yourself.
-
-${nameLine}Today's date is ${todayLabel}. Resolve relative dates ("next Tuesday", "23 February") into a real ISO date (YYYY-MM-DD) in the future using this.
-
-There are exactly four kinds of listing the creator can create — never invent a new kind:
-- "workshop": a live or online workshop session, can be free or paid, has a date (startsAt).
-- "event": an in-person or online event/meetup, can be free or paid, has a date (startsAt).
-- "digital_product": a downloadable file (guide, template, ebook) the creator uploads separately, always paid, no date.
-- "personal_service": a 1:1 consulting/coaching offer, always paid, no date.
-
-What the creator actually sees (describe nothing else):
-- A simple chat with your replies.
-- Whenever your response includes a "draft" object, a single button appears under the chat: "Fill the form with this". Clicking it opens the real form pre-filled with your draft, where the creator reviews, edits and saves it themselves.
-- There is no side panel, no preview, no attachment, no link and no other UI. Never mention anything that is not in this list.
-
-Rules:
-- Reply in the same language the creator writes in.
-- Keep replies short and conversational (1-3 sentences), like a helpful assistant, never robotic or formal.
-- Ask a clarifying question only when something essential is truly missing (which of the 4 kinds, and a title/topic). Don't over-ask: once the kind and topic are clear, produce the draft even if minor details are still missing.
-- NEVER invent a price. If the creator didn't mention one, omit price entirely (they'll set it themselves in the form). Only set isFree to true if the creator explicitly said it's free.
-- As soon as you know the kind and a title, include the COMPLETE "draft" object in your response, and keep including the complete, up-to-date draft in EVERY following response of the conversation (including every change the creator asked for), even when the creator is only chatting or saying thanks.
-- Your reply text must match your response exactly: only say a draft is ready (and point to the "Fill the form with this" button) when this same response includes the "draft" object. Never claim to have prepared, attached or updated something you are not including.
-- The title must come from the topic the creator actually gave you, even a generic one (e.g. "a guide" → "Guide", "a guide about nutrition" → "Nutrition Guide"). Never use placeholder titles or descriptions like "New Event" or "Event description goes here": if there is no topic at all yet, omit the draft and ask for it.
-- Set replyMentionsDraft to true if your reply text talks about a draft, a form or the button in any language, false otherwise.
-- Never put JSON or code in the reply text: the draft goes only in the "draft" field.
-- If the request is still too vague to pick one of the 4 kinds or a topic, omit draft and ask ONE short question about what's missing. In a response without a draft, never mention a draft, a form or a button.`;
-}
-
 function normalizeDraft(raw: RawDraft | undefined): CommunityDraft | null {
-  if (!raw?.type || !raw.title) return null;
+  if (!raw?.type || !raw.title?.trim()) return null;
   if (!COMMUNITY_LISTING_TYPES.includes(raw.type as CommunityListingType)) return null;
 
   return {
@@ -106,61 +105,57 @@ function normalizeDraft(raw: RawDraft | undefined): CommunityDraft | null {
   };
 }
 
-// Il modello "lite" a volte scrive la bozza come blocco JSON dentro il testo invece che nel campo
-// "draft": la recuperiamo da lì e la togliamo dal messaggio mostrato al creator.
-const JSON_BLOCK_PATTERN = /```(?:json)?s*([sS]*?)```/;
-
-function extractDraftFromReply(reply: string): { reply: string; draft: RawDraft | undefined } {
-  const match = reply.match(JSON_BLOCK_PATTERN);
-  if (!match) return { reply, draft: undefined };
-
-  let embedded: { draft?: RawDraft } & RawDraft;
-  try {
-    embedded = JSON.parse(match[1]);
-  } catch {
-    embedded = {};
-  }
-  return { reply: reply.replace(match[0], "").trim(), draft: embedded.draft ?? embedded };
+function formatTranscript(messages: CommunityChatMessage[]): string {
+  return messages
+    .map((message) => `${message.role === "user" ? "Creator" : "Assistant"}: ${message.text}`)
+    .join("\n\n");
 }
 
-// Un secondo tentativo basta quasi sempre a correggere una risposta incoerente (verificato dal vivo
-// il 2026-09-26); oltre, meglio una risposta onesta di ripiego che far aspettare il creator.
-const MAX_ATTEMPTS = 2;
-const FALLBACK_REPLY = "Could you tell me a bit more, like what kind of listing it is and its topic? Then I'll prepare the draft.";
+async function extractDraft(conversation: CommunityChatMessage[]): Promise<CommunityDraft | null> {
+  const result = await callGemini({
+    input: formatTranscript(conversation),
+    systemInstruction: EXTRACTION_INSTRUCTION,
+    responseSchema: EXTRACTION_SCHEMA,
+  });
+  if ("error" in result) return null;
+  return normalizeDraft(parseGeminiJson<{ draft?: RawDraft }>(result.text)?.draft);
+}
 
-/** Un turno della chat: il chiamante mantiene solo `interactionId` tra un turno e l'altro (nessuno
- * storico da salvare lato Zero, lo gestisce Gemini). Vedi lib/actions/communityAi.ts per l'azione
- * server che espone questa funzione al componente client. */
+/**
+ * Un turno della chat. Gemini ricorda la conversazione tramite `previousInteractionId`; se quella
+ * memoria non è più disponibile (scaduta: la chat ora resta salvata fino al logout) si riparte
+ * rimandando la conversazione come testo, così l'AI non "dimentica" mai quello che il creator vede.
+ * `draftConversation` è la parte di conversazione dopo l'ultima creazione confermata: la bozza viene
+ * estratta solo da lì, per non riproporre qualcosa che il creator ha già creato.
+ */
 export async function continueCommunityDraftChat(params: {
   message: string;
   previousInteractionId: string | null;
+  history: CommunityChatMessage[];
+  draftConversation: CommunityChatMessage[];
   today: Date;
   creatorFirstName: string | null;
 }): Promise<CommunityDraftTurnResult> {
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const result = await callGemini({
-      input: params.message,
-      systemInstruction: buildSystemInstruction(params.today, params.creatorFirstName),
-      previousInteractionId: params.previousInteractionId ?? undefined,
-      responseSchema: DRAFT_RESPONSE_SCHEMA,
+  const systemInstruction = buildChatInstruction(params.today, params.creatorFirstName);
+
+  let chat = await callGemini({
+    input: params.message,
+    systemInstruction,
+    previousInteractionId: params.previousInteractionId ?? undefined,
+  });
+  if ("error" in chat && params.previousInteractionId && params.history.length > 0) {
+    chat = await callGemini({
+      input: `Conversation so far:\n\n${formatTranscript(params.history)}\n\nCreator's new message: ${params.message}`,
+      systemInstruction,
     });
-    if ("error" in result) return result;
-
-    const parsed = parseGeminiJson<DraftReplyPayload>(result.text);
-    if (!parsed) return { error: "The AI assistant didn't return a usable answer." };
-
-    const embedded = extractDraftFromReply(parsed.reply);
-    // Il pulsante dipende solo dalla presenza di una bozza valida, mai da un segnale separato del
-    // modello: in passato l'AI mandava la bozza ma dimenticava il flag, e il pulsante non compariva.
-    const draft = normalizeDraft(parsed.draft) ?? normalizeDraft(embedded.draft);
-    const claimsMissingDraft = !draft && Boolean(parsed.replyMentionsDraft);
-
-    if (!claimsMissingDraft) {
-      return { reply: embedded.reply, draft, interactionId: result.interactionId };
-    }
-    if (attempt === MAX_ATTEMPTS) {
-      return { reply: FALLBACK_REPLY, draft: null, interactionId: result.interactionId };
-    }
   }
-  return { error: "The AI assistant didn't return a usable answer." };
+  if ("error" in chat) return chat;
+
+  const draft = await extractDraft([
+    ...params.draftConversation,
+    { role: "user", text: params.message },
+    { role: "assistant", text: chat.text },
+  ]);
+
+  return { reply: chat.text, draft, interactionId: chat.interactionId };
 }

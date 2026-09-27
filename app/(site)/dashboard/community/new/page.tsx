@@ -14,7 +14,7 @@ export default async function NewCommunityListingPage() {
         </p>
 
         <div className="mt-8">
-          <NewCommunityListingClient creatorFirstName={firstNameOf(user.name)} />
+          <NewCommunityListingClient userId={user.id} creatorFirstName={firstNameOf(user.name)} />
         </div>
       </div>
     </main>

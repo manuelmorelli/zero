@@ -51,20 +51,24 @@ type CommunityListingFormProps = {
     coverUrl: string | null;
   };
   initialDraft?: CommunityListingDraft;
+  /** Chiamata all'invio del modulo: la chat AI la usa per non riproporre una bozza già usata. */
+  onSubmitted?: () => void;
 };
 
 function toDatetimeLocal(iso: string | null): string {
   if (!iso) return "";
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toISOString().slice(0, 16);
+  // Ora locale, non UTC: con toISOString() le 18:00 in Italia comparivano come 17:00 nel campo.
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 function formatMB(bytes: number): string {
   return `${Math.round(bytes / (1024 * 1024))}MB`;
 }
 
-export function CommunityListingForm({ type, listing, initialDraft }: CommunityListingFormProps) {
+export function CommunityListingForm({ type, listing, initialDraft, onSubmitted }: CommunityListingFormProps) {
   const [state, formAction, pending] = useActionState(
     listing ? updateCommunityListing : createCommunityListing,
     { error: null }
@@ -177,6 +181,7 @@ export function CommunityListingForm({ type, listing, initialDraft }: CommunityL
         action={(formData) => {
           if (hasFile) formData.set("fileKey", fileKey);
           formData.set("coverKey", coverKey);
+          onSubmitted?.();
           formAction(formData);
         }}
         className="space-y-4"
@@ -288,12 +293,13 @@ export function CommunityListingForm({ type, listing, initialDraft }: CommunityL
             <input
               id="price"
               name="price"
-              type="number"
-              min="0.01"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]+([.][0-9]{1,2})?"
+              title="A price like 25 or 19.99"
               required={!isFree}
               value={price}
-              onChange={(event) => setPrice(event.target.value)}
+              onChange={(event) => setPrice(event.target.value.replace(",", "."))}
               className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
             />
           </div>

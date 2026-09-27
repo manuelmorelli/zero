@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown, { type Components } from "react-markdown";
 import { Loader2, Send, Sparkles } from "lucide-react";
 import { sendCommunityAiMessage } from "@/lib/actions/communityAi";
-import { COMMUNITY_LISTING_LABELS, type CommunityListingType } from "@/lib/constants/communityListing";
-import type { CommunityListingDraft } from "@/components/creator/CommunityListingForm";
+import { COMMUNITY_LISTING_LABELS } from "@/lib/constants/communityListing";
+import {
+  loadCommunityAiChat,
+  saveCommunityAiChat,
+  type CommunityAiChatMessage,
+  type CommunityAiPendingDraft,
+  type StoredCommunityAiChat,
+} from "@/lib/communityAiChatStorage";
 
-type ChatMessage = { role: "user" | "assistant"; text: string };
-
-type PendingDraft = { type: CommunityListingType; draft: CommunityListingDraft };
-
-function welcomeMessage(creatorFirstName: string | null): ChatMessage {
+function welcomeMessage(creatorFirstName: string | null): CommunityAiChatMessage {
   const greeting = creatorFirstName ? `Hi ${creatorFirstName}!` : "Hi!";
   return {
     role: "assistant",
@@ -18,55 +21,92 @@ function welcomeMessage(creatorFirstName: string | null): ChatMessage {
   };
 }
 
-/** Assistente "personale" della pagina Community (Punto 8 dell'allineamento, 2026-09-25): una vera
- * chat, non un singolo box — Manuel l'ha chiesta così esplicitamente ("facile, intuitivo,
- * futuristico"). Dietro le quinte resta comunque semplice: ogni turno è una singola chiamata a
- * Gemini (lib/ai/communityDraft.ts), nessuno storico salvato da Zero (lo tiene Gemini via
- * interactionId). Quando la bozza è pronta, il creator la apre nel modulo vero e la conferma lui. */
+// Le risposte dell'AI arrivano in Markdown (grassetti, elenchi) come su Gemini: qui solo la
+// spaziatura, i colori restano quelli della bolla del messaggio.
+const MARKDOWN_COMPONENTS: Components = {
+  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+  ul: ({ children }) => <ul className="mb-2 list-disc space-y-1 pl-5 last:mb-0">{children}</ul>,
+  ol: ({ children }) => <ol className="mb-2 list-decimal space-y-1 pl-5 last:mb-0">{children}</ol>,
+  strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+  a: ({ children, href }) => (
+    <a href={href} target="_blank" rel="noopener noreferrer" className="underline">
+      {children}
+    </a>
+  ),
+};
+
+/** Assistente AI della pagina Community (Punto 8 dell'allineamento): una chat libera come su
+ * Gemini, che intanto prepara dietro le quinte una bozza (lib/ai/communityDraft.ts). La bozza non
+ * viene mai salvata da sola: il creator la apre nel modulo vero e la conferma lui. La conversazione
+ * resta salvata nel browser fino al logout (lib/communityAiChatStorage.ts). */
 export function CommunityAiChat({
+  userId,
   creatorFirstName,
   onDraftReady,
 }: {
+  userId: string;
   creatorFirstName: string | null;
-  onDraftReady: (pending: PendingDraft) => void;
+  onDraftReady: (pending: CommunityAiPendingDraft) => void;
 }) {
-  const [messages, setMessages] = useState<ChatMessage[]>(() => [welcomeMessage(creatorFirstName)]);
+  const [chat, setChat] = useState<StoredCommunityAiChat>(
+    () =>
+      loadCommunityAiChat(userId) ?? {
+        messages: [welcomeMessage(creatorFirstName)],
+        interactionId: null,
+        readyDraft: null,
+        draftStartIndex: 0,
+      }
+  );
   const [input, setInput] = useState("");
-  const [interactionId, setInteractionId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [readyDraft, setReadyDraft] = useState<PendingDraft | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    saveCommunityAiChat(userId, chat);
+  }, [userId, chat]);
 
   // Scende da solo all'ultimo messaggio (e all'indicatore "Thinking…"), come in ogni app di chat.
   useEffect(() => {
     const container = scrollRef.current;
     if (container) container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
-  }, [messages, pending, readyDraft]);
+  }, [chat.messages, chat.readyDraft, pending]);
 
   async function handleSend() {
     const message = input.trim();
     if (!message || pending) return;
 
-    setMessages((current) => [...current, { role: "user", text: message }]);
+    const conversation = chat.messages.filter((item) => !item.failed);
+    const draftConversation = chat.messages.slice(chat.draftStartIndex).filter((item) => !item.failed);
+
+    setChat((current) => ({ ...current, messages: [...current.messages, { role: "user", text: message }] }));
     setInput("");
     setPending(true);
 
-    const result = await sendCommunityAiMessage(message, interactionId);
+    const result = await sendCommunityAiMessage({
+      message,
+      previousInteractionId: chat.interactionId,
+      history: conversation,
+      draftConversation,
+    });
 
     if ("error" in result) {
-      setMessages((current) => [...current, { role: "assistant", text: result.error }]);
-      setPending(false);
-      return;
-    }
-
-    setInteractionId(result.interactionId);
-    setMessages((current) => [...current, { role: "assistant", text: result.reply }]);
-    // Una risposta senza bozza non cancella quella precedente: il pulsante resta finché ce n'è una.
-    if (result.draft) {
-      setReadyDraft({ type: result.draft.type, draft: result.draft });
+      setChat((current) => ({
+        ...current,
+        messages: [...current.messages, { role: "assistant", text: result.error, failed: true }],
+      }));
+    } else {
+      setChat((current) => ({
+        ...current,
+        interactionId: result.interactionId,
+        messages: [...current.messages, { role: "assistant", text: result.reply }],
+        // Una risposta senza bozza non cancella quella precedente: il pulsante resta finché ce n'è una.
+        readyDraft: result.draft ? { type: result.draft.type, draft: result.draft } : current.readyDraft,
+      }));
     }
     setPending(false);
   }
+
+  const { readyDraft } = chat;
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] backdrop-blur-md">
@@ -76,16 +116,20 @@ export function CommunityAiChat({
       </div>
 
       <div ref={scrollRef} className="flex max-h-80 flex-col gap-3 overflow-y-auto px-4 py-4">
-        {messages.map((message, index) => (
+        {chat.messages.map((message, index) => (
           <div
             key={index}
             className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
               message.role === "user"
-                ? "ml-auto bg-ink text-bg"
+                ? "ml-auto whitespace-pre-wrap bg-ink text-bg"
                 : "bg-surface-2 text-ink"
             }`}
           >
-            {message.text}
+            {message.role === "assistant" ? (
+              <ReactMarkdown components={MARKDOWN_COMPONENTS}>{message.text}</ReactMarkdown>
+            ) : (
+              message.text
+            )}
           </div>
         ))}
         {pending && (
@@ -120,7 +164,7 @@ export function CommunityAiChat({
             }
           }}
           placeholder="e.g. a free workshop about running on Feb 23rd"
-          maxLength={500}
+          maxLength={2000}
           className="flex-1 rounded-full border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
         />
         <button

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "@/lib/auth-client";
+import { clearCommunityAiChats } from "@/lib/communityAiChatStorage";
 
 /** L'azione requestAccountDeletionAction() ha già segnato l'account per la cancellazione;
  * questa pagina chiude la sessione lato client (stesso pattern di SignOutButton) e mostra
@@ -12,6 +13,7 @@ export default function DeletionScheduledPage() {
   const [signedOut, setSignedOut] = useState(false);
 
   useEffect(() => {
+    clearCommunityAiChats();
     signOut().finally(() => setSignedOut(true));
   }, []);
 
