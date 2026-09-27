@@ -75,6 +75,8 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ☐ [Da definire dove] Dare risalto pubblico al principio "nessun pagamento influenza il ranking dei Journey" (vedi `10_Monetization.md`) — dove mostrarlo è ancora da decidere (pagina Journey? footer? sezione "Come funziona"?).
 
+☐ [Idea, 2026-09-27] Pulsante "Download as PDF" sotto le risposte lunghe della chat AI Community: trasformare testo in PDF non richiede l'AI, quindi è gratis. Utile soprattutto per i Digital product (l'AI scrive la guida, il creator la scarica e la carica come file da vendere). Messa da parte da Manuel per non complicare troppo il giro, da riprendere con calma.
+
 ## Monetizzazione
 
 Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator`, `/pricing`, `/settings/subscription`) esistono ma mostrano solo "Coming soon". Percentuali e ordine di attivazione decisi al Punto 3 dell'allineamento (`93_Project_Alignment_Recap.md`), dettagli in `10_Monetization.md` v4.0.
