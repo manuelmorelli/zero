@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import ReactMarkdown, { type Components } from "react-markdown";
-import { Check, ImagePlus, Loader2, Send, Sparkles } from "lucide-react";
+import { FileText, Loader2, Plus, Send, Sparkles } from "lucide-react";
 import { sendCommunityAiMessage } from "@/lib/actions/communityAi";
 import { COMMUNITY_LISTING_LABELS } from "@/lib/constants/communityListing";
 import {
@@ -13,6 +12,10 @@ import {
   type CommunityAiPendingDraft,
   type StoredCommunityAiChat,
 } from "@/lib/communityAiChatStorage";
+import { AI_ATTACHMENT_ACCEPT } from "@/lib/constants/communityAiAttachment";
+import { useCommunityAiAttachments } from "@/hooks/useCommunityAiAttachments";
+import { CommunityAiChatImage } from "@/components/creator/CommunityAiChatImage";
+import { CommunityAiAttachmentPreview } from "@/components/creator/CommunityAiAttachmentPreview";
 
 function welcomeMessage(creatorFirstName: string | null): CommunityAiChatMessage {
   const greeting = creatorFirstName ? `Hi ${creatorFirstName}!` : "Hi!";
@@ -35,11 +38,6 @@ const MARKDOWN_COMPONENTS: Components = {
     </a>
   ),
 };
-
-// Stesso indirizzo stabile usato dal modulo per l'anteprima copertina (app/api/community-ai/image).
-function aiImageUrl(key: string): string {
-  return `/api/community-ai/image?key=${encodeURIComponent(key)}`;
-}
 
 /** Assistente AI della pagina Community (Punto 8 dell'allineamento): una chat libera come su
  * Gemini, che intanto prepara dietro le quinte una bozza (lib/ai/communityDraft.ts). La bozza non
@@ -66,6 +64,8 @@ export function CommunityAiChat({
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const files = useCommunityAiAttachments();
 
   useEffect(() => {
     saveCommunityAiChat(userId, chat);
@@ -79,13 +79,17 @@ export function CommunityAiChat({
 
   async function handleSend() {
     const message = input.trim();
-    if (!message || pending) return;
+    if ((!message && files.attachments.length === 0) || pending || files.uploading) return;
+    const attachments = files.takeReady();
 
     const conversation = chat.messages.filter((item) => !item.failed);
     const draftConversation = chat.messages.slice(chat.draftStartIndex).filter((item) => !item.failed);
     const lastImageKey = [...chat.messages].reverse().find((item) => item.imageKey)?.imageKey ?? null;
 
-    setChat((current) => ({ ...current, messages: [...current.messages, { role: "user", text: message }] }));
+    setChat((current) => ({
+      ...current,
+      messages: [...current.messages, { role: "user", text: message, ...(attachments.length > 0 ? { attachments } : {}) }],
+    }));
     setInput("");
     setPending(true);
 
@@ -95,6 +99,7 @@ export function CommunityAiChat({
       history: conversation,
       draftConversation,
       lastImageKey,
+      attachments,
     });
 
     if ("error" in result) {
@@ -136,25 +141,27 @@ export function CommunityAiChat({
                 : "bg-surface-2 text-ink"
             }`}
           >
-            {message.imageKey && (
-              <div className="mb-2">
-                <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border bg-surface-2">
-                  <Image src={aiImageUrl(message.imageKey)} alt="" fill sizes="320px" unoptimized className="object-cover" />
+            {message.attachments?.map((attachment) =>
+              attachment.kind === "image" ? (
+                <CommunityAiChatImage
+                  key={attachment.key}
+                  imageKey={attachment.key}
+                  selected={coverKey === attachment.key}
+                  onSelect={() => setChat((current) => ({ ...current, coverKey: attachment.key }))}
+                />
+              ) : (
+                <div key={attachment.key} className="mb-2 flex items-center gap-2 rounded-xl border border-border/40 px-3 py-2">
+                  <FileText className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  <span className="truncate text-xs">{attachment.name}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setChat((current) => ({ ...current, coverKey: message.imageKey }))}
-                  disabled={coverKey === message.imageKey}
-                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted transition-colors hover:text-ink disabled:text-ember"
-                >
-                  {coverKey === message.imageKey ? (
-                    <Check className="h-3.5 w-3.5" aria-hidden="true" />
-                  ) : (
-                    <ImagePlus className="h-3.5 w-3.5" aria-hidden="true" />
-                  )}
-                  {coverKey === message.imageKey ? "Cover selected" : "Use as cover"}
-                </button>
-              </div>
+              )
+            )}
+            {message.imageKey && (
+              <CommunityAiChatImage
+                imageKey={message.imageKey}
+                selected={coverKey === message.imageKey}
+                onSelect={() => setChat((current) => ({ ...current, coverKey: message.imageKey }))}
+              />
             )}
             {message.role === "assistant" ? (
               <ReactMarkdown components={MARKDOWN_COMPONENTS}>{message.text}</ReactMarkdown>
@@ -183,30 +190,53 @@ export function CommunityAiChat({
         </div>
       )}
 
-      <div className="flex items-center gap-2 border-t border-border/60 p-3">
-        <input
-          type="text"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault();
-              handleSend();
-            }
-          }}
-          placeholder="e.g. a free workshop about running on Feb 23rd"
-          maxLength={2000}
-          className="flex-1 rounded-full border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-        />
-        <button
-          type="button"
-          onClick={handleSend}
-          disabled={pending || !input.trim()}
-          aria-label="Send"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-bg transition-colors hover:bg-ink-muted disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Send className="h-4 w-4" aria-hidden="true" />
-        </button>
+      <div className="border-t border-border/60">
+        <CommunityAiAttachmentPreview attachments={files.attachments} onRemove={files.remove} />
+        {files.error && <p className="px-4 pt-2 text-xs text-danger">{files.error}</p>}
+        <div className="flex items-center gap-2 p-3">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            aria-label="Attach photos or PDFs"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
+          >
+            <Plus className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={AI_ATTACHMENT_ACCEPT}
+            multiple
+            onChange={(event) => {
+              files.addFiles(event.target.files);
+              event.target.value = "";
+            }}
+            className="hidden"
+          />
+          <input
+            type="text"
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                handleSend();
+              }
+            }}
+            placeholder="e.g. a free workshop about running on Feb 23rd"
+            maxLength={2000}
+            className="flex-1 rounded-full border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          />
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={pending || files.uploading || (!input.trim() && files.attachments.length === 0)}
+            aria-label="Send"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-bg transition-colors hover:bg-ink-muted disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Send className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </div>
   );

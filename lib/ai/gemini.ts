@@ -10,7 +10,10 @@ const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/intera
 // vedi Punto 8 dell'allineamento ("nessuna attivazione di servizi a pagamento").
 const GEMINI_MODEL = "gemini-3.5-flash-lite";
 
-export type GeminiInputPart = { type: "text"; text: string } | { type: "image"; data: string; mime_type: string };
+export type GeminiInputPart =
+  | { type: "text"; text: string }
+  | { type: "image"; data: string; mime_type: string }
+  | { type: "document"; data: string; mime_type: string };
 
 type GeminiCallParams = {
   input: string | GeminiInputPart[];

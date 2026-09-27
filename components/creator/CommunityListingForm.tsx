@@ -21,6 +21,7 @@ import { ALLOWED_DIGITAL_PRODUCT_TYPES, MAX_DIGITAL_PRODUCT_SIZE_BYTES } from "@
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { aiImageUrl } from "@/components/creator/CommunityAiChatImage";
 import {
   Dialog,
   DialogContent,
@@ -39,12 +40,6 @@ export type CommunityListingDraft = {
   /** Immagine creata dall'AI nella chat e scelta con "Use as cover" (chiave R2 "ai-images/..."). */
   coverKey?: string | null;
 };
-
-// Le immagini AI della chat si vedono tramite questo indirizzo stabile (link R2 rigenerato a ogni
-// richiesta, vedi app/api/community-ai/image/route.ts).
-function aiImageUrl(key: string): string {
-  return `/api/community-ai/image?key=${encodeURIComponent(key)}`;
-}
 
 type CommunityListingFormProps = {
   type: CommunityListingType;

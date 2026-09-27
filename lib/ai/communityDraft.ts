@@ -1,4 +1,6 @@
-import { callGemini, parseGeminiJson } from "@/lib/ai/gemini";
+import { callGemini, parseGeminiJson, type GeminiInputPart } from "@/lib/ai/gemini";
+import { getImageBytes } from "@/lib/r2";
+import { PDF_CONTENT_TYPE, type CommunityAiAttachment } from "@/lib/constants/communityAiAttachment";
 import { createCommunityImage, DAILY_AI_IMAGE_LIMIT, isAiImageGenerationEnabled } from "@/lib/ai/communityImage";
 import { COMMUNITY_LISTING_TYPES, type CommunityListingType } from "@/lib/constants/communityListing";
 
@@ -54,14 +56,18 @@ When the creator wants to create one of these:
 - Write a complete, engaging description for them (not a single line) and improve it as you learn more.
 - Suggest a price only if they ask for advice; never assume one.
 
-How the app works (describe nothing else): while you talk, Zero automatically prepares a draft from the conversation. A "Fill the form with this" button appears under the chat once the kind and topic are clear; it opens the real form pre-filled, where the creator reviews, changes and saves it themselves. You never save, publish or send anything yourself, and you have no other buttons, panels or previews. You can't read files yet: if asked, say so honestly.
+How the app works (describe nothing else): while you talk, Zero automatically prepares a draft from the conversation. A button labelled exactly "Fill the form with this" (always in English, never translate its name) appears under the chat once the kind and topic are clear; it opens the real form pre-filled, where the creator reviews, changes and saves it themselves. You never save, publish or send anything yourself, and you have no other buttons, panels or previews. The creator can attach photos and PDFs with the "+" button: when they do, you see them and can use them (describe a photo, summarize a PDF, turn it into a listing). Other file types aren't supported yet.
 
 ${imageLine}
 
 Reply in the same language the creator writes in.`;
 }
 
-const EXTRACTION_INSTRUCTION = `You read a conversation between a creator and an AI assistant on Zero and extract the Community listing being prepared, as JSON. Kinds: "workshop", "event", "digital_product", "personal_service".
+// La data di oggi serve anche qui: senza, "sabato 8 novembre" finiva in un anno passato.
+function buildExtractionInstruction(today: Date): string {
+  return `Today's date is ${today.toISOString().slice(0, 10)}.
+
+You read a conversation between a creator and an AI assistant on Zero and extract the Community listing being prepared, as JSON. Kinds: "workshop", "event", "digital_product", "personal_service".
 
 Rules:
 - First decide "hasDraft": true as soon as the kind AND a topic are known, even if date, price, place and other details are still missing (a draft is meant to be incomplete, the creator finishes it in the form). Example: "an event" + "a trail run on Mont Blanc" is enough. false only if the kind or the topic is still unknown.
@@ -70,7 +76,8 @@ Rules:
 - title: short and specific, based on what the creator said or accepted. Never a placeholder like "New Event".
 - description: the most complete description available (use the assistant's proposed description if the creator didn't reject it), otherwise write a short one from the facts given. Plain text, no Markdown.
 - isFree: true only if the creator said it's free. price: only if the creator stated a price, never invent one.
-- startsAt: only for workshop/event, ISO 8601 (YYYY-MM-DDTHH:mm if a time was given, else YYYY-MM-DD), in the future.`;
+- startsAt: only for workshop/event, ISO 8601 (YYYY-MM-DDTHH:mm if a time was given, else YYYY-MM-DD), always the next future occurrence after today.`;
+}
 
 // Se presente, la bozza deve avere tipo/titolo/descrizione: con i campi tutti facoltativi Gemini
 // mandava bozze monche (senza titolo) che venivano scartate (verificato dal vivo il 2026-09-26).
@@ -97,7 +104,20 @@ const EXTRACTION_SCHEMA = {
   propertyOrdering: ["hasDraft", "draft"],
 };
 
-function normalizeDraft(raw: RawDraft | undefined): CommunityDraft | null {
+// Una data già passata non ha senso per un evento nuovo: capita quando il creator scrive un giorno
+// della settimana che non torna ("sabato 8 novembre" è sabato nel 2025, non nel 2026) e il modello
+// sceglie l'anno che combacia. La spostiamo all'anno dopo; il creator la ricontrolla nel modulo.
+function futureStartsAt(raw: string | undefined, today: Date): string | null {
+  if (!raw) return null;
+  const match = raw.match(/^(\d{4})(-.*)$/);
+  if (!match || Number.isNaN(new Date(raw).getTime())) return null;
+
+  let year = Number(match[1]);
+  while (new Date(`${year}${match[2]}`) < today) year++;
+  return `${year}${match[2]}`;
+}
+
+function normalizeDraft(raw: RawDraft | undefined, today: Date): CommunityDraft | null {
   if (!raw?.type || !raw.title?.trim()) return null;
   if (!COMMUNITY_LISTING_TYPES.includes(raw.type as CommunityListingType)) return null;
 
@@ -107,7 +127,7 @@ function normalizeDraft(raw: RawDraft | undefined): CommunityDraft | null {
     description: (raw.description ?? "").trim().slice(0, 2000),
     isFree: Boolean(raw.isFree),
     price: typeof raw.price === "number" && raw.price > 0 ? raw.price : null,
-    startsAt: raw.startsAt ?? null,
+    startsAt: futureStartsAt(raw.startsAt, today),
   };
 }
 
@@ -117,14 +137,14 @@ function formatTranscript(messages: CommunityChatMessage[]): string {
     .join("\n\n");
 }
 
-async function extractDraft(conversation: CommunityChatMessage[]): Promise<CommunityDraft | null> {
+async function extractDraft(conversation: CommunityChatMessage[], today: Date): Promise<CommunityDraft | null> {
   const result = await callGemini({
     input: formatTranscript(conversation),
-    systemInstruction: EXTRACTION_INSTRUCTION,
+    systemInstruction: buildExtractionInstruction(today),
     responseSchema: EXTRACTION_SCHEMA,
   });
   if ("error" in result) return null;
-  return normalizeDraft(parseGeminiJson<{ draft?: RawDraft }>(result.text)?.draft);
+  return normalizeDraft(parseGeminiJson<{ draft?: RawDraft }>(result.text)?.draft, today);
 }
 
 const IMAGE_REQUEST_INSTRUCTION = `You read the end of a conversation between a creator and an AI assistant and decide whether the creator's LAST message asks to create or edit an image (cover, poster, picture, illustration). Return JSON.
@@ -168,6 +188,26 @@ const IMAGE_NOTES = {
   failed: "[Zero note: the image was NOT created because of a temporary problem; suggest trying again.]",
 } as const;
 
+// Gli allegati del "+" vanno a Gemini come file veri accanto al testo (gratis per foto e PDF).
+// Un file sparito da R2 viene semplicemente saltato invece di far fallire tutto il messaggio.
+async function buildAttachmentParts(attachments: CommunityAiAttachment[]): Promise<GeminiInputPart[]> {
+  const parts: GeminiInputPart[] = [];
+  for (const attachment of attachments) {
+    // getImageBytes legge qualunque oggetto R2, anche i PDF.
+    const file = await getImageBytes(attachment.key);
+    if (!file) continue;
+    const data = file.data.toString("base64");
+    parts.push(
+      attachment.kind === "pdf"
+        ? { type: "document", data, mime_type: PDF_CONTENT_TYPE }
+        : { type: "image", data, mime_type: file.contentType }
+    );
+  }
+  return parts;
+}
+
+const ATTACHMENT_ONLY_MESSAGE = "(The creator sent the attached file without a message.)";
+
 /**
  * Un turno della chat. Gemini ricorda la conversazione tramite `previousInteractionId`; se quella
  * memoria non è più disponibile (scaduta: la chat ora resta salvata fino al logout) si riparte
@@ -180,6 +220,8 @@ export async function continueCommunityDraftChat(params: {
   message: string;
   /** Ultima immagine AI della conversazione, già verificata come dell'utente: base per le modifiche. */
   lastImageKey: string | null;
+  /** Allegati del "+" di questo messaggio, già verificati (proprietario, tipo, dimensione). */
+  attachments: CommunityAiAttachment[];
   previousInteractionId: string | null;
   history: CommunityChatMessage[];
   draftConversation: CommunityChatMessage[];
@@ -188,40 +230,49 @@ export async function continueCommunityDraftChat(params: {
 }): Promise<CommunityDraftTurnResult> {
   const imagesEnabled = isAiImageGenerationEnabled();
   const systemInstruction = buildChatInstruction(params.today, params.creatorFirstName, imagesEnabled);
+  const message = params.message || ATTACHMENT_ONLY_MESSAGE;
 
   // Solo con le immagini attive: da spente non serve una chiamata in più, l'AI sa già che non può.
   let imageKey: string | null = null;
-  let chatInput = params.message;
-  const imageRequest = imagesEnabled ? await detectImageRequest(params.history, params.message) : null;
+  let chatInput = message;
+  const imageRequest = imagesEnabled ? await detectImageRequest(params.history, message) : null;
   if (imageRequest) {
+    // Se il creator allega una foto e chiede di modificarla ("aggiungi il titolo a questa"), la
+    // base è quella foto, non l'ultima immagine creata dall'AI.
+    const attachedImageKey = params.attachments.find((attachment) => attachment.kind === "image")?.key;
     const image = await createCommunityImage({
       userId: params.userId,
       prompt: imageRequest.prompt,
-      sourceKey: imageRequest.editPreviousImage ? params.lastImageKey : null,
+      sourceKey: imageRequest.editPreviousImage ? (attachedImageKey ?? params.lastImageKey) : null,
     });
     if ("key" in image) imageKey = image.key;
     const note = "key" in image ? IMAGE_NOTES.created : image.unavailable === "limit" ? IMAGE_NOTES.limit : IMAGE_NOTES.failed;
-    chatInput = `${params.message}\n\n${note}`;
+    chatInput = `${message}\n\n${note}`;
   }
 
+  const attachmentParts = await buildAttachmentParts(params.attachments);
+  const withAttachments = (text: string): string | GeminiInputPart[] =>
+    attachmentParts.length > 0 ? [{ type: "text", text }, ...attachmentParts] : text;
+
   let chat = await callGemini({
-    input: chatInput,
+    input: withAttachments(chatInput),
     systemInstruction,
     previousInteractionId: params.previousInteractionId ?? undefined,
   });
   if ("error" in chat && params.previousInteractionId && params.history.length > 0) {
     chat = await callGemini({
-      input: `Conversation so far:\n\n${formatTranscript(params.history)}\n\nCreator's new message: ${chatInput}`,
+      input: withAttachments(
+        `Conversation so far:\n\n${formatTranscript(params.history)}\n\nCreator's new message: ${chatInput}`
+      ),
       systemInstruction,
     });
   }
   if ("error" in chat) return chat;
 
-  const draft = await extractDraft([
-    ...params.draftConversation,
-    { role: "user", text: params.message },
-    { role: "assistant", text: chat.text },
-  ]);
+  const draft = await extractDraft(
+    [...params.draftConversation, { role: "user", text: message }, { role: "assistant", text: chat.text }],
+    params.today
+  );
 
   return { reply: chat.text, draft, imageKey, interactionId: chat.interactionId };
 }

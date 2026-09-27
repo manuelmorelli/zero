@@ -1,5 +1,6 @@
 import type { CommunityListingType } from "@/lib/constants/communityListing";
 import type { CommunityListingDraft } from "@/components/creator/CommunityListingForm";
+import type { CommunityAiAttachment } from "@/lib/constants/communityAiAttachment";
 
 export type CommunityAiChatMessage = {
   role: "user" | "assistant";
@@ -7,6 +8,8 @@ export type CommunityAiChatMessage = {
   failed?: boolean;
   /** Immagine creata dall'AI con questa risposta (chiave R2 "ai-images/..."). */
   imageKey?: string;
+  /** Foto/PDF allegati dal creator col "+". */
+  attachments?: CommunityAiAttachment[];
 };
 
 export type CommunityAiPendingDraft = { type: CommunityListingType; draft: CommunityListingDraft };

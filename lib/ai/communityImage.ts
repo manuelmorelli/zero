@@ -2,6 +2,8 @@ import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { generateGeminiImage } from "@/lib/ai/gemini";
 import { getImageBytes, putImage } from "@/lib/r2";
+import { IMAGE_EXTENSIONS } from "@/lib/constants/image";
+import { PDF_CONTENT_TYPE } from "@/lib/constants/communityAiAttachment";
 
 /**
  * Immagini create dall'AI nella chat Community (Punto 8). A differenza della chat (gratuita),
@@ -18,10 +20,17 @@ export function isAiImageGenerationEnabled(): boolean {
   return process.env.GEMINI_IMAGE_GENERATION_ENABLED === "true";
 }
 
-/** Le immagini AI di un utente stanno sotto "ai-images/{userId}/": basta il prefisso per sapere
- * se una chiave arrivata dal browser gli appartiene davvero. */
+/** Le immagini AI di un utente stanno sotto "ai-images/{userId}/" (anche gli allegati del "+",
+ * sotto ".../uploads/"): basta il prefisso per sapere se una chiave arrivata dal browser gli
+ * appartiene davvero. */
 export function isOwnAiImageKey(userId: string, key: string): boolean {
   return key.startsWith(`${AI_IMAGE_PREFIX}/${userId}/`) && !key.includes("..");
+}
+
+/** Chiave R2 per un allegato del "+" (foto o PDF) caricato dal browser. */
+export function newAiUploadKey(userId: string, contentType: string): string {
+  const extension = contentType === PDF_CONTENT_TYPE ? "pdf" : IMAGE_EXTENSIONS[contentType];
+  return `${AI_IMAGE_PREFIX}/${userId}/uploads/${randomUUID()}.${extension}`;
 }
 
 export type CommunityImageResult =
