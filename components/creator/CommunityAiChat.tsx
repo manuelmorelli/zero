@@ -130,7 +130,10 @@ export function CommunityAiChat({
         <span className="text-sm font-semibold text-ink">Create with AI</span>
       </div>
 
-      <div ref={scrollRef} className="flex max-h-80 flex-col gap-3 overflow-y-auto px-4 py-4">
+      <div
+        ref={scrollRef}
+        className="flex max-h-80 flex-col gap-3 overflow-y-auto px-4 py-4 [scrollbar-color:var(--color-surface-2)_transparent] [scrollbar-width:thin]"
+      >
         {chat.messages.map((message, index) => (
           <div
             key={index}
