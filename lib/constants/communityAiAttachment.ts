@@ -15,8 +15,6 @@ export const MAX_AI_PDF_SIZE_BYTES = 20 * 1024 * 1024;
 
 export const MAX_AI_ATTACHMENTS_PER_MESSAGE = 3;
 
-export const AI_ATTACHMENT_ACCEPT = [...ALLOWED_IMAGE_TYPES, PDF_CONTENT_TYPE].join(",");
-
 export function attachmentKindOf(contentType: string): CommunityAiAttachmentKind | null {
   if (ALLOWED_IMAGE_TYPES.has(contentType)) return "image";
   if (contentType === PDF_CONTENT_TYPE) return "pdf";

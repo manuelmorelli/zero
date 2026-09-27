@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
-import { FileText, Loader2, Plus, Send, Sparkles } from "lucide-react";
+import { FileText, Loader2, Send, Sparkles } from "lucide-react";
 import { sendCommunityAiMessage } from "@/lib/actions/communityAi";
 import { COMMUNITY_LISTING_LABELS } from "@/lib/constants/communityListing";
 import {
@@ -12,10 +12,10 @@ import {
   type CommunityAiPendingDraft,
   type StoredCommunityAiChat,
 } from "@/lib/communityAiChatStorage";
-import { AI_ATTACHMENT_ACCEPT } from "@/lib/constants/communityAiAttachment";
 import { useCommunityAiAttachments } from "@/hooks/useCommunityAiAttachments";
 import { CommunityAiChatImage } from "@/components/creator/CommunityAiChatImage";
 import { CommunityAiAttachmentPreview } from "@/components/creator/CommunityAiAttachmentPreview";
+import { CommunityAiAttachMenu } from "@/components/creator/CommunityAiAttachMenu";
 
 function welcomeMessage(creatorFirstName: string | null): CommunityAiChatMessage {
   const greeting = creatorFirstName ? `Hi ${creatorFirstName}!` : "Hi!";
@@ -64,7 +64,6 @@ export function CommunityAiChat({
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const files = useCommunityAiAttachments();
 
   useEffect(() => {
@@ -194,25 +193,7 @@ export function CommunityAiChat({
         <CommunityAiAttachmentPreview attachments={files.attachments} onRemove={files.remove} />
         {files.error && <p className="px-4 pt-2 text-xs text-danger">{files.error}</p>}
         <div className="flex items-center gap-2 p-3">
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            aria-label="Attach photos or PDFs"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
-          >
-            <Plus className="h-4 w-4" aria-hidden="true" />
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept={AI_ATTACHMENT_ACCEPT}
-            multiple
-            onChange={(event) => {
-              files.addFiles(event.target.files);
-              event.target.value = "";
-            }}
-            className="hidden"
-          />
+          <CommunityAiAttachMenu onFiles={files.addFiles} />
           <input
             type="text"
             value={input}
