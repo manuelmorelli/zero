@@ -194,7 +194,7 @@ export default async function PublicProfilePage({
               />
               <Link
                 href="/dashboard"
-                className="rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-5 py-2.5 text-sm font-semibold text-ink backdrop-blur-md transition-colors hover:from-ember/15"
+                className="rounded-full border border-ember/35 bg-ember/[0.08] px-5 py-2.5 text-sm font-semibold text-ink shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] transition-all duration-300 hover:border-ember/70 hover:bg-ember/[0.15] hover:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)]"
               >
                 Dashboard
               </Link>
@@ -213,7 +213,18 @@ export default async function PublicProfilePage({
       <ProfileTabs
         basePath={`/profile/${username}`}
         activeTab={activeTab}
-        actions={!isOwnProfile && creator ? <CreatorEconomyLinks username={username} /> : undefined}
+        actions={
+          isOwnProfile ? (
+            <Link
+              href="/dashboard/community"
+              className="shrink-0 rounded-full border border-ember/35 bg-ember/[0.08] px-4 py-2 text-sm text-white opacity-70 shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] backdrop-blur-md transition-all duration-300 hover:opacity-100"
+            >
+              Community
+            </Link>
+          ) : creator ? (
+            <CreatorEconomyLinks username={username} />
+          ) : undefined
+        }
       />
 
       <div className="mx-auto max-w-[1400px] px-5 py-4 md:px-[calc(4.43%+2rem)]">
@@ -402,7 +413,7 @@ export default async function PublicProfilePage({
  * Consulting (deciso con Manuel il 2026-09-22: niente pagamento reale dietro per ora). */
 function CreatorEconomyLinks({ username }: { username: string }) {
   const linkClassName =
-    "shrink-0 rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-4 py-2 text-sm text-white opacity-70 backdrop-blur-md transition-colors hover:opacity-100";
+    "shrink-0 rounded-full border border-ember/35 bg-ember/[0.08] px-4 py-2 text-sm text-white opacity-70 shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] transition-all duration-300 hover:opacity-100";
   return (
     <Link href={`/profile/${username}/community`} className={linkClassName}>
       Community
