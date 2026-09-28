@@ -61,10 +61,21 @@ function LoginForm() {
     setLoading(false);
 
     if (signInError) {
-      setError(signInError.message ?? "Sign in failed. Please try again.");
+      const isUnverifiedEmail = signInError.message === "Email not verified";
+      // status 401 = credenziali sbagliate davvero; qualsiasi altro status (500, errore di rete...)
+      // è un problema del server, non dell'utente, e va detto in modo onesto (bug segnalato da
+      // Manuel: un 500 mostrava comunque "wrong password", facendo credere all'utente di aver
+      // sbagliato lui mentre l'account era intatto).
+      if (isUnverifiedEmail) {
+        setError(signInError.message ?? null);
+      } else if (signInError.status === 401) {
+        setError(signInError.message ?? "Wrong email or password.");
+      } else {
+        setError("We're having a technical issue. Please try again in a moment.");
+      }
       // con emailVerification.sendOnSignIn attivo, questo tentativo ha già
       // fatto ripartire una nuova email di conferma
-      setNeedsVerification(signInError.message === "Email not verified");
+      setNeedsVerification(isUnverifiedEmail);
       return;
     }
 
