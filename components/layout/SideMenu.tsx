@@ -119,6 +119,9 @@ export function SideMenu() {
                   <MenuLink href="/dashboard" onClick={close}>
                     Dashboard
                   </MenuLink>
+                  <MenuLink href="/dashboard/community/new" onClick={close}>
+                    Add to Community
+                  </MenuLink>
                   <MenuLink href="/settings" onClick={close}>
                     Settings
                   </MenuLink>

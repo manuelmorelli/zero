@@ -69,6 +69,10 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ☑ Tasto "indietro" del sito: la sensazione "macchinosa" segnalata da Manuel è stata chiarita (2026-09-22). Causa trovata: `BackButton.tsx` tiene la sua memoria delle pagine visitate in `sessionStorage`, ma quella memoria si azzera a ogni caricamento completo della pagina — non solo un refresh manuale, ma anche i ricaricamenti automatici che il sito fa durante le sessioni di sviluppo quando il codice viene modificato. Per questo il problema sembrava capitare "sempre, da qualsiasi pagina": succedeva quasi solo mentre si lavorava al progetto insieme, non nell'uso normale. Testato dal vivo con un percorso guidato (Home → Journey → episodio → Indietro → Indietro): funziona correttamente. Comportamento residuo — un utente reale che ricarica manualmente una pagina profonda perde il pulsante "Indietro" — validato con Manuel come accettabile, nessuna modifica al codice necessaria.
 
+## Community
+
+☑ Ridotti i clic per creare qualcosa in Community (Workshop/Event/Digital Product/1:1 Service), segnalato da Manuel come priorità del Punto 8 (2026-09-27/28): il percorso reale era menu → Dashboard → Community → Add → scegli AI o a mano → conferma → Pubblica, **8 clic** (non serviva già tornare alla lista per pubblicare: `createCommunityListing` reindirizza già alla pagina di dettaglio con il pulsante Pubblica visibile). Aggiunta una voce diretta "Add to Community" nel menu laterale (`components/layout/SideMenu.tsx`, sezione "You"), che porta dritto a `/dashboard/community/new` saltando Dashboard e la lista: **6 clic**.
+
 ## Business futuro (idee, nessun piano richiesto ora)
 
 ☐ [Idea] Sezione dove le aziende possono proporsi per sponsorizzare Zero/i creator, stile Instagram.
