@@ -53,7 +53,7 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ☑ [Da Punto 1 allineamento] Bloccare l'iscrizione a chi ha meno di 16 anni — implementato al Punto 6 dell'allineamento (Legale, 2026-09-22): campo `dateOfBirth`, controllo a dichiarazione (non verifica documentale) sia lato client sia lato server (`lib/auth.ts`, `databaseHooks.user.create.before`), non aggirabile. Non retroattivo: account creati prima restano con data di nascita vuota.
 
-☐ [Da Punto 1 allineamento] Raccogliere solo il minimo indispensabile di dati personali in registrazione, per ridurre il rischio legale (GDPR e simili) — da rivedere quali campi sono oggi realmente necessari. Non toccato dal lavoro sull'età minima sopra: resta aperto.
+☑ [Da Punto 1 allineamento] Raccogliere solo il minimo indispensabile di dati personali in registrazione, per ridurre il rischio legale (GDPR e simili). Verificato il 2026-09-28: `app/register/page.tsx` chiede solo nome, email, password e data di nascita (quest'ultima necessaria per il controllo età minima 16 anni). Bio, città, foto profilo, interessi non si chiedono in registrazione, si aggiungono dopo, per scelta, in Onboarding o nelle Impostazioni. Nessun campo da togliere, nessuna modifica necessaria.
 
 ☑ Messaggio di errore onesto nel login (segnalato da Manuel il 2026-09-26, corretto il 2026-09-28): `app/login/page.tsx` ora distingue lo status dell'errore restituito da Better Auth: 401 (`UNAUTHORIZED`, credenziali davvero sbagliate) → "Wrong email or password."; qualunque altro status (es. 500, errore di rete) → "We're having a technical issue. Please try again in a moment.". Il caso email non verificata (403 `FORBIDDEN`) resta gestito come prima, messaggio originale + rinvio email di conferma.
 
