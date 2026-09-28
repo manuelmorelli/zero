@@ -5,8 +5,9 @@ import { requireCreator } from "@/lib/creator";
 import { DashboardPanel } from "@/components/creator/DashboardPanel";
 import { CommunityListingRow, type ListingRowItem } from "@/components/creator/CommunityListingRow";
 import { Reveal } from "@/components/common/Reveal";
+import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 
-function toRowItems(
+async function toRowItems(
   rows: Array<{
     id: string;
     title: string;
@@ -14,18 +15,22 @@ function toRowItems(
     isFree?: boolean;
     price: unknown;
     startsAt?: Date | null;
+    coverUrl?: string | null;
     _count?: { rsvps: number };
   }>
-): ListingRowItem[] {
-  return rows.map((row) => ({
-    id: row.id,
-    title: row.title,
-    status: row.status as ListingRowItem["status"],
-    isFree: Boolean(row.isFree),
-    price: row.price === null ? null : Number(row.price),
-    startsAt: row.startsAt ? row.startsAt.toISOString() : null,
-    rsvpCount: row._count?.rsvps,
-  }));
+): Promise<ListingRowItem[]> {
+  return Promise.all(
+    rows.map(async (row) => ({
+      id: row.id,
+      title: row.title,
+      status: row.status as ListingRowItem["status"],
+      isFree: Boolean(row.isFree),
+      price: row.price === null ? null : Number(row.price),
+      startsAt: row.startsAt ? row.startsAt.toISOString() : null,
+      rsvpCount: row._count?.rsvps,
+      coverUrl: await resolveCoverUrl(row.coverUrl ?? null),
+    }))
+  );
 }
 
 export default async function CommunityDashboardPage() {
@@ -52,11 +57,18 @@ export default async function CommunityDashboardPage() {
     }),
   ]);
 
+  const [workshopItems, eventItems, digitalProductItems, personalServiceItems] = await Promise.all([
+    toRowItems(workshops),
+    toRowItems(events),
+    toRowItems(digitalProducts),
+    toRowItems(personalServices),
+  ]);
+
   const sections: Array<{ title: string; type: "workshop" | "event" | "digital_product" | "personal_service"; items: ListingRowItem[] }> = [
-    { title: "Workshops", type: "workshop", items: toRowItems(workshops) },
-    { title: "Events", type: "event", items: toRowItems(events) },
-    { title: "Digital Products", type: "digital_product", items: toRowItems(digitalProducts) },
-    { title: "1:1 Services", type: "personal_service", items: toRowItems(personalServices) },
+    { title: "Workshops", type: "workshop", items: workshopItems },
+    { title: "Events", type: "event", items: eventItems },
+    { title: "Digital Products", type: "digital_product", items: digitalProductItems },
+    { title: "1:1 Services", type: "personal_service", items: personalServiceItems },
   ];
 
   return (

@@ -71,6 +71,8 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ## Community
 
+☑ Copertina e dimensioni delle card nella lista Dashboard (`/dashboard/community`), segnalato da Manuel (2026-09-27/28): `CommunityListingRow.tsx` era solo testo, senza immagine. Ora mostra la copertina (quando presente) con lo stesso stile e le stesse dimensioni delle card episodio della pagina Journey (`EpisodeRow`): miniatura a sinistra, bordo/ombra ember al passaggio del mouse, sfumatura sulla copertina. `app/(site)/dashboard/community/page.tsx` risolve `coverUrl` (chiave R2) in link di riproduzione con `resolveCoverUrl`, stesso meccanismo già usato per le copertine dei Journey.
+
 ☑ Ridotti i clic per creare qualcosa in Community (Workshop/Event/Digital Product/1:1 Service), segnalato da Manuel come priorità del Punto 8 (2026-09-27/28): il percorso reale era menu → Dashboard → Community → Add → scegli AI o a mano → conferma → Pubblica, **8 clic** (non serviva già tornare alla lista per pubblicare: `createCommunityListing` reindirizza già alla pagina di dettaglio con il pulsante Pubblica visibile). Aggiunta una voce diretta "Add to Community" nel menu laterale (`components/layout/SideMenu.tsx`, sezione "You"), che porta dritto a `/dashboard/community/new` saltando Dashboard e la lista: **6 clic**.
 
 ## Business futuro (idee, nessun piano richiesto ora)
