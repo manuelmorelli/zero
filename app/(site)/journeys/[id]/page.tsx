@@ -199,17 +199,29 @@ function EpisodeRow({
       <Link
         href={`/journeys/${journeyId}/episodes/${episode.id}`}
         id={episode.id}
-        className="group flex w-full max-w-[420px] scroll-mt-24 items-center gap-3 rounded-xl border border-border bg-surface p-2 text-left transition-colors hover:border-ink-muted hover:bg-surface-2"
+        className="group flex w-full max-w-[420px] scroll-mt-24 items-center gap-3 rounded-xl border border-border bg-surface p-2 text-left shadow-[0_20px_40px_-22px_rgba(0,0,0,45%)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-ember/40 hover:shadow-[0_20px_40px_-16px_rgba(226,145,77,50%)]"
       >
         <span className="relative aspect-4/3 w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:w-44">
           {episode.posterUrl || coverUrl ? (
-            <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="176px" className="object-cover" />
+            <Image
+              src={episode.posterUrl || coverUrl!}
+              alt=""
+              fill
+              sizes="176px"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+            />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
           )}
-          <span className="absolute inset-0 grid place-items-center bg-bg/30 opacity-0 transition-opacity group-hover:opacity-100">
-            <span className="grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-bg/60 backdrop-blur-md">
-              <Play className="h-3 w-3 fill-current text-ember" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-t from-bg/60 via-transparent to-transparent" />
+          {/* Glow al passaggio del mouse, stesso "poster style" di JourneyCard/VideoCard. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(226,145,77,28%),_transparent_65%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+          />
+          <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <span className="grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-bg/60 backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
+              <Play className="h-3 w-3 translate-x-[1px] fill-current text-ember" aria-hidden="true" />
             </span>
           </span>
         </span>
@@ -219,7 +231,7 @@ function EpisodeRow({
               Episode {episode.number}
             </span>
             {episode.progress?.completedAt && (
-              <span className="text-[0.65rem] font-semibold text-ink-muted">· Completed</span>
+              <span className="text-[0.65rem] font-semibold text-ember">· Completed</span>
             )}
           </span>
           <span className="mt-0.5 block truncate text-sm font-semibold transition-colors group-hover:text-ember">
