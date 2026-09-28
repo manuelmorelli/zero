@@ -151,6 +151,10 @@ export async function hardDeleteUser(userId: string): Promise<void> {
       prisma.discountCode.deleteMany({ where: { creatorId: creator.id } }),
       ...(community ? [prisma.communityMember.deleteMany({ where: { communityId: community.id } })] : []),
       prisma.tip.deleteMany({ where: { creatorId: creator.id } }),
+      // Le iscrizioni "Partecipo" ai propri Workshop/Event hanno FK RESTRICT: senza cancellarle
+      // prima, la cancellazione del Workshop/Event sotto fallisce (bug trovato 2026-09-27).
+      prisma.workshopRsvp.deleteMany({ where: { workshopId: { in: workshopIds } } }),
+      prisma.eventRsvp.deleteMany({ where: { eventId: { in: eventIds } } }),
       prisma.workshop.deleteMany({ where: { creatorId: creator.id } }),
       prisma.event.deleteMany({ where: { creatorId: creator.id } }),
       prisma.digitalProduct.deleteMany({ where: { creatorId: creator.id } }),
@@ -190,6 +194,8 @@ export async function hardDeleteUser(userId: string): Promise<void> {
     prisma.journeyProgress.deleteMany({ where: { userId } }),
     prisma.episodeProgress.deleteMany({ where: { userId } }),
     prisma.communityMember.deleteMany({ where: { userId } }),
+    prisma.workshopRsvp.deleteMany({ where: { userId } }),
+    prisma.eventRsvp.deleteMany({ where: { userId } }),
     prisma.report.deleteMany({ where: { userId } }),
     prisma.payment.deleteMany({ where: { purchaseId: { in: purchaseIds } } }),
     prisma.purchase.deleteMany({ where: { userId } }),
