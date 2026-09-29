@@ -3,10 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { formatRelativeDate } from "@/lib/utils";
+import { cn, formatRelativeDate } from "@/lib/utils";
+import { NOTICE } from "@/components/ui/panel";
 import { archiveUpdate, markUpdateViewed, reactToUpdate, submitAnswer, voteOnPoll } from "@/lib/actions/update";
 import { REACTION_EMOJIS } from "@/lib/constants/updates";
 import type { CreatorStory, StoryUpdate } from "@/lib/discovery/stories";
+import { Button } from "@/components/ui/button";
+import { PILL_FIELD_ON_PHOTO } from "@/components/ui/input";
 
 const STORY_DURATION_MS = 5000;
 
@@ -190,9 +193,9 @@ function StorySlide({
     <>
       <div className="absolute inset-x-3 top-3 z-30 flex gap-1">
         {story.updates.map((item, index) => (
-          <div key={item.id} className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/30">
+          <div key={item.id} className="h-0.5 flex-1 overflow-hidden rounded-full bg-overlay">
             <div
-              className="h-full bg-white"
+              className="h-full bg-on-photo"
               style={{
                 width: `${index < updateIndex ? 100 : index === updateIndex ? segmentProgress : 0}%`,
               }}
@@ -203,7 +206,7 @@ function StorySlide({
 
       <div className="absolute inset-x-4 top-7 z-30 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-white/20 text-xs font-semibold text-white">
+          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-overlay text-sm font-semibold text-on-photo">
             {story.creatorAvatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={story.creatorAvatarUrl} alt="" className="h-full w-full object-cover" />
@@ -212,8 +215,8 @@ function StorySlide({
             )}
           </div>
           <div>
-            <p className="text-sm font-semibold text-white">{story.creatorName}</p>
-            <p className="text-[11px] text-white/70">{formatRelativeDate(update.publishedAt)}</p>
+            <p className="text-sm font-semibold text-on-photo">{story.creatorName}</p>
+            <p className="text-sm text-on-photo">{formatRelativeDate(update.publishedAt)}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -223,12 +226,12 @@ function StorySlide({
               onClick={handleDelete}
               disabled={deleting}
               aria-label="Delete this Update"
-              className="text-white/80 hover:text-white disabled:opacity-50"
+              className="text-on-photo hover:text-on-photo disabled:opacity-50"
             >
               <TrashIcon className="h-[18px] w-[18px]" />
             </button>
           )}
-          <button type="button" onClick={onClose} aria-label="Close" className="text-white/80 hover:text-white">
+          <button type="button" onClick={onClose} aria-label="Close" className="text-on-photo hover:text-on-photo">
             <CloseIcon className="h-5 w-5" />
           </button>
         </div>
@@ -248,7 +251,7 @@ function StorySlide({
         />
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-30 flex flex-col gap-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pb-5 pt-10">
+      <div className="absolute inset-x-0 bottom-0 z-30 flex flex-col gap-3 card-scrim px-4 pb-5 pt-10">
         {/* Prompt del sondaggio/domanda quando abbinati a una foto/video: qui, appena sopra i
             pulsanti/il campo risposta, invece che come didascalia sovrapposta più in alto (dove
             entrerebbe in collisione con un pannello alto come quello del sondaggio). Per un
@@ -256,7 +259,7 @@ function StorySlide({
             gestito da StoryContent. */}
         {(update.poll || update.isQuestion) &&
           (update.type === "IMAGE" || update.type === "VIDEO") &&
-          update.content && <p className="text-sm font-medium text-white">{update.content}</p>}
+          update.content && <p className="text-sm font-medium text-on-photo">{update.content}</p>}
 
         {update.poll && (
           <div className="space-y-2" onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
@@ -278,25 +281,28 @@ function StorySlide({
                   type="button"
                   onClick={() => handleVote(option.id)}
                   disabled={isOwner || myVoteOptionId !== null}
-                  className={`relative w-full overflow-hidden rounded-2xl border px-4 py-3 text-left text-sm font-semibold text-white transition-colors ${
-                    isMine ? "border-ember" : "border-white/15"
-                  } ${isOwner ? "cursor-default" : ""}`}
+                  className={cn(
+                    NOTICE,
+                    "relative w-full overflow-hidden rounded-2xl text-left font-semibold text-on-photo transition-colors",
+                    isMine ? "border-ember" : "border-border",
+                    isOwner && "cursor-default"
+                  )}
                 >
                   {showResults && (
                     <div
-                      className={`absolute inset-y-0 left-0 ${isMine ? "bg-ember/35" : "bg-white/10"}`}
+                      className={`absolute inset-y-0 left-0 ${isMine ? "bg-ember-line" : "bg-overlay-soft"}`}
                       style={{ width: `${percent}%` }}
                     />
                   )}
                   <span className="relative flex items-center justify-between">
                     <span>{option.label}</span>
-                    {showResults && <span className="text-xs text-white/80">{percent}%</span>}
+                    {showResults && <span className="text-sm text-on-photo">{percent}%</span>}
                   </span>
                 </button>
               );
             })}
             {isOwner && (
-              <p className="text-center text-[11px] text-white/50">
+              <p className="text-center text-sm text-on-photo">
                 {update.poll.totalVotes} {update.poll.totalVotes === 1 ? "vote" : "votes"}
               </p>
             )}
@@ -306,7 +312,7 @@ function StorySlide({
         {update.link && (
           <Link
             href={update.link.href}
-            className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-black"
+            className="inline-flex w-fit items-center gap-1.5 rounded-full bg-on-photo px-4 py-2 text-sm font-semibold text-bg"
           >
             {update.link.label} →
           </Link>
@@ -316,7 +322,7 @@ function StorySlide({
             propria storia) — chiunque altro vede il campo per rispondere, mai le une le altre. */}
         {update.isQuestion && isOwner && (
           <div>
-            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/50">
+            <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-on-photo">
               {update.answers.length === 0
                 ? "No answers yet"
                 : `${update.answers.length} ${update.answers.length === 1 ? "answer" : "answers"}`}
@@ -330,9 +336,9 @@ function StorySlide({
                 onMouseLeave={() => setPaused(false)}
               >
                 {update.answers.map((answer) => (
-                  <div key={answer.id} className="rounded-2xl bg-white/10 px-3.5 py-2">
-                    <p className="text-sm text-white">{answer.content}</p>
-                    <p className="mt-0.5 text-[10px] text-white/50">{formatRelativeDate(answer.createdAt)}</p>
+                  <div key={answer.id} className="rounded-2xl bg-overlay-soft px-3.5 py-2">
+                    <p className="text-sm text-on-photo">{answer.content}</p>
+                    <p className="mt-0.5 text-sm text-on-photo">{formatRelativeDate(answer.createdAt)}</p>
                   </div>
                 ))}
               </div>
@@ -343,8 +349,8 @@ function StorySlide({
         {update.isQuestion &&
           !isOwner &&
           (answered ? (
-            <p className="text-sm font-medium text-white/80">
-              Answer sent — only {story.creatorName} can see it.
+            <p className="text-sm font-medium text-on-photo">
+              Answer sent. Only {story.creatorName} can see it.
             </p>
           ) : (
             <form onSubmit={handleAnswerSubmit} className="flex items-center gap-2">
@@ -356,15 +362,11 @@ function StorySlide({
                 onBlur={() => setPaused(false)}
                 placeholder="Send a private answer…"
                 maxLength={500}
-                className="flex-1 rounded-full border border-white/30 bg-white/10 px-4 py-2.5 text-sm text-white placeholder:text-white/60 outline-none"
+                className={PILL_FIELD_ON_PHOTO}
               />
-              <button
-                type="submit"
-                disabled={answerPending || !answerText.trim()}
-                className="rounded-full bg-ember px-4 py-2.5 text-xs font-semibold text-bg disabled:opacity-50"
-              >
+              <Button variant="primary" type="submit" disabled={answerPending || !answerText.trim()}>
                 Send
-              </button>
+              </Button>
             </form>
           ))}
 
@@ -376,7 +378,7 @@ function StorySlide({
               onClick={() => handleReaction(emoji)}
               aria-pressed={reaction === emoji}
               className={`flex h-9 w-9 items-center justify-center rounded-full border text-base transition-transform active:scale-90 ${
-                reaction === emoji ? "border-ember bg-ember/20" : "border-white/25 bg-white/5"
+                reaction === emoji ? "border-ember bg-ember-soft" : "border-border bg-overlay-soft"
               }`}
             >
               {emoji}
@@ -417,7 +419,7 @@ function StoryContent({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={update.mediaUrl} alt="" className="h-full w-full object-cover" />
         {update.content && !update.poll && !update.isQuestion && (
-          <p className="absolute bottom-32 left-4 right-4 text-sm font-medium text-white drop-shadow-lg">
+          <p className="absolute bottom-32 left-4 right-4 text-sm font-medium text-on-photo drop-shadow-lg">
             {update.content}
           </p>
         )}
@@ -441,12 +443,12 @@ function StoryContent({
           type="button"
           onClick={onToggleMute}
           aria-label={muted ? "Unmute" : "Mute"}
-          className="absolute right-4 top-20 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white"
+          className="absolute right-4 top-20 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-scrim text-on-photo"
         >
           {muted ? <MuteIcon className="h-4 w-4" /> : <VolumeIcon className="h-4 w-4" />}
         </button>
         {update.content && !update.poll && !update.isQuestion && (
-          <p className="absolute bottom-32 left-4 right-4 text-sm font-medium text-white drop-shadow-lg">
+          <p className="absolute bottom-32 left-4 right-4 text-sm font-medium text-on-photo drop-shadow-lg">
             {update.content}
           </p>
         )}
@@ -455,8 +457,8 @@ function StoryContent({
   }
 
   return (
-    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-surface-2 via-black to-black px-8">
-      <p className="text-center text-2xl font-bold leading-snug text-white">{update.content}</p>
+    <div className="flex h-full w-full items-center justify-center cover-placeholder px-8">
+      <p className="text-center text-2xl font-bold leading-snug text-on-photo">{update.content}</p>
     </div>
   );
 }

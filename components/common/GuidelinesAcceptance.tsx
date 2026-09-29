@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { acceptGuidelines } from "@/lib/actions/guidelines";
+import { ReadingTitle } from "@/components/ui/heading";
+import { PANEL_ACCENT } from "@/components/ui/panel";
 
 type GuidelinesAcceptanceProps = {
   isLoggedIn: boolean;
@@ -46,14 +48,14 @@ export function GuidelinesAcceptance({ isLoggedIn, initialAccepted }: Guidelines
   }
 
   return (
-    <section className="rounded-xl border border-ember/25 bg-ember/5 p-4">
+    <section className={PANEL_ACCENT}>
       <div ref={sentinelRef} aria-hidden="true" />
-      <h2 className="text-[1.3rem] font-bold tracking-tight text-ember">Accept these guidelines</h2>
+      <ReadingTitle>Accept These Guidelines</ReadingTitle>
 
       {!isLoggedIn ? (
         <p className="mt-2 text-sm leading-relaxed text-ink">
           Accepting these guidelines is required before you can publish on Zero.{" "}
-          <Link href="/login" className="font-semibold text-ember hover:text-ember/80">
+          <Link href="/login" className="font-semibold text-ember hover:underline">
             Log in
           </Link>{" "}
           to accept them.

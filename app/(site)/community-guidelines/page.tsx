@@ -2,6 +2,10 @@ import { HighlightedText } from "@/components/common/HighlightedText";
 import { GuidelinesAcceptance } from "@/components/common/GuidelinesAcceptance";
 import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { CardTitle, DisplayTitle, ReadingTitle } from "@/components/ui/heading";
+import { PANEL_DANGER } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
 
 export const metadata = {
   title: "Community Guidelines",
@@ -94,23 +98,23 @@ export default async function CommunityGuidelinesPage() {
 
   return (
     <main>
-      <div className="mx-auto max-w-2xl px-6 pb-10 pt-14">
-        <h1 className="whitespace-nowrap text-[clamp(2rem,6vw,3.75rem)] font-black leading-[0.9] tracking-tight">
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+        <DisplayTitle className="whitespace-nowrap">
           Community{" "}
-          <span className="bg-gradient-to-br from-ember to-ember/50 bg-clip-text text-transparent">
+          <span className="text-ember">
             Guidelines
           </span>
-        </h1>
+        </DisplayTitle>
         <p className="mt-3 text-sm text-ink-muted">
           Zero only works if people can trust what they see here. These are the rules that keep it that way.
         </p>
 
         <div className="mt-5 space-y-5">
           <section>
-            <h2 className="text-[1.3rem] font-bold tracking-tight text-ember">Not allowed on Zero</h2>
+            <ReadingTitle>Not Allowed on Zero</ReadingTitle>
 
-            <div className="mt-2 rounded-xl border border-danger/30 bg-danger/10 p-3.5">
-              <p className="text-sm font-bold text-danger">Zero tolerance, immediate action</p>
+            <div className={cn(PANEL_DANGER, "mt-2")}>
+              <p className="text-sm font-bold text-danger">Zero Tolerance, Immediate Action</p>
               <p className="mt-1 text-sm leading-relaxed text-ink">
                 These are never allowed, with no exceptions. We remove the content immediately, suspend or
                 permanently ban the account on the first confirmed case, and report it to the relevant
@@ -128,7 +132,7 @@ export default async function CommunityGuidelinesPage() {
             <div className="mt-4 space-y-3">
               {notAllowedGroups.map((group) => (
                 <div key={group.title}>
-                  <h3 className="text-[1.14rem] font-bold tracking-tight text-ember">{group.title}</h3>
+                  <CardTitle className="text-ember">{group.title}</CardTitle>
                   <p className="mt-0.5 text-sm leading-relaxed text-ink">
                     <HighlightedText text={group.body} />
                   </p>
@@ -143,7 +147,7 @@ export default async function CommunityGuidelinesPage() {
 
           {simpleSections.map((section) => (
             <section key={section.title}>
-              <h2 className="text-[1.3rem] font-bold tracking-tight text-ember">{section.title}</h2>
+              <ReadingTitle>{section.title}</ReadingTitle>
               <p className="mt-1 text-sm leading-relaxed text-ink">
                 <HighlightedText text={section.body} />
               </p>

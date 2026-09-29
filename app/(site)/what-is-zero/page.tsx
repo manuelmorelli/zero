@@ -11,11 +11,15 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
+import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
 import { Reveal } from "@/components/common/Reveal";
+import { DisplayTitle, SectionTitle } from "@/components/ui/heading";
+import { PANEL_ACCENT } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
 export const metadata = {
-  title: "What is Zero — Journeys told as they happen",
+  title: "What Is Zero | Journeys told as they happen",
   description:
     "Zero is built around Journeys: real paths documented from the very first day. Reputation earned over time, ranked by Trust Score instead of likes.",
 };
@@ -56,7 +60,7 @@ const howItWorks: Bullet[] = [
   { icon: MousePointerClick, text: "Publishing takes two clicks, maximum." },
   {
     icon: BadgeCheck,
-    text: "You can watch without an account — an account is only needed to follow, like, comment or save.",
+    text: "You can watch without an account. An account is only needed to follow, like, comment or save.",
   },
 ];
 
@@ -65,7 +69,7 @@ function BulletList({ items }: { items: Bullet[] }) {
     <ul className="mt-4 space-y-3">
       {items.map(({ icon: Icon, text }) => (
         <li key={text} className="flex gap-3 text-sm leading-relaxed text-ink">
-          <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-ember/30 bg-ember/10 text-ember">
+          <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
             <Icon className="h-3.5 w-3.5" aria-hidden="true" />
           </span>
           <span className="pt-1">{text}</span>
@@ -78,22 +82,22 @@ function BulletList({ items }: { items: Bullet[] }) {
 export default function WhatIsZeroPage() {
   return (
     <div className="min-h-screen bg-bg text-ink">
-      <main className="relative mx-auto max-w-3xl px-5 pb-10 pt-16 md:px-8 md:pt-20">
+      <main className={cn(PAGE_WIDTH.wide, "relative max-w-3xl pb-10 pt-16 md:pt-20")}>
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[28rem] w-[46rem] -translate-x-1/2 rounded-full bg-ember/10 blur-[120px]"
+          className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[28rem] w-[46rem] -translate-x-1/2 rounded-full bg-ember-soft blur-[120px]"
         />
         <Reveal>
-          <p className="inline-flex items-center gap-2 rounded-full border border-ember/30 bg-ember/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.32em] text-ember">
+          <p className="inline-flex items-center gap-2 rounded-full border border-ember-line bg-ember-soft px-3 py-1 text-sm uppercase tracking-[0.32em] text-ember">
             <Sparkles className="h-3 w-3" aria-hidden="true" />
             Every journey starts from
           </p>
-          <h1 className="mt-2 text-5xl font-black leading-[0.9] tracking-tight sm:text-6xl">
+          <DisplayTitle className="mt-2">
             What is{" "}
-            <span className="bg-gradient-to-br from-ember to-ember/50 bg-clip-text text-transparent">
+            <span className="text-ember">
               Zero
             </span>
-          </h1>
+          </DisplayTitle>
         </Reveal>
 
         <div className="mt-5 space-y-3">
@@ -101,19 +105,19 @@ export default function WhatIsZeroPage() {
             highlighted.has(text) ? (
               <p
                 key={text.slice(0, 40)}
-                className="rounded-2xl border border-ember/25 bg-gradient-to-r from-ember/12 to-transparent px-5 py-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl"
+                className={cn(PANEL_ACCENT, "text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}
               >
                 {text}
               </p>
             ) : (
-              <p key={text.slice(0, 40)} className="text-[0.95rem] leading-relaxed text-ink">
+              <p key={text.slice(0, 40)} className="text-base leading-relaxed text-ink">
                 {text}
               </p>
             )
           )}
-          <p className="relative overflow-hidden rounded-2xl border border-ember/30 bg-gradient-to-br from-ember/15 via-ember/5 to-transparent px-6 py-6 text-2xl font-black tracking-tight text-ink sm:text-3xl">
+          <p className={cn(PANEL_ACCENT, "relative overflow-hidden text-2xl font-black tracking-tight text-ink sm:text-3xl")}>
             Every Journey Starts From{" "}
-            <span className="bg-gradient-to-br from-ember to-ember/50 bg-clip-text text-transparent">
+            <span className="text-ember">
               Zero.
             </span>
           </p>
@@ -121,14 +125,14 @@ export default function WhatIsZeroPage() {
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <Reveal>
-            <section className="h-full rounded-2xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] p-5">
-              <h2 className="text-base font-bold tracking-tight">What makes Zero different</h2>
+            <section className={cn(PANEL_ACCENT, "h-full")}>
+              <SectionTitle>What Makes Zero Different</SectionTitle>
               <BulletList items={different} />
             </section>
           </Reveal>
           <Reveal delayMs={80}>
-            <section className="h-full rounded-2xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] p-5">
-              <h2 className="text-base font-bold tracking-tight">How it works</h2>
+            <section className={cn(PANEL_ACCENT, "h-full")}>
+              <SectionTitle>How It Works</SectionTitle>
               <BulletList items={howItWorks} />
             </section>
           </Reveal>
@@ -137,7 +141,7 @@ export default function WhatIsZeroPage() {
         <Reveal>
           <p className="mt-5 text-sm text-ink">
             Curious how the algorithm actually decides what to show?{" "}
-            <Link href="/how-it-works#algorithm" className="font-semibold text-ember hover:text-ember/80">
+            <Link href="/how-it-works#algorithm" className="font-semibold text-ember hover:underline">
               Know the Algorithm. Know Zero.
             </Link>
           </p>

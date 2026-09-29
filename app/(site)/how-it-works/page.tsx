@@ -1,6 +1,10 @@
 import { FileVideo, Maximize, Sparkles, UploadCloud, type LucideIcon } from "lucide-react";
-import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
+import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
 import { Reveal } from "@/components/common/Reveal";
+import { CardTitle, DisplayTitle, ReadingTitle } from "@/components/ui/heading";
+import { PANEL_ACCENT } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
 export const metadata = {
   title: "Know the Algorithm. Know Zero.",
@@ -64,7 +68,7 @@ function BulletList({ items }: { items: Bullet[] }) {
     <ul className="mt-3 space-y-2">
       {items.map(({ icon: Icon, text }) => (
         <li key={text} className="flex gap-3 text-sm leading-relaxed text-ink">
-          <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-ember/30 bg-ember/10 text-ember">
+          <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
             <Icon className="h-3.5 w-3.5" aria-hidden="true" />
           </span>
           <span className="pt-1">{text}</span>
@@ -77,35 +81,32 @@ function BulletList({ items }: { items: Bullet[] }) {
 export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-bg text-ink">
-      <main className="relative mx-auto max-w-3xl px-5 pb-10 pt-16 md:px-8 md:pt-20">
+      <main className={cn(PAGE_WIDTH.wide, "relative max-w-3xl pb-10 pt-16 md:pt-20")}>
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[28rem] w-[46rem] -translate-x-1/2 rounded-full bg-ember/10 blur-[120px]"
+          className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[28rem] w-[46rem] -translate-x-1/2 rounded-full bg-ember-soft blur-[120px]"
         />
         <Reveal>
-          <p className="inline-flex items-center gap-2 rounded-full border border-ember/30 bg-ember/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.32em] text-ember">
+          <p className="inline-flex items-center gap-2 rounded-full border border-ember-line bg-ember-soft px-3 py-1 text-sm uppercase tracking-[0.32em] text-ember">
             <Sparkles className="h-3 w-3" aria-hidden="true" />
             How Zero really works
           </p>
-          <h1 className="mt-2 text-5xl font-black leading-[0.9] tracking-tight sm:text-6xl">
+          <DisplayTitle className="mt-2">
             Know the Algorithm. Know{" "}
-            <span className="bg-gradient-to-br from-ember to-ember/50 bg-clip-text text-transparent">
+            <span className="text-ember">
               Zero
             </span>
             .
-          </h1>
+          </DisplayTitle>
           <p className="mt-2 text-ink">
             Three steps to get started, the questions people ask most, and how everything really works.
           </p>
         </Reveal>
 
         <Reveal delayMs={100}>
-          <h2
-            id="algorithm"
-            className="mb-3 mt-8 scroll-mt-24 text-[1.73rem] font-bold tracking-tight text-ember sm:text-[2.16rem]"
-          >
+          <ReadingTitle id="algorithm" className="mb-3 mt-8 scroll-mt-24">
             How the algorithm decides what to show
-          </h2>
+          </ReadingTitle>
         </Reveal>
         <Reveal delayMs={140}>
           <div className="space-y-3 text-ink">
@@ -125,43 +126,43 @@ export default function HowItWorksPage() {
           </div>
         </Reveal>
         <Reveal delayMs={180}>
-          <p className="mt-4 rounded-2xl border border-ember/25 bg-gradient-to-r from-ember/12 to-transparent px-5 py-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl">
+          <p className={cn(PANEL_ACCENT, "mt-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
             A creator with 5 followers, where everyone finishes every episode, is shown to more people
             than a creator with 600 followers that nobody finishes.
           </p>
         </Reveal>
         <Reveal delayMs={200}>
-          <p className="mt-4 rounded-2xl border border-ember/25 bg-gradient-to-r from-ember/12 to-transparent px-5 py-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl">
+          <p className={cn(PANEL_ACCENT, "mt-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
             Paying doesn&apos;t get you seen more. On Zero, a Journey rises only because people
             actually watch and love it, never because someone paid for it.
           </p>
         </Reveal>
 
         <Reveal delayMs={100}>
-          <h2 className="mb-4 mt-10 text-[1.73rem] font-bold tracking-tight text-ember sm:text-[2.16rem]">
-            Three steps to get started
-          </h2>
+          <ReadingTitle className="mb-4 mt-10">
+            Three Steps to Get Started
+          </ReadingTitle>
         </Reveal>
         <div className="grid gap-6 md:grid-cols-3">
           {steps.map((step, index) => (
             <Reveal key={step.number} delayMs={index * 120}>
               <span className="text-sm font-bold text-ink-faint">{step.number}</span>
-              <h2 className="mt-2 text-[1.29rem] font-bold text-ember">{step.title}</h2>
+              <CardTitle as="h2" className="mt-2 text-ember">{step.title}</CardTitle>
               <p className="mt-1.5 text-ink">{step.text}</p>
             </Reveal>
           ))}
         </div>
 
         <Reveal delayMs={100}>
-          <h2 className="mb-4 mt-10 text-[1.73rem] font-bold tracking-tight text-ember sm:text-[2.16rem]">
-            Frequently asked questions
-          </h2>
+          <ReadingTitle className="mb-4 mt-10">
+            Frequently Asked Questions
+          </ReadingTitle>
         </Reveal>
         <div className="divide-y divide-border">
           {questions.map((item, index) => (
             <Reveal key={item.q} delayMs={index * 60}>
               <details className="group py-3.5">
-                <summary className="flex cursor-pointer list-none items-center justify-between text-[1.15rem] font-semibold text-ember">
+                <summary className="flex cursor-pointer list-none items-center justify-between text-lg font-semibold text-ember">
                   {item.q}
                   <span className="ml-4 text-ink transition-transform group-open:rotate-45">
                     +
@@ -175,19 +176,19 @@ export default function HowItWorksPage() {
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <Reveal>
-            <section className="h-full rounded-2xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] p-5">
-              <h2 className="text-[1.15rem] font-bold tracking-tight text-ember">Publishing isn&apos;t the end</h2>
+            <section className={cn(PANEL_ACCENT, "h-full")}>
+              <CardTitle as="h2" className="text-ember">Publishing Isn&apos;t the End</CardTitle>
               <p className="mt-3 text-sm leading-relaxed text-ink">
                 On Zero, publishing an episode isn&apos;t final. Found a mistake, or want to make it
                 better? You can swap the video for a new one (it keeps its spot in your Journey, and
-                all its likes and views). Other apps make you delete everything and start from zero
+                all its likes and views). Other apps make you delete everything and start again with no
                 views. Zero doesn&apos;t.
               </p>
             </section>
           </Reveal>
           <Reveal delayMs={80}>
-            <section className="h-full rounded-2xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] p-5">
-              <h2 className="text-[1.15rem] font-bold tracking-tight text-ember">Before you upload</h2>
+            <section className={cn(PANEL_ACCENT, "h-full")}>
+              <CardTitle as="h2" className="text-ember">Before You Upload</CardTitle>
               <BulletList items={uploadTips} />
             </section>
           </Reveal>

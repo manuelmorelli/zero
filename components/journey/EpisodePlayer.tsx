@@ -4,11 +4,12 @@ import Link from "next/link";
 import Hls from "hls.js";
 import { useEffect, useRef, useState } from "react";
 import { saveEpisodeProgress } from "@/lib/actions/progress";
-import { Avatar } from "@/components/common/Avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
 import { TrustyButton } from "@/components/journey/TrustyButton";
 import { ShareButton } from "@/components/common/ShareButton";
 import { VideoPlayer, type VideoPlayerHandle } from "@/components/common/VideoPlayer";
+import { PageTitle } from "@/components/ui/heading";
 
 // Sotto questa quota non vale la pena riprendere da dove si era arrivati (praticamente l'inizio).
 const RESUME_THRESHOLD_SEC = 5;
@@ -188,14 +189,14 @@ export function EpisodePlayer({
                 className="text-ember transition-opacity hover:opacity-80"
               />
             </div>
-            <p className="pr-24 text-[0.66rem] leading-none tracking-[0.22em] text-ember uppercase">
+            <p className="pr-24 text-sm leading-none tracking-[0.22em] text-ember uppercase">
               Episode {episode.number}
               {journeyCategory ? ` · ${journeyCategory}` : ""}
             </p>
-            <h1 className="mt-1 text-xl font-bold leading-tight tracking-tight md:text-2xl">
+            <PageTitle className="mt-1">
               {episode.title}
-            </h1>
-            <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+            </PageTitle>
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
               <Link href={`/journeys/${journeyId}`} className="transition-colors hover:text-ember">
                 {journeyTitle}
               </Link>
@@ -204,7 +205,7 @@ export function EpisodePlayer({
                 href={`/profile/${creator.userId}`}
                 className="flex min-w-0 items-center gap-1.5 transition-colors hover:text-ember"
               >
-                <Avatar name={creator.displayName} className="h-6 w-6 text-[0.6rem]" />
+                <Avatar name={creator.displayName} size="sm" />
                 <span className="truncate">{creator.displayName}</span>
               </Link>
               {trustScore !== null && <TrustScoreBadge score={trustScore} />}

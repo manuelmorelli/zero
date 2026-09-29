@@ -136,15 +136,15 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
           type="button"
           aria-label="Play video"
           onClick={toggle}
-          className="absolute inset-0 grid place-items-center bg-bg/35 transition-opacity"
+          className="absolute inset-0 grid place-items-center bg-scrim transition-opacity"
         >
-          <span className="grid h-16 w-16 place-items-center rounded-full border border-white/20 bg-bg/60 backdrop-blur-md transition-transform duration-300 hover:scale-105">
+          <span className="grid h-16 w-16 place-items-center rounded-full border border-border bg-scrim backdrop-blur-md transition-transform duration-300 hover:scale-105">
             <Play className="h-6 w-6 fill-current text-ember" aria-hidden="true" />
           </span>
         </button>
       )}
 
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-bg/85 to-transparent p-3 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100">
+      <div className="absolute inset-x-0 bottom-0 card-scrim p-3 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100">
         <input
           type="range"
           aria-label="Seek"
@@ -159,7 +159,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
           }}
           className="h-1 w-full cursor-pointer accent-ember"
         />
-        <div className="mt-2 flex items-center gap-3 text-xs text-ink-muted">
+        <div className="mt-2 flex items-center gap-3 text-sm text-ink-muted">
           <button type="button" onClick={toggle} aria-label={playing ? "Pause" : "Play"} className="text-ink">
             {playing ? (
               <Pause className="h-5 w-5 fill-current" aria-hidden="true" />

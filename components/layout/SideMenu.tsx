@@ -88,12 +88,12 @@ export function SideMenu() {
           <>
             <div
               onClick={close}
-              className={`fixed inset-0 z-[60] bg-black/70 transition-opacity ${
+              className={`fixed inset-0 z-[60] bg-scrim transition-opacity ${
                 open ? "opacity-100" : "pointer-events-none opacity-0"
               }`}
             />
             <aside
-              className={`fixed inset-y-0 left-0 z-[60] flex w-80 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-surface shadow-2xl shadow-black/50 transition-transform duration-300 ${
+              className={`fixed inset-y-0 left-0 z-[60] flex w-80 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-surface shadow-2xl  transition-transform duration-300 ${
                 open ? "translate-x-0" : "-translate-x-full"
               }`}
               aria-hidden={!open}
@@ -114,7 +114,7 @@ export function SideMenu() {
               {isLoggedIn && (
                 <MenuSection title="You">
                   <MenuLink href={`/profile/${data.user.id}`} onClick={close}>
-                    Your profile
+                    Your Profile
                   </MenuLink>
                   <MenuLink href="/dashboard" onClick={close}>
                     Dashboard
@@ -146,13 +146,13 @@ export function SideMenu() {
                       key={link.label}
                       href={link.href}
                       onClick={close}
-                      className="text-xs text-ink-muted transition-colors hover:text-ink"
+                      className="text-sm text-ink-muted transition-colors hover:text-ink"
                     >
                       {link.label}
                     </Link>
                   ))}
                 </div>
-                <p className="text-xs text-ink-faint">© {new Date().getFullYear()} Zero</p>
+                <p className="text-sm text-ink-faint">© {new Date().getFullYear()} Zero</p>
               </div>
             </aside>
           </>,
@@ -165,7 +165,7 @@ export function SideMenu() {
 function MenuSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="border-b border-border px-3 py-4">
-      <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">{title}</p>
+      <p className="px-3 pb-2 text-sm font-semibold uppercase tracking-wide text-ink-faint">{title}</p>
       <div className="space-y-0.5">{children}</div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { SectionTitle } from "@/components/ui/heading";
 
 type HorizontalScrollRowProps = {
   /** Ancora per il collegamento diretto da un'altra pagina (es. Categories in Home). */
@@ -48,7 +49,7 @@ export function HorizontalScrollRow({ id, title, subtitle, children }: Horizonta
   return (
     <section id={id} className="scroll-mt-24">
       <div>
-        <h2 className="text-base font-bold tracking-tight">{title}</h2>
+        <SectionTitle>{title}</SectionTitle>
         {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}
       </div>
 
@@ -62,7 +63,7 @@ export function HorizontalScrollRow({ id, title, subtitle, children }: Horizonta
             type="button"
             onClick={() => scrollByPage(-1)}
             aria-label="Scroll left"
-            className="absolute left-0 top-1/2 hidden h-9 w-9 -translate-x-2 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-bg/90 text-ink-muted shadow-lg backdrop-blur transition-colors hover:border-ember/40 hover:text-ember sm:flex"
+            className="absolute left-0 top-1/2 hidden h-9 w-9 -translate-x-2 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-scrim text-ink-muted shadow-lg backdrop-blur transition-colors hover:border-ember hover:text-ember sm:flex"
           >
             <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           </button>
@@ -73,7 +74,7 @@ export function HorizontalScrollRow({ id, title, subtitle, children }: Horizonta
             type="button"
             onClick={() => scrollByPage(1)}
             aria-label="Scroll right"
-            className="absolute right-0 top-1/2 hidden h-9 w-9 -translate-y-1/2 translate-x-2 items-center justify-center rounded-full border border-border bg-bg/90 text-ink-muted shadow-lg backdrop-blur transition-colors hover:border-ember/40 hover:text-ember sm:flex"
+            className="absolute right-0 top-1/2 hidden h-9 w-9 -translate-y-1/2 translate-x-2 items-center justify-center rounded-full border border-border bg-scrim text-ink-muted shadow-lg backdrop-blur transition-colors hover:border-ember hover:text-ember sm:flex"
           >
             <ChevronRight className="h-4 w-4" aria-hidden="true" />
           </button>

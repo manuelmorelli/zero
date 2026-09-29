@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Cropper, { type Area } from "react-easy-crop";
 import { getCroppedImageBlob } from "@/lib/cropImage";
+import { Button } from "@/components/ui/button";
+import { CardTitle } from "@/components/ui/heading";
 
 type ImageCropperProps = {
   imageSrc: string;
@@ -34,7 +36,7 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 px-4 py-8"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-scrim px-4 py-8"
       onClick={(event) => {
         // Il riquadro può comparire annidato dentro un altro overlay (es. "Edit profile"):
         // ferma la propagazione, altrimenti il click sullo sfondo chiuderebbe anche quello.
@@ -47,8 +49,8 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
         onClick={(event) => event.stopPropagation()}
       >
         <div className="border-b border-border px-5 py-4">
-          <h2 className="text-sm font-bold text-ink">{title}</h2>
-          <p className="mt-1 text-xs text-ink-muted">Drag to move, use the slider to zoom.</p>
+          <CardTitle as="h2">{title}</CardTitle>
+          <p className="mt-1 text-sm text-ink-muted">Drag to move, use the slider to zoom.</p>
         </div>
 
         <div className="relative h-72 w-full bg-black">
@@ -80,21 +82,12 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
           />
 
           <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="flex-1 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-ink-muted"
-            >
+            <Button variant="secondary" onClick={onCancel} className="flex-1">
               Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleConfirm}
-              disabled={processing || !croppedAreaPixels}
-              className="flex-1 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-            >
+            </Button>
+            <Button variant="primary" onClick={handleConfirm} disabled={processing || !croppedAreaPixels} className="flex-1">
               {processing ? "Applying…" : "Apply"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

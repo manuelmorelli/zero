@@ -3,6 +3,7 @@ import { requireSession } from "@/lib/session";
 import { getConversationChatData } from "@/lib/messaging";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { ChatWindow } from "@/components/messages/ChatWindow";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
 export default async function ConversationPage({
   params,
@@ -23,7 +24,7 @@ export default async function ConversationPage({
   return (
     <main>
 
-      <div className="mx-auto max-w-2xl px-6 pb-10 pt-24">
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
         <ChatWindow
           conversationId={conversationId}
           currentUserId={user.id}

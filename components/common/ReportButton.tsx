@@ -5,7 +5,11 @@ import { Flag } from "lucide-react";
 import { toast } from "sonner";
 import { createReport } from "@/lib/actions/report";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CHIP, CHIP_SELECTED } from "@/components/ui/panel";
 import type { ReportTargetType } from "@/generated/prisma/client";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const REPORT_REASONS = ["Spam", "Inappropriate content", "Copyright violation", "Harassment", "Other"] as const;
 
@@ -55,7 +59,7 @@ export function ReportButton({ targetType, targetId, className }: ReportButtonPr
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Report content</DialogTitle>
+            <DialogTitle>Report Content</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 px-5 pb-1">
             <div className="flex flex-wrap gap-1.5">
@@ -64,11 +68,7 @@ export function ReportButton({ targetType, targetId, className }: ReportButtonPr
                   key={option}
                   type="button"
                   onClick={() => setReason(option)}
-                  className={`rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${
-                    reason === option
-                      ? "border-ink bg-ink text-bg"
-                      : "border-border bg-surface-2 text-ink hover:border-ink-muted"
-                  }`}
+                  className={reason === option ? CHIP_SELECTED : CHIP}
                 >
                   {option}
                 </button>
@@ -80,25 +80,16 @@ export function ReportButton({ targetType, targetId, className }: ReportButtonPr
               maxLength={500}
               rows={3}
               placeholder="Add details (optional)"
-              className="w-full resize-none rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+              className={cn(FIELD, "resize-none")}
             />
           </div>
           <DialogFooter>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-            >
+            <Button variant="secondary" onClick={() => setOpen(false)}>
               Cancel
-            </button>
-            <button
-              type="button"
-              disabled={pending}
-              onClick={handleSubmit}
-              className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90 disabled:opacity-50"
-            >
+            </Button>
+            <Button variant="danger" disabled={pending} onClick={handleSubmit}>
               {pending ? "Sending…" : "Send report"}
-            </button>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

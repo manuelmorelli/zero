@@ -3,6 +3,10 @@ import { requireSession } from "@/lib/session";
 import { listConversations } from "@/lib/messaging";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { formatRelativeDate } from "@/lib/utils";
+import { Avatar } from "@/components/ui/avatar";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { PageTitle } from "@/components/ui/heading";
+import { NOTICE } from "@/components/ui/panel";
 
 export default async function MessagesPage() {
   const { user } = await requireSession();
@@ -24,11 +28,11 @@ export default async function MessagesPage() {
   return (
     <main>
 
-      <div className="mx-auto max-w-2xl px-6 pb-10 pt-24">
-        <h1 className="text-xl font-bold tracking-tight">Messages</h1>
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+        <PageTitle>Messages</PageTitle>
 
         {items.length === 0 ? (
-          <p className="mt-6 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
+          <p className={`mt-6 ${NOTICE}`}>
             You don&apos;t have any conversations yet. You can message someone you follow, or who
             follows you, from their profile.
           </p>
@@ -44,11 +48,11 @@ export default async function MessagesPage() {
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center justify-between gap-2">
                     <span className="truncate text-sm font-semibold text-ink">{conversation.otherUserName}</span>
-                    <span className="shrink-0 text-[11px] text-ink-faint">
+                    <span className="shrink-0 text-sm text-ink-faint">
                       {formatRelativeDate(conversation.lastMessageAt)}
                     </span>
                   </span>
-                  <span className="mt-0.5 line-clamp-1 text-xs text-ink-muted">
+                  <span className="mt-0.5 line-clamp-1 text-sm text-ink-muted">
                     {conversation.lastMessagePreview ?? "No messages yet"}
                   </span>
                 </span>
@@ -61,23 +65,5 @@ export default async function MessagesPage() {
         )}
       </div>
     </main>
-  );
-}
-
-function Avatar({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
-  if (avatarUrl) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={avatarUrl} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />;
-  }
-  const initials = name
-    .split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-  return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-bold text-ink-muted">
-      {initials}
-    </span>
   );
 }

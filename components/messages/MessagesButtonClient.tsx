@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { formatRelativeDate } from "@/lib/utils";
-import { Avatar } from "./Avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { InlineChat } from "./InlineChat";
 
 type ConversationItem = {
@@ -56,11 +56,11 @@ export function MessagesButtonClient({ unreadCount, conversations, currentUserId
         // components/layout/NotificationBellButton.tsx): +/campanella occupano già
         // 8.5rem di altezza totale da terra, questo si aggiunge sopra con lo stesso gap.
         style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 7.75rem)" }}
-        className="fixed right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface text-ink shadow-xl shadow-black/40 transition-transform hover:scale-105 active:scale-95"
+        className="fixed right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95"
       >
         <MessageIcon className="h-5 w-5" />
         {displayedUnreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1 text-[11px] font-bold text-bg">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1 text-sm font-bold text-bg">
             {displayedUnreadCount > 9 ? "9+" : displayedUnreadCount}
           </span>
         )}
@@ -73,7 +73,7 @@ export function MessagesButtonClient({ unreadCount, conversations, currentUserId
             role="menu"
             aria-label="Messages panel"
             style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 11.25rem)" }}
-            className="fixed right-5 z-40 flex max-h-[70vh] w-full max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xl shadow-black/40"
+            className="fixed right-5 z-40 flex max-h-[70vh] w-full max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xl"
           >
             {active ? (
               <InlineChat
@@ -87,13 +87,13 @@ export function MessagesButtonClient({ unreadCount, conversations, currentUserId
             ) : (
               <>
                 <div className="flex items-center justify-between border-b border-border px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">Messages</p>
+                  <p className="text-sm font-semibold uppercase tracking-wider text-ink-faint">Messages</p>
                   <Link
                     href="/messages"
                     onClick={closeAll}
-                    className="text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
+                    className="text-sm font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
                   >
-                    View all
+                    View All
                   </Link>
                 </div>
 
@@ -112,11 +112,11 @@ export function MessagesButtonClient({ unreadCount, conversations, currentUserId
                         <span className="min-w-0 flex-1">
                           <span className="flex items-center justify-between gap-2">
                             <span className="truncate text-sm font-semibold text-ink">{conversation.otherUserName}</span>
-                            <span className="shrink-0 text-[11px] text-ink-faint">
+                            <span className="shrink-0 text-sm text-ink-faint">
                               {formatRelativeDate(new Date(conversation.lastMessageAt))}
                             </span>
                           </span>
-                          <span className="mt-0.5 line-clamp-1 text-xs text-ink-muted">
+                          <span className="mt-0.5 line-clamp-1 text-sm text-ink-muted">
                             {conversation.lastMessagePreview ?? "No messages yet"}
                           </span>
                         </span>

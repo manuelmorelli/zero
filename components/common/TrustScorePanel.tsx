@@ -23,7 +23,7 @@ export function TrustScorePanel({
 }) {
   return (
     <span
-      className={`absolute z-20 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-surface py-2.5 pl-3 pr-7 text-left text-xs font-medium leading-relaxed text-ink-muted shadow-lg ${className}`}
+      className={`absolute z-20 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-surface py-2.5 pl-3 pr-7 text-left text-sm font-medium leading-relaxed text-ink-muted shadow-lg ${className}`}
     >
       <button
         type="button"
@@ -36,8 +36,8 @@ export function TrustScorePanel({
         </svg>
       </button>
       {active ? TRUST_SCORE_EXPLANATION : TRUST_SCORE_INACTIVE_EXPLANATION}{" "}
-      <Link href={TRUST_SCORE_LEARN_MORE_HREF} className="font-semibold text-ember hover:text-ember/80">
-        Learn more →
+      <Link href={TRUST_SCORE_LEARN_MORE_HREF} className="font-semibold text-ember hover:underline">
+        Learn More →
       </Link>
     </span>
   );

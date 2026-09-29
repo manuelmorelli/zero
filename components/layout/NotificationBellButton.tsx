@@ -50,11 +50,11 @@ export function NotificationBellButton({ unreadCount, notifications }: Notificat
         // proprio header (SiteHeader) che occupa già l'angolo in alto a destra — l'angolo in
         // basso a destra, già usato dal "+", è l'unico punto libero su ogni pagina.
         style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 4.25rem)" }}
-        className="fixed right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface text-ink shadow-xl shadow-black/40 transition-transform hover:scale-105 active:scale-95"
+        className="fixed right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95"
       >
         <BellIcon className="h-5 w-5" />
         {unread > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1 text-[11px] font-bold text-bg">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1 text-sm font-bold text-bg">
             {unread > 9 ? "9+" : unread}
           </span>
         )}
@@ -67,17 +67,17 @@ export function NotificationBellButton({ unreadCount, notifications }: Notificat
             role="menu"
             aria-label="Notifications panel"
             style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 7.75rem)" }}
-            className="fixed right-5 z-40 flex max-h-[70vh] w-full max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xl shadow-black/40"
+            className="fixed right-5 z-40 flex max-h-[70vh] w-full max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">Notifications</p>
+              <p className="text-sm font-semibold uppercase tracking-wider text-ink-faint">Notifications</p>
               {unread > 0 && (
                 <button
                   type="button"
                   onClick={handleMarkAllRead}
-                  className="text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
+                  className="text-sm font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
                 >
-                  Mark all as read
+                  Mark All as Read
                 </button>
               )}
             </div>
@@ -107,7 +107,7 @@ function NotificationRow({ item, onOpen }: { item: NotificationItem; onOpen: () 
       />
       <div className="min-w-0">
         <p className={`text-sm ${item.read ? "text-ink-muted" : "text-ink"}`}>{item.content}</p>
-        <p className="mt-0.5 text-xs text-ink-faint">{formatRelativeDate(new Date(item.createdAt))}</p>
+        <p className="mt-0.5 text-sm text-ink-faint">{formatRelativeDate(new Date(item.createdAt))}</p>
       </div>
     </div>
   );

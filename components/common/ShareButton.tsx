@@ -87,7 +87,7 @@ export function ShareButton({
         aria-label={`Share ${label}`}
         className={
           className ??
-          "grid h-7 w-7 place-items-center rounded-full border border-white/15 bg-bg/50 text-ember backdrop-blur-md transition-colors hover:bg-bg/80"
+          "grid h-7 w-7 place-items-center rounded-full border border-border bg-scrim text-ember backdrop-blur-md transition-colors hover:bg-scrim"
         }
       >
         <Send className="h-3.5 w-3.5" aria-hidden="true" />
@@ -97,7 +97,7 @@ export function ShareButton({
           <Send className="h-4 w-4" aria-hidden="true" />
           Add to your Update
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleCopyLink}>Copy link</DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleCopyLink}>Copy Link</DropdownMenuItem>
         {canNativeShare && <DropdownMenuItem onSelect={handleNativeShare}>Share via…</DropdownMenuItem>}
       </DropdownMenuContent>
     </DropdownMenu>

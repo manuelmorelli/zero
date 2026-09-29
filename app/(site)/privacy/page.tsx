@@ -1,4 +1,6 @@
 import { HighlightedText } from "@/components/common/HighlightedText";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { DisplayTitle, ReadingTitle } from "@/components/ui/heading";
 
 export const metadata = {
   title: "Privacy Policy",
@@ -72,8 +74,8 @@ const sections: Section[] = [
 export default function PrivacyPage() {
   return (
     <main>
-      <div className="mx-auto max-w-2xl px-6 pb-10 pt-14">
-        <h1 className="text-5xl font-black leading-[0.9] tracking-tight sm:text-6xl">Privacy Policy</h1>
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+        <DisplayTitle>Privacy Policy</DisplayTitle>
         <p className="mt-3 text-sm text-ink-muted">
           What we collect, why, and the rights you have over it.
         </p>
@@ -81,7 +83,7 @@ export default function PrivacyPage() {
         <div className="mt-5 space-y-4">
           {sections.map((section) => (
             <section key={section.title}>
-              <h2 className="text-[1.3rem] font-bold tracking-tight text-ember">{section.title}</h2>
+              <ReadingTitle>{section.title}</ReadingTitle>
               <div className="mt-1 space-y-1.5">
                 {section.body.map((paragraph) => (
                   <p key={paragraph} className="text-sm leading-relaxed text-ink">

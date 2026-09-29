@@ -1,6 +1,9 @@
 "use client";
 
 import { MESSAGE_MAX_LENGTH } from "@/lib/constants/messages";
+import { Button } from "@/components/ui/button";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 type ChatComposerProps = {
   canWrite: boolean;
@@ -32,22 +35,18 @@ export function ChatComposer({
             maxLength={MESSAGE_MAX_LENGTH}
             placeholder={`Message ${otherUserName}…`}
             disabled={sending}
-            className="w-full rounded-full border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted disabled:opacity-50"
+            className={cn(FIELD, "rounded-full bg-surface-2")}
           />
-          <button
-            type="submit"
-            disabled={sending || !input.trim()}
-            className="shrink-0 rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-          >
+          <Button variant="primary" type="submit" disabled={sending || !input.trim()} className="shrink-0">
             Send
-          </button>
+          </Button>
         </form>
       ) : (
-        <p className="text-center text-xs text-ink-faint">
+        <p className="text-center text-sm text-ink-faint">
           You can only message people you follow, or who follow you.
         </p>
       )}
-      {error && <p className="mt-2 text-center text-xs text-danger">{error}</p>}
+      {error && <p className="mt-2 text-center text-sm text-danger">{error}</p>}
     </div>
   );
 }

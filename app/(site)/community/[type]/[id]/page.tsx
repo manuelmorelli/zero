@@ -134,7 +134,7 @@ export default async function CommunityListingDetailPage({
             <>
               <span className="text-xl font-bold text-ink">€{Number(listing.price)}</span>
               <Button variant="secondary" disabled title="Coming soon: payments aren't connected yet">
-                Coming soon
+                Coming Soon
               </Button>
             </>
           )}
