@@ -42,9 +42,9 @@ export function CommunityAiAttachMenu({ onFiles }: { onFiles: (files: FileList |
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label="Attach photos or PDFs"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
         >
-          <Plus className="h-4 w-4" aria-hidden="true" />
+          <Plus className="h-5 w-5" aria-hidden="true" />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" align="start" className="w-60">
           <DropdownMenuItem onSelect={() => photoInputRef.current?.click()}>

@@ -10,6 +10,9 @@ export type CommunityAiChatMessage = {
   imageKey?: string;
   /** Foto/PDF allegati dal creator col "+". */
   attachments?: CommunityAiAttachment[];
+  /** Solo risposte AI: la memoria Gemini da cui era partito questo turno, per "Regenerate"
+   * (null = primo turno). Assente nelle chat salvate prima di questa funzione. */
+  parentInteractionId?: string | null;
 };
 
 export type CommunityAiPendingDraft = { type: CommunityListingType; draft: CommunityListingDraft };
