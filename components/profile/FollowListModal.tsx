@@ -2,8 +2,7 @@
 
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { useState } from "react";
-import { toggleFollow } from "@/lib/actions/follow";
+import { FollowButton } from "@/components/profile/FollowButton";
 import type { FollowListPerson } from "@/lib/profile/followList";
 
 type FollowListModalProps = {
@@ -20,7 +19,7 @@ type FollowListModalProps = {
 export function FollowListModal({ title, people, loading, viewerId, isLoggedIn, onClose }: FollowListModalProps) {
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-8"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-scrim px-4 py-8"
       onClick={onClose}
     >
       <div
@@ -65,21 +64,10 @@ function PersonRow({
   viewerId: string | null;
   isLoggedIn: boolean;
 }) {
-  const [isFollowing, setIsFollowing] = useState(person.isFollowedByViewer);
-  const [pending, setPending] = useState(false);
   const isSelf = viewerId === person.id;
 
-  async function handleClick() {
-    const previous = isFollowing;
-    setIsFollowing(!previous);
-    setPending(true);
-    const result = await toggleFollow(person.id);
-    setPending(false);
-    if (result.error) setIsFollowing(previous);
-  }
-
   return (
-    <div className="flex items-center gap-3 border-b border-border/50 px-5 py-3 last:border-0">
+    <div className="flex items-center gap-3 border-b border-border px-5 py-3 last:border-0">
       <Link href={`/profile/${person.username ?? person.id}`} className="flex min-w-0 flex-1 items-center gap-3">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-ink-muted">
           {person.avatarUrl ? (
@@ -91,23 +79,12 @@ function PersonRow({
         </span>
         <span className="min-w-0">
           <span className="block truncate text-sm font-semibold text-ink">{person.name}</span>
-          {person.username && <span className="block truncate text-xs text-ink-muted">@{person.username}</span>}
+          {person.username && <span className="block truncate text-sm text-ink-muted">@{person.username}</span>}
         </span>
       </Link>
 
       {isLoggedIn && !isSelf && (
-        <button
-          type="button"
-          onClick={handleClick}
-          disabled={pending}
-          className={
-            isFollowing
-              ? "shrink-0 rounded-full border border-border px-3.5 py-1.5 text-xs font-semibold text-ink-muted transition-colors hover:border-ink-muted disabled:opacity-50"
-              : "shrink-0 rounded-full bg-ink px-3.5 py-1.5 text-xs font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-          }
-        >
-          {isFollowing ? "Following" : "Follow"}
-        </button>
+        <FollowButton userId={person.id} initialIsFollowing={person.isFollowedByViewer} isLoggedIn={isLoggedIn} />
       )}
     </div>
   );

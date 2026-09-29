@@ -72,7 +72,7 @@ export function CategoryIcon({
 
   return (
     <span
-      className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/15 bg-white/10 backdrop-blur-md ${className ?? ""}`}
+      className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-scrim backdrop-blur-md ${className ?? ""}`}
     >
       <Icon className="h-4 w-4 text-ember" aria-hidden="true" />
     </span>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, X } from "lucide-react";
 import { getConversationForChat } from "@/lib/actions/message";
-import { Avatar } from "./Avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { ChatMessageList } from "./ChatMessageList";
 import { ChatComposer } from "./ChatComposer";
 import { useChatSession, type ChatMessage } from "./useChatSession";
@@ -65,7 +65,7 @@ export function InlineChat({
         >
           <ChevronLeft className="h-4 w-4" aria-hidden="true" />
         </button>
-        <Avatar name={data?.otherUser.name ?? fallbackName} avatarUrl={data?.otherUser.avatarUrl ?? fallbackAvatarUrl} size="h-7 w-7" />
+        <Avatar name={data?.otherUser.name ?? fallbackName} avatarUrl={data?.otherUser.avatarUrl ?? fallbackAvatarUrl} size="sm" />
         <span className="flex-1 truncate text-sm font-semibold text-ink">
           {data?.otherUser.name ?? fallbackName}
         </span>

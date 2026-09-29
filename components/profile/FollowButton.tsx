@@ -11,7 +11,7 @@ type FollowButtonProps = {
 };
 
 const buttonClassName =
-  "rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-md transition-colors hover:from-ember/15";
+  "rounded-full border border-ember-line bg-ember-soft px-5 py-2.5 text-sm font-semibold text-on-photo shadow-glow transition-all duration-300 hover:border-ember hover:bg-ember-soft ";
 
 export function FollowButton({ userId, initialIsFollowing, isLoggedIn }: FollowButtonProps) {
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);

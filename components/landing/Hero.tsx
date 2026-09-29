@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Play, Quote } from "lucide-react";
-import { Avatar } from "@/components/common/Avatar";
-import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
+import { Avatar } from "@/components/ui/avatar";
+import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
 import { StoryViewer } from "@/components/home/StoryViewer";
 import type { HeroSlide } from "@/lib/demo/heroSlides";
 import type { CreatorStory } from "@/lib/discovery/stories";
+import { PANEL_ACCENT } from "@/components/ui/panel";
+import { PAGE_WIDTH } from "@/components/ui/page-container";
+import { cn } from "@/lib/utils";
 
 const creators = ["Alex R.", "Sarah J.", "David L.", "Emma W.", "James T."];
 
@@ -59,26 +62,29 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
             }`}
           />
         ))}
-        {/* Trattamento cinematografico: color grade caldo leggero, grana pellicola più marcata
-         * che nel resto del sito. Niente più barre "letterbox": leggevano come un difetto di
-         * layout (card troppo grande/foto troppo piccola), non come scelta stilistica. */}
-        <div className="absolute inset-0 mix-blend-overlay bg-gradient-to-br from-ember/25 via-transparent to-black/30" aria-hidden="true" />
+        {/* Trattamento cinematografico: grana pellicola sulla foto e veli scuri per leggere il
+         * testo a sinistra (classi hero-* in app/globals.css). */}
         <div className="hero-grain absolute inset-0" aria-hidden="true" />
 
-        <div className="absolute inset-0 bg-bg/65 md:bg-bg/10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-bg from-5% via-bg/70 to-transparent md:from-bg/55 md:from-10% md:via-bg/20 md:via-45%" />
-        <div className="absolute inset-y-0 left-0 hidden w-32 bg-gradient-to-r from-bg/40 to-transparent md:block" />
+        <div className="hero-scrim absolute inset-0" />
+        <div className="hero-side-fade absolute inset-0" />
         <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
       </div>
 
-      <div className="relative mx-auto grid max-w-[1400px] gap-5 px-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto_auto] md:gap-x-8 md:gap-y-3 md:px-[calc(4.43%+2rem)] md:pt-6 md:pb-12">
+      {/* Margine laterale allineato alla foto rientrata della Hero (md:inset-x-[4.43%]). */}
+      <div
+        className={cn(
+          PAGE_WIDTH.wideCover,
+          "relative grid gap-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto_auto] md:gap-x-8 md:gap-y-3 md:pt-6 md:pb-12"
+        )}
+      >
         <div className="max-w-lg md:col-start-1 md:row-start-1">
           <p className="text-hero-eyebrow uppercase tracking-[0.42em] text-ink-muted">
             Every <span className="text-ember">journey</span> starts from
           </p>
           <Image
             src="/images/zero-wordmark.png"
-            alt="ZERO"
+            alt="Zero"
             width={3000}
             height={795}
             unoptimized
@@ -117,10 +123,10 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
                 >
                   <span
                     className={`flex h-11 w-11 items-center justify-center rounded-full p-[2px] ${
-                      ownStory.hasUnseen ? "bg-gradient-to-br from-ember to-danger" : "bg-border"
+                      ownStory.hasUnseen ? "bg-ember" : "bg-border"
                     }`}
                   >
-                    <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-bg bg-surface-2 text-xs font-semibold text-ink-muted">
+                    <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-bg bg-surface-2 text-sm font-semibold text-ink-muted">
                       {ownStory.creatorAvatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={ownStory.creatorAvatarUrl} alt="" className="h-full w-full object-cover" />
@@ -141,10 +147,10 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
                 >
                   <span
                     className={`flex h-11 w-11 items-center justify-center rounded-full p-[2px] ${
-                      story.hasUnseen ? "bg-gradient-to-br from-ember to-danger" : "bg-border"
+                      story.hasUnseen ? "bg-ember" : "bg-border"
                     }`}
                   >
-                    <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-bg bg-surface-2 text-xs font-semibold text-ink-muted">
+                    <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-bg bg-surface-2 text-sm font-semibold text-ink-muted">
                       {story.creatorAvatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={story.creatorAvatarUrl} alt="" className="h-full w-full object-cover" />
@@ -167,7 +173,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
                   <span className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-2 text-ink-muted transition-colors hover:text-ember">
                     &rarr;
                   </span>
-                  <span className="text-hero-caption text-ink-muted">View all</span>
+                  <span className="text-hero-caption text-ink-muted">View All</span>
                 </button>
               )}
             </div>
@@ -178,11 +184,12 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
                   <Avatar
                     key={name}
                     name={name}
-                    className="h-9 w-9 border-2 border-bg bg-surface-2 text-hero-caption"
+                    size="sm"
+                    className="h-9 w-9 border-2 border-bg"
                   />
                 ))}
               </div>
-              <p className="text-xs leading-relaxed text-ink-muted">
+              <p className="text-sm leading-relaxed text-ink-muted">
                 No account needed to watch.
                 <br />
                 Join when you&apos;re ready to be part of it.
@@ -204,7 +211,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
                   aria-label={`Show journey ${index + 1}`}
                   onClick={() => setActive(index)}
                   className={`h-1.5 rounded-full transition-all duration-500 ${
-                    index === active ? "w-7 bg-ember" : "w-1.5 bg-white/30 hover:bg-white/60"
+                    index === active ? "w-7 bg-ember" : "w-1.5 bg-ink-faint hover:bg-ink-muted"
                   }`}
                 />
               ))}
@@ -239,10 +246,10 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
 function HeroSlideCard({ slide }: { slide: HeroSlide }) {
   if (slide.kind === "demo") {
     return (
-      <div className="rounded-xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-md">
+      <div className={cn(PANEL_ACCENT, "rounded-xl p-3.5 shadow-glow")}>
         <Quote className="h-3.5 w-3.5 text-ember" aria-hidden="true" />
-        <p className="mt-2 text-xs leading-relaxed text-ink/90">{slide.quote}</p>
-        <p className="mt-2 text-hero-caption text-ink-muted">&mdash; {slide.author}</p>
+        <p className="mt-2 text-sm leading-relaxed text-ink">{slide.quote}</p>
+        <p className="mt-2 text-hero-caption text-ink-muted">{slide.author}</p>
       </div>
     );
   }
@@ -250,7 +257,7 @@ function HeroSlideCard({ slide }: { slide: HeroSlide }) {
   return (
     <Link
       href={`/journeys/${slide.id}`}
-      className="block rounded-xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-md transition-colors hover:border-ember/40"
+      className={cn(PANEL_ACCENT, "block rounded-xl p-3.5 shadow-glow transition-colors duration-300 hover:border-ember")}
     >
       {slide.category && (
         <p className="text-hero-tag uppercase tracking-[0.2em] text-ember">{slide.category}</p>

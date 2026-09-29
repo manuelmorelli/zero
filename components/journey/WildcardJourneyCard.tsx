@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Shuffle } from "lucide-react";
+import { PANEL_DASHED } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
 
 type WildcardJourneyCardProps = {
   /** Journey scelto a caso tra quelli della categoria della riga in cui compare la card. */
@@ -12,14 +14,18 @@ export function WildcardJourneyCard({ journeyId, className }: WildcardJourneyCar
   return (
     <Link
       href={`/journeys/${journeyId}`}
-      className={`group relative flex aspect-4/3 flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border border-dashed border-ember/40 bg-surface-2 p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-ember hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)] ${className ?? ""}`}
+      className={cn(
+        PANEL_DASHED,
+        "group relative flex aspect-4/3 flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border-ember-line bg-surface-2 p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-ember hover:shadow-glow",
+        className
+      )}
     >
-      <span className="grid h-11 w-11 place-items-center rounded-full bg-ember/15 text-ember transition-transform duration-300 group-hover:scale-110">
+      <span className="grid h-11 w-11 place-items-center rounded-full bg-ember-soft text-ember transition-transform duration-300 group-hover:scale-110">
         <Shuffle className="h-5 w-5" aria-hidden="true" />
       </span>
       <div>
         <p className="text-sm font-bold text-ink">Wildcard</p>
-        <p className="mt-1 text-xs text-ink-muted">A random Journey from this category</p>
+        <p className="mt-1 text-sm text-ink-muted">A Random Journey from This Category</p>
       </div>
     </Link>
   );

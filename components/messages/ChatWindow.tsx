@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { X } from "lucide-react";
-import { Avatar } from "./Avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { ChatMessageList } from "./ChatMessageList";
 import { ChatComposer } from "./ChatComposer";
 import { useChatSession, type ChatMessage } from "./useChatSession";
@@ -29,7 +29,7 @@ export function ChatWindow({
   return (
     <div className="flex h-[70vh] flex-col overflow-hidden rounded-xl border border-border bg-surface">
       <div className="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
-        <Avatar name={otherUser.name} avatarUrl={otherUser.avatarUrl} size="h-8 w-8" />
+        <Avatar name={otherUser.name} avatarUrl={otherUser.avatarUrl} size="sm" />
         <span className="flex-1 text-sm font-semibold text-ink">{otherUser.name}</span>
         <Link
           href="/messages"
