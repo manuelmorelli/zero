@@ -3,6 +3,9 @@
 import { useState, useTransition } from "react";
 import { requestAccountDeletionAction } from "@/lib/actions/account";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { CHIP } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
 
 type DeleteAccountSectionProps = {
   /** Bare button, no border/padding wrapper — used inline next to Save in EditProfileButton. */
@@ -27,13 +30,9 @@ export function DeleteAccountSection({ inline = false }: DeleteAccountSectionPro
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={
-          inline
-            ? "rounded-full border border-border px-4 py-2 text-sm font-medium text-danger transition-colors hover:border-danger"
-            : "text-sm font-medium text-danger hover:underline"
-        }
+        className={inline ? cn(CHIP, "text-danger hover:border-danger") : "text-sm font-medium text-danger hover:underline"}
       >
-        Delete my account
+        Delete My Account
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -49,21 +48,12 @@ export function DeleteAccountSection({ inline = false }: DeleteAccountSectionPro
             <p>You can cancel by logging back in any time before then.</p>
           </div>
           <DialogFooter>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="rounded-full border border-border px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-ink-muted"
-            >
+            <Button variant="secondary" onClick={() => setOpen(false)}>
               Cancel
-            </button>
-            <button
-              type="button"
-              disabled={pending}
-              onClick={handleConfirm}
-              className="rounded-full bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-50"
-            >
+            </Button>
+            <Button variant="danger" disabled={pending} onClick={handleConfirm}>
               {pending ? "Deleting…" : "Yes, delete my account"}
-            </button>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

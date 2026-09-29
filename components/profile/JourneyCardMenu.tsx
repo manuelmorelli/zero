@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 type JourneyCardMenuProps = {
   journeyId: string;
@@ -82,7 +83,7 @@ export function JourneyCardMenu({
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={`Manage ${title}`}
-          className="grid h-7 w-7 place-items-center rounded-full border border-white/15 bg-bg/50 text-ink backdrop-blur-md transition-colors hover:bg-bg/80"
+          className="grid h-7 w-7 place-items-center rounded-full border border-border bg-scrim text-ink backdrop-blur-md transition-colors hover:bg-scrim"
         >
           <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
         </DropdownMenuTrigger>
@@ -190,20 +191,12 @@ function ArchiveJourneyDialog({
           <input type="hidden" name="journeyId" value={journeyId} />
           {state.error && <p className="px-5 text-sm text-danger">{state.error}</p>}
           <DialogFooter>
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-            >
+            <Button variant="secondary" onClick={() => onOpenChange(false)}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={pending}
-              className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90 disabled:opacity-50"
-            >
+            </Button>
+            <Button variant="danger" type="submit" disabled={pending}>
               {pending ? "Archiving…" : "Archive"}
-            </button>
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -234,19 +227,12 @@ function DeleteJourneyDialog({
         <form action={deleteJourney}>
           <input type="hidden" name="journeyId" value={journeyId} />
           <DialogFooter>
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-            >
+            <Button variant="secondary" onClick={() => onOpenChange(false)}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90"
-            >
+            </Button>
+            <Button variant="danger" type="submit">
               Delete
-            </button>
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

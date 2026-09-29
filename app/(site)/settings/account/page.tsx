@@ -2,6 +2,8 @@ import { requireSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { AccountDetailsForm } from "@/components/settings/AccountDetailsForm";
 import { DeleteAccountSection } from "@/components/profile/DeleteAccountSection";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { PageTitle } from "@/components/ui/heading";
 
 export default async function SettingsAccountPage() {
   const { user } = await requireSession();
@@ -12,8 +14,8 @@ export default async function SettingsAccountPage() {
 
   return (
     <main>
-      <div className="mx-auto w-full max-w-2xl px-6 pb-16 pt-24">
-        <h1 className="text-xl font-bold tracking-tight">Account</h1>
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+        <PageTitle>Account</PageTitle>
         <p className="mt-2 text-sm text-ink-muted">Update your name, username, bio and location.</p>
 
         <div className="mt-8 overflow-hidden rounded-xl border border-border bg-surface">

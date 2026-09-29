@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { updateNotificationPreferences } from "@/lib/actions/settings";
+import { Button } from "@/components/ui/button";
 
 type NotificationsFormProps = {
   notifyNewEpisode: boolean;
@@ -62,7 +63,7 @@ export function NotificationsForm(props: NotificationsFormProps) {
           >
             <span>
               <span className="block text-sm font-medium text-ink">{toggle.label}</span>
-              <span className="block text-xs text-ink-muted">{toggle.description}</span>
+              <span className="block text-sm text-ink-muted">{toggle.description}</span>
             </span>
             <input
               type="checkbox"
@@ -90,13 +91,9 @@ export function NotificationsForm(props: NotificationsFormProps) {
 
       {state.error && <p className="text-sm text-danger">{state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending}>
         {pending ? "Saving…" : "Save changes"}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export function PasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -33,7 +36,7 @@ export function PasswordForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label htmlFor="currentPassword" className="text-sm font-medium text-ink-muted">
-          Current password
+          Current Password
         </label>
         <input
           id="currentPassword"
@@ -42,13 +45,13 @@ export function PasswordForm() {
           autoComplete="current-password"
           value={currentPassword}
           onChange={(event) => setCurrentPassword(event.target.value)}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1.5")}
         />
       </div>
 
       <div>
         <label htmlFor="newPassword" className="text-sm font-medium text-ink-muted">
-          New password
+          New Password
         </label>
         <input
           id="newPassword"
@@ -58,17 +61,13 @@ export function PasswordForm() {
           autoComplete="new-password"
           value={newPassword}
           onChange={(event) => setNewPassword(event.target.value)}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1.5")}
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={pending || !currentPassword || newPassword.length < 8}
-        className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending || !currentPassword || newPassword.length < 8}>
         {pending ? "Updating…" : "Update password"}
-      </button>
+      </Button>
     </form>
   );
 }

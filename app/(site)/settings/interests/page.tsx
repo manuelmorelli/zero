@@ -2,6 +2,9 @@ import { requireSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { InterestsForm } from "@/components/settings/InterestsForm";
 import type { JourneyCategory } from "@/lib/constants/categories";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { PageTitle } from "@/components/ui/heading";
+import { PANEL } from "@/components/ui/panel";
 
 export default async function SettingsInterestsPage() {
   const { user } = await requireSession();
@@ -12,13 +15,13 @@ export default async function SettingsInterestsPage() {
 
   return (
     <main>
-      <div className="mx-auto w-full max-w-2xl px-6 pb-16 pt-24">
-        <h1 className="text-xl font-bold tracking-tight">Interests</h1>
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+        <PageTitle>Interests</PageTitle>
         <p className="mt-2 text-sm text-ink-muted">
-          The categories you picked during onboarding — used to personalize what you see.
+          The categories you picked during onboarding, used to personalize what you see.
         </p>
 
-        <div className="mt-8 rounded-xl border border-border bg-surface p-5">
+        <div className={`mt-8 ${PANEL}`}>
           <InterestsForm interests={account.interests as JourneyCategory[]} />
         </div>
       </div>

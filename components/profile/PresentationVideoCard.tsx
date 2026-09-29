@@ -9,6 +9,10 @@ import { createPresentationVideoUploadUrl, updatePresentationVideo } from "@/lib
 import { uploadFileWithProgress } from "@/lib/upload";
 import { ALLOWED_VIDEO_TYPES } from "@/lib/constants/video";
 import { VideoPlayer, type VideoPlayerHandle } from "@/components/common/VideoPlayer";
+import { Button } from "@/components/ui/button";
+import { CardTitle } from "@/components/ui/heading";
+import { CoverTitle } from "@/components/ui/cover-card";
+import { PANEL_ACCENT } from "@/components/ui/panel";
 
 type PresentationVideoCardProps = {
   /** Link temporaneo già risolto (chiave R2 -> URL), o null se non è mai stato caricato nulla. */
@@ -90,7 +94,7 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
   if (!videoUrl && !isOwnProfile) return null;
 
   return (
-    <div className="rounded-2xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] p-4">
+    <div className={PANEL_ACCENT}>
       {/* Card orizzontale (richiesto da Manuel, 2026-09-22): Bio a sinistra, video di
           presentazione a destra, divise da un bordo verticale. In colonna solo su mobile, dove
           affiancarle non c'entra. Su schermi larghi NON usa una propria proporzione fissa (le due
@@ -103,23 +107,23 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
           quella soglia sono impilate una sopra l'altra, "ereditare" un'altezza non avrebbe senso). */}
       <div className="flex flex-col gap-4 md:flex-row lg:h-full lg:overflow-hidden">
         <div className="md:w-[55%] md:shrink-0 md:overflow-y-auto">
-          <h2 className="inline-flex items-center gap-1.5 text-base font-semibold text-ember">
+          <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
             <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
             Bio
-          </h2>
+          </CardTitle>
           {bio ? (
-            <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-relaxed text-ink/85">{bio}</p>
+            <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-relaxed text-ink">{bio}</p>
           ) : (
             <p className="mt-3 text-sm text-ink-faint">{name} hasn&apos;t written a bio yet.</p>
           )}
           {interests && interests.length > 0 && (
             <div className="mt-4">
-              <p className="text-[0.65rem] uppercase tracking-wider text-ink-faint">Focus</p>
+              <p className="text-sm uppercase tracking-wider text-ink-faint">Focus</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {interests.map((interest) => (
                   <span
                     key={interest}
-                    className="rounded-full border border-border px-2.5 py-1 text-[0.7rem] text-ink-muted"
+                    className="rounded-full border border-border px-2.5 py-1 text-sm text-ink-muted"
                   >
                     {interest}
                   </span>
@@ -133,10 +137,10 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
         {/* Con il video presente il titolo vive dentro il poster (stile ContentCard, vedi sotto):
             l'intestazione esterna resta solo per lo stato vuoto, altrimenti sarebbe doppia. */}
         {!videoUrl && (
-          <h2 className="inline-flex items-center gap-1.5 text-base font-semibold text-ember">
+          <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
             <VideoIcon className="h-3.5 w-3.5" aria-hidden="true" />
             Who I am
-          </h2>
+          </CardTitle>
         )}
 
         {videoUrl ? (
@@ -161,16 +165,16 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-transparent" />
+              <div className="absolute inset-0 card-scrim" />
 
               {!isPlaying && (
-                <span className="pointer-events-none absolute inset-0 grid place-items-center text-white">
+                <span className="pointer-events-none absolute inset-0 grid place-items-center text-on-photo">
                   <Play className="h-10 w-10" fill="currentColor" aria-hidden="true" />
                 </span>
               )}
 
               <div className="absolute inset-x-0 bottom-0 p-3">
-                <h3 className="truncate text-base font-semibold text-white">Who I am</h3>
+                <CoverTitle className="truncate">Who I Am</CoverTitle>
               </div>
             </div>
 
@@ -220,16 +224,11 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
 
         {isOwnProfile && (
           <>
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              disabled={progress !== null}
-              className="mt-3 w-full rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-4 py-2 text-sm font-semibold text-ember backdrop-blur-md transition-colors hover:from-ember/15 disabled:opacity-50"
-            >
+            <Button variant="secondary" onClick={() => inputRef.current?.click()} disabled={progress !== null} className="mt-3 w-full">
               {progress !== null ? `Uploading… ${progress}%` : videoUrl ? "Change video" : "Upload video"}
-            </button>
+            </Button>
             <input ref={inputRef} type="file" accept="video/*" onChange={handleFileChosen} className="hidden" />
-            {error && <p className="mt-2 text-xs text-danger">{error}</p>}
+            {error && <p className="mt-2 text-sm text-danger">{error}</p>}
           </>
         )}
         </div>
@@ -267,7 +266,7 @@ function ExpandedPresentationVideo({ videoUrl, onClose }: { videoUrl: string; on
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-6"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-scrim p-6"
       onClick={onClose}
     >
       {/* La X sta sull'angolo della card del video, non della pagina intera: il video ha
@@ -278,7 +277,7 @@ function ExpandedPresentationVideo({ videoUrl, onClose }: { videoUrl: string; on
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute -right-3 -top-3 z-10 grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-bg/80 text-white backdrop-blur-md transition-colors hover:bg-bg"
+          className="absolute -right-3 -top-3 z-10 grid h-9 w-9 place-items-center rounded-full border border-border bg-scrim text-on-photo backdrop-blur-md transition-colors hover:bg-bg"
         >
           <X className="h-5 w-5" aria-hidden="true" />
         </button>

@@ -6,15 +6,19 @@ import { useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
 import { PasswordField } from "@/components/common/PasswordField";
 import { AuthHeader } from "@/components/layout/AuthHeader";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/heading";
 
 export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
         <AuthHeader />
-        <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-          Welcome back
-        </h1>
+        <PageTitle className="mt-8">
+          Welcome Back
+        </PageTitle>
         <p className="mt-2 text-sm text-ink-muted">
           Sign in to continue your Journey.
         </p>
@@ -103,7 +107,7 @@ function LoginForm() {
         labelRight={
           <Link
             href="/forgot-password"
-            className="text-xs text-ink-muted hover:text-ink hover:underline"
+            className="text-sm text-ink-muted hover:text-ink hover:underline"
           >
             Forgot password?
           </Link>
@@ -117,13 +121,9 @@ function LoginForm() {
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={loading} className="w-full">
         {loading ? "Signing in…" : "Sign in"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -156,7 +156,7 @@ function Field({ label, id, type, value, onChange, autoComplete, required }: Fie
         onChange={(event) => onChange(event.target.value)}
         autoComplete={autoComplete}
         required={required}
-        className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+        className={cn(FIELD, "mt-1.5")}
       />
     </div>
   );

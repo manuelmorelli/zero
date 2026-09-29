@@ -1,25 +1,28 @@
 import { requireSession } from "@/lib/session";
 import { PasswordForm } from "@/components/settings/PasswordForm";
 import { EmailForm } from "@/components/settings/EmailForm";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { PageTitle, SectionTitle } from "@/components/ui/heading";
+import { PANEL } from "@/components/ui/panel";
 
 export default async function SettingsSecurityPage() {
   const { user } = await requireSession();
 
   return (
     <main>
-      <div className="mx-auto w-full max-w-2xl px-6 pb-16 pt-24">
-        <h1 className="text-xl font-bold tracking-tight">Password & Security</h1>
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+        <PageTitle>Password & Security</PageTitle>
         <p className="mt-2 text-sm text-ink-muted">Change your password or update your email address.</p>
 
-        <div className="mt-8 rounded-xl border border-border bg-surface p-5">
-          <h2 className="text-sm font-semibold text-ink-muted">Password</h2>
+        <div className={`mt-8 ${PANEL}`}>
+          <SectionTitle>Password</SectionTitle>
           <div className="mt-4">
             <PasswordForm />
           </div>
         </div>
 
-        <div className="mt-6 rounded-xl border border-border bg-surface p-5">
-          <h2 className="text-sm font-semibold text-ink-muted">Email</h2>
+        <div className={`mt-6 ${PANEL}`}>
+          <SectionTitle>Email</SectionTitle>
           <div className="mt-4">
             <EmailForm currentEmail={user.email} />
           </div>

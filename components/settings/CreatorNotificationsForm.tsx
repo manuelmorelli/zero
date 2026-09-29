@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { updateCreatorNotificationPreferences } from "@/lib/actions/settings";
+import { Button } from "@/components/ui/button";
 
 type CreatorNotificationsFormProps = {
   notifyNewFollower: boolean;
@@ -31,8 +32,8 @@ export function CreatorNotificationsForm({ notifyNewFollower }: CreatorNotificat
       <div className="rounded-lg border border-border">
         <label className="flex items-center justify-between gap-4 px-4 py-3.5">
           <span>
-            <span className="block text-sm font-medium text-ink">New follower</span>
-            <span className="block text-xs text-ink-muted">When someone starts following you.</span>
+            <span className="block text-sm font-medium text-ink">New Follower</span>
+            <span className="block text-sm text-ink-muted">When someone starts following you.</span>
           </span>
           <input
             type="checkbox"
@@ -57,13 +58,9 @@ export function CreatorNotificationsForm({ notifyNewFollower }: CreatorNotificat
 
       {state.error && <p className="text-sm text-danger">{state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending}>
         {pending ? "Saving…" : "Save changes"}
-      </button>
+      </Button>
     </form>
   );
 }

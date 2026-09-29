@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { reactivateAccountAction } from "@/lib/actions/account";
 import { SignOutButton } from "@/components/common/SignOutButton";
+import { PageTitle } from "@/components/ui/heading";
+import { Button, BUTTON_VARIANTS } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /** Non usa requireSession(): un account in cancellazione viene mandato proprio qui da
  * requireSession(), quindi questa pagina deve poter essere raggiunta senza rimbalzare via. */
@@ -25,7 +28,7 @@ export default async function ReactivateAccountPage() {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-bg px-6 text-center">
       <div className="max-w-md space-y-3">
-        <h1 className="text-xl font-semibold text-ink">Your account is scheduled for deletion</h1>
+        <PageTitle>Your Account Is Scheduled for Deletion</PageTitle>
         <p className="text-sm text-ink-muted">
           You asked to delete your account. It will be permanently deleted on{" "}
           <span className="font-medium text-ink">{deletionDate}</span>, along with your Journeys,
@@ -36,14 +39,11 @@ export default async function ReactivateAccountPage() {
 
       <div className="flex items-center gap-3">
         <form action={reactivateAccountAction}>
-          <button
-            type="submit"
-            className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
-          >
-            Reactivate my account
-          </button>
+          <Button variant="primary" type="submit">
+            Reactivate My Account
+          </Button>
         </form>
-        <SignOutButton className="rounded-full border border-border px-6 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-ink-muted" />
+        <SignOutButton className={cn(BUTTON_VARIANTS.secondary, "border-border bg-transparent shadow-none hover:border-ink-muted")} />
       </div>
     </main>
   );

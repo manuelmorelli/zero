@@ -6,15 +6,17 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { PasswordField } from "@/components/common/PasswordField";
 import { AuthHeader } from "@/components/layout/AuthHeader";
+import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/heading";
 
 export default function ResetPasswordPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
         <AuthHeader />
-        <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-          Choose a new password
-        </h1>
+        <PageTitle className="mt-8">
+          Choose a New Password
+        </PageTitle>
 
         <Suspense fallback={null}>
           <ResetPasswordForm />
@@ -93,13 +95,9 @@ function ResetPasswordForm() {
 
       {error && <p className="text-sm text-danger">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={loading} className="w-full">
         {loading ? "Saving…" : "Save new password"}
-      </button>
+      </Button>
     </form>
   );
 }

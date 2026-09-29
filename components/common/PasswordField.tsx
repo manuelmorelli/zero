@@ -1,6 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 type PasswordFieldProps = {
   id: string;
@@ -46,7 +48,7 @@ export function PasswordField({
           autoComplete={autoComplete}
           minLength={minLength}
           required={required}
-          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 pr-11 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "pr-11")}
         />
         <button
           type="button"

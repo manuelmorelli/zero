@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { saveOnboardingInterests } from "@/lib/actions/onboarding";
 import { JOURNEY_CATEGORIES, type JourneyCategory } from "@/lib/constants/categories";
+import { Button } from "@/components/ui/button";
 
 export function OnboardingForm() {
   const [state, formAction, pending] = useActionState(saveOnboardingInterests, {
@@ -49,13 +50,9 @@ export function OnboardingForm() {
 
       {state.error && <p className="text-sm text-danger">{state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={pending || selected.length === 0}
-        className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending || selected.length === 0} className="w-full">
         {pending ? "Saving…" : "Continue"}
-      </button>
+      </Button>
     </form>
   );
 }

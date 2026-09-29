@@ -1,10 +1,13 @@
 import { FadeImage } from "@/components/common/FadeImage";
-import { formatCompactNumber } from "@/lib/utils";
+import { cn, formatCompactNumber } from "@/lib/utils";
 import { ProfileAvatarStory } from "@/components/profile/ProfileAvatarStory";
 import { ProfileFollowStats } from "@/components/profile/ProfileFollowStats";
 import { ProfileTrustStat } from "@/components/profile/ProfileTrustStat";
 import { Stat } from "@/components/profile/ProfileStat";
 import type { CreatorStory } from "@/lib/discovery/stories";
+import { PageTitle } from "@/components/ui/heading";
+import { PANEL_ACCENT } from "@/components/ui/panel";
+import { PAGE_WIDTH } from "@/components/ui/page-container";
 
 type ProfileHeroProps = {
   /** Id dell'utente di cui si sta guardando il profilo (non del visitatore) — serve a
@@ -57,7 +60,7 @@ export function ProfileHero({
         {coverUrl ? (
           <FadeImage src={coverUrl} alt="" fill sizes="100vw" quality={90} className="object-cover" preload />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+          <div className="absolute inset-0 cover-placeholder" />
         )}
         {/* Sfumatura ampia con curva "ad S" (vedi .cover-fade in globals.css): copre la parte
          * bassa della foto, dove poggiano anche le statistiche e i bottoni, così quegli elementi
@@ -66,7 +69,7 @@ export function ProfileHero({
         <div className="cover-fade absolute inset-x-0 bottom-0 h-32 sm:h-40 md:h-48" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[1400px] px-5 md:px-[calc(4.43%+2rem)]">
+      <div className={cn("relative z-10", PAGE_WIDTH.wideCover)}>
         <div className="pt-[calc(7.5rem+0.9cm)] sm:pt-[calc(11rem+0.9cm)] md:pt-[calc(12rem+0.9cm)]">
           <div className="flex items-end gap-4">
             <ProfileAvatarStory
@@ -77,11 +80,11 @@ export function ProfileHero({
             />
 
             <div className="min-w-0 pb-1">
-              <h1 className="truncate text-2xl font-extrabold tracking-tight text-ink drop-shadow-sm sm:text-3xl">
+              <PageTitle className="truncate">
                 {name}
-              </h1>
+              </PageTitle>
               {username && <p className="text-sm text-ink-muted drop-shadow-sm">@{username}</p>}
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-muted drop-shadow-sm">
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted drop-shadow-sm">
                 {location && (
                   <span className="inline-flex items-center gap-1.5">
                     <LocationIcon className="h-3.5 w-3.5" />
@@ -98,7 +101,7 @@ export function ProfileHero({
         </div>
 
         <div className="mt-1.5 flex flex-wrap items-center justify-between gap-3 pb-4">
-          <ul className="grid shrink-0 grid-cols-4 gap-2 rounded-xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-3 py-2 backdrop-blur-md">
+          <ul className={cn(PANEL_ACCENT, "grid shrink-0 grid-cols-4 gap-2 px-3 py-2")}>
             <ProfileTrustStat score={trustScore} />
             <Stat label="Journeys" value={formatCompactNumber(journeysCount)} />
             <ProfileFollowStats

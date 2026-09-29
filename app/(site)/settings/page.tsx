@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { requireSession } from "@/lib/session";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { PageTitle } from "@/components/ui/heading";
 
 const SETTINGS_SECTIONS = [
   { href: "/settings/account", label: "Account", description: "Name, username, bio, location" },
@@ -16,8 +18,8 @@ export default async function SettingsPage() {
 
   return (
     <main>
-      <div className="mx-auto w-full max-w-2xl px-6 pb-16 pt-24">
-        <h1 className="text-xl font-bold tracking-tight">Settings</h1>
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+        <PageTitle>Settings</PageTitle>
         <p className="mt-2 text-sm text-ink-muted">Manage your account, notifications and preferences.</p>
 
         <div className="mt-8 divide-y divide-border rounded-xl border border-border bg-surface">
@@ -29,7 +31,7 @@ export default async function SettingsPage() {
             >
               <span>
                 <span className="block text-sm font-semibold text-ink">{section.label}</span>
-                <span className="block text-xs text-ink-muted">{section.description}</span>
+                <span className="block text-sm text-ink-muted">{section.description}</span>
               </span>
               <ChevronIcon className="h-4 w-4 shrink-0 text-ink-faint" />
             </Link>

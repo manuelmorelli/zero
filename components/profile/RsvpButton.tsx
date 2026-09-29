@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { toggleWorkshopRsvp, toggleEventRsvp } from "@/lib/actions/rsvp";
+import { Button } from "@/components/ui/button";
 
 type RsvpButtonProps = {
   kind: "workshop" | "event";
@@ -21,12 +22,9 @@ export function RsvpButton({ kind, id, initialGoing, isLoggedIn }: RsvpButtonPro
 
   if (!isLoggedIn) {
     return (
-      <Link
-        href="/login"
-        className="shrink-0 whitespace-nowrap rounded-full border border-border px-3.5 py-1.5 text-xs font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-      >
+      <Button variant="secondary" href="/login" className="shrink-0">
         Log in
-      </Link>
+      </Button>
     );
   }
 
@@ -42,15 +40,8 @@ export function RsvpButton({ kind, id, initialGoing, isLoggedIn }: RsvpButtonPro
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={pending}
-      className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
-        going ? "border border-ember/40 text-ember" : "bg-ember text-white hover:bg-ember/90"
-      }`}
-    >
-      {going ? "I'm going ✓" : "I'm going"}
-    </button>
+    <Button variant="secondary" onClick={handleClick} disabled={pending} className="shrink-0 whitespace-nowrap">
+      {going ? "I'm Going ✓" : "I'm Going"}
+    </Button>
   );
 }

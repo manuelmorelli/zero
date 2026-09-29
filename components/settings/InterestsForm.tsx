@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { updateInterests } from "@/lib/actions/settings";
 import { JOURNEY_CATEGORIES, type JourneyCategory } from "@/lib/constants/categories";
+import { Button } from "@/components/ui/button";
 
 export function InterestsForm({ interests }: { interests: JourneyCategory[] }) {
   const [state, formAction, pending] = useActionState(updateInterests, { error: null });
@@ -45,7 +46,7 @@ export function InterestsForm({ interests }: { interests: JourneyCategory[] }) {
                 className="sr-only"
               />
               <span
-                className={`inline-block cursor-pointer rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                className={`inline-block cursor-pointer rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
                   active
                     ? "border-ink bg-ink text-bg"
                     : "border-border bg-surface-2 text-ink hover:border-ink-muted"
@@ -60,13 +61,9 @@ export function InterestsForm({ interests }: { interests: JourneyCategory[] }) {
 
       {state.error && <p className="text-sm text-danger">{state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={pending || selected.length === 0}
-        className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending || selected.length === 0}>
         {pending ? "Saving…" : "Save changes"}
-      </button>
+      </Button>
     </form>
   );
 }

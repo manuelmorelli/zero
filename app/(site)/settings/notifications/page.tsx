@@ -1,6 +1,9 @@
 import { requireSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { NotificationsForm } from "@/components/settings/NotificationsForm";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { PageTitle } from "@/components/ui/heading";
+import { PANEL } from "@/components/ui/panel";
 
 export default async function SettingsNotificationsPage() {
   const { user } = await requireSession();
@@ -16,11 +19,11 @@ export default async function SettingsNotificationsPage() {
 
   return (
     <main>
-      <div className="mx-auto w-full max-w-2xl px-6 pb-16 pt-24">
-        <h1 className="text-xl font-bold tracking-tight">Notifications</h1>
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+        <PageTitle>Notifications</PageTitle>
         <p className="mt-2 text-sm text-ink-muted">Choose which notifications you want to receive.</p>
 
-        <div className="mt-8 rounded-xl border border-border bg-surface p-5">
+        <div className={`mt-8 ${PANEL}`}>
           <NotificationsForm
             notifyNewEpisode={preferences.notifyNewEpisode}
             notifyNewJourney={preferences.notifyNewJourney}

@@ -13,7 +13,7 @@ export function Stat({
   const content = (
     <>
       <p className="text-sm font-bold tracking-tight text-ember md:text-base">{value}</p>
-      <p className="text-[0.6rem] font-medium uppercase tracking-wider text-ink-muted">{label}</p>
+      <p className="text-sm font-medium uppercase tracking-wider text-ink-muted">{label}</p>
     </>
   );
 

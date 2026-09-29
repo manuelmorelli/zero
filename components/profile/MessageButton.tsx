@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { startConversation } from "@/lib/actions/message";
+import { Button } from "@/components/ui/button";
 
 type MessageButtonProps = {
   userId: string;
@@ -33,15 +34,10 @@ export function MessageButton({ userId }: MessageButtonProps) {
 
   return (
     <div className="flex flex-col items-end gap-1">
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={isPending}
-        className="rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-md transition-colors hover:from-ember/15 disabled:opacity-50"
-      >
+      <Button variant="secondary" onClick={handleClick} disabled={isPending}>
         {isPending ? "Opening…" : "Message"}
-      </button>
-      {error && <p className="text-xs text-danger">{error}</p>}
+      </Button>
+      {error && <p className="text-sm text-danger">{error}</p>}
     </div>
   );
 }

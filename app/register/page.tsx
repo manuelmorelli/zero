@@ -4,17 +4,20 @@ import Link from "next/link";
 import { useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
 import { PasswordField } from "@/components/common/PasswordField";
-import { DevEmailLinkNotice } from "@/components/common/DevEmailLinkNotice";
 import { AuthHeader } from "@/components/layout/AuthHeader";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/heading";
 
 export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
         <AuthHeader />
-        <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
-          Create your account
-        </h1>
+        <PageTitle className="mt-8">
+          Create Your Account
+        </PageTitle>
         <p className="mt-2 text-sm text-ink-muted">
           Start following or sharing your transformation.
         </p>
@@ -101,10 +104,9 @@ function RegisterForm() {
     return (
       <div className="mt-8">
         <p className="text-sm text-ink">
-          Account created! We&apos;ve sent you an email — open the link inside
+          Account created! We&apos;ve sent you an email. Open the link inside
           to confirm your address and activate your account.
         </p>
-        <DevEmailLinkNotice email={email} kind="verify-email" />
       </div>
     );
   }
@@ -160,13 +162,9 @@ function RegisterForm() {
 
       {error && <p className="text-sm text-danger">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={loading} className="w-full">
         {loading ? "Creating account…" : "Create account"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -213,7 +211,7 @@ function Field({
         required={required}
         minLength={minLength}
         max={max}
-        className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+        className={cn(FIELD, "mt-1.5")}
       />
     </div>
   );

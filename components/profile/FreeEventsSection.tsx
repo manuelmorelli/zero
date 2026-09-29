@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { RsvpButton } from "@/components/profile/RsvpButton";
+import { SectionTitle } from "@/components/ui/heading";
 
 export type FreeEventItem = {
   kind: "workshop" | "event";
@@ -22,7 +23,7 @@ export function FreeEventsSection({ items, isLoggedIn }: { items: FreeEventItem[
 
   return (
     <section>
-      <h2 className="text-base font-bold tracking-tight">Upcoming free events</h2>
+      <SectionTitle>Upcoming Free Events</SectionTitle>
       {/* Stessa griglia di OfferingSection (Shop/Workshop&Events a pagamento, poco più sotto in
           questa stessa pagina): card piccole e dense, mai una sola card che si allarga a metà
           riga quando c'è un solo evento (bug segnalato da Manuel il 2026-09-26). */}
@@ -40,14 +41,14 @@ export function FreeEventsSection({ items, isLoggedIn }: { items: FreeEventItem[
                 {item.coverUrl ? (
                   <Image src={item.coverUrl} alt={item.title} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-cover" />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+                  <div className="absolute inset-0 cover-placeholder" />
                 )}
-                <span className="absolute right-2 top-2 rounded-full border border-ember/20 bg-gradient-to-b from-ember/15 to-white/[0.02] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-emerald-500 backdrop-blur-md">
+                <span className="absolute right-2 top-2 rounded-full border border-ember-line bg-ember-soft px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-ember backdrop-blur-md">
                   Free
                 </span>
               </div>
               <div className="flex flex-1 flex-col p-3.5 pb-0">
-                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-ink-faint">
+                <p className="text-sm font-semibold uppercase tracking-wide text-ink-faint">
                   {item.kind === "workshop" ? "Workshop" : "Event"}
                   {item.startsAt &&
                     ` · ${new Date(item.startsAt).toLocaleDateString(undefined, { dateStyle: "medium" })}`}
@@ -56,12 +57,12 @@ export function FreeEventsSection({ items, isLoggedIn }: { items: FreeEventItem[
                   {item.title}
                 </p>
                 {item.description && (
-                  <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-muted">{item.description}</p>
+                  <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-ink-muted">{item.description}</p>
                 )}
               </div>
             </Link>
             <div className="mt-auto flex items-center justify-between gap-2 p-3.5 pt-3">
-              <span className="truncate text-xs text-ink-faint">
+              <span className="truncate text-sm text-ink-faint">
                 {item.rsvpCount} going
               </span>
               <RsvpButton kind={item.kind} id={item.id} initialGoing={item.going} isLoggedIn={isLoggedIn} />

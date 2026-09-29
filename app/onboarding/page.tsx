@@ -4,6 +4,7 @@ import { requireSession } from "@/lib/session";
 import { OnboardingWelcome } from "@/components/onboarding/OnboardingWelcome";
 import { OnboardingForm } from "@/components/onboarding/OnboardingForm";
 import { AuthHeader } from "@/components/layout/AuthHeader";
+import { SectionTitle } from "@/components/ui/heading";
 
 export default async function OnboardingPage() {
   const { user } = await requireSession();
@@ -24,7 +25,7 @@ export default async function OnboardingPage() {
         </div>
 
         <div className="mt-12">
-          <h2 className="text-lg font-bold tracking-tight">What are you into?</h2>
+          <SectionTitle>What are you into?</SectionTitle>
           <p className="mt-1 text-sm text-ink-muted">
             Pick a few interests so we can show you Journeys worth following.
           </p>

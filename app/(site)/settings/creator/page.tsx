@@ -2,6 +2,10 @@ import Link from "next/link";
 import { requireSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { CreatorNotificationsForm } from "@/components/settings/CreatorNotificationsForm";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { PageTitle, SectionTitle } from "@/components/ui/heading";
+import { NOTICE, PANEL } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
 
 export default async function SettingsCreatorPage() {
   const { user } = await requireSession();
@@ -12,29 +16,29 @@ export default async function SettingsCreatorPage() {
 
   return (
     <main>
-      <div className="mx-auto w-full max-w-2xl px-6 pb-16 pt-24">
-        <h1 className="text-xl font-bold tracking-tight">Creator</h1>
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+        <PageTitle>Creator</PageTitle>
         <p className="mt-2 text-sm text-ink-muted">Notifications and tools for what you publish on Zero.</p>
 
-        <h2 className="mt-8 text-sm font-semibold text-ink-muted">Notifications</h2>
-        <div className="mt-3 rounded-xl border border-border bg-surface p-5">
+        <SectionTitle className="mt-8">Notifications</SectionTitle>
+        <div className={`mt-3 ${PANEL}`}>
           <CreatorNotificationsForm notifyNewFollower={preferences.notifyNewFollower} />
         </div>
 
-        <h2 className="mt-8 text-sm font-semibold text-ink-muted">Dashboard</h2>
+        <SectionTitle className="mt-8">Dashboard</SectionTitle>
         <Link
           href="/dashboard"
-          className="mt-3 flex items-center justify-between gap-4 rounded-xl border border-border bg-surface px-5 py-4 transition-colors hover:bg-surface-2"
+          className={cn(PANEL, "mt-3 flex items-center justify-between gap-4 transition-colors hover:border-ink-muted")}
         >
           <span>
-            <span className="block text-sm font-semibold text-ink">Manage your Journeys</span>
-            <span className="block text-xs text-ink-muted">Publish, edit and track your content.</span>
+            <span className="block text-sm font-semibold text-ink">Manage Your Journeys</span>
+            <span className="block text-sm text-ink-muted">Publish, edit and track your content.</span>
           </span>
           <ChevronIcon className="h-4 w-4 shrink-0 text-ink-faint" />
         </Link>
 
-        <h2 className="mt-8 text-sm font-semibold text-ink-muted">Payouts</h2>
-        <p className="mt-3 rounded-xl border border-border bg-surface p-5 text-sm text-ink-muted">
+        <SectionTitle className="mt-8">Payouts</SectionTitle>
+        <p className={`mt-3 ${NOTICE}`}>
           Coming soon. Payment details will be available once payments are connected.
         </p>
       </div>

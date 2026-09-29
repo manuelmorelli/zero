@@ -1,3 +1,4 @@
+import { DisplayTitle } from "@/components/ui/heading";
 type OnboardingWelcomeProps = {
   name: string;
 };
@@ -14,12 +15,12 @@ export function OnboardingWelcome({ name }: OnboardingWelcomeProps) {
     <div className="relative">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-ember/20 blur-[90px]"
+        className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-ember-soft blur-[90px]"
       />
       <div className="relative">
-        <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance sm:text-5xl">
+        <DisplayTitle className="text-balance">
           Welcome to <span className="text-ember">Zero</span>, {firstName}.
-        </h1>
+        </DisplayTitle>
         <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-muted text-balance">
           You&apos;re not just here to watch. You&apos;re here to inspire and to be inspired.
         </p>

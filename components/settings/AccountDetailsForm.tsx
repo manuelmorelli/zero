@@ -4,6 +4,9 @@ import { useActionState } from "react";
 import { toast } from "sonner";
 import { useEffect, useRef } from "react";
 import { updateAccountDetails } from "@/lib/actions/settings";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 type AccountDetailsFormProps = {
   name: string;
@@ -43,7 +46,7 @@ export function AccountDetailsForm({ name, username, bio, location }: AccountDet
           minLength={2}
           maxLength={100}
           defaultValue={name}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1.5")}
         />
       </div>
 
@@ -58,7 +61,7 @@ export function AccountDetailsForm({ name, username, bio, location }: AccountDet
           maxLength={30}
           placeholder="e.g. jane-doe"
           defaultValue={username ?? ""}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1.5")}
         />
       </div>
 
@@ -73,7 +76,7 @@ export function AccountDetailsForm({ name, username, bio, location }: AccountDet
           maxLength={100}
           placeholder="e.g. Lisbon, Portugal"
           defaultValue={location ?? ""}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1.5")}
         />
       </div>
 
@@ -88,24 +91,20 @@ export function AccountDetailsForm({ name, username, bio, location }: AccountDet
           maxLength={250}
           defaultValue={bio ?? ""}
           placeholder="Tell your story: who you are, what you're working on, why it matters."
-          className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1.5 resize-none")}
         />
       </div>
 
-      <p className="text-xs text-ink-muted">
+      <p className="text-sm text-ink-muted">
         To change your profile or cover photo, open{" "}
-        <span className="font-medium text-ink">Edit profile</span> from your profile page.
+        <span className="font-medium text-ink">Edit Profile</span> from your profile page.
       </p>
 
       {state.error && <p className="text-sm text-danger">{state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending}>
         {pending ? "Saving…" : "Save changes"}
-      </button>
+      </Button>
     </form>
   );
 }

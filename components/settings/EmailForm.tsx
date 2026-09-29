@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export function EmailForm({ currentEmail }: { currentEmail: string }) {
   const [newEmail, setNewEmail] = useState("");
@@ -29,13 +32,13 @@ export function EmailForm({ currentEmail }: { currentEmail: string }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <p className="text-sm font-medium text-ink-muted">Current email</p>
+        <p className="text-sm font-medium text-ink-muted">Current Email</p>
         <p className="mt-1.5 text-sm text-ink">{currentEmail}</p>
       </div>
 
       <div>
         <label htmlFor="newEmail" className="text-sm font-medium text-ink-muted">
-          New email
+          New Email
         </label>
         <input
           id="newEmail"
@@ -43,20 +46,16 @@ export function EmailForm({ currentEmail }: { currentEmail: string }) {
           required
           value={newEmail}
           onChange={(event) => setNewEmail(event.target.value)}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1.5")}
         />
-        <p className="mt-1.5 text-xs text-ink-muted">
+        <p className="mt-1.5 text-sm text-ink-muted">
           We&apos;ll send a confirmation link to the new address before the change takes effect.
         </p>
       </div>
 
-      <button
-        type="submit"
-        disabled={pending || !newEmail}
-        className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending || !newEmail}>
         {pending ? "Sending…" : "Change email"}
-      </button>
+      </Button>
     </form>
   );
 }

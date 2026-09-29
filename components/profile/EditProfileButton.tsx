@@ -13,6 +13,10 @@ import { JOURNEY_CATEGORIES, type JourneyCategory } from "@/lib/constants/catego
 import { ImageCropper } from "@/components/common/ImageCropper";
 import { DeleteAccountSection } from "@/components/profile/DeleteAccountSection";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { CHIP, CHIP_SELECTED } from "@/components/ui/panel";
+import { Button } from "@/components/ui/button";
 
 const BIO_MAX_LENGTH = 250;
 
@@ -34,13 +38,9 @@ export function EditProfileButton({ user, avatarUrl, coverUrl }: EditProfileButt
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="rounded-full border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] px-5 py-2.5 text-sm font-semibold text-ember backdrop-blur-md transition-colors hover:from-ember/15"
-      >
-        Edit profile
-      </button>
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Edit Profile
+      </Button>
 
       {open && (
         <EditProfileModal
@@ -164,7 +164,7 @@ function EditProfileModal({
   return (
     <DialogContent className="max-h-[92vh] max-w-3xl p-0">
       <DialogHeader className="sr-only">
-        <DialogTitle>Edit profile</DialogTitle>
+        <DialogTitle>Edit Profile</DialogTitle>
       </DialogHeader>
 
       <form
@@ -184,17 +184,17 @@ function EditProfileModal({
                 {coverPreview ? (
                   <Image src={coverPreview} alt="" fill sizes="280px" className="object-cover" />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+                  <div className="absolute inset-0 cover-placeholder" />
                 )}
                 <button
                   type="button"
                   onClick={() => coverInputRef.current?.click()}
                   aria-label="Change cover photo"
-                  className="absolute inset-0 flex items-center justify-center bg-black/0 text-[0.65rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
+                  className="absolute inset-0 flex items-center justify-center bg-transparent text-sm font-semibold text-transparent transition-colors hover:bg-bg hover:text-on-photo"
                 >
                   {coverProgress !== null ? `${coverProgress}%` : "Change"}
                 </button>
-                <span className="pointer-events-none absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/50 text-white">
+                <span className="pointer-events-none absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-scrim text-on-photo">
                   <CameraIcon className="h-3 w-3" />
                 </span>
                 <input
@@ -220,7 +220,7 @@ function EditProfileModal({
                   type="button"
                   onClick={() => avatarInputRef.current?.click()}
                   aria-label="Change profile photo"
-                  className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all group-hover:bg-black/50 group-hover:opacity-100"
+                  className="absolute inset-0 flex items-center justify-center bg-transparent text-on-photo opacity-0 transition-all group-hover:bg-scrim group-hover:opacity-100"
                 >
                   <CameraIcon className="h-4 w-4" />
                 </button>
@@ -233,12 +233,12 @@ function EditProfileModal({
                 />
               </div>
               {avatarProgress !== null && (
-                <span className="text-xs text-ink-muted">Uploading… {avatarProgress}%</span>
+                <span className="text-sm text-ink-muted">Uploading… {avatarProgress}%</span>
               )}
             </div>
 
             {(avatarError || coverError) && (
-              <p className="text-xs text-danger">{avatarError ?? coverError}</p>
+              <p className="text-sm text-danger">{avatarError ?? coverError}</p>
             )}
           </div>
 
@@ -256,7 +256,7 @@ function EditProfileModal({
                   minLength={2}
                   maxLength={100}
                   defaultValue={user.name}
-                  className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                  className={cn(FIELD, "mt-1.5")}
                 />
               </div>
 
@@ -271,7 +271,7 @@ function EditProfileModal({
                   maxLength={30}
                   placeholder="e.g. jane-doe"
                   defaultValue={user.username ?? ""}
-                  className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                  className={cn(FIELD, "mt-1.5")}
                 />
               </div>
             </div>
@@ -287,7 +287,7 @@ function EditProfileModal({
                 maxLength={100}
                 placeholder="e.g. Lisbon, Portugal"
                 defaultValue={user.location ?? ""}
-                className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                className={cn(FIELD, "mt-1.5")}
               />
             </div>
 
@@ -296,7 +296,7 @@ function EditProfileModal({
                 <label htmlFor="bio" className="text-sm font-medium text-ink-muted">
                   Bio
                 </label>
-                <span className="text-xs text-ink-muted">
+                <span className="text-sm text-ink-muted">
                   {bioLength}/{BIO_MAX_LENGTH}
                 </span>
               </div>
@@ -308,7 +308,7 @@ function EditProfileModal({
                 placeholder="Tell your story: who you are, what you're working on, why it matters."
                 value={bioValue}
                 onChange={(event) => setBioValue(event.target.value)}
-                className="mt-1.5 w-full resize-none overflow-hidden rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                className={cn(FIELD, "mt-1.5 resize-none overflow-hidden")}
               />
             </div>
 
@@ -342,11 +342,7 @@ function EditProfileModal({
                           key={category}
                           type="button"
                           onClick={() => toggle(category)}
-                          className={`inline-block cursor-pointer rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${
-                            active
-                              ? "border-ink bg-ink text-bg"
-                              : "border-border bg-surface-2 text-ink hover:border-ink-muted"
-                          }`}
+                          className={cn(active ? CHIP_SELECTED : CHIP, "cursor-pointer")}
                         >
                           {category}
                         </button>
@@ -361,18 +357,14 @@ function EditProfileModal({
 
             <div className="flex items-center gap-3">
               <DeleteAccountSection inline />
-              <button
-                type="submit"
-                disabled={
+              <Button variant="primary" type="submit" disabled={
                   pending ||
                   selected.length === 0 ||
                   avatarProgress !== null ||
                   coverProgress !== null
-                }
-                className="flex-1 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-              >
+                } className="flex-1">
                 {pending ? "Saving…" : "Save changes"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

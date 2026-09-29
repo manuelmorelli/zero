@@ -2,17 +2,20 @@
 
 import { useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
-import { DevEmailLinkNotice } from "@/components/common/DevEmailLinkNotice";
 import { AuthHeader } from "@/components/layout/AuthHeader";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/heading";
 
 export default function ForgotPasswordPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
         <AuthHeader />
-        <h1 className="mt-8 text-2xl font-extrabold tracking-tight">
+        <PageTitle className="mt-8">
           Forgot your password?
-        </h1>
+        </PageTitle>
         <p className="mt-2 text-sm text-ink-muted">
           Enter your email: if it matches an account, we&apos;ll send you a
           link to choose a new one.
@@ -56,7 +59,6 @@ function ForgotPasswordForm() {
           Check your email: if the address is registered, you&apos;ll receive
           a password reset link shortly.
         </p>
-        <DevEmailLinkNotice email={email} kind="reset-password" />
       </div>
     );
   }
@@ -75,19 +77,15 @@ function ForgotPasswordForm() {
           onChange={(event) => setEmail(event.target.value)}
           autoComplete="email"
           required
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1.5")}
         />
       </div>
 
       {error && <p className="text-sm text-danger">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={loading} className="w-full">
         {loading ? "Sending…" : "Send reset link"}
-      </button>
+      </Button>
     </form>
   );
 }

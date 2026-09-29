@@ -19,6 +19,11 @@ import { prisma } from "@/lib/prisma";
 import { getViewerSession } from "@/lib/session";
 import { getFreeEventItems } from "@/lib/community/freeEvents";
 import { FreeEventsSection } from "@/components/profile/FreeEventsSection";
+import { NOTICE, PANEL_ACCENT } from "@/components/ui/panel";
+import { Button } from "@/components/ui/button";
+import { PageTitle, SectionTitle } from "@/components/ui/heading";
+import { cn } from "@/lib/utils";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
 /** Pagina "Community" del profilo (ex "Subscribe", rinominata il 2026-09-26 su richiesta di
  * Manuel: un follower deve poter vedere qui TUTTO quello che il creator organizza, gratis o a
@@ -149,8 +154,8 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
 
   return (
     <main>
-      <div className="mx-auto w-full max-w-4xl px-5 pb-16 pt-24">
-        <section className="rounded-2xl border border-ember/20 bg-gradient-to-b from-ember/8 to-white/[0.02] p-6 backdrop-blur-md sm:p-8">
+      <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "max-w-4xl")}>
+        <section className={cn(PANEL_ACCENT, "sm:p-8")}>
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <div className="flex items-center gap-3">
@@ -164,7 +169,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
                   )}
                 </div>
                 <div className="min-w-0">
-                  <h1 className="truncate text-lg font-bold tracking-tight text-ink">{user.name}</h1>
+                  <PageTitle className="truncate">{user.name}</PageTitle>
                   <p className="truncate text-sm text-ink-muted">@{user.username ?? username}</p>
                 </div>
               </div>
@@ -190,16 +195,11 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
                   <span className="text-3xl font-bold tracking-tight text-ink">{MONTHLY_PRICE}</span>
                   <span className="text-sm text-ink-muted">/month</span>
                 </p>
-                <p className="mt-1 text-xs text-ink-muted">Cancel anytime.</p>
+                <p className="mt-1 text-sm text-ink-muted">Cancel anytime.</p>
               </div>
-              <button
-                type="button"
-                disabled
-                title="Coming soon: payments aren't connected yet"
-                className="cursor-not-allowed rounded-full bg-surface-2 px-5 py-2.5 text-sm font-semibold text-ink-faint"
-              >
-                Subscribe — Coming soon
-              </button>
+              <Button variant="secondary" disabled title="Coming soon: payments aren't connected yet">
+                Subscribe (Coming Soon)
+              </Button>
             </div>
           </div>
         </section>
@@ -211,7 +211,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
         )}
 
         <section className="mt-10">
-          <h2 className="text-base font-bold tracking-tight text-ink">What&apos;s inside</h2>
+          <SectionTitle>What&apos;s Inside</SectionTitle>
           <p className="mt-1 text-sm text-ink-muted">A preview of what members unlock.</p>
 
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -221,14 +221,14 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
                   {item.kind === "video" && <Play className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
                   {item.kind === "document" && <FileText className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
                   {item.kind === "map" && <Map className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
-                  <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-ember/20 bg-gradient-to-b from-ember/15 to-white/[0.02] px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-ink-muted backdrop-blur-md">
+                  <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-ember-line bg-ember-soft px-2 py-0.5 text-sm font-semibold uppercase tracking-wide text-ink-muted backdrop-blur-md">
                     <Lock className="h-3 w-3" aria-hidden="true" />
                     Locked
                   </span>
                 </div>
                 <div className="p-3.5">
                   <p className="truncate text-sm font-semibold text-ink">{item.title}</p>
-                  <p className="mt-0.5 text-xs text-ink-muted">{item.meta}</p>
+                  <p className="mt-0.5 text-sm text-ink-muted">{item.meta}</p>
                 </div>
               </div>
             ))}
@@ -271,11 +271,11 @@ function OfferingSection({
 }) {
   return (
     <section className="mt-10">
-      <h2 className="text-base font-bold tracking-tight text-ink">{title}</h2>
+      <SectionTitle>{title}</SectionTitle>
       <p className="mt-1 text-sm text-ink-muted">{description}</p>
 
       {items.length === 0 ? (
-        <p className="mt-4 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
+        <p className={`mt-4 ${NOTICE}`}>
           Nothing here yet.
         </p>
       ) : (
@@ -296,14 +296,14 @@ function OfferingSection({
                   )}
                 </div>
                 <div className="flex flex-1 flex-col p-3.5">
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-ink-faint">{item.meta}</p>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-ink-faint">{item.meta}</p>
                   <p className="mt-1 text-sm font-semibold leading-snug text-ink">{item.title}</p>
-                  <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-muted">{item.description}</p>
+                  <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-ink-muted">{item.description}</p>
                   <div className="mt-auto flex items-center justify-between gap-2 pt-3">
                     <span className="text-base font-bold text-ink">{item.price}</span>
                     <span
                       title="Coming soon: payments aren't connected yet"
-                      className="cursor-not-allowed rounded-full bg-surface-2 px-3.5 py-1.5 text-xs font-semibold text-ink-faint"
+                      className="cursor-not-allowed rounded-full bg-surface-2 px-3.5 py-1.5 text-sm font-semibold text-ink-faint"
                     >
                       {item.ctaLabel}
                     </span>

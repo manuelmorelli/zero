@@ -30,6 +30,11 @@ import { DEMO_FEED_ITEMS } from "@/lib/demo/demoProfile";
 import { findUserByUsernameOrId } from "@/lib/profile/findUserByUsernameOrId";
 import { FreeEventsSection } from "@/components/profile/FreeEventsSection";
 import { getFreeEventItems } from "@/lib/community/freeEvents";
+import { NOTICE } from "@/components/ui/panel";
+import { Button } from "@/components/ui/button";
+import { SectionTitle } from "@/components/ui/heading";
+import { PAGE_WIDTH } from "@/components/ui/page-container";
+import { cn } from "@/lib/utils";
 
 /** Quante Published Journeys mostrare in anteprima nell'Overview prima del link "View all"
  * verso la tab Journeys (che resta la lista completa, archiviati compresi). */
@@ -192,12 +197,9 @@ export default async function PublicProfilePage({
                 avatarUrl={avatarUrl}
                 coverUrl={coverUrl}
               />
-              <Link
-                href="/dashboard"
-                className="rounded-full border border-ember/35 bg-ember/[0.08] px-5 py-2.5 text-sm font-semibold text-ink shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] transition-all duration-300 hover:border-ember/70 hover:bg-ember/[0.15] hover:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)]"
-              >
+              <Button variant="secondary" href="/dashboard">
                 Dashboard
-              </Link>
+              </Button>
               <ShareProfileButton />
             </>
           ) : (
@@ -215,19 +217,16 @@ export default async function PublicProfilePage({
         activeTab={activeTab}
         actions={
           isOwnProfile ? (
-            <Link
-              href="/dashboard/community"
-              className="shrink-0 rounded-full border border-ember/35 bg-ember/[0.08] px-4 py-2 text-sm text-white opacity-70 shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] backdrop-blur-md transition-all duration-300 hover:opacity-100"
-            >
+            <Button variant="secondary" href="/dashboard/community" className="shrink-0">
               Community
-            </Link>
+            </Button>
           ) : creator ? (
             <CreatorEconomyLinks username={username} />
           ) : undefined
         }
       />
 
-      <div className="mx-auto max-w-[1400px] px-5 py-4 md:px-[calc(4.43%+2rem)]">
+      <div className={cn(PAGE_WIDTH.wideCover, "py-4")}>
         {activeTab === "overview" && (
           <>
             {/* 1. Journey in corso + card Bio/Presentazione (unica, vedi sopra) */}
@@ -292,8 +291,8 @@ export default async function PublicProfilePage({
                 </HorizontalScrollRow>
               ) : (
                 <section>
-                  <h2 className="text-base font-bold tracking-tight">Recent Episodes</h2>
-                  <p className="mt-4 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
+                  <SectionTitle>Recent Episodes</SectionTitle>
+                  <p className={`mt-4 ${NOTICE}`}>
                     {`${user.name} hasn't shared any episode yet.`}
                   </p>
                 </section>
@@ -304,13 +303,13 @@ export default async function PublicProfilePage({
             <Reveal delayMs={120} className="mt-6 block">
               <section>
                 <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-base font-bold tracking-tight">Published Journeys</h2>
+                  <SectionTitle>Published Journeys</SectionTitle>
                   {liveJourneys.length > PUBLISHED_JOURNEYS_PREVIEW_COUNT && (
                     <Link
                       href={`/profile/${username}?tab=journeys`}
                       className="text-sm text-ink-muted transition-colors hover:text-ember"
                     >
-                      View all →
+                      View All →
                     </Link>
                   )}
                 </div>
@@ -349,7 +348,7 @@ export default async function PublicProfilePage({
                     })}
                   </div>
                 ) : (
-                  <p className="mt-4 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
+                  <p className={`mt-4 ${NOTICE}`}>
                     {`${user.name} hasn't published any Journey yet.`}
                   </p>
                 )}
@@ -361,7 +360,7 @@ export default async function PublicProfilePage({
         {activeTab === "journeys" && (
           <section>
             {journeys.length === 0 ? (
-              <p className="rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
+              <p className={NOTICE}>
                 {`${user.name} hasn't published any Journey yet.`}
               </p>
             ) : (
@@ -413,7 +412,7 @@ export default async function PublicProfilePage({
  * Consulting (deciso con Manuel il 2026-09-22: niente pagamento reale dietro per ora). */
 function CreatorEconomyLinks({ username }: { username: string }) {
   const linkClassName =
-    "shrink-0 rounded-full border border-ember/35 bg-ember/[0.08] px-4 py-2 text-sm text-white opacity-70 shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] transition-all duration-300 hover:opacity-100";
+    "shrink-0 rounded-full border border-ember-line bg-ember-soft px-4 py-2 text-sm text-on-photo opacity-70 shadow-glow transition-all duration-300 hover:opacity-100";
   return (
     <Link href={`/profile/${username}/community`} className={linkClassName}>
       Community
