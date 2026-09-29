@@ -1,8 +1,8 @@
 ---
 title: Lovable Redesign Checklist
 doc_id: 97-lovable-redesign-checklist
-version: "1.4"
-status: in-progress
+version: "1.5"
+status: superseded
 related_docs:
   - 14_UI_Pages
   - 15_Design_System
@@ -10,6 +10,8 @@ related_docs:
 ---
 
 # Lovable Redesign Checklist
+
+**Superato (confermato da Manuel il 2026-09-29): Lovable non è più in uso** (crediti esauriti durante il Punto 7 dell'allineamento, il design da allora si costruisce direttamente nel codice, vedi `93_Project_Alignment_Recap.md` e l'iniziativa di coerenza design in `92_Project_History.md`, Capitolo 25). Questo documento resta solo come archivio storico di quella fase, non va più aggiornato né usato come riferimento.
 
 Mappa di lavoro per l'allineamento pixel-preciso del progetto reale al design di riferimento Lovable (`manuelmorelli/zero-your-transformation-journey`, letto tramite lo strumento Lovable collegato — fonte di verità esatta, non ricostruzione a memoria).
 
