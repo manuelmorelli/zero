@@ -16,6 +16,7 @@ import { useCommunityAiAttachments } from "@/hooks/useCommunityAiAttachments";
 import { CommunityAiChatImage } from "@/components/creator/CommunityAiChatImage";
 import { CommunityAiComposer } from "@/components/creator/CommunityAiComposer";
 import { CommunityAiMessageActions } from "@/components/creator/CommunityAiMessageActions";
+import { CommunityAiNewChatButton } from "@/components/creator/CommunityAiNewChatButton";
 
 function welcomeMessage(creatorFirstName: string | null): CommunityAiChatMessage {
   const greeting = creatorFirstName ? `Hi ${creatorFirstName}!` : "Hi!";
@@ -39,6 +40,10 @@ const MARKDOWN_COMPONENTS: Components = {
   ),
 };
 
+function freshChat(creatorFirstName: string | null): StoredCommunityAiChat {
+  return { messages: [welcomeMessage(creatorFirstName)], interactionId: null, readyDraft: null, draftStartIndex: 0 };
+}
+
 function hasDraggedFiles(event: React.DragEvent): boolean {
   return event.dataTransfer.types.includes("Files");
 }
@@ -58,13 +63,7 @@ export function CommunityAiChat({
   onDraftReady: (pending: CommunityAiPendingDraft) => void;
 }) {
   const [chat, setChat] = useState<StoredCommunityAiChat>(
-    () =>
-      loadCommunityAiChat(userId) ?? {
-        messages: [welcomeMessage(creatorFirstName)],
-        interactionId: null,
-        readyDraft: null,
-        draftStartIndex: 0,
-      }
+    () => loadCommunityAiChat(userId) ?? freshChat(creatorFirstName)
   );
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
@@ -138,6 +137,13 @@ export function CommunityAiChat({
       [...chat.messages, { role: "user", text: message, ...(attachments.length > 0 ? { attachments } : {}) }],
       chat.interactionId
     );
+  }
+
+  /** "New chat": riparte da zero, anche con la memoria Gemini (nuovo interactionId al primo messaggio). */
+  function handleNewChat() {
+    files.takeReady();
+    setInput("");
+    setChat(freshChat(creatorFirstName));
   }
 
   function handleRegenerate(index: number) {
@@ -219,6 +225,9 @@ export function CommunityAiChat({
         </div>
       ) : (
         <>
+          <div className="mx-auto flex w-full max-w-3xl justify-end px-4 pt-4">
+            <CommunityAiNewChatButton onConfirm={handleNewChat} disabled={pending} />
+          </div>
           <div
             ref={scrollRef}
             className="min-h-0 flex-1 overflow-y-auto [scrollbar-color:var(--color-surface-2)_transparent] [scrollbar-width:thin]"
