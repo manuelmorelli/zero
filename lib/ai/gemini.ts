@@ -24,12 +24,11 @@ type GeminiCallParams = {
 
 type GeminiCallResult = { text: string; interactionId: string } | { error: string };
 
-/**
- * Chiamata di basso livello, condivisa da moderazione (lib/moderation.ts) e dall'assistente di
- * creazione Community (lib/ai/communityDraft.ts). Non lancia mai un'eccezione: un problema di rete
- * o della chiave mancante torna come `{ error }`, mai un crash della pagina che la chiama.
- */
-export async function callGemini(params: GeminiCallParams): Promise<GeminiCallResult> {
+const UNAVAILABLE = "The AI assistant is unavailable right now.";
+const UNUSABLE = "The AI assistant didn't return a usable answer.";
+
+/** Invia una richiesta all'Interactions API. Torna la risposta HTTP solo se è andata a buon fine. */
+async function postInteraction(params: GeminiCallParams, stream: boolean): Promise<Response | { error: string }> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return { error: "AI assistant is not configured." };
 
@@ -42,32 +41,115 @@ export async function callGemini(params: GeminiCallParams): Promise<GeminiCallRe
   if (params.responseSchema) {
     body.response_format = { type: "text", mime_type: "application/json", schema: params.responseSchema };
   }
+  if (stream) body.stream = true;
 
   let response: Response;
   try {
-    response = await fetch(GEMINI_ENDPOINT, {
+    response = await fetch(stream ? `${GEMINI_ENDPOINT}?alt=sse` : GEMINI_ENDPOINT, {
       method: "POST",
       headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
   } catch (error) {
     console.error("[gemini] request failed", error);
-    return { error: "The AI assistant is unavailable right now." };
+    return { error: UNAVAILABLE };
   }
 
   if (!response.ok) {
     console.error(`[gemini] request failed: ${response.status} ${await response.text().catch(() => "")}`);
-    return { error: "The AI assistant is unavailable right now." };
+    return { error: UNAVAILABLE };
   }
+  return response;
+}
+
+/**
+ * Chiamata di basso livello, condivisa da moderazione (lib/moderation.ts) e dall'assistente di
+ * creazione Community (lib/ai/communityDraft.ts). Non lancia mai un'eccezione: un problema di rete
+ * o della chiave mancante torna come `{ error }`, mai un crash della pagina che la chiama.
+ */
+export async function callGemini(params: GeminiCallParams): Promise<GeminiCallResult> {
+  const response = await postInteraction(params, false);
+  if ("error" in response) return response;
 
   const data = await response.json();
   const modelOutputStep = (data.steps ?? []).find((step: { type: string }) => step.type === "model_output");
   const text = modelOutputStep?.content?.find((part: { type: string }) => part.type === "text")?.text;
   if (!text || typeof data.id !== "string") {
-    return { error: "The AI assistant didn't return a usable answer." };
+    return { error: UNUSABLE };
   }
 
   return { text, interactionId: data.id };
+}
+
+type StreamEvent = {
+  event_type?: string;
+  interaction?: { id?: string; status?: string };
+  delta?: { type?: string; text?: string };
+};
+
+/**
+ * Come callGemini, ma il testo arriva a pezzi mentre il modello lo scrive (`onText` per ogni pezzo),
+ * come nell'app Gemini: le prime parole arrivano in meno di un secondo invece di aspettare la
+ * risposta intera (misurato il 2026-09-29: ~0,7 s contro 9-12 s). Formato verificato dal vivo: eventi
+ * SSE "interaction.created" (id), "step.delta" con delta di tipo "text", "interaction.completed".
+ * Se la richiesta viene rifiutata (es. memoria scaduta) l'errore arriva prima di qualunque testo.
+ */
+export async function streamGemini(
+  params: GeminiCallParams,
+  onText: (delta: string) => void
+): Promise<GeminiCallResult> {
+  const response = await postInteraction(params, true);
+  if ("error" in response) return response;
+  if (!response.body) return { error: UNUSABLE };
+
+  let interactionId: string | null = null;
+  let text = "";
+  let failed = false;
+
+  const handleEvent = (raw: string) => {
+    const data = raw
+      .split("\n")
+      .filter((line) => line.startsWith("data:"))
+      .map((line) => line.slice(5).trim())
+      .join("");
+    if (!data || data === "[DONE]") return;
+    let event: StreamEvent;
+    try {
+      event = JSON.parse(data) as StreamEvent;
+    } catch {
+      return;
+    }
+    if (event.interaction?.id) interactionId = event.interaction.id;
+    if (event.interaction?.status === "failed" || event.event_type === "error") failed = true;
+    if (event.event_type === "step.delta" && event.delta?.type === "text" && event.delta.text) {
+      text += event.delta.text;
+      onText(event.delta.text);
+    }
+  };
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, "\n");
+      let boundary = buffer.indexOf("\n\n");
+      while (boundary !== -1) {
+        handleEvent(buffer.slice(0, boundary));
+        buffer = buffer.slice(boundary + 2);
+        boundary = buffer.indexOf("\n\n");
+      }
+    }
+    if (buffer.trim()) handleEvent(buffer);
+  } catch (error) {
+    console.error("[gemini] stream interrupted", error);
+    return { error: UNAVAILABLE };
+  }
+
+  if (failed || !text || !interactionId) return { error: UNUSABLE };
+  return { text, interactionId };
 }
 
 // Modello per creare/modificare immagini ("Nano Banana"): NON incluso nel piano gratuito di Google,

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import { FileText, Sparkles, Upload } from "lucide-react";
-import { sendCommunityAiMessage } from "@/lib/actions/communityAi";
+import { streamCommunityAiTurn } from "@/lib/communityAiChatStream";
 import { COMMUNITY_LISTING_LABELS } from "@/lib/constants/communityListing";
 import {
   loadCommunityAiChat,
@@ -67,6 +67,7 @@ export function CommunityAiChat({
   );
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
+  const [streamingText, setStreamingText] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const files = useCommunityAiAttachments();
@@ -79,7 +80,7 @@ export function CommunityAiChat({
   useEffect(() => {
     const container = scrollRef.current;
     if (container) container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
-  }, [chat.messages, chat.readyDraft, pending]);
+  }, [chat.messages, chat.readyDraft, pending, streamingText]);
 
   /** Un turno con l'AI. `base` è la conversazione fino al messaggio del creator compreso: per un
    * messaggio nuovo è tutta la chat più quel messaggio, per "Regenerate" è la chat senza l'ultima
@@ -94,37 +95,53 @@ export function CommunityAiChat({
     setChat((current) => ({ ...current, messages: base }));
     setPending(true);
 
-    const result = await sendCommunityAiMessage({
-      message: userMessage.text,
-      previousInteractionId: parentInteractionId,
-      history: conversation,
-      draftConversation,
-      lastImageKey,
-      attachments: userMessage.attachments ?? [],
-    });
-
-    if ("error" in result) {
-      setChat((current) => ({
-        ...current,
-        messages: [...current.messages, { role: "assistant", text: result.error, failed: true, parentInteractionId }],
-      }));
-    } else {
-      setChat((current) => ({
-        ...current,
-        interactionId: result.interactionId,
-        messages: [
-          ...current.messages,
-          {
-            role: "assistant",
-            text: result.reply,
-            parentInteractionId,
-            ...(result.imageKey ? { imageKey: result.imageKey } : {}),
-          },
-        ],
-        // Una risposta senza bozza non cancella quella precedente: il pulsante resta finché ce n'è una.
-        readyDraft: result.draft ? { type: result.draft.type, draft: result.draft } : current.readyDraft,
-      }));
-    }
+    // La risposta si vede mentre arriva (streamingText, mai salvata a metà); a risposta completa
+    // entra nella conversazione, e la bozza arriva qualche secondo dopo.
+    let replied = false;
+    let partial = "";
+    await streamCommunityAiTurn(
+      {
+        message: userMessage.text,
+        previousInteractionId: parentInteractionId,
+        history: conversation,
+        draftConversation,
+        lastImageKey,
+        attachments: userMessage.attachments ?? [],
+      },
+      (event) => {
+        if (event.type === "text") {
+          partial += event.delta;
+          setStreamingText(partial);
+        } else if (event.type === "reply") {
+          replied = true;
+          setStreamingText(null);
+          setChat((current) => ({
+            ...current,
+            interactionId: event.interactionId,
+            messages: [
+              ...current.messages,
+              {
+                role: "assistant",
+                text: event.reply,
+                parentInteractionId,
+                ...(event.imageKey ? { imageKey: event.imageKey } : {}),
+              },
+            ],
+          }));
+        } else if (event.type === "draft") {
+          // Una risposta senza bozza non cancella quella precedente: il pulsante resta finché ce n'è una.
+          const { draft } = event;
+          if (draft) setChat((current) => ({ ...current, readyDraft: { type: draft.type, draft } }));
+        } else if (!replied) {
+          // Un errore dopo la risposta (es. bozza non arrivata) non tocca la conversazione.
+          setStreamingText(null);
+          setChat((current) => ({
+            ...current,
+            messages: [...current.messages, { role: "assistant", text: event.error, failed: true, parentInteractionId }],
+          }));
+        }
+      }
+    );
     setPending(false);
   }
 
@@ -286,11 +303,21 @@ export function CommunityAiChat({
                   </div>
                 )
               )}
-              {pending && (
-                <div className="flex items-center gap-3 text-base text-ink-faint">
-                  <Sparkles className="h-5 w-5 shrink-0 animate-pulse text-ember" aria-hidden="true" />
-                  Thinking…
+              {streamingText !== null ? (
+                <div className="flex gap-3">
+                  <Sparkles className="mt-1 h-5 w-5 shrink-0 animate-pulse text-ember" aria-hidden="true" />
+                  <div className="min-w-0 flex-1 text-base leading-relaxed text-ink">
+                    <ReactMarkdown components={MARKDOWN_COMPONENTS}>{streamingText}</ReactMarkdown>
+                  </div>
                 </div>
+              ) : (
+                pending &&
+                lastMessage?.role === "user" && (
+                  <div className="flex items-center gap-3 text-base text-ink-faint">
+                    <Sparkles className="h-5 w-5 shrink-0 animate-pulse text-ember" aria-hidden="true" />
+                    Thinking…
+                  </div>
+                )
               )}
             </div>
           </div>

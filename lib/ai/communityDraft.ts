@@ -1,4 +1,4 @@
-import { callGemini, parseGeminiJson, type GeminiInputPart } from "@/lib/ai/gemini";
+import { callGemini, parseGeminiJson, streamGemini, type GeminiInputPart } from "@/lib/ai/gemini";
 import { getImageBytes } from "@/lib/r2";
 import { PDF_CONTENT_TYPE, type CommunityAiAttachment } from "@/lib/constants/communityAiAttachment";
 import { createCommunityImage, DAILY_AI_IMAGE_LIMIT, isAiImageGenerationEnabled } from "@/lib/ai/communityImage";
@@ -25,8 +25,8 @@ type RawDraft = Partial<Record<"type" | "title" | "description" | "startsAt", st
   price?: number;
 };
 
-export type CommunityDraftTurnResult =
-  | { reply: string; draft: CommunityDraft | null; imageKey: string | null; interactionId: string }
+export type CommunityChatTurnResult =
+  | { reply: string; imageKey: string | null; interactionId: string }
   | { error: string };
 
 // La chat è una conversazione libera, come su Gemini (richiesta esplicita di Manuel il 2026-09-26:
@@ -209,13 +209,13 @@ async function buildAttachmentParts(attachments: CommunityAiAttachment[]): Promi
 const ATTACHMENT_ONLY_MESSAGE = "(The creator sent the attached file without a message.)";
 
 /**
- * Un turno della chat. Gemini ricorda la conversazione tramite `previousInteractionId`; se quella
- * memoria non è più disponibile (scaduta: la chat ora resta salvata fino al logout) si riparte
- * rimandando la conversazione come testo, così l'AI non "dimentica" mai quello che il creator vede.
- * `draftConversation` è la parte di conversazione dopo l'ultima creazione confermata: la bozza viene
- * estratta solo da lì, per non riproporre qualcosa che il creator ha già creato.
+ * Un turno della chat: la risposta arriva a pezzi tramite `onText` (come su Gemini), la bozza si
+ * prepara dopo con extractCommunityDraft, mentre il creator legge. Gemini ricorda la conversazione
+ * tramite `previousInteractionId`; se quella memoria non è più disponibile (scaduta: la chat resta
+ * salvata fino al logout) si riparte rimandando la conversazione come testo, così l'AI non
+ * "dimentica" mai quello che il creator vede.
  */
-export async function continueCommunityDraftChat(params: {
+export async function continueCommunityChat(params: {
   userId: string;
   message: string;
   /** Ultima immagine AI della conversazione, già verificata come dell'utente: base per le modifiche. */
@@ -224,10 +224,10 @@ export async function continueCommunityDraftChat(params: {
   attachments: CommunityAiAttachment[];
   previousInteractionId: string | null;
   history: CommunityChatMessage[];
-  draftConversation: CommunityChatMessage[];
   today: Date;
   creatorFirstName: string | null;
-}): Promise<CommunityDraftTurnResult> {
+  onText: (delta: string) => void;
+}): Promise<CommunityChatTurnResult> {
   const imagesEnabled = isAiImageGenerationEnabled();
   const systemInstruction = buildChatInstruction(params.today, params.creatorFirstName, imagesEnabled);
   const message = params.message || ATTACHMENT_ONLY_MESSAGE;
@@ -254,25 +254,51 @@ export async function continueCommunityDraftChat(params: {
   const withAttachments = (text: string): string | GeminiInputPart[] =>
     attachmentParts.length > 0 ? [{ type: "text", text }, ...attachmentParts] : text;
 
-  let chat = await callGemini({
-    input: withAttachments(chatInput),
-    systemInstruction,
-    previousInteractionId: params.previousInteractionId ?? undefined,
-  });
-  if ("error" in chat && params.previousInteractionId && params.history.length > 0) {
-    chat = await callGemini({
-      input: withAttachments(
-        `Conversation so far:\n\n${formatTranscript(params.history)}\n\nCreator's new message: ${chatInput}`
-      ),
-      systemInstruction,
-    });
+  // Il secondo tentativo ha senso solo se non è ancora arrivato nessun pezzo di testo, altrimenti
+  // il creator vedrebbe la risposta ricominciare da capo.
+  let streamedText = false;
+  const onText = (delta: string) => {
+    streamedText = true;
+    params.onText(delta);
+  };
+
+  let chat = await streamGemini(
+    { input: withAttachments(chatInput), systemInstruction, previousInteractionId: params.previousInteractionId ?? undefined },
+    onText
+  );
+  if ("error" in chat && !streamedText && params.previousInteractionId && params.history.length > 0) {
+    chat = await streamGemini(
+      {
+        input: withAttachments(
+          `Conversation so far:\n\n${formatTranscript(params.history)}\n\nCreator's new message: ${chatInput}`
+        ),
+        systemInstruction,
+      },
+      onText
+    );
   }
   if ("error" in chat) return chat;
 
-  const draft = await extractDraft(
-    [...params.draftConversation, { role: "user", text: message }, { role: "assistant", text: chat.text }],
+  return { reply: chat.text, imageKey, interactionId: chat.interactionId };
+}
+
+/**
+ * La bozza del turno appena concluso. `draftConversation` è la parte di conversazione dopo l'ultima
+ * creazione confermata: la bozza viene estratta solo da lì, per non riproporre qualcosa che il
+ * creator ha già creato.
+ */
+export async function extractCommunityDraft(params: {
+  draftConversation: CommunityChatMessage[];
+  message: string;
+  reply: string;
+  today: Date;
+}): Promise<CommunityDraft | null> {
+  return extractDraft(
+    [
+      ...params.draftConversation,
+      { role: "user", text: params.message || ATTACHMENT_ONLY_MESSAGE },
+      { role: "assistant", text: params.reply },
+    ],
     params.today
   );
-
-  return { reply: chat.text, draft, imageKey, interactionId: chat.interactionId };
 }
