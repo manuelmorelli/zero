@@ -228,7 +228,7 @@ Task precedente ancora: **Messaggistica privata** — vedi la voce corrispondent
 
 Cose note che vanno risolte prima che utenti reali usino il prodotto, ma non bloccano lo sviluppo in corso.
 
-- **Mittente email non verificato**: le email (verifica account, reset password) partono da `onboarding@resend.dev`, l'indirizzo di test di Resend, non da un dominio verificato. **Confermato concretamente** (non solo in teoria): un invio di test reale risulta "delivered" lato Resend, ma non arriva a destinazione — probabilmente bloccato in silenzio da Yahoo prima ancora dello Spam, non solo spostato lì. Il dominio ora esiste (zerojourneys.com, comprato su Cloudflare il 2026-09-23) ma non è ancora collegato a Resend, voce aperta in `94_Product_Backlog.md`. Prima del rilascio pubblico serve collegare un dominio verificato su Resend e aggiornare l'indirizzo mittente in `lib/email.ts`. Mitigazione temporanea nel frattempo: `lib/devEmailLog.ts` + `components/common/DevEmailLinkNotice.tsx` mostrano il link di verifica/reset direttamente nell'interfaccia (solo fuori produzione, con etichetta "Development only"), per non restare bloccati nei test. Da rimuovere quando il dominio verificato risolverà la consegna reale.
+- ~~Mittente email non verificato~~ — **risolto il 2026-09-29**: dominio `zerojourneys.com` verificato su Resend, mittente in `lib/email.ts` aggiornato a `noreply@zerojourneys.com`, email di test confermata arrivata su Yahoo. Rimossa la mitigazione temporanea (`lib/devEmailLog.ts`, `lib/actions/devEmail.ts`, `components/common/DevEmailLinkNotice.tsx`), non più necessaria.
 
 ### Procedura di fine task
 
