@@ -16,11 +16,12 @@ export type CommunityDraft = {
   isFree: boolean;
   price: number | null;
   startsAt: string | null;
+  location: string | null;
 };
 
 export type CommunityChatMessage = { role: "user" | "assistant"; text: string };
 
-type RawDraft = Partial<Record<"type" | "title" | "description" | "startsAt", string>> & {
+type RawDraft = Partial<Record<"type" | "title" | "description" | "startsAt" | "location", string>> & {
   isFree?: boolean;
   price?: number;
 };
@@ -76,7 +77,8 @@ Rules:
 - title: short and specific, based on what the creator said or accepted. Never a placeholder like "New Event".
 - description: the most complete description available (use the assistant's proposed description if the creator didn't reject it), otherwise write a short one from the facts given. Plain text, no Markdown.
 - isFree: true only if the creator said it's free. price: only if the creator stated a price, never invent one.
-- startsAt: only for workshop/event, ISO 8601 (YYYY-MM-DDTHH:mm if a time was given, else YYYY-MM-DD), always the next future occurrence after today.`;
+- startsAt: only for workshop/event, ISO 8601 (YYYY-MM-DDTHH:mm if a time was given, else YYYY-MM-DD), always the next future occurrence after today.
+- location: only for workshop/event, the venue address or online link if the creator mentioned one, otherwise omit.`;
 }
 
 // Se presente, la bozza deve avere tipo/titolo/descrizione: con i campi tutti facoltativi Gemini
@@ -96,6 +98,7 @@ const EXTRACTION_SCHEMA = {
         isFree: { type: "boolean" },
         price: { type: "number" },
         startsAt: { type: "string" },
+        location: { type: "string" },
       },
       required: ["type", "title", "description"],
     },
@@ -128,6 +131,7 @@ function normalizeDraft(raw: RawDraft | undefined, today: Date): CommunityDraft 
     isFree: Boolean(raw.isFree),
     price: typeof raw.price === "number" && raw.price > 0 ? raw.price : null,
     startsAt: futureStartsAt(raw.startsAt, today),
+    location: raw.location?.trim() || null,
   };
 }
 

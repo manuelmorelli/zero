@@ -30,6 +30,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { PANEL } from "@/components/ui/panel";
 
 export type CommunityListingDraft = {
   title: string;
@@ -37,6 +41,7 @@ export type CommunityListingDraft = {
   isFree: boolean;
   price: number | null;
   startsAt: string | null;
+  location?: string | null;
   /** Immagine creata dall'AI nella chat e scelta con "Use as cover" (chiave R2 "ai-images/..."). */
   coverKey?: string | null;
 };
@@ -50,6 +55,7 @@ type CommunityListingFormProps = {
     isFree: boolean;
     price: number | null;
     startsAt: string | null;
+    location: string | null;
     fileUrl: string | null;
     coverUrl: string | null;
   };
@@ -85,7 +91,8 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
   );
   const [startsAt, setStartsAt] = useState(
     toDatetimeLocal(listing?.startsAt ?? initialDraft?.startsAt ?? null)
-  );
+  )
+  const [location, setLocation] = useState(listing?.location ?? initialDraft?.location ?? "");
 
   const [fileKey, setFileKey] = useState("");
   const [fileName, setFileName] = useState<string | null>(listing?.fileUrl ? "Current file" : null);
@@ -205,7 +212,7 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
                   className="object-cover"
                 />
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+                <div className="absolute inset-0 cover-placeholder" />
               )}
               {listing && (
                 <>
@@ -213,7 +220,7 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
                     type="button"
                     onClick={() => coverInputRef.current?.click()}
                     aria-label="Change cover photo"
-                    className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-black/0 text-[0.65rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-transparent text-sm font-semibold text-transparent transition-colors hover:bg-bg hover:text-on-photo"
                   >
                     <ImagePlus className="h-4 w-4" aria-hidden="true" />
                     {coverProgress !== null ? `${coverProgress}%` : "Change"}
@@ -228,7 +235,7 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
                 </>
               )}
             </div>
-            {coverError && <p className="mt-1.5 text-xs text-danger">{coverError}</p>}
+            {coverError && <p className="mt-1.5 text-sm text-danger">{coverError}</p>}
           </div>
         )}
         {listing ? (
@@ -253,7 +260,7 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
             maxLength={100}
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "mt-1.5")}
           />
         </div>
 
@@ -268,24 +275,40 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
             maxLength={2000}
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "mt-1.5 resize-none")}
           />
         </div>
 
         {hasDate && (
-          <div>
-            <label htmlFor="startsAt" className="text-sm font-medium text-ink-muted">
-              Date {COMMUNITY_LISTING_LABELS[type] === "Event" ? "and time" : ""}
-            </label>
-            <input
-              id="startsAt"
-              name="startsAt"
-              type="datetime-local"
-              value={startsAt}
-              onChange={(event) => setStartsAt(event.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
-            />
-          </div>
+          <>
+            <div>
+              <label htmlFor="startsAt" className="text-sm font-medium text-ink-muted">
+                Date {COMMUNITY_LISTING_LABELS[type] === "Event" ? "and time" : ""}
+              </label>
+              <input
+                id="startsAt"
+                name="startsAt"
+                type="datetime-local"
+                value={startsAt}
+                onChange={(event) => setStartsAt(event.target.value)}
+                className={cn(FIELD, "mt-1.5")}
+              />
+            </div>
+            <div>
+              <label htmlFor="location" className="text-sm font-medium text-ink-muted">
+                Location or link <span className="text-ink-faint">(optional)</span>
+              </label>
+              <input
+                id="location"
+                name="location"
+                type="text"
+                placeholder="e.g. Via Roma 12, Milan  or  zoom.us/j/123456"
+                value={location}
+                onChange={(event) => setLocation(event.target.value)}
+                className={cn(FIELD, "mt-1.5")}
+              />
+            </div>
+          </>
         )}
 
         {supportsFree && (
@@ -316,7 +339,7 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
               required={!isFree}
               value={price}
               onChange={(event) => setPrice(event.target.value.replace(",", "."))}
-              className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+              className={cn(FIELD, "mt-1.5")}
             />
           </div>
         )}
@@ -325,18 +348,14 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
           <div>
             <span className="text-sm font-medium text-ink-muted">File to sell</span>
             {listing ? (
-              <div className="mt-1.5 flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3">
+              <div className={cn(PANEL, "mt-1.5 flex items-center gap-3")}>
                 <FileUp className="h-4 w-4 shrink-0 text-ink-faint" aria-hidden="true" />
                 <span className="min-w-0 flex-1 truncate text-sm text-ink-muted">
                   {fileProgress !== null ? `Uploading… ${fileProgress}%` : fileName ?? "No file uploaded yet"}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="shrink-0 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-                >
+                <Button variant="secondary" onClick={() => fileInputRef.current?.click()} className="shrink-0">
                   {fileName ? "Replace" : "Upload"}
-                </button>
+                </Button>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -346,11 +365,11 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
                 />
               </div>
             ) : (
-              <p className="mt-1.5 text-xs text-ink-faint">
+              <p className="mt-1.5 text-sm text-ink-faint">
                 You&apos;ll be able to upload the file right after creating this Draft.
               </p>
             )}
-            {fileError && <p className="mt-1.5 text-xs text-danger">{fileError}</p>}
+            {fileError && <p className="mt-1.5 text-sm text-danger">{fileError}</p>}
           </div>
         )}
 
@@ -358,24 +377,16 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
           {listing ? (
-            <button
-              type="button"
-              onClick={() => setDeleteOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs font-semibold text-danger transition-colors hover:border-danger"
-            >
+            <Button variant="danger" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
               Delete
-            </button>
+            </Button>
           ) : (
             <span />
           )}
-          <button
-            type="submit"
-            disabled={pending || fileProgress !== null || coverProgress !== null}
-            className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <Button variant="primary" type="submit" disabled={pending || fileProgress !== null || coverProgress !== null}>
             {pending ? "Saving…" : listing ? "Save changes" : `Create ${COMMUNITY_LISTING_LABELS[type]}`}
-          </button>
+          </Button>
         </div>
       </form>
 
@@ -403,19 +414,12 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
               <input type="hidden" name="listingId" value={listing.id} />
               <input type="hidden" name="listingType" value={type} />
               <DialogFooter>
-                <button
-                  type="button"
-                  onClick={() => setDeleteOpen(false)}
-                  className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-                >
+                <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90"
-                >
+                </Button>
+                <Button variant="danger" type="submit">
                   Delete
-                </button>
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>

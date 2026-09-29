@@ -141,7 +141,11 @@ export async function createCommunityListing(
     price: priceResult.price,
   };
   if (listingSupportsFree(type)) data.isFree = isFree;
-  if (listingHasDate(type)) data.startsAt = parseStartsAt(formData.get("startsAt"));
+  if (listingHasDate(type)) {
+    data.startsAt = parseStartsAt(formData.get("startsAt"));
+    const loc = formData.get("location");
+    data.location = typeof loc === "string" && loc.trim() ? loc.trim() : null;
+  }
 
   // Alla creazione l'unica copertina possibile è un'immagine creata dall'AI nella chat ("Use as
   // cover"): le altre si caricano dopo, quando la bozza esiste già. Viene copiata sotto
@@ -185,7 +189,11 @@ export async function updateCommunityListing(
     price: priceResult.price,
   };
   if (listingSupportsFree(ref.type)) data.isFree = isFree;
-  if (listingHasDate(ref.type)) data.startsAt = parseStartsAt(formData.get("startsAt"));
+  if (listingHasDate(ref.type)) {
+    data.startsAt = parseStartsAt(formData.get("startsAt"));
+    const loc = formData.get("location");
+    data.location = typeof loc === "string" && loc.trim() ? loc.trim() : null;
+  }
 
   const fileKey = formData.get("fileKey");
   if (listingHasFile(ref.type) && typeof fileKey === "string" && fileKey) {

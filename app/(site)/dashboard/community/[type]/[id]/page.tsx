@@ -9,6 +9,7 @@ import {
 } from "@/lib/constants/communityListing";
 import { CommunityListingForm } from "@/components/creator/CommunityListingForm";
 import { CommunityListingStatusControl } from "@/components/creator/CommunityListingStatusControl";
+import { PageTitle } from "@/components/ui/heading";
 
 function isListingType(value: string): value is CommunityListingType {
   return (COMMUNITY_LISTING_TYPES as readonly string[]).includes(value);
@@ -46,8 +47,8 @@ export default async function EditCommunityListingPage({
   return (
     <main>
       <div className="mx-auto w-full max-w-lg px-6 pb-16 pt-24">
-        <p className="text-[0.7rem] uppercase tracking-[0.18em] text-ember">{COMMUNITY_LISTING_LABELS[type]}</p>
-        <h1 className="mt-1 text-xl font-bold tracking-tight">{listing.title}</h1>
+        <p className="text-sm uppercase tracking-[0.18em] text-ember">{COMMUNITY_LISTING_LABELS[type]}</p>
+        <PageTitle>{listing.title}</PageTitle>
 
         <div className="mt-6">
           <CommunityListingStatusControl
@@ -68,6 +69,7 @@ export default async function EditCommunityListingPage({
               isFree: "isFree" in listing ? Boolean(listing.isFree) : false,
               price: listing.price === null ? null : Number(listing.price),
               startsAt: "startsAt" in listing && listing.startsAt ? listing.startsAt.toISOString() : null,
+              location: "location" in listing ? (listing.location as string | null) : null,
               fileUrl: "fileUrl" in listing ? (listing.fileUrl as string | null) : null,
               coverUrl: coverPreviewUrl,
             }}

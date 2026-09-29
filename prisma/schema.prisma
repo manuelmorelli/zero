@@ -588,6 +588,7 @@ model Workshop {
   // Chiave R2 della copertina (stesso pattern di Journey.coverUrl), aggiunta il 2026-09-26 dopo
   // test reale di Manuel: creare un evento senza poter caricare una foto sembrava incompleto.
   coverUrl    String?
+  location    String? // indirizzo fisico o link online, visibile a tutti
   status      ListingStatus @default(DRAFT)
   presaleReleaseAt DateTime?
   createdAt   DateTime      @default(now())
@@ -611,6 +612,7 @@ model Event {
   price       Decimal?      @db.Money // null se isFree = true
   startsAt    DateTime?
   coverUrl    String?
+  location    String? // indirizzo fisico o link online, visibile a tutti
   status      ListingStatus @default(DRAFT)
   presaleReleaseAt DateTime?
   createdAt   DateTime      @default(now())

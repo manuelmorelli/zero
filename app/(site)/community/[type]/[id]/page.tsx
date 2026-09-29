@@ -11,6 +11,9 @@ import {
 } from "@/lib/constants/communityListing";
 import { RsvpButton } from "@/components/profile/RsvpButton";
 import { ShareButton } from "@/components/common/ShareButton";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { PageTitle } from "@/components/ui/heading";
+import { Button } from "@/components/ui/button";
 
 function isListingType(value: string): value is CommunityListingType {
   return (COMMUNITY_LISTING_TYPES as readonly string[]).includes(value);
@@ -59,6 +62,7 @@ export default async function CommunityListingDetailPage({
 
   const isFree = "isFree" in listing ? Boolean(listing.isFree) : false;
   const startsAt = "startsAt" in listing && listing.startsAt ? listing.startsAt : null;
+  const location = "location" in listing && listing.location ? String(listing.location) : null;
   const rsvpCount = "_count" in listing ? listing._count.rsvps : 0;
   const going = "rsvps" in listing && Array.isArray(listing.rsvps) && listing.rsvps.length > 0;
 
@@ -66,8 +70,8 @@ export default async function CommunityListingDetailPage({
 
   return (
     <main>
-      <div className="mx-auto w-full max-w-2xl px-5 pb-16 pt-24">
-        <Link href={`/profile/${handle}/community`} className="text-xs font-semibold text-ink-muted transition-colors hover:text-ink">
+      <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+        <Link href={`/profile/${handle}/community`} className="text-sm font-semibold text-ink-muted transition-colors hover:text-ink">
           {listing.creator.displayName}&apos;s Community
         </Link>
 
@@ -75,10 +79,10 @@ export default async function CommunityListingDetailPage({
           {coverUrl ? (
             <Image src={coverUrl} alt={listing.title} fill sizes="(min-width: 768px) 672px, 100vw" className="object-cover" priority />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+            <div className="absolute inset-0 cover-placeholder" />
           )}
           {isFree && (
-            <span className="absolute right-3 top-3 rounded-full border border-ember/20 bg-gradient-to-b from-ember/15 to-white/[0.02] px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-emerald-500 backdrop-blur-md">
+            <span className="absolute right-3 top-3 rounded-full border border-ember-line bg-ember-soft px-2.5 py-1 text-sm font-bold uppercase tracking-wide text-ember backdrop-blur-md">
               Free
             </span>
           )}
@@ -86,10 +90,10 @@ export default async function CommunityListingDetailPage({
 
         <div className="mt-5 flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-ember">
+            <p className="text-sm font-semibold uppercase tracking-wide text-ember">
               {COMMUNITY_LISTING_LABELS[type]}
             </p>
-            <h1 className="mt-1 text-xl font-bold tracking-tight text-ink">{listing.title}</h1>
+            <PageTitle>{listing.title}</PageTitle>
           </div>
           <ShareButton
             path={`/community/${type}/${id}`}
@@ -99,10 +103,19 @@ export default async function CommunityListingDetailPage({
           />
         </div>
 
-        {startsAt && (
-          <p className="mt-2 text-sm text-ink-muted">
-            {startsAt.toLocaleString(undefined, { dateStyle: "full", timeStyle: "short" })}
-          </p>
+        {(startsAt || location) && (
+          <div className="mt-2 space-y-0.5">
+            {startsAt && (
+              <p className="text-sm text-ink-muted">
+                📅 {startsAt.toLocaleString(undefined, { dateStyle: "full", timeStyle: "short" })}
+              </p>
+            )}
+            {location && (
+              <p className="text-sm text-ink-muted">
+                📍 {location}
+              </p>
+            )}
+          </div>
         )}
 
         {listing.description && (
@@ -120,14 +133,9 @@ export default async function CommunityListingDetailPage({
           ) : (
             <>
               <span className="text-xl font-bold text-ink">€{Number(listing.price)}</span>
-              <button
-                type="button"
-                disabled
-                title="Coming soon: payments aren't connected yet"
-                className="cursor-not-allowed rounded-full bg-surface-2 px-5 py-2.5 text-sm font-semibold text-ink-faint"
-              >
+              <Button variant="secondary" disabled title="Coming soon: payments aren't connected yet">
                 Coming soon
-              </button>
+              </Button>
             </>
           )}
         </div>
