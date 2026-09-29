@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.49"
+version: "1.50"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -145,7 +145,19 @@ Nessuna funzionalità in corso di implementazione al momento.
 
 ### Ultimo task completato
 
-**Punto 8 dell'allineamento: Community con creazione AI (2026-09-25 → 2026-09-27)**. Dettaglio completo della discussione e delle decisioni in `93_Project_Alignment_Recap.md` (Punto 8). Costruito e committato su `design-wow-experiment`:
+**Pulizia di uniformità del sito — design system unico e lucchetto automatico (2026-09-29)**. Nato da uno sfogo diretto di Manuel ("il sito di Zero è pieno di errori e discrepanze [...] ogni volta che aggiungiamo un pezzo nuovo è completamente scollegato dal lavoro fatto finora"): un inventario completo (162 file, 2.374 elementi grafici, catalogati con un programma) ha confermato il problema con numeri concreti — bottone ufficiale usato solo 9 volte contro 157 bottoni fatti a mano in 67 combinazioni diverse, 9 stili di titolo pagina, 28 combinazioni di card, 14 di campo, 42 grandezze di testo (30 fuori scala), due arancioni diversi in uso. Dettaglio completo della storia in `docs/92_Project_History.md` (Capitolo 25 e Capitolo 27); scelte di colore/card/testo fatte da Manuel tramite due pagine di confronto dedicate (non decise dall'AI). Committato su `design-wow-experiment` in 7 blocchi separati (`e1db5c5`→`7aee64d`):
+
+- **`app/globals.css`**: unica fonte di colori e grandezze del sito. Sfondo un gradino più scuro (grigio neutro, chroma zero), testi più chiari, un solo arancione sempre pieno mai sfumato (`--color-ember`, ambra piena — nessun colore inventato a mano, tutti presi da palette collaudate tipo Tailwind), rosso più leggibile sullo sfondo scuro, velo scuro/vetro per il testo sopra le foto e la barra in alto, nessuna grandezza di testo sotto `text-sm` (eccezione approvata solo per le didascalie piccole della Hero). Luce soffusa in cima alla pagina e grana globale (introdotte dall'esperimento "design più vivo") rimosse.
+- **`components/ui/`, mattoncini ufficiali**: `button.tsx` (Button/ButtonPrimary/Secondary/Danger/Icon/Text), `heading.tsx` (PageTitle/DisplayTitle/SectionTitle/ReadingTitle/CardTitle), `panel.tsx` (Panel/Notice/Badge/Chip + varianti), `input.tsx` (Input/Textarea/PillField), `page-container.tsx` (PageContainer/PAGE_WIDTH), `cover-card.tsx` (CoverFrame, il pezzo condiviso da ogni card con foto — Journey, episodio, persona, evento — con le griglie/righe che le contengono), `avatar.tsx` (foto profilo tonda unica, prima ne esistevano tre copie quasi identiche in file diversi). Ogni pagina del sito ora compone questi pezzi invece di disegnarne di propri.
+- **Card**: quelle dei Journey sono diventate verticali 4:5 (locandina, cinque per riga) invece di orizzontali; le persone (Journeyers, Creators, Wildcards, Ricerca, liste Followers/Following) condividono un'unica `JourneyerCard`, sostituendo `CreatorResultCard` e `PersonResultCard` (rimossi). Sul telefono, una card per riga ovunque.
+- **`scripts/check-design.mjs`** (`npm run check:design`), attivato in automatico da `.githooks/pre-commit` (`git config core.hooksPath .githooks`, già impostato nel repository): legge ogni file di `app/` e `components/` e blocca il commit se trova un colore fuori palette, una grandezza di testo fuori scala, o un bottone/titolo/riquadro/campo/contenitore fatto a mano invece del componente ufficiale — è il pezzo che rende la regola duratura invece che affidata alla memoria di chi scrive il codice in una sessione futura. Un'unica eccezione elencata esplicitamente nello script: i componenti della chat AI della Community (`CommunityAiChat.tsx` e affini), approvati così com'erano da Manuel il giorno prima.
+- **Documentazione**: `docs/15_Design_System.md` (nuova sezione "Attuazione tecnica") e `CLAUDE.md` aggiornati con le regole tecniche, così ogni sessione futura le legge prima di scrivere codice.
+
+Verificato con `tsc --noEmit` pulito, `next build` di produzione pulita, il lucchetto interrogato sull'intero sito senza trovare eccezioni, e una verifica visiva vera (non solo di codice): sito acceso davvero, 11 pagine fotografate con Playwright da computer e da telefono (Home, Discover, Journeys, Journeyers, How it works, What is Zero, Login, Registrazione, Privacy, Pricing, Ricerca). **Nota tecnica per il futuro**: le sezioni della Home usano un'animazione di comparsa legata allo scorrimento (`IntersectionObserver`); una schermata a pagina intera presa in un colpo solo, senza far scorrere davvero la pagina prima, le lascia invisibili — non un difetto del sito ma dello strumento di verifica, corretto scorrendo la pagina passo passo prima dello screenshot.
+
+**Prossimo passo, non ancora iniziato**: tema chiaro/scuro. Scelte già prese da Manuel — tasto solo nelle Impostazioni (non in barra/menu), sempre scuro alla prima visita, scelta ricordata per persona; serve una nuova pagina di confronto per i colori del tema chiaro (l'arancione andrà scurito per leggersi su sfondo bianco).
+
+Task precedente: **Punto 8 dell'allineamento: Community con creazione AI (2026-09-25 → 2026-09-27)**. Dettaglio completo della discussione e delle decisioni in `93_Project_Alignment_Recap.md` (Punto 8). Costruito e committato su `design-wow-experiment`:
 
 - **Sezione Community nella Dashboard** (`/dashboard/community`): CRUD reale per Workshop, Event, Digital product e 1:1 service (`lib/actions/communityListing.ts`), tutti partono come Bozza; copertina per ogni elemento; pulsante "Notify your followers" separato e mai automatico.
 - **Workshop/Event gratuiti** con RSVP reale ("Partecipo", tabelle `WorkshopRsvp`/`EventRsvp`), badge Free/Locked nello stile vetro del sito.
