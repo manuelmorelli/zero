@@ -1,40 +1,64 @@
 @import "tailwindcss";
 
+/*
+ * Design system Zero: UNICA fonte di colori, grandezze e effetti del sito.
+ * Valori scelti da Manuel pezzo per pezzo (pagine di confronto del 2026-09-29, vedi
+ * docs/15_Design_System.md). Colori presi da palette collaudate (Tailwind neutral/amber/red),
+ * mai derivati a mano. Il controllo automatico (scripts/check-design.mjs) blocca qualunque
+ * colore o grandezza fuori da questa lista: per cambiare l'aspetto del sito si cambia QUI.
+ */
 @theme {
-  /* Palette Zero — valori esatti del design di riferimento (Lovable), oklch */
-  --color-bg: oklch(0.15 0.008 250);
-  --color-surface: oklch(0.21 0.008 250);
-  --color-surface-2: oklch(0.26 0.008 250);
-  /* Ammorbidita da 14% a 9% (esperimento "design più vivo"): stesso token riusato in tutto il
-   * sito (card, pannelli, input...), qui si risolve alla radice l'aspetto "a blocchi" per tutte
-   * le pagine in un colpo solo, senza toccare ogni singolo componente. */
-  --color-border: oklch(1 0 0 / 9%);
+  /* Sfondo e riquadri: grigio neutro, un gradino più scuro (neutral 950 / 900 / 800) */
+  --color-bg: oklch(14.5% 0 0);
+  --color-surface: oklch(20.5% 0 0);
+  --color-surface-2: oklch(26.9% 0 0);
+  --color-border: oklch(1 0 0 / 14%);
+
+  /* Testo: bianco puro, secondario neutral 300, terziario neutral 400 */
   --color-ink: oklch(1 0 0);
-  --color-ink-muted: oklch(0.78 0.005 250);
-  /* Terzo livello di testo attenuato: il riferimento non lo prevede, derivato mantenendo la stessa tonalità di ink-muted ma più scuro */
-  --color-ink-faint: oklch(0.55 0.005 250);
-  --color-danger: oklch(0.577 0.245 27.325);
+  --color-ink-muted: oklch(87% 0 0);
+  --color-ink-faint: oklch(70.8% 0 0);
 
-  /* Unico accento cromatico del sito: ambra dorata, usato con estrema parsimonia */
-  --color-ember: oklch(0.769 0.155 70.5);
+  /* Rosso chiaro (red 400): il più leggibile sullo sfondo scuro */
+  --color-danger: oklch(70.4% 0.191 22.216);
+  --color-danger-soft: oklch(70.4% 0.191 22.216 / 10%);
+  --color-danger-line: oklch(70.4% 0.191 22.216 / 40%);
 
-  /* Un'unica famiglia di font, pesi diversi (da Design System) */
+  /* Unico arancione del sito: ambra piena (amber 500). Le scritte arancioni sono sempre piene,
+   * mai sfumate né trasparenti. Le sole trasparenze ammesse sono le due qui sotto. */
+  --color-ember: oklch(76.9% 0.188 70.08);
+  --color-ember-soft: oklch(76.9% 0.188 70.08 / 10%);
+  --color-ember-line: oklch(76.9% 0.188 70.08 / 40%);
+
+  /* Testo sopra le foto: sempre bianco pieno, in qualunque tema (scelta C6A) */
+  --color-on-photo: oklch(1 0 0);
+
+  /* Velo scuro sopra foto e video (testo leggibile, sfondo delle finestre) */
+  --color-scrim: oklch(0% 0 0 / 60%);
+
+  /* Vetro traslucido usato sopra le foto/video nel visore delle storie (barra di avanzamento,
+   * pillole, bolle di risposta): due soli livelli, mai un bianco scritto a mano. */
+  --color-overlay: oklch(1 0 0 / 20%);
+  --color-overlay-soft: oklch(1 0 0 / 10%);
+
+  /* Sfondo vetro della barra in alto: appena visibile, più marcato scorrendo la pagina. */
+  --color-glass: oklch(1 0 0 / 8%);
+  --color-glass-strong: oklch(1 0 0 / 15%);
+
+  /* Un solo bagliore arancione e una sola ombra per le card */
+  --shadow-glow: 0 0 22px -8px oklch(76.9% 0.188 70.08 / 55%);
+  --shadow-card: 0 20px 40px -22px oklch(0% 0 0 / 70%);
+
+  /* Un'unica famiglia di font, pesi diversi */
   --font-sans: var(--font-inter);
 
-  /* Manopola "tutto il resto" (spazi/layout): stesso valore usato sotto su html,
-   * in una sola variabile per non farli mai più andare fuori sincrono. */
+  /* Manopola "tutto il resto" (spazi/layout): stesso valore usato sotto su html. */
   --layout-scale: 0.9;
-  /* Manopola dedicata solo al testo, indipendente da --layout-scale.
-   * Il valore "neutro" (che riproduce l'aspetto attuale) è 0.9, non 1: la formula sotto
-   * annulla del tutto la riduzione di --layout-scale, quindi con 1 il testo tornerebbe
-   * alla taglia originale di Tailwind (più grande di oggi). 0.9 è solo il punto di partenza:
-   * da qui in poi questa manopola è comunque indipendente da --layout-scale. */
+  /* Manopola dedicata solo al testo, indipendente da --layout-scale (0.9 = aspetto attuale). */
   --text-scale: 0.9;
 
-  /* Token testo di Tailwind ridefiniti per annullare l'effetto di --layout-scale
-   * su html e dipendere invece solo da --text-scale (valori di partenza presi da
-   * node_modules/tailwindcss/theme.css). Le variabili di interlinea (--text-*--line-height)
-   * non servono: sono rapporti unitless, già proporzionali al font-size del testo. */
+  /* Scala del testo. Nessuna taglia sotto text-sm: una sola grandezza per le scritte piccole
+   * (scelta di Manuel). text-xs resta definita solo per le didascalie della Hero. */
   --text-xs: calc(0.75rem / var(--layout-scale) * var(--text-scale));
   --text-sm: calc(0.875rem / var(--layout-scale) * var(--text-scale));
   --text-base: calc(1rem / var(--layout-scale) * var(--text-scale));
@@ -49,9 +73,12 @@
   --text-8xl: calc(6rem / var(--layout-scale) * var(--text-scale));
   --text-9xl: calc(8rem / var(--layout-scale) * var(--text-scale));
 
-  /* Taglie su misura per i testi della Hero (components/landing/Hero.tsx) che non
-   * corrispondono a nessuna taglia standard di Tailwind. Stessa formula sopra: seguono
-   * --text-scale insieme al resto, ma ognuna resta modificabile per conto proprio. */
+  /* Titoli di sezione delle pagine di lettura (How it works, legali, Linee guida) */
+  --text-reading: calc(1.73rem / var(--layout-scale) * var(--text-scale));
+  --text-reading-lg: calc(2.16rem / var(--layout-scale) * var(--text-scale));
+
+  /* Taglie su misura della Hero (components/landing/Hero.tsx): eccezione approvata, le
+   * didascalie piccole sotto i cerchietti restano piccole. */
   --text-hero-eyebrow: calc(0.77rem / var(--layout-scale) * var(--text-scale));
   --text-hero-headline: calc(1.65rem / var(--layout-scale) * var(--text-scale));
   --text-hero-subhead: calc(0.96rem / var(--layout-scale) * var(--text-scale));
@@ -60,9 +87,8 @@
 }
 
 html {
-  /* Manopola "tutto il resto" (spazi/layout): tutte le unità rem di Tailwind
-   * (spaziature, dimensioni non testuali) si restringono di conseguenza in automatico.
-   * Il testo non ne risente più: vedi --text-scale sopra. */
+  /* Manopola "tutto il resto" (spazi/layout): tutte le unità rem di Tailwind si restringono di
+   * conseguenza. Il testo non ne risente: vedi --text-scale sopra. */
   font-size: calc(var(--layout-scale) * 100%);
 }
 
@@ -71,43 +97,58 @@ body {
   color: var(--color-ink);
 }
 
-/* Sfumatura verso il nero di pagina con curva "ad S" (non lineare): l'oscuramento parte quasi
- * impercettibile e accelera solo vicino al fondo. Con un gradiente lineare a 2 tappe l'occhio
- * percepisce comunque una riga netta nel punto esatto in cui l'oscuramento comincia (effetto
- * banda di Mach), anche se il colore cambia in modo matematicamente continuo — da qui le tappe
- * intermedie. Usata sul bordo inferiore della copertina Profilo. */
-/* Valori oklch ripetuti letteralmente (non var(--color-bg) + color-mix): quella combinazione
- * viene scartata in silenzio dalla pipeline CSS del progetto in fase di build. */
+/* Sfumatura verso lo sfondo con curva "ad S" (non lineare): l'oscuramento parte quasi
+ * impercettibile e accelera solo vicino al fondo, così non si vede una riga netta dove comincia.
+ * Usata sul bordo inferiore della copertina Profilo e della Hero. Valori ripetuti letteralmente
+ * (non var() + color-mix): quella combinazione viene scartata in silenzio in fase di build. Il
+ * colore è lo stesso di --color-bg (neutral 950 = rgb 10,10,10). */
 .cover-fade {
   background-image: linear-gradient(
     to top,
-    oklch(0.15 0.008 250 / 100%) 0%,
-    oklch(0.15 0.008 250 / 74%) 19%,
-    oklch(0.15 0.008 250 / 54%) 34%,
-    oklch(0.15 0.008 250 / 38%) 47%,
-    oklch(0.15 0.008 250 / 28%) 56.5%,
-    oklch(0.15 0.008 250 / 19%) 65%,
-    oklch(0.15 0.008 250 / 13%) 73%,
-    oklch(0.15 0.008 250 / 8%) 80.6%,
-    oklch(0.15 0.008 250 / 4%) 87.6%,
-    oklch(0.15 0.008 250 / 2%) 94.1%,
-    oklch(0.15 0.008 250 / 0%) 100%
+    rgba(10, 10, 10, 100%) 0%,
+    rgba(10, 10, 10, 74%) 19%,
+    rgba(10, 10, 10, 54%) 34%,
+    rgba(10, 10, 10, 38%) 47%,
+    rgba(10, 10, 10, 28%) 56.5%,
+    rgba(10, 10, 10, 19%) 65%,
+    rgba(10, 10, 10, 13%) 73%,
+    rgba(10, 10, 10, 8%) 80.6%,
+    rgba(10, 10, 10, 4%) 87.6%,
+    rgba(10, 10, 10, 2%) 94.1%,
+    rgba(10, 10, 10, 0%) 100%
   );
 }
 
-/* Profondità ambientale diffusa su tutto il sito (esperimento "design più vivo"): sostituisce lo
- * sfondo piatto a tinta unica con un leggerissimo respiro di colore, fissato al viewport (non
- * scorre con la pagina) così è coerente ovunque senza doverlo ripetere pagina per pagina. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 60% 45% at 12% -5%, oklch(0.769 0.155 70.5 / 16%), transparent 60%),
-    radial-gradient(ellipse 55% 45% at 100% 105%, oklch(0.769 0.155 70.5 / 13%), transparent 60%);
-  animation: aurora-drift 34s ease-in-out infinite;
+/* Sfumatura scura sulle copertine delle card, per leggere il testo bianco sopra la foto.
+ * Una sola, uguale per tutte le card. */
+.card-scrim {
+  background-image: linear-gradient(to top, rgba(0, 0, 0, 85%) 0%, rgba(0, 0, 0, 40%) 45%, rgba(0, 0, 0, 0%) 75%);
+}
+
+/* Veli scuri della Hero: su telefono il testo sta sopra la foto intera, da computer solo a sinistra. */
+.hero-scrim {
+  background-color: rgba(10, 10, 10, 65%);
+}
+.hero-side-fade {
+  background-image: linear-gradient(to right, rgba(10, 10, 10, 100%) 5%, rgba(10, 10, 10, 70%), rgba(10, 10, 10, 0%));
+}
+@media (min-width: 768px) {
+  .hero-scrim {
+    background-color: rgba(10, 10, 10, 10%);
+  }
+  .hero-side-fade {
+    background-image: linear-gradient(to right, rgba(10, 10, 10, 55%) 10%, rgba(10, 10, 10, 20%) 45%, rgba(10, 10, 10, 0%));
+  }
+}
+
+/* Velo sopra una foto larga con testo a sinistra (banner finale della Home). */
+.banner-scrim {
+  background-image: linear-gradient(to right, rgba(10, 10, 10, 100%), rgba(10, 10, 10, 85%), rgba(10, 10, 10, 60%));
+}
+
+/* Copertina senza foto: grigio che sfuma nel nero. */
+.cover-placeholder {
+  background-image: linear-gradient(to bottom right, var(--color-surface-2), var(--color-surface-2), #000);
 }
 
 /* Righe scorrevoli stile Netflix: scrollbar nascosta, lo scroll resta utilizzabile */
@@ -119,47 +160,8 @@ body::after {
   display: none;
 }
 
-/* Texture grain/noise leggerissima e statica su tutto il sito (CSS puro, nessuna immagine esterna) */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 999;
-  pointer-events: none;
-  opacity: 0.035;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Esperimento "design più vivo" (ramo design-wow-experiment): due animazioni pure CSS
- * riusate da Hero (glow di sfondo) e ButtonPrimary (sweep di luce), referenziate via le
- * utility arbitrarie di Tailwind (animate-[...]) invece di nuove classi custom. */
-@keyframes aurora-drift {
-  0%,
-  100% {
-    transform: translate(0%, 0%) scale(1);
-    opacity: 0.55;
-  }
-  50% {
-    transform: translate(6%, -4%) scale(1.12);
-    opacity: 0.8;
-  }
-}
-
-@keyframes shimmer-sweep {
-  0% {
-    transform: translateX(-160%);
-  }
-  55% {
-    transform: translateX(160%);
-  }
-  100% {
-    transform: translateX(160%);
-  }
-}
-
-/* Zoom lentissimo e continuo ("Ken Burns"), usato sulla foto/video della Hero per un tocco
- * cinematografico: nessun jump quando il ciclo riparte perché alternate va avanti e indietro. */
+/* Zoom lentissimo e continuo ("Ken Burns"), usato sulla foto/video della Hero: nessun salto
+ * quando il ciclo riparte perché alternate va avanti e indietro. */
 @keyframes kenburns {
   0% {
     transform: scale(1);
@@ -169,16 +171,14 @@ body::before {
   }
 }
 
-/* Grana pellicola più marcata della texture globale (usata solo sulla foto/video della Hero per
- * il tocco cinematografico): stesso rumore SVG di body::before, opacità più alta. */
+/* Grana pellicola solo sulla foto/video della Hero (tocco cinematografico). La grana su tutto il
+ * sito è stata tolta (scelta di Manuel), questa resta parte della Hero. */
 .hero-grain {
   pointer-events: none;
   opacity: 0.16;
   mix-blend-mode: overlay;
-  /* SVG di rumore volutamente diverso da quello di body::before (baseFrequency/dimensioni
-   * leggermente diverse): un bundler di questo progetto (vedi AGENTS.md, "non è il Next.js che
-   * conosci") elimina in silenzio in build una regola con background-image a stringa identica a
-   * un'altra già presente nel CSS, anche con selettore diverso — bug scoperto con questo esperimento. */
+  /* SVG di rumore volutamente diverso da qualunque altro nel CSS: il bundler di questo progetto
+   * elimina in silenzio una regola con background-image a stringa identica a un'altra. */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='hn'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23hn)'/%3E%3C/svg%3E");
 }
 
@@ -187,9 +187,5 @@ body::before {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-
-  body::before {
-    display: none;
   }
 }

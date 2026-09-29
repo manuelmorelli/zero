@@ -120,10 +120,14 @@ export const DEMO_CREATORS: CreatorSearchResult[] = [
   { id: "demo-creator-2", username: "sara-j", name: "Sara J.", bio: "One rep, one day at a time.", avatarUrl: null, followersCount: 18000 },
   { id: "demo-creator-3", username: "david-l", name: "David L.", bio: "Chasing the unknown, camera in hand.", avatarUrl: null, followersCount: 31000 },
   { id: "demo-creator-4", username: "emma-w", name: "Emma W.", bio: "Creativity as a way back to myself.", avatarUrl: null, followersCount: 16000 },
+  { id: "demo-creator-5", username: "james-t", name: "James T.", bio: "Building a company in public.", avatarUrl: null, followersCount: 29000 },
+  { id: "demo-creator-6", username: "nora-k", name: "Nora K.", bio: "Learning to sail at 40.", avatarUrl: null, followersCount: 340 },
+  { id: "demo-creator-7", username: "leo-p", name: "Leo P.", bio: "Quitting sugar, one week at a time.", avatarUrl: null, followersCount: 180 },
+  { id: "demo-creator-8", username: "ana-m", name: "Ana M.", bio: "Teaching myself to paint.", avatarUrl: null, followersCount: 95 },
 ];
 
 export const DEMO_LATEST_VIDEOS: LatestVideoItem[] = [
-  { episodeId: "demo-ep-1", journeyId: "demo-1", title: "Day 1: starting from zero", coverUrl: null, category: "Mental Health", creatorName: "Marco R.", createdAt: hoursAgo(2), journeyScore: 86 },
+  { episodeId: "demo-ep-1", journeyId: "demo-1", title: "Day 1: starting from Zero", coverUrl: null, category: "Mental Health", creatorName: "Marco R.", createdAt: hoursAgo(2), journeyScore: 86 },
   { episodeId: "demo-ep-2", journeyId: "demo-2", title: "The workout that changed my mind", coverUrl: null, category: "Fitness", creatorName: "Sara J.", createdAt: hoursAgo(11), journeyScore: 88 },
   { episodeId: "demo-ep-3", journeyId: "demo-3", title: "First solo ride", coverUrl: null, category: "Sports", creatorName: "David L.", createdAt: hoursAgo(26), journeyScore: 82 },
   { episodeId: "demo-ep-4", journeyId: "demo-4", title: "Finding a new perspective", coverUrl: null, category: "Creativity", creatorName: "Emma W.", createdAt: hoursAgo(40), journeyScore: 90 },
@@ -133,6 +137,8 @@ export const DEMO_DISCOVERING_NOW: DiscoveringNowItem[] = [
   { id: "demo-discovery-1", title: "Learning to sail at 40", coverUrl: null, category: "Sports", creatorName: "Nora K.", followersCount: 340, daysLeft: 11 },
   { id: "demo-discovery-2", title: "Quitting sugar, day by day", coverUrl: null, category: "Nutrition", creatorName: "Leo P.", followersCount: 180, daysLeft: 6 },
   { id: "demo-discovery-3", title: "Teaching myself to paint", coverUrl: null, category: "Creativity", creatorName: "Ana M.", followersCount: 95, daysLeft: 14 },
+  { id: "demo-discovery-4", title: "Waking up at 5am for a month", coverUrl: null, category: "Habits", creatorName: "Tom B.", followersCount: 60, daysLeft: 9 },
+  { id: "demo-discovery-5", title: "My first vegetable garden", coverUrl: null, category: "Gardening & Plants", creatorName: "Giulia F.", followersCount: 120, daysLeft: 3 },
 ];
 
 export const DEMO_TOP_JOURNEYS: TopJourneyItem[] = [
@@ -140,4 +146,5 @@ export const DEMO_TOP_JOURNEYS: TopJourneyItem[] = [
   { id: "demo-3", title: "Ride the unknown", coverUrl: null, category: "Sports", creatorName: "David L.", followersCount: 31000, episodesCount: 22, journeyScore: 89 },
   { id: "demo-1", title: "From burnout to balance", coverUrl: null, category: "Mental Health", creatorName: "Marco R.", followersCount: 24000, episodesCount: 9, journeyScore: 87 },
   { id: "demo-2", title: "Stronger every day", coverUrl: null, category: "Fitness", creatorName: "Sara J.", followersCount: 18000, episodesCount: 17, journeyScore: 85 },
+  { id: "demo-4", title: "See the world differently", coverUrl: null, category: "Creativity", creatorName: "Emma W.", followersCount: 16000, episodesCount: 11, journeyScore: 84 },
 ];

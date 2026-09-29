@@ -1,0 +1,6 @@
+#!/bin/sh
+# Lucchetto del design system Zero: blocca il commit se app/ o components/ contengono un
+# pezzo di stile fatto a mano invece dei mattoncini ufficiali (components/ui/). Vedi
+# scripts/check-design.mjs e docs/15_Design_System.md. Per saltarlo una volta sola (sconsigliato):
+# git commit --no-verify.
+node scripts/check-design.mjs

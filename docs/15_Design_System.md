@@ -1,7 +1,7 @@
 ---
 title: Design System
 doc_id: 15-design-system
-version: "3.0"
+version: "3.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -100,11 +100,32 @@ L'identità grafica deve trasmettere:
 
 Il linguaggio visivo deve rafforzare la percezione di Zero come piattaforma dedicata ai percorsi di crescita personale.
 
+## Attuazione tecnica (dal 2026-09-29)
+
+I principi sopra non bastavano da soli: ogni nuova sessione di lavoro tendeva a ricostruire da zero bottoni, titoli, card e colori invece di riusare quelli già esistenti, e il sito si è scollegato pezzo dopo pezzo (vedi Capitolo 25 di `92_Project_History.md`). Da qui un sistema che *obbliga* a rispettare la coerenza invece di limitarsi a chiederla:
+
+**Un solo posto per i colori e le grandezze**: `app/globals.css` (blocco `@theme`). Sfondo, testi, bordo, arancione (`--color-ember`, sempre pieno, mai sfumato), rosso, velo scuro sulle foto (`--color-scrim`), vetro della barra in alto, tutti i colori vengono da lì. Nessun colore va scritto a mano (`#fff`, `rgba(...)`, `bg-white/10`...) dentro un componente.
+
+**Un solo posto per ogni pezzo di interfaccia**: `components/ui/`.
+- `button.tsx` — `ButtonPrimary` (bianco), `ButtonSecondary` (arancione), `ButtonDanger` (rosso), `IconButton`, `TextButton`. Sono gli unici bottoni del sito.
+- `heading.tsx` — `PageTitle`, `DisplayTitle`, `SectionTitle`, `ReadingTitle`, `CardTitle`.
+- `panel.tsx` — `Panel`/`PANEL`, `PANEL_ACCENT`, `PANEL_DANGER`, `PANEL_DASHED`, `Notice`/`NOTICE`, `ROW`, `Badge`/`BADGE`, `CHIP`/`CHIP_SELECTED`.
+- `input.tsx` / `textarea.tsx` — `Input`, `Textarea`, `Select`, `PillField`, e le costanti `FIELD`/`PILL_FIELD` per chi ha bisogno del solo className.
+- `page-container.tsx` — `PageContainer`/`PAGE_WIDTH` (`narrow`, `wide`, `wideCover`) e `PAGE_SPACING`: le uniche larghezze e distanze di pagina ammesse.
+- `cover-card.tsx` — `CoverFrame` (la card con foto usata da Journey, episodi, persone, eventi), `CARD_GRID`/`CARD_ROW_ITEM` per le griglie e le righe che scorrono.
+- `avatar.tsx` — `Avatar`, l'unica foto profilo tonda del sito.
+
+Una pagina nuova compone questi pezzi; non ne disegna di propri. Un'eccezione (un colore o un componente diverso) va discussa con Manuel prima, non decisa da soli.
+
+**Il lucchetto**: `scripts/check-design.mjs` (`npm run check:design`) legge ogni file di `app/` e `components/` e blocca chi usa un colore fuori palette, una grandezza di testo sotto `text-sm`, un bottone/titolo/riquadro/campo/contenitore fatto a mano invece del mattoncino ufficiale, una scritta arancione sfumata, "zero" minuscolo o un trattino lungo nel testo. Parte da solo prima di ogni commit (`git config core.hooksPath .githooks`, già impostato nel repository — a chi clona il progetto da zero conviene rilanciarlo una volta). Un componente approvato come eccezione (es. la chat AI della Community, per scelta esplicita di Manuel) è elencato in cima allo script.
+
+Le scelte di colore, formato delle card e grandezze sono quelle decise da Manuel il 2026-09-29 tramite due pagine di confronto (bottoni/titoli/card e colori), non inventate durante la pulizia.
+
 ## Regole
 
-Ogni nuova schermata o componente deve rispettare i principi definiti in questo documento.
+Ogni nuova schermata o componente deve rispettare i principi definiti in questo documento e i mattoncini della sezione precedente.
 
-Le eccezioni devono essere limitate e adeguatamente motivate.
+Le eccezioni devono essere limitate e adeguatamente motivate, e vanno aggiunte esplicitamente alla lista di `scripts/check-design.mjs`.
 
 ## Implicazioni sul prodotto
 
