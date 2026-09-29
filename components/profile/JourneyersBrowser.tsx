@@ -3,9 +3,12 @@
 import { useMemo, useState } from "react";
 import { SearchIcon } from "@/components/search/SearchForm";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
+import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
 import { JourneyerCard } from "@/components/profile/JourneyerCard";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 import type { JourneyerCategoryRow } from "@/lib/discovery/journeyersByCategory";
+import { NOTICE } from "@/components/ui/panel";
+import { PILL_FIELD, PILL_FIELD_INPUT } from "@/components/ui/input";
 
 type JourneyersBrowserProps = {
   newJourneyers: CreatorSearchResult[];
@@ -42,7 +45,7 @@ export function JourneyersBrowser({ newJourneyers, rows }: JourneyersBrowserProp
   return (
     <div className="space-y-10">
       <div className="max-w-md">
-        <div className="flex items-center gap-2 rounded-full border border-border bg-surface-2 px-4 py-2">
+        <div className={PILL_FIELD}>
           <SearchIcon className="h-4 w-4 shrink-0 text-ink-faint" aria-hidden="true" />
           <input
             type="search"
@@ -50,13 +53,13 @@ export function JourneyersBrowser({ newJourneyers, rows }: JourneyersBrowserProp
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search Journeyers"
             aria-label="Search Journeyers"
-            className="w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none"
+            className={PILL_FIELD_INPUT}
           />
         </div>
       </div>
 
       {noResults && (
-        <p className="rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+        <p className={NOTICE}>
           {`No Journeyers found for "${query}".`}
         </p>
       )}
@@ -67,7 +70,7 @@ export function JourneyersBrowser({ newJourneyers, rows }: JourneyersBrowserProp
           subtitle="Journeyers whose Journey is in Discovery Phase right now."
         >
           {filteredNewJourneyers.map((journeyer) => (
-            <JourneyerCard key={journeyer.id} journeyer={journeyer} className="w-40 shrink-0 sm:w-44" />
+            <JourneyerCard key={journeyer.id} journeyer={journeyer} className={CARD_ROW_ITEM.person} />
           ))}
         </HorizontalScrollRow>
       )}
@@ -75,7 +78,7 @@ export function JourneyersBrowser({ newJourneyers, rows }: JourneyersBrowserProp
       {filteredRows.map((row) => (
         <HorizontalScrollRow key={row.category} id={row.slug} title={row.category}>
           {row.journeyers.map((journeyer) => (
-            <JourneyerCard key={journeyer.id} journeyer={journeyer} className="w-40 shrink-0 sm:w-44" />
+            <JourneyerCard key={journeyer.id} journeyer={journeyer} className={CARD_ROW_ITEM.person} />
           ))}
         </HorizontalScrollRow>
       ))}

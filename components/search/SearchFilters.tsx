@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { JOURNEY_DATE_PRESETS, type JourneyDatePreset } from "@/lib/constants/journeyDatePresets";
+import { CHIP } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
 
 const DATE_PRESET_LABELS: Record<JourneyDatePreset, string> = {
   today: "Today",
@@ -46,9 +48,9 @@ export function SearchFilters({
         aria-label="Filter by category"
         defaultValue={defaultCategory}
         onChange={(event) => updateParam("category", event.target.value)}
-        className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs text-ink-muted focus:outline-none focus:ring-1 focus:ring-ink-muted"
+        className={cn(CHIP, "text-ink-muted")}
       >
-        <option value="">All categories</option>
+        <option value="">All Categories</option>
         {JOURNEY_CATEGORIES.map((category) => (
           <option key={category} value={category}>
             {category}
@@ -60,9 +62,9 @@ export function SearchFilters({
         aria-label="Filter by date"
         defaultValue={defaultDatePreset}
         onChange={(event) => updateParam("date", event.target.value)}
-        className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs text-ink-muted focus:outline-none focus:ring-1 focus:ring-ink-muted"
+        className={cn(CHIP, "text-ink-muted")}
       >
-        <option value="">Any time</option>
+        <option value="">Any Time</option>
         {JOURNEY_DATE_PRESETS.map((preset) => (
           <option key={preset} value={preset}>
             {DATE_PRESET_LABELS[preset]}

@@ -1,14 +1,17 @@
 import { SearchForm } from "@/components/search/SearchForm";
 import { SearchFilters } from "@/components/search/SearchFilters";
 import { JourneyCard } from "@/components/journey/JourneyCard";
-import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
-import { PersonResultCard } from "@/components/profile/PersonResultCard";
+import { JourneyerCard } from "@/components/profile/JourneyerCard";
 import { searchJourneys } from "@/lib/search/searchJourneys";
 import { searchCreators } from "@/lib/search/searchCreators";
 import { searchPeople } from "@/lib/search/searchPeople";
 import { promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { JOURNEY_CATEGORIES, type JourneyCategory } from "@/lib/constants/categories";
 import { JOURNEY_DATE_PRESETS, type JourneyDatePreset } from "@/lib/constants/journeyDatePresets";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { CARD_GRID } from "@/components/ui/cover-card";
+import { NOTICE } from "@/components/ui/panel";
+import { PageTitle, SectionTitle } from "@/components/ui/heading";
 
 export default async function SearchPage({
   searchParams,
@@ -42,8 +45,8 @@ export default async function SearchPage({
 
   return (
     <main>
-      <div className="mx-auto max-w-[1400px] px-5 pb-16 pt-24 md:px-8">
-        <h1 className="text-xl font-bold tracking-tight">Search</h1>
+      <div className={`${PAGE_WIDTH.wide} ${PAGE_SPACING}`}>
+        <PageTitle>Search</PageTitle>
         <div className="mt-4 max-w-md">
           <SearchForm defaultValue={query} />
         </div>
@@ -54,15 +57,15 @@ export default async function SearchPage({
         )}
 
         {(query || hasJourneyFilters) && journeys.length === 0 && creators.length === 0 && people.length === 0 && (
-          <p className="mt-10 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
+          <p className={`mt-10 ${NOTICE}`}>
             {query ? `No results for "${query}".` : "No Journeys match these filters."}
           </p>
         )}
 
         {journeys.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-sm font-bold tracking-tight">Journeys</h2>
-            <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <SectionTitle>Journeys</SectionTitle>
+            <div className={`mt-4 ${CARD_GRID.journey}`}>
               {journeys.map((journey) => (
                 <JourneyCard key={journey.id} journey={journey} />
               ))}
@@ -72,10 +75,10 @@ export default async function SearchPage({
 
         {creators.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-sm font-bold tracking-tight">Creators</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <SectionTitle>Creators</SectionTitle>
+            <div className={`mt-4 ${CARD_GRID.person}`}>
               {creators.map((creator) => (
-                <CreatorResultCard key={creator.id} creator={creator} />
+                <JourneyerCard key={creator.id} journeyer={creator} />
               ))}
             </div>
           </section>
@@ -83,10 +86,10 @@ export default async function SearchPage({
 
         {people.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-sm font-bold tracking-tight">People</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <SectionTitle>People</SectionTitle>
+            <div className={`mt-4 ${CARD_GRID.person}`}>
               {people.map((person) => (
-                <PersonResultCard key={person.id} person={person} />
+                <JourneyerCard key={person.id} journeyer={person} />
               ))}
             </div>
           </section>

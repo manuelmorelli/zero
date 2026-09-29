@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 import { SignOutButton } from "@/components/common/SignOutButton";
+import { Button, BUTTON_VARIANTS } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function AuthStatus() {
   const { data, isPending } = useSession();
@@ -27,16 +29,13 @@ export function AuthStatus() {
       <>
         <Link
           href="/login"
-          className="hidden text-[15.5px] font-medium text-ink-muted hover:text-ink transition-colors sm:block"
+          className="hidden text-sm font-medium text-ink-muted hover:text-ink transition-colors sm:block"
         >
-          Sign In
+          Sign in
         </Link>
-        <Link
-          href="/register"
-          className="rounded-full bg-ink px-5 py-2.5 text-[15.5px] font-semibold text-bg hover:bg-ink-muted transition-colors"
-        >
+        <Button variant="primary" href="/register" className="text-sm">
           Get Started
-        </Link>
+        </Button>
       </>
     );
   }
@@ -45,11 +44,11 @@ export function AuthStatus() {
     <>
       <Link
         href={`/profile/${data.user.id}`}
-        className="hidden text-[15.5px] font-medium text-ink-muted hover:text-ink transition-colors sm:block"
+        className="hidden text-sm font-medium text-ink-muted hover:text-ink transition-colors sm:block"
       >
         Hi, {data.user.name}
       </Link>
-      <SignOutButton className="rounded-full border border-border px-5 py-2.5 text-[15.5px] font-semibold text-ink hover:border-ink-muted transition-colors" />
+      <SignOutButton className={cn(BUTTON_VARIANTS.secondary, "border-border bg-transparent shadow-none hover:border-ink-muted")} />
     </>
   );
 }

@@ -5,8 +5,10 @@ import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { DEMO_LATEST_VIDEOS } from "@/lib/demo/demoContent";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { CARD_GRID } from "@/components/ui/cover-card";
 
-export const metadata = { title: "Latest Videos — Zero" };
+export const metadata = { title: "Latest Videos | Zero" };
 
 export default async function LatestVideosPage() {
   const session = await getViewerSession();
@@ -20,14 +22,15 @@ export default async function LatestVideosPage() {
 
   return (
     <main>
-      <div className="mx-auto max-w-[1400px] px-5 pb-16 pt-24 md:px-8">
+      <div className={`${PAGE_WIDTH.wide} ${PAGE_SPACING}`}>
         <SectionHeading
+          page
           icon={<Video className="h-6 w-6" aria-hidden="true" />}
           title="Latest Videos"
           subtitle="New episodes just published across Zero."
         />
 
-        <ul className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className={`mt-6 ${CARD_GRID.episode}`}>
           {displayed.map((video) => (
             <li key={video.episodeId}>
               <VideoCard video={video} />

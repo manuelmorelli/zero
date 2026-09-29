@@ -7,6 +7,8 @@ import { AuthStatus } from "@/components/layout/AuthStatus";
 import { BackButton } from "@/components/layout/BackButton";
 import { SideMenu } from "@/components/layout/SideMenu";
 import { SearchIcon } from "@/components/search/SearchForm";
+import { PAGE_WIDTH } from "@/components/ui/page-container";
+import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { label: "Journeys", href: "/journeys" },
@@ -34,11 +36,11 @@ export function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 border-b backdrop-blur-lg transition-[background-color,border-color] duration-300 ${
-        scrolled ? "border-border bg-bg/60" : "border-white/5 bg-bg/25"
+      className={`fixed inset-x-0 top-0 z-50 border-b border-border bg-glass backdrop-blur-md transition-colors duration-300 ${
+        scrolled ? "bg-glass-strong" : ""
       }`}
     >
-      <div className="mx-auto grid h-[3.85rem] max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 md:grid-cols-[1fr_auto_1fr] md:px-8">
+      <div className={cn(PAGE_WIDTH.wide, "grid h-[3.85rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 md:grid-cols-[1fr_auto_1fr]")}>
         <div className="-ml-5 flex min-w-0 items-center gap-3 md:-ml-8">
           <SideMenu />
           <BackButton />
@@ -52,7 +54,7 @@ export function Header() {
             <Link
               key={link.label}
               href={link.href}
-              className="text-[15.5px] text-ink transition-colors hover:text-ember"
+              className="text-sm text-ink transition-colors hover:text-ember"
             >
               {link.label}
             </Link>

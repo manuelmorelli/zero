@@ -5,8 +5,10 @@ import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
 import { DEMO_TOP_JOURNEYS } from "@/lib/demo/demoContent";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { CARD_GRID } from "@/components/ui/cover-card";
 
-export const metadata = { title: "Top Journeys — Zero" };
+export const metadata = { title: "Top Journeys | Zero" };
 
 export default async function TopJourneysPage() {
   const session = await getViewerSession();
@@ -20,14 +22,15 @@ export default async function TopJourneysPage() {
 
   return (
     <main>
-      <div className="mx-auto max-w-[1400px] px-5 pb-16 pt-24 md:px-8">
+      <div className={`${PAGE_WIDTH.wide} ${PAGE_SPACING}`}>
         <SectionHeading
+          page
           icon={<Star className="h-6 w-6 fill-current" aria-hidden="true" />}
           title="Top Journeys"
           subtitle="Timeless stories that continue to inspire."
         />
 
-        <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <ul className={`mt-6 ${CARD_GRID.journey}`}>
           {displayed.map((journey) => (
             <li key={journey.id}>
               <JourneyCard
@@ -40,7 +43,7 @@ export default async function TopJourneysPage() {
                   creator: { displayName: journey.creatorName },
                 }}
                 footer={
-                  <p className="mt-2 text-xs text-ink-muted">
+                  <p className="mt-2 text-sm text-ink-muted">
                     {journey.episodesCount} {journey.episodesCount === 1 ? "episode" : "episodes"}
                   </p>
                 }

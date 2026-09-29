@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { PAGE_WIDTH } from "@/components/ui/page-container";
+import { cn } from "@/lib/utils";
 
 type OnboardingBannerProps = {
   userId: string;
@@ -36,11 +38,11 @@ export function OnboardingBanner({ userId }: OnboardingBannerProps) {
 
   return (
     <div className="relative z-40 border-b border-border bg-surface">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 pb-3 pt-20 text-sm">
+      <div className={cn(PAGE_WIDTH.wide, "flex items-center justify-between gap-4 pb-3 pt-20 text-sm")}>
         <p className="text-ink-muted">
           Tell us what you&apos;re into for better recommendations.{" "}
           <Link href="/onboarding" className="font-semibold text-ink underline underline-offset-2">
-            Pick your interests
+            Pick Your Interests
           </Link>
         </p>
         <button

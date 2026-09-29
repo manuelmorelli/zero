@@ -1,33 +1,35 @@
 import Link from "next/link";
+import { PageTitle, SectionTitle } from "@/components/ui/heading";
+import { BUTTON_VARIANTS } from "@/components/ui/button";
 
-/** Intestazione di una riga Home ("Discovering Now", "Top Journeys", ecc.): icona + titolo + sottotitolo + "View all". */
+/** Intestazione di una riga ("Discovering Now", "Top Journeys", ecc.): icona + titolo + sottotitolo + "View all".
+ * Con `page` fa da intestazione di una pagina intera (es. /discover/now) e usa il titolo di pagina. */
 export function SectionHeading({
   icon,
   title,
   subtitle,
   viewAllHref,
+  page,
 }: {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   viewAllHref?: string;
+  page?: boolean;
 }) {
+  const Title = page ? PageTitle : SectionTitle;
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:justify-between">
       <div className="flex min-w-0 items-start gap-3">
-        <span className="mt-0.5 shrink-0 text-ember">{icon}</span>
+        {icon && <span className="mt-0.5 shrink-0 text-ember">{icon}</span>}
         <div className="min-w-0">
-          <h2 className="truncate text-lg font-bold tracking-tight">{title}</h2>
-          <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>
+          <Title className="truncate">{title}</Title>
+          {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}
         </div>
       </div>
       {viewAllHref && (
-        <Link
-          href={viewAllHref}
-          className="group inline-flex shrink-0 items-center gap-1.5 text-sm text-ink-muted transition-colors hover:text-ember"
-        >
-          View all
-          <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
+        <Link href={viewAllHref} className={`${BUTTON_VARIANTS.text} shrink-0`}>
+          View All
         </Link>
       )}
     </div>

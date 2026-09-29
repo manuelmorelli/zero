@@ -4,8 +4,10 @@ import { JourneyCard } from "@/components/journey/JourneyCard";
 import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getNewJourneys } from "@/lib/discovery/newJourneys";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { CARD_GRID } from "@/components/ui/cover-card";
 
-export const metadata = { title: "New Journeys — Zero" };
+export const metadata = { title: "New Journeys | Zero" };
 
 export default async function NewJourneysPage() {
   const session = await getViewerSession();
@@ -18,14 +20,15 @@ export default async function NewJourneysPage() {
 
   return (
     <main>
-      <div className="mx-auto max-w-[1400px] px-5 pb-16 pt-24 md:px-8">
+      <div className={`${PAGE_WIDTH.wide} ${PAGE_SPACING}`}>
         <SectionHeading
+          page
           icon={<Clock className="h-6 w-6" aria-hidden="true" />}
           title="New Journeys"
           subtitle="Real stories. Real impact."
         />
 
-        <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <ul className={`mt-6 ${CARD_GRID.journey}`}>
           {journeys.map((journey) => (
             <li key={journey.id}>
               <JourneyCard journey={journey} />

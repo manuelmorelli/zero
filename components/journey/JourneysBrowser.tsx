@@ -3,9 +3,12 @@
 import { useMemo, useState } from "react";
 import { SearchIcon } from "@/components/search/SearchForm";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
+import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
 import { JourneyCard } from "@/components/journey/JourneyCard";
 import { WildcardJourneyCard } from "@/components/journey/WildcardJourneyCard";
 import type { JourneyCategoryRow } from "@/lib/discovery/journeysByCategory";
+import { NOTICE } from "@/components/ui/panel";
+import { PILL_FIELD, PILL_FIELD_INPUT } from "@/components/ui/input";
 
 type JourneysBrowserProps = {
   rows: JourneyCategoryRow[];
@@ -30,7 +33,7 @@ export function JourneysBrowser({ rows }: JourneysBrowserProps) {
   return (
     <div className="space-y-10">
       <div className="max-w-md">
-        <div className="flex items-center gap-2 rounded-full border border-border bg-surface-2 px-4 py-2">
+        <div className={PILL_FIELD}>
           <SearchIcon className="h-4 w-4 shrink-0 text-ink-faint" aria-hidden="true" />
           <input
             type="search"
@@ -38,13 +41,13 @@ export function JourneysBrowser({ rows }: JourneysBrowserProps) {
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search Journeys"
             aria-label="Search Journeys"
-            className="w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none"
+            className={PILL_FIELD_INPUT}
           />
         </div>
       </div>
 
       {q.length > 0 && filteredRows.length === 0 && (
-        <p className="rounded-xl border border-border bg-surface p-6 text-sm text-ink-muted">
+        <p className={NOTICE}>
           {`No Journeys found for "${query}".`}
         </p>
       )}
@@ -52,10 +55,10 @@ export function JourneysBrowser({ rows }: JourneysBrowserProps) {
       {filteredRows.map((row) => (
         <HorizontalScrollRow key={row.category} id={row.slug} title={row.category}>
           {row.wildcardJourneyId && (
-            <WildcardJourneyCard journeyId={row.wildcardJourneyId} className="w-56 shrink-0 sm:w-72 lg:w-80" />
+            <WildcardJourneyCard journeyId={row.wildcardJourneyId} className={CARD_ROW_ITEM.journey} />
           )}
           {row.journeys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} className="w-56 shrink-0 sm:w-72 lg:w-80" />
+            <JourneyCard key={journey.id} journey={journey} className={CARD_ROW_ITEM.journey} />
           ))}
         </HorizontalScrollRow>
       ))}

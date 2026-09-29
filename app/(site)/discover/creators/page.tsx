@@ -1,12 +1,14 @@
 import { UserPlus } from "lucide-react";
 import { SectionHeading } from "@/components/common/SectionHeading";
-import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
+import { JourneyerCard } from "@/components/profile/JourneyerCard";
 import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getRecommendedCreators } from "@/lib/discovery/recommendedCreators";
 import { DEMO_CREATORS } from "@/lib/demo/demoContent";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { CARD_GRID } from "@/components/ui/cover-card";
 
-export const metadata = { title: "Creators to follow — Zero" };
+export const metadata = { title: "Creators to Follow | Zero" };
 
 export default async function RecommendedCreatorsPage() {
   const session = await getViewerSession();
@@ -20,17 +22,18 @@ export default async function RecommendedCreatorsPage() {
 
   return (
     <main>
-      <div className="mx-auto max-w-[1400px] px-5 pb-16 pt-24 md:px-8">
+      <div className={`${PAGE_WIDTH.wide} ${PAGE_SPACING}`}>
         <SectionHeading
+          page
           icon={<UserPlus className="h-6 w-6" aria-hidden="true" />}
-          title="Creators to follow"
+          title="Creators to Follow"
           subtitle="People documenting journeys like the ones you follow."
         />
 
-        <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <ul className={`mt-6 ${CARD_GRID.person}`}>
           {displayed.map((creator) => (
             <li key={creator.id}>
-              <CreatorResultCard creator={creator} />
+              <JourneyerCard journeyer={creator} />
             </li>
           ))}
         </ul>

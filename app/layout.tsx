@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Zero — Every journey starts from zero",
+  title: "Zero | Every journey starts from Zero",
   description:
     "Zero is the platform where people's real transformations become Journeys to follow, chapter by chapter.",
 };

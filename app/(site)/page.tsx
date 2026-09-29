@@ -4,14 +4,18 @@ import { Compass, Video as VideoIcon, Star, ArrowRight, Sparkles, Shuffle, HelpC
 import type { ContinueJourneyItem } from "@/lib/discovery/continueJourneys";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { VideoCard } from "@/components/journey/VideoCard";
-import { Avatar } from "@/components/common/Avatar";
-import { CreatorResultCard } from "@/components/creator/CreatorResultCard";
+import { Avatar } from "@/components/ui/avatar";
+import { JourneyerCard } from "@/components/profile/JourneyerCard";
 import { Logo } from "@/components/layout/Logo";
 import { OnboardingBanner } from "@/components/layout/OnboardingBanner";
 import { Hero } from "@/components/landing/Hero";
 import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
-import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
+import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
+import { CARD_GRID, CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
+import { CardTitle, PageTitle } from "@/components/ui/heading";
+import { CHIP, PANEL } from "@/components/ui/panel";
+import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
@@ -35,6 +39,11 @@ import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
+
+/** Una riga piena per formato di card (CARD_GRID): 5 Journey, 4 episodi, 8 persone. */
+const JOURNEYS_PER_ROW = 5;
+const PEOPLE_PER_ROW = 8;
+const HOME_SECTION = `${PAGE_WIDTH.wide} py-4`;
 
 export default async function Home() {
   await promoteExpiredDiscoveryJourneys();
@@ -74,14 +83,14 @@ export default async function Home() {
   ] = await Promise.all([
     getFollowedCreatorsStories({ userId }),
     getOwnStory({ userId }),
-    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: 4, interests: userInterests }),
-    getWildcardsToFollow(5),
+    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: JOURNEYS_PER_ROW, interests: userInterests }),
+    getWildcardsToFollow(PEOPLE_PER_ROW),
     getJourneyCountsByCategory(),
     getLatestVideos({ limit: 4, interests: userInterests }),
-    getTopJourneys({ limit: 4, interests: userInterests }),
+    getTopJourneys({ limit: JOURNEYS_PER_ROW, interests: userInterests }),
     // Nessuna personalizzazione: "Discovering Now" mostra tutti i Journey in Discovery Phase a
     // chiunque, loggato o no, indipendentemente da interessi o creator seguiti (08_Algorithm.md).
-    getDiscoveringNowJourneys(4),
+    getDiscoveringNowJourneys(JOURNEYS_PER_ROW),
     getHeroJourneys(4),
   ]);
 
@@ -89,10 +98,10 @@ export default async function Home() {
   // ancora vuote (nessun dato reale sufficiente), per una demo visiva completa. Ogni sezione
   // torna automaticamente ai dati reali non appena ce ne sono abbastanza, nessuna struttura da toccare.
   const displayedLatestVideos = (latestVideos.length > 0 ? latestVideos : DEMO_LATEST_VIDEOS).slice(0, 4);
-  const displayedTopJourneys = (topJourneys.length > 0 ? topJourneys : DEMO_TOP_JOURNEYS).slice(0, 4);
-  const displayedDiscoveringNow = (discoveringNow.length > 0 ? discoveringNow : DEMO_DISCOVERING_NOW).slice(0, 4);
+  const displayedTopJourneys = (topJourneys.length > 0 ? topJourneys : DEMO_TOP_JOURNEYS).slice(0, JOURNEYS_PER_ROW);
+  const displayedDiscoveringNow = (discoveringNow.length > 0 ? discoveringNow : DEMO_DISCOVERING_NOW).slice(0, JOURNEYS_PER_ROW);
   const displayedStories = creatorStories.length > 0 ? creatorStories : DEMO_STORIES;
-  const displayedRecommendedJourneys = (recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS).slice(0, 4);
+  const displayedRecommendedJourneys = (recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS).slice(0, JOURNEYS_PER_ROW);
   const displayedWildcardsToFollow = wildcardsToFollow.length > 0 ? wildcardsToFollow : DEMO_CREATORS;
   const heroSlides: HeroSlide[] =
     heroJourneys.length > 0
@@ -111,15 +120,9 @@ export default async function Home() {
     <main>
       {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
 
-      {/* La Hero e il resto della pagina condividono un unico sfondo continuo invece di due
-       * blocchi separati: questo bagliore vive fuori dalla sezione Hero (che ha overflow-hidden)
-       * e si estende ben oltre la sua fine, così la Hero è una "finestra" appoggiata sopra, non
-       * un blocco a sé — niente più cucitura netta ai lati/in fondo alla foto. */}
+      {/* Bagliore ambra dietro la Hero: rimosso (esperimento "design più vivo", round colori) —
+       * sporcava lo sfondo di arancio insieme a quello sitewide in globals.css. */}
       <div className="relative md:pt-[calc(3.85rem+1cm)]">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+32rem)] bg-[radial-gradient(ellipse_70%_50%_at_18%_10%,_oklch(0.769_0.155_70.5_/_24%),_transparent_62%),radial-gradient(ellipse_65%_55%_at_85%_50%,_oklch(0.769_0.155_70.5_/_20%),_transparent_62%),radial-gradient(ellipse_85%_60%_at_50%_48%,_oklch(0.769_0.155_70.5_/_15%),_transparent_70%)]"
-        />
         <Hero slides={heroSlides} stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
       </div>
 
@@ -147,7 +150,7 @@ export default async function Home() {
 
 function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
   return (
-    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+    <section className={HOME_SECTION}>
       <Reveal>
         <SectionHeading
           icon={<History className="h-6 w-6" aria-hidden="true" />}
@@ -156,59 +159,39 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className={`mt-4 ${CARD_GRID.episode}`}>
         {journeys.map((item, index) => (
           <Reveal key={item.journeyId} as="li" delayMs={index * 70}>
-            <Link
+            <CoverFrame
+              format="episode"
               href={item.episodeId ? `/journeys/${item.journeyId}/episodes/${item.episodeId}` : `/journeys/${item.journeyId}`}
-              className="group block transition-transform duration-300 hover:-translate-y-1"
-            >
-              <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember/40 group-hover:shadow-[0_20px_40px_-20px_rgba(226,145,77,0.25)]">
-                {item.coverUrl ? (
-                  <Image
-                    src={item.coverUrl}
-                    alt={item.title}
-                    fill
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/25 to-transparent" />
-                <span className="absolute left-2.5 top-2.5 rounded-full border border-ember/30 bg-bg/70 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-ember backdrop-blur-md">
-                  Continue watching
-                </span>
-                <span className="absolute inset-0 grid place-items-center">
-                  <span className="grid h-12 w-12 place-items-center rounded-full border border-white/20 bg-bg/50 backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
-                    <Play className="h-4 w-4 translate-x-[1px] fill-current text-ember" aria-hidden="true" />
-                  </span>
-                </span>
-
-                <div className="absolute inset-x-0 bottom-0 p-3">
-                  {item.category && (
-                    <span className="inline-block rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
-                      {item.category}
-                    </span>
-                  )}
-                  <h3 className="mt-2 truncate text-base font-bold leading-tight text-white transition-colors group-hover:text-ember">
-                    {item.episodeTitle ?? item.title}
-                  </h3>
-                  <div className="mt-2 flex items-center justify-between gap-2">
-                    <span className="flex min-w-0 items-center gap-1.5 text-xs text-white/85">
-                      <Avatar name={item.creatorName} className="h-5 w-5 text-[0.55rem]" />
+              imageUrl={item.coverUrl}
+              imageAlt={item.title}
+              topLeft={<CoverChip className="text-ember">Continue Watching</CoverChip>}
+              center={
+                <CoverPlay>
+                  <Play className="h-4 w-4 translate-x-px fill-current" aria-hidden="true" />
+                </CoverPlay>
+              }
+              overlay={
+                <>
+                  {item.category && <CoverChip>{item.category}</CoverChip>}
+                  <CoverTitle className="mt-2">{item.episodeTitle ?? item.title}</CoverTitle>
+                  <div className="mt-2 flex items-center justify-between gap-2 text-sm">
+                    <span className="flex min-w-0 items-center gap-1.5">
+                      <Avatar name={item.creatorName} size="xs" />
                       <span className="truncate">{item.creatorName}</span>
                     </span>
                     {item.journeyScore !== undefined && (
-                      <span className="flex shrink-0 items-center gap-1 text-xs font-bold text-ember">
-                        <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                      <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
+                        <ShieldCheck className="h-4 w-4" aria-hidden="true" />
                         {item.journeyScore}
                       </span>
                     )}
                   </div>
-                </div>
-              </div>
-            </Link>
+                </>
+              }
+            />
           </Reveal>
         ))}
       </ul>
@@ -222,17 +205,17 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
 
 function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
   return (
-    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+    <section className={HOME_SECTION}>
       <Reveal>
         <SectionHeading
           icon={<Compass className="h-6 w-6" aria-hidden="true" />}
           title="Discovering Now"
-          subtitle="Brand new Journeys, shown to everyone — not just people who already follow this topic."
+          subtitle="Brand new Journeys, shown to everyone, not just people who already follow this topic."
           viewAllHref="/discover/now"
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className={`mt-4 ${CARD_GRID.journey}`}>
         {journeys.map((journey, index) => (
           <Reveal key={journey.id} as="li" delayMs={index * 70}>
             <JourneyCard
@@ -244,7 +227,7 @@ function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
                 creator: { displayName: journey.creatorName },
               }}
               footer={
-                <p className="mt-2 text-xs text-ink-muted">
+                <p className="mt-2 text-sm text-ink-muted">
                   {journey.daysLeft} {journey.daysLeft === 1 ? "day" : "days"} left in Discovery
                 </p>
               }
@@ -262,7 +245,7 @@ function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
 
 function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestVideos>> }) {
   return (
-    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+    <section className={HOME_SECTION}>
       <Reveal>
         <SectionHeading
           icon={<VideoIcon className="h-6 w-6" aria-hidden="true" />}
@@ -272,7 +255,7 @@ function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestV
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className={`mt-4 ${CARD_GRID.episode}`}>
         {videos.map((video, index) => (
           <Reveal key={video.episodeId} as="li" delayMs={index * 70}>
             <VideoCard video={video} />
@@ -289,7 +272,7 @@ function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestV
 
 function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJourneys>> }) {
   return (
-    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+    <section className={HOME_SECTION}>
       <Reveal>
         <SectionHeading
           icon={<Star className="h-6 w-6 fill-current" aria-hidden="true" />}
@@ -299,7 +282,7 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className={`mt-4 ${CARD_GRID.journey}`}>
         {journeys.map((journey, index) => (
           <Reveal key={journey.id} as="li" delayMs={index * 70}>
             <JourneyCard
@@ -312,7 +295,7 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
                 creator: { displayName: journey.creatorName },
               }}
               footer={
-                <p className="mt-2 text-xs text-ink-muted">
+                <p className="mt-2 text-sm text-ink-muted">
                   {journey.episodesCount} {journey.episodesCount === 1 ? "episode" : "episodes"}
                 </p>
               }
@@ -330,17 +313,17 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
 
 function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
   return (
-    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+    <section className={HOME_SECTION}>
       <Reveal>
         <SectionHeading
           icon={<Sparkles className="h-6 w-6" aria-hidden="true" />}
-          title="Recommended for you"
+          title="Recommended for You"
           subtitle="Picked based on who you follow."
           viewAllHref="/discover/recommended"
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className={`mt-4 ${CARD_GRID.journey}`}>
         {journeys.map((journey, index) => (
           <Reveal key={journey.id} as="li" delayMs={index * 70}>
             <JourneyCard journey={journey} />
@@ -353,26 +336,24 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
 
 /* ------------------------------------------------------------------ */
 /* WILDCARDS TO FOLLOW — creator dietro il pick Wildcard stabile di      */
-/* ogni categoria (lib/discovery/wildcardCreators.ts), sostituisce la   */
-/* vecchia riga "Creators to follow" (raccomandazione personalizzata,    */
-/* ora coperta da "Recommended for you")                                */
+/* ogni categoria (lib/discovery/wildcardCreators.ts)                   */
 /* ------------------------------------------------------------------ */
 
 function WildcardsToFollow({ creators }: { creators: CreatorSearchResult[] }) {
   return (
-    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+    <section className={HOME_SECTION}>
       <Reveal>
         <SectionHeading
           icon={<Shuffle className="h-6 w-6" aria-hidden="true" />}
-          title="Wildcards to follow"
+          title="Wildcards to Follow"
           subtitle="A random pick from each category, refreshed daily."
         />
       </Reveal>
 
-      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <ul className={`mt-4 ${CARD_GRID.person}`}>
         {creators.map((creator, index) => (
           <Reveal key={creator.id} as="li" delayMs={index * 70}>
-            <CreatorResultCard creator={creator} />
+            <JourneyerCard journeyer={creator} />
           </Reveal>
         ))}
       </ul>
@@ -386,7 +367,7 @@ function WildcardsToFollow({ creators }: { creators: CreatorSearchResult[] }) {
 
 function Categories({ countByCategory }: { countByCategory: Map<string, number> }) {
   return (
-    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+    <section className={HOME_SECTION}>
       <Reveal>
         <SectionHeading
           icon={<Compass className="h-6 w-6" aria-hidden="true" />}
@@ -401,13 +382,9 @@ function Categories({ countByCategory }: { countByCategory: Map<string, number> 
           {JOURNEY_CATEGORIES.map((category) => {
             const count = countByCategory.get(category) ?? 0;
             return (
-              <Link
-                key={category}
-                href={`/journeys#${categoryToSlug(category)}`}
-                className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-ink-muted"
-              >
+              <Link key={category} href={`/journeys#${categoryToSlug(category)}`} className={CHIP}>
                 {category}
-                <span className="ml-1.5 text-ink-faint">{count}</span>
+                <span className="text-ink-faint">{count}</span>
               </Link>
             );
           })}
@@ -423,19 +400,19 @@ function Categories({ countByCategory }: { countByCategory: Map<string, number> 
 
 function HowItWorksCta() {
   return (
-    <section className="mx-auto max-w-[1400px] px-5 py-4 md:px-8">
+    <section className={HOME_SECTION}>
       <Reveal>
         <Link
           href="/how-it-works"
-          className="group flex items-center justify-between gap-4 rounded-xl border border-border bg-surface px-5 py-4 transition-colors hover:border-ink-muted"
+          className={`group flex items-center justify-between gap-4 transition-colors hover:border-ink-muted ${PANEL}`}
         >
           <div className="flex min-w-0 items-center gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-surface-2">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-surface-2 text-ember">
               <HelpCircle className="h-5 w-5" aria-hidden="true" />
             </span>
             <div className="min-w-0">
-              <h2 className="text-sm font-bold text-ink">How Zero works</h2>
-              <p className="truncate text-xs text-ink-muted">
+              <CardTitle as="h2">How Zero Works</CardTitle>
+              <p className="truncate text-sm text-ink-muted">
                 Three steps to get started, plus answers to common questions.
               </p>
             </div>
@@ -456,7 +433,7 @@ function HowItWorksCta() {
 
 function FinalCta() {
   return (
-    <section className="mx-auto max-w-[1400px] px-5 py-4 pb-10 md:px-8">
+    <section className={`${HOME_SECTION} pb-10`}>
       <Reveal>
         <div className="relative overflow-hidden rounded-2xl border border-border">
           <Image
@@ -466,14 +443,14 @@ function FinalCta() {
             sizes="(min-width: 1400px) 1400px, 100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/60" />
+          <div className="banner-scrim absolute inset-0" />
           <div className="relative grid items-center gap-6 p-7 md:grid-cols-[minmax(0,1fr)_auto] md:p-10">
             <div className="min-w-0">
-              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-                Every Journey Starts From <span className="text-ember">Zero</span>.
-              </h2>
+              <PageTitle as="h2">
+                Every journey starts from <span className="text-ember">Zero</span>.
+              </PageTitle>
               <p className="mt-2 max-w-md text-sm text-ink-muted">
-                Start documenting your story today — one honest episode at a time.
+                Start documenting your story today, one honest episode at a time.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -497,9 +474,9 @@ function FinalCta() {
 function SiteFooter() {
   return (
     <footer>
-      <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-4 px-5 py-10 text-sm text-ink-muted sm:flex-row md:px-8">
+      <div className={`${PAGE_WIDTH.wide} flex flex-col items-center justify-between gap-4 py-10 text-sm text-ink-muted sm:flex-row`}>
         <Logo className="h-6" />
-        <p>© {new Date().getFullYear()} Zero. Every journey starts from zero.</p>
+        <p>© {new Date().getFullYear()} Zero. Every journey starts from Zero.</p>
       </div>
     </footer>
   );

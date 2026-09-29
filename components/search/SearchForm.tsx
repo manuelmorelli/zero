@@ -1,5 +1,8 @@
 import type { SVGProps } from "react";
 import Form from "next/form";
+import { IconButton } from "@/components/ui/button";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 type SearchFormProps = {
   defaultValue?: string;
@@ -18,15 +21,11 @@ export function SearchForm({ defaultValue = "", className = "" }: SearchFormProp
         name="q"
         defaultValue={defaultValue}
         placeholder="Search Journeys and creators"
-        className="w-full rounded-full border border-border bg-surface-2 px-4 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-1 focus:ring-ink-muted"
+        className={cn(FIELD, "rounded-full bg-surface-2")}
       />
-      <button
-        type="submit"
-        aria-label="Search"
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-bg transition-opacity hover:opacity-90"
-      >
+      <IconButton type="submit" aria-label="Search" className="border-transparent bg-ink text-bg hover:opacity-90">
         <SearchIcon className="h-4 w-4" />
-      </button>
+      </IconButton>
     </Form>
   );
 }
