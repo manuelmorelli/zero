@@ -8,6 +8,8 @@ import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustSco
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { EpisodePlayer } from "@/components/journey/EpisodePlayer";
 import { UpNextList } from "@/components/journey/UpNextList";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { cn } from "@/lib/utils";
 
 export default async function EpisodePlayerPage({
   params,
@@ -55,7 +57,7 @@ export default async function EpisodePlayerPage({
   return (
     <main>
 
-      <div className="mx-auto grid max-w-[1400px] gap-5 px-5 pb-10 pt-24 md:px-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className={cn(PAGE_WIDTH.wide, "grid gap-5 pb-10 pt-24 lg:grid-cols-[minmax(0,1fr)_340px]")}>
         <EpisodePlayer
           journeyId={journey.id}
           journeyTitle={journey.title}

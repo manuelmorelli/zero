@@ -27,7 +27,7 @@ export function CommunityAiChatImage({
         type="button"
         onClick={onSelect}
         disabled={selected}
-        className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold opacity-70 transition-opacity hover:opacity-100 disabled:text-ember disabled:opacity-100"
+        className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold opacity-70 transition-opacity hover:opacity-100 disabled:text-ember disabled:opacity-100"
       >
         {selected ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <ImagePlus className="h-3.5 w-3.5" aria-hidden="true" />}
         {selected ? "Cover selected" : "Use as cover"}

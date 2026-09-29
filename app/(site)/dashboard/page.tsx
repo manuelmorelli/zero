@@ -7,6 +7,11 @@ import { PrivateStatsPanel } from "@/components/creator/PrivateStatsPanel";
 import { Reveal } from "@/components/common/Reveal";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { getCreatorPrivateStats } from "@/lib/dashboard/creatorStats";
+import { PageTitle } from "@/components/ui/heading";
+import { Button } from "@/components/ui/button";
+import { NOTICE, PANEL } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
 export default async function CreatorDashboardPage() {
   const { creator } = await requireCreator();
@@ -77,22 +82,19 @@ export default async function CreatorDashboardPage() {
   return (
     <main>
 
-      <div className="mx-auto max-w-[1400px] space-y-4 px-5 pb-16 pt-24 md:px-8">
+      <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "space-y-4")}>
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-[0.7rem] uppercase tracking-[0.18em] text-ember">Creator area</p>
-              <h1 className="mt-1 text-xl font-bold tracking-tight">
+              <p className="text-sm uppercase tracking-[0.18em] text-ember">Creator Area</p>
+              <PageTitle>
                 Hi, {creator.displayName}
-              </h1>
+              </PageTitle>
             </div>
             <div className="flex items-center gap-3">
-              <Link
-                href="/dashboard/journeys/new"
-                className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
-              >
+              <Button variant="primary" href="/dashboard/journeys/new">
                 New Journey
-              </Link>
+              </Button>
             </div>
           </div>
         </Reveal>
@@ -104,7 +106,7 @@ export default async function CreatorDashboardPage() {
         <Reveal delayMs={60}>
           <DashboardPanel title="Your Journeys">
             {gridJourneys.length === 0 ? (
-              <p className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-ink-muted">
+              <p className={NOTICE}>
                 You don&apos;t have an active Journey yet. Start one to begin sharing your story.
               </p>
             ) : (
@@ -116,7 +118,7 @@ export default async function CreatorDashboardPage() {
         {archivedJourneys.length > 0 && (
           <Reveal delayMs={90}>
             <DashboardPanel title="Archived Journeys">
-              <p className="mb-3 text-xs text-ink-muted">
+              <p className="mb-3 text-sm text-ink-muted">
                 Archived Journeys stay visible on your public profile until deleted.
               </p>
               <div className="space-y-3">
@@ -124,10 +126,10 @@ export default async function CreatorDashboardPage() {
                   <Link
                     key={journey.id}
                     href={`/dashboard/journeys/${journey.id}`}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2 p-5 transition-colors hover:border-ink-muted"
+                    className={cn(PANEL, "flex items-center justify-between transition-colors hover:border-ink-muted")}
                   >
                     <span className="text-sm font-semibold text-ink">{journey.title}</span>
-                    <span className="rounded-full border border-border px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
+                    <span className="rounded-full border border-border px-3 py-1 text-sm font-semibold uppercase tracking-wider text-ink-muted">
                       Archived
                     </span>
                   </Link>

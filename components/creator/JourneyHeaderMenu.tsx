@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 type JourneyHeaderMenuProps = {
   journeyId: string;
@@ -105,7 +106,7 @@ function ArchiveJourneyDialog({
         <DialogHeader>
           <DialogTitle>Archive Journey</DialogTitle>
           <DialogDescription>
-            It will stop being your active Journey, but stays visible on your public profile — it
+            It will stop being your active Journey, but stays visible on your public profile. It
             can&apos;t be deleted or unarchived. You&apos;ll be able to start a new Journey right away.
           </DialogDescription>
         </DialogHeader>
@@ -118,20 +119,12 @@ function ArchiveJourneyDialog({
           <input type="hidden" name="journeyId" value={journeyId} />
           {state.error && <p className="px-5 text-sm text-danger">{state.error}</p>}
           <DialogFooter>
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-            >
+            <Button variant="secondary" onClick={() => onOpenChange(false)}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={pending}
-              className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90 disabled:opacity-50"
-            >
+            </Button>
+            <Button variant="danger" type="submit" disabled={pending}>
               {pending ? "Archiving…" : "Archive"}
-            </button>
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

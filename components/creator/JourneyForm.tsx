@@ -21,6 +21,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { CHIP } from "@/components/ui/panel";
+import { Button } from "@/components/ui/button";
 
 type JourneyFormProps = {
   journey?: {
@@ -135,7 +139,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
                 maxLength={100}
                 value={draft.title}
                 onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))}
-                className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                className={cn(FIELD, "mt-1.5")}
               />
             </div>
 
@@ -148,12 +152,12 @@ export function JourneyForm({ journey }: JourneyFormProps) {
                 name="description"
                 rows={4}
                 maxLength={2000}
-                placeholder="Tell the story behind this journey — what it's really about, and why it matters to you."
+                placeholder="Tell the story behind this Journey: what it's really about, and why it matters to you."
                 value={draft.description}
                 onChange={(event) => setDraft((prev) => ({ ...prev, description: event.target.value }))}
-                className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                className={cn(FIELD, "mt-1.5 resize-none")}
               />
-              <p className="mt-1.5 text-xs text-ink-faint">
+              <p className="mt-1.5 text-sm text-ink-faint">
                 This is the line people will see first if your journey gets featured on Zero's homepage.
               </p>
             </div>
@@ -178,11 +182,11 @@ export function JourneyForm({ journey }: JourneyFormProps) {
               {!categoryOpen && (
                 <div className="mt-1.5">
                   {draft.category ? (
-                    <span className="inline-flex rounded-full border border-ember/50 bg-ember/15 px-2.5 py-1 text-xs text-ember">
+                    <span className="inline-flex rounded-full border border-ember-line bg-ember-soft px-2.5 py-1 text-sm text-ember">
                       {draft.category}
                     </span>
                   ) : (
-                    <span className="text-xs text-ink-faint">No category selected</span>
+                    <span className="text-sm text-ink-faint">No Category Selected</span>
                   )}
                 </div>
               )}
@@ -201,11 +205,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
                         onClick={() =>
                           setDraft((prev) => ({ ...prev, category: prev.category === category ? "" : category }))
                         }
-                        className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
-                          draft.category === category
-                            ? "border-ember/50 bg-ember/15 text-ember"
-                            : "border-border text-ink-muted hover:border-ink-muted hover:text-ink"
-                        }`}
+                        className={cn(CHIP, draft.category === category && "border-ember-line bg-ember-soft text-ember")}
                       >
                         {category}
                       </button>
@@ -227,7 +227,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
                 placeholder="fitness, running"
                 value={draft.tags}
                 onChange={(event) => setDraft((prev) => ({ ...prev, tags: event.target.value }))}
-                className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                className={cn(FIELD, "mt-1.5")}
               />
             </div>
           </div>
@@ -239,18 +239,18 @@ export function JourneyForm({ journey }: JourneyFormProps) {
                 {coverPreview ? (
                   <Image src={coverPreview} alt="" fill sizes="220px" className="object-cover" />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+                  <div className="absolute inset-0 cover-placeholder" />
                 )}
                 <button
                   type="button"
                   onClick={() => coverInputRef.current?.click()}
                   aria-label="Change cover photo"
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-black/0 text-[0.65rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-transparent text-sm font-semibold text-transparent transition-colors hover:bg-bg hover:text-on-photo"
                 >
                   <ImagePlus className="h-4 w-4" aria-hidden="true" />
                   {coverProgress !== null ? `${coverProgress}%` : "Change"}
                 </button>
-                <span className="pointer-events-none absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white">
+                <span className="pointer-events-none absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-scrim text-on-photo">
                   <ImagePlus className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
                 <input
@@ -261,7 +261,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
                   className="hidden"
                 />
               </div>
-              {coverError && <p className="mt-1.5 text-xs text-danger">{coverError}</p>}
+              {coverError && <p className="mt-1.5 text-sm text-danger">{coverError}</p>}
             </div>
           )}
         </div>
@@ -270,34 +270,22 @@ export function JourneyForm({ journey }: JourneyFormProps) {
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
           {journey ? (
-            <button
-              type="button"
-              onClick={() => setDeleteOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs font-semibold text-danger transition-colors hover:border-danger"
-            >
+            <Button variant="danger" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
               Delete Journey
-            </button>
+            </Button>
           ) : (
             <span />
           )}
           <div className="flex flex-wrap items-center gap-2.5">
             {journey && dirty && (
-              <button
-                type="button"
-                onClick={() => setDraft(initialDraft)}
-                className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-              >
+              <Button variant="secondary" onClick={() => setDraft(initialDraft)}>
                 Cancel
-              </button>
+              </Button>
             )}
-            <button
-              type="submit"
-              disabled={pending || coverProgress !== null || (journey ? !dirty : false)}
-              className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:cursor-not-allowed disabled:opacity-50"
-            >
+            <Button variant="primary" type="submit" disabled={pending || coverProgress !== null || (journey ? !dirty : false)}>
               {pending ? "Saving…" : journey ? "Save changes" : "Create Journey"}
-            </button>
+            </Button>
           </div>
         </div>
       </form>
@@ -348,19 +336,12 @@ function DeleteJourneyFormDialog({
         <form action={deleteJourney}>
           <input type="hidden" name="journeyId" value={journeyId} />
           <DialogFooter>
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-            >
+            <Button variant="secondary" onClick={() => onOpenChange(false)}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90"
-            >
+            </Button>
+            <Button variant="danger" type="submit">
               Delete
-            </button>
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

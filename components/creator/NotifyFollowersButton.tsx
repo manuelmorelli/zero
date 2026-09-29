@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 /** Mai automatico: compare solo sugli elementi già pubblicati, e richiede sempre questa conferma
  * esplicita prima di avvisare davvero i follower (regola di sicurezza concordata con Manuel,
@@ -49,14 +50,10 @@ export function NotifyFollowersButton({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-ember/30 px-3.5 py-1.5 text-xs font-semibold text-ember transition-colors hover:bg-ember/10"
-      >
+      <Button variant="secondary" onClick={() => setOpen(true)}>
         <Megaphone className="h-3.5 w-3.5" aria-hidden="true" />
         Notify your followers
-      </button>
+      </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-sm">
@@ -68,21 +65,12 @@ export function NotifyFollowersButton({
           </DialogHeader>
           {error && <p className="text-sm text-danger">{error}</p>}
           <DialogFooter>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-            >
+            <Button variant="secondary" onClick={() => setOpen(false)}>
               Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleConfirm}
-              disabled={pending}
-              className="rounded-full bg-ember px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-ember/90 disabled:opacity-50"
-            >
+            </Button>
+            <Button variant="primary" onClick={handleConfirm} disabled={pending}>
               {pending ? "Sending…" : "Send notification"}
-            </button>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

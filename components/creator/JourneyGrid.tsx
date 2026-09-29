@@ -48,7 +48,7 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
           <li key={journey.id} className="group">
             <div
               className={`relative w-full overflow-hidden rounded-xl border transition-colors ${
-                needsAttention ? "border-ember/50 hover:border-ember" : "border-border hover:border-ink-muted"
+                needsAttention ? "border-ember-line hover:border-ember" : "border-border hover:border-ink-muted"
               }`}
             >
               <Link
@@ -64,17 +64,17 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 cover-placeholder transition-transform duration-700 group-hover:scale-105" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-bg/80 to-transparent" />
+                <div className="absolute inset-0 card-scrim" />
                 <span className="absolute left-2 top-2">
                   <CategoryIcon category={journey.category} className="h-7 w-7" />
                 </span>
                 <span
-                  className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wider backdrop-blur-md ${
+                  className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-sm font-bold uppercase tracking-wider backdrop-blur-md ${
                     journey.status === "DRAFT"
                       ? "bg-ember text-bg"
-                      : "border border-white/15 bg-white/10 text-ink-muted"
+                      : "border border-border bg-overlay-soft text-ink-muted"
                   }`}
                 >
                   {STATUS_LABEL[journey.status] ?? journey.status}
@@ -92,22 +92,22 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
               </div>
 
               <Link href={`/dashboard/journeys/${journey.id}`} className="block px-2.5 py-2">
-                <span className="line-clamp-2 block text-[0.74rem] font-semibold leading-snug text-ink transition-colors group-hover:text-ember">
+                <span className="line-clamp-2 block text-sm font-semibold leading-snug text-ink transition-colors group-hover:text-ember">
                   {journey.title}
                 </span>
-                <span className="mt-0.5 block text-[0.6rem] uppercase tracking-wider text-ink-muted">
+                <span className="mt-0.5 block text-sm uppercase tracking-wider text-ink-muted">
                   {journey.chapterCount > 0
                     ? `${journey.chapterCount} ${journey.chapterCount === 1 ? "chapter" : "chapters"} · `
                     : ""}
                   {journey.episodeCount} {journey.episodeCount === 1 ? "episode" : "episodes"}
                   {journey.draftCount > 0 && (
-                    <span className="ml-1 inline-block rounded-full bg-ember px-1.5 py-0.5 text-[0.58rem] font-bold normal-case tracking-normal text-bg">
+                    <span className="ml-1 inline-block rounded-full bg-ember px-1.5 py-0.5 text-sm font-bold normal-case tracking-normal text-bg">
                       {journey.draftCount} draft{journey.draftCount === 1 ? "" : "s"}
                     </span>
                   )}
                 </span>
-                <span className="mt-0.5 block text-[0.62rem] font-semibold text-ember">
-                  Open to edit →
+                <span className="mt-0.5 block text-sm font-semibold text-ember">
+                  Open to Edit →
                 </span>
               </Link>
             </div>

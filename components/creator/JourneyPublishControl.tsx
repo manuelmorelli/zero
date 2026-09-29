@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { publishJourney } from "@/lib/actions/journey";
+import { Button } from "@/components/ui/button";
 
 type JourneyPublishControlProps = {
   journeyId: string;
@@ -21,13 +22,9 @@ function PublishForm({ journeyId }: { journeyId: string }) {
   return (
     <form action={formAction} className="flex flex-col items-start gap-2">
       <input type="hidden" name="journeyId" value={journeyId} />
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending}>
         {pending ? "Publishing…" : "Publish"}
-      </button>
+      </Button>
       {state.error && <p className="text-sm text-danger">{state.error}</p>}
     </form>
   );

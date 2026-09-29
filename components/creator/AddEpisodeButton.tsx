@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { AddEpisodeCard } from "@/components/creator/AddEpisodeCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export function AddEpisodeButton({
   journeyId,
@@ -20,19 +21,15 @@ export function AddEpisodeButton({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-border px-3.5 py-1.5 text-[0.78rem] text-ink-muted transition-colors hover:border-ember/60 hover:text-ember"
-      >
+      <Button variant="secondary" onClick={() => setOpen(true)}>
         <Plus className="h-3.5 w-3.5" aria-hidden="true" />
         {label}
-      </button>
+      </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Add episode</DialogTitle>
+            <DialogTitle>Add Episode</DialogTitle>
           </DialogHeader>
           <div className="p-4">
             <AddEpisodeCard journeyId={journeyId} chapters={chapters} defaultChapterId={defaultChapterId} />

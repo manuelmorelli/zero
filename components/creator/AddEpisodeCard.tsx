@@ -8,6 +8,10 @@ import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video
 import { uploadFileWithProgress } from "@/lib/upload";
 import { readVideoDuration } from "@/lib/media/readVideoDuration";
 import { captureVideoFrame } from "@/lib/media/captureVideoFrame";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { PANEL_DASHED, PANEL } from "@/components/ui/panel";
 
 type Chapter = { id: string; title: string };
 
@@ -157,16 +161,16 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
           <button
             type="button"
             onClick={() => videoInputRef.current?.click()}
-            className="flex w-full flex-col items-center gap-3 rounded-xl border-2 border-dashed border-border py-12 transition-colors hover:border-ink-muted sm:h-full sm:justify-center sm:py-0"
+            className={cn(PANEL_DASHED, "flex w-full flex-col items-center gap-3 py-12 sm:h-full sm:justify-center sm:py-0")}
           >
             <VideoIcon className="h-9 w-9 text-ink-muted" aria-hidden="true" />
-            <span className="text-sm font-semibold text-ink">Select a video from your device</span>
-            <span className="text-xs text-ink-faint">Max {formatMB(MAX_VIDEO_SIZE_BYTES)}</span>
+            <span className="text-sm font-semibold text-ink">Select a Video from Your Device</span>
+            <span className="text-sm text-ink-faint">Max {formatMB(MAX_VIDEO_SIZE_BYTES)}</span>
           </button>
         ) : stillUploadingVideo ? (
-          <div className="flex w-full flex-col items-center gap-3 rounded-xl border border-border py-10 sm:h-full sm:justify-center sm:py-0">
+          <div className={cn(PANEL, "flex w-full flex-col items-center gap-3 sm:h-full sm:justify-center sm:py-0")}>
             <span className="text-2xl font-extrabold tracking-tight text-ink">{videoProgress}%</span>
-            <span className="text-xs text-ink-muted">Uploading video…</span>
+            <span className="text-sm text-ink-muted">Uploading Video…</span>
           </div>
         ) : (
           <>
@@ -183,7 +187,7 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
                 type="button"
                 onClick={handleRemoveVideo}
                 aria-label="Remove video"
-                className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+                className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-scrim text-on-photo transition-colors hover:bg-bg"
               >
                 <CloseIcon className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
@@ -191,8 +195,8 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
 
             {durationSec !== null && durationSec > 0.2 && (
               <div>
-                <label htmlFor={`${uid}-scrub`} className="text-xs font-medium text-ink-muted">
-                  Cover: drag to pick a moment
+                <label htmlFor={`${uid}-scrub`} className="text-sm font-medium text-ink-muted">
+                  Cover: Drag to Pick a Moment
                 </label>
                 <input
                   id={`${uid}-scrub`}
@@ -215,7 +219,7 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
       <div className="mt-4 space-y-4 sm:mt-0">
         <div>
           <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
-            Episode title
+            Episode Title
           </label>
           <input
             id={`${uid}-title`}
@@ -227,7 +231,7 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="Give this episode a title"
-            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "mt-1.5")}
           />
         </div>
 
@@ -243,14 +247,14 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
             value={caption}
             onChange={(event) => setCaption(event.target.value)}
             placeholder="Tell what happened in this episode."
-            className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "mt-1.5 resize-none")}
           />
         </div>
 
         <button
           type="button"
           onClick={() => setAdvanced((value) => !value)}
-          className="text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
+          className="text-sm font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
         >
           {advanced ? "Hide options" : chapters.length > 0 ? "More options (chapter, date)" : "More options (date)"}
         </button>
@@ -266,9 +270,9 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
                 name="chapterId"
                 value={chapterId}
                 onChange={(event) => setChapterId(event.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                className={cn(FIELD, "mt-1.5")}
               >
-                <option value="">No chapter</option>
+                <option value="">No Chapter</option>
                 {chapters.map((chapter) => (
                   <option key={chapter.id} value={chapter.id}>
                     {chapter.title}
@@ -280,7 +284,7 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
 
           <div>
             <label htmlFor={`${uid}-occurredAt`} className="text-sm font-medium text-ink-muted">
-              When it happened
+              When It Happened
             </label>
             <input
               id={`${uid}-occurredAt`}
@@ -289,7 +293,7 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
               required
               value={occurredAt}
               onChange={(event) => setOccurredAt(event.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+              className={cn(FIELD, "mt-1.5")}
             />
           </div>
         </div>
@@ -307,7 +311,7 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
             onChange={(event) => setPublished(event.target.checked)}
             className="h-4 w-4 accent-ink disabled:cursor-not-allowed"
           />
-          <span className="text-xs font-medium text-ink">
+          <span className="text-sm font-medium text-ink">
             {published ? "Published" : "Draft"}
             <span className="ml-1 font-normal text-ink-faint">
               {videoKey ? (published ? "— visible to everyone" : "— only visible to you") : "— add a video first"}
@@ -317,13 +321,9 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
 
         {state.error && <p className="text-sm text-danger">{state.error}</p>}
 
-        <button
-          type="submit"
-          disabled={!videoKey || stillUploadingVideo || posterUploading || pending}
-          className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-        >
+        <Button variant="primary" type="submit" disabled={!videoKey || stillUploadingVideo || posterUploading || pending} className="w-full">
           {pending ? "Saving…" : "Add episode"}
-        </button>
+        </Button>
       </div>
     </form>
   );

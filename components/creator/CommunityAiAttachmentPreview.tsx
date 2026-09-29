@@ -25,11 +25,11 @@ export function CommunityAiAttachmentPreview({
           ) : (
             <div className="flex max-w-40 items-center gap-2 px-3">
               <FileText className="h-4 w-4 shrink-0 text-ink-muted" aria-hidden="true" />
-              <span className="truncate text-xs text-ink">{attachment.name}</span>
+              <span className="truncate text-sm text-ink">{attachment.name}</span>
             </div>
           )}
           {attachment.key === null && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-[0.65rem] font-semibold text-white">
+            <div className="absolute inset-0 flex items-center justify-center bg-scrim text-sm font-semibold text-on-photo">
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
             </div>
           )}
@@ -37,7 +37,7 @@ export function CommunityAiAttachmentPreview({
             type="button"
             onClick={() => onRemove(attachment.id)}
             aria-label={`Remove ${attachment.name}`}
-            className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+            className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-scrim text-on-photo transition-colors hover:bg-bg"
           >
             <X className="h-3 w-3" aria-hidden="true" />
           </button>

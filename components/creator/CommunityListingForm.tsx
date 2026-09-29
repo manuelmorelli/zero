@@ -346,7 +346,7 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
 
         {hasFile && (
           <div>
-            <span className="text-sm font-medium text-ink-muted">File to sell</span>
+            <span className="text-sm font-medium text-ink-muted">File to Sell</span>
             {listing ? (
               <div className={cn(PANEL, "mt-1.5 flex items-center gap-3")}>
                 <FileUp className="h-4 w-4 shrink-0 text-ink-faint" aria-hidden="true" />

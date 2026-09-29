@@ -2,6 +2,9 @@
 
 import { useActionState, useId } from "react";
 import { createChapter, updateChapter } from "@/lib/actions/chapter";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 type ChapterFormProps = {
   journeyId: string;
@@ -21,7 +24,7 @@ export function ChapterForm({ journeyId, chapter }: ChapterFormProps) {
 
       <div>
         <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
-          Chapter title
+          Chapter Title
         </label>
         <input
           id={`${uid}-title`}
@@ -31,7 +34,7 @@ export function ChapterForm({ journeyId, chapter }: ChapterFormProps) {
           minLength={2}
           maxLength={100}
           defaultValue={chapter?.title}
-          className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1.5")}
         />
       </div>
 
@@ -46,19 +49,15 @@ export function ChapterForm({ journeyId, chapter }: ChapterFormProps) {
           maxLength={1000}
           placeholder="What this phase of the journey is about."
           defaultValue={chapter?.description ?? undefined}
-          className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1.5 resize-none")}
         />
       </div>
 
       {state.error && <p className="text-sm text-danger">{state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending}>
         {pending ? "Saving…" : chapter ? "Save changes" : "Add chapter"}
-      </button>
+      </Button>
     </form>
   );
 }

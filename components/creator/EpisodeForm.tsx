@@ -15,6 +15,9 @@ import { compressImageIfNeeded } from "@/lib/compressImage";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { readVideoDuration } from "@/lib/media/readVideoDuration";
 import { formatDuration } from "@/lib/format/duration";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 type EpisodeFormProps = {
   journeyId: string;
@@ -152,17 +155,17 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
           {posterPreview ? (
             <Image src={posterPreview} alt="" fill sizes="96px" className="object-cover" />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+            <div className="absolute inset-0 cover-placeholder" />
           )}
           <button
             type="button"
             onClick={() => posterInputRef.current?.click()}
             aria-label="Change episode cover"
-            className="absolute inset-0 flex items-center justify-center bg-black/0 text-[0.6rem] font-semibold text-transparent transition-colors hover:bg-black/50 hover:text-white"
+            className="absolute inset-0 flex items-center justify-center bg-transparent text-sm font-semibold text-transparent transition-colors hover:bg-bg hover:text-on-photo"
           >
             {posterProgress !== null ? `${posterProgress}%` : "Change"}
           </button>
-          <span className="pointer-events-none absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-white">
+          <span className="pointer-events-none absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-scrim text-on-photo">
             <ImagePlus className="h-3 w-3" aria-hidden="true" />
           </span>
           <input
@@ -175,8 +178,8 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
         </div>
 
         <div className="flex-1">
-          <label htmlFor={`${uid}-title`} className="text-xs font-medium text-ink-muted">
-            Episode title
+          <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
+            Episode Title
           </label>
           <input
             id={`${uid}-title`}
@@ -186,15 +189,15 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
             minLength={2}
             maxLength={100}
             defaultValue={episode?.title}
-            className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "mt-1")}
           />
-          {posterError && <p className="mt-1 text-xs text-danger">{posterError}</p>}
-          {!posterPreview && <p className="mt-1 text-[0.65rem] text-ink-faint">Cover optional — uses the Journey cover if not set.</p>}
+          {posterError && <p className="mt-1 text-sm text-danger">{posterError}</p>}
+          {!posterPreview && <p className="mt-1 text-sm text-ink-faint">Cover optional. Uses the Journey cover if not set.</p>}
         </div>
       </div>
 
       <div>
-        <label htmlFor={`${uid}-caption`} className="text-xs font-medium text-ink-muted">
+        <label htmlFor={`${uid}-caption`} className="text-sm font-medium text-ink-muted">
           Caption <span className="text-ink-faint">(optional)</span>
         </label>
         <textarea
@@ -204,22 +207,22 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
           maxLength={10000}
           placeholder="Tell what happened in this episode."
           defaultValue={episode?.caption ?? undefined}
-          className="mt-1 w-full resize-none rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={cn(FIELD, "mt-1 resize-none")}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-2.5">
         <div>
-          <label htmlFor={`${uid}-chapter`} className="text-xs font-medium text-ink-muted">
+          <label htmlFor={`${uid}-chapter`} className="text-sm font-medium text-ink-muted">
             Chapter
           </label>
           <select
             id={`${uid}-chapter`}
             name="chapterId"
             defaultValue={episode?.chapterId ?? defaultChapterId ?? ""}
-            className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "mt-1")}
           >
-            <option value="">No chapter</option>
+            <option value="">No Chapter</option>
             {chapters.map((chapter) => (
               <option key={chapter.id} value={chapter.id}>
                 {chapter.title}
@@ -229,8 +232,8 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
         </div>
 
         <div>
-          <label htmlFor={`${uid}-occurredAt`} className="text-xs font-medium text-ink-muted">
-            When it happened
+          <label htmlFor={`${uid}-occurredAt`} className="text-sm font-medium text-ink-muted">
+            When It Happened
           </label>
           <input
             id={`${uid}-occurredAt`}
@@ -238,32 +241,28 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
             type="date"
             required
             defaultValue={toDateInputValue(episode?.occurredAt ?? new Date())}
-            className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "mt-1")}
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor={`${uid}-video`} className="text-xs font-medium text-ink-muted">
+        <label htmlFor={`${uid}-video`} className="text-sm font-medium text-ink-muted">
           Video <span className="text-ink-faint">(required to publish, max {formatMB(MAX_VIDEO_SIZE_BYTES)})</span>
         </label>
         <div className="mt-1 flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => videoInputRef.current?.click()}
-            className="shrink-0 rounded-full bg-ink px-3.5 py-1.5 text-xs font-semibold text-bg transition-colors hover:bg-ink-muted"
-          >
+          <Button variant="primary" onClick={() => videoInputRef.current?.click()} className="shrink-0">
             {videoKey ? "Replace video" : "Choose video"}
-          </button>
-          {uploadProgress !== null && <p className="text-xs text-ink-muted">Uploading… {uploadProgress}%</p>}
-          {uploadProgress === null && uploadError && <p className="text-xs text-danger">{uploadError}</p>}
+          </Button>
+          {uploadProgress !== null && <p className="text-sm text-ink-muted">Uploading… {uploadProgress}%</p>}
+          {uploadProgress === null && uploadError && <p className="text-sm text-danger">{uploadError}</p>}
           {uploadProgress === null && !uploadError && videoKey && (
-            <p className="text-xs font-medium text-ink">
+            <p className="text-sm font-medium text-ink">
               ✓ Video ready{durationSec !== null ? ` · ${formatDuration(durationSec)}` : ""}
             </p>
           )}
           {uploadProgress === null && !uploadError && !videoKey && (
-            <p className="text-xs text-ink-faint">No video selected yet.</p>
+            <p className="text-sm text-ink-faint">No video selected yet.</p>
           )}
         </div>
         <input
@@ -289,7 +288,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
           onChange={(event) => setPublished(event.target.checked)}
           className="h-4 w-4 accent-ink disabled:cursor-not-allowed"
         />
-        <span className="text-xs font-medium text-ink">
+        <span className="text-sm font-medium text-ink">
           {published ? "Published" : "Draft"}
           <span className="ml-1 font-normal text-ink-faint">
             {videoKey ? (published ? "— visible to everyone" : "— only visible to you") : "— add a video to publish"}
@@ -297,15 +296,11 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
         </span>
       </label>
 
-      {state.error && <p className="text-xs text-danger">{state.error}</p>}
+      {state.error && <p className="text-sm text-danger">{state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={pending || uploadProgress !== null}
-        className="w-full rounded-full bg-ink px-5 py-2 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending || uploadProgress !== null} className="w-full">
         {pending ? "Saving…" : episode ? "Save changes" : "Add episode"}
-      </button>
+      </Button>
     </form>
   );
 }

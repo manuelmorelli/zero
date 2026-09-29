@@ -12,6 +12,11 @@ import { ChaptersAndEpisodesPanel } from "@/components/creator/ChaptersAndEpisod
 import { PrivateStatsPanel } from "@/components/creator/PrivateStatsPanel";
 import { Reveal } from "@/components/common/Reveal";
 import Link from "next/link";
+import { PageTitle } from "@/components/ui/heading";
+import { NOTICE } from "@/components/ui/panel";
+import { Button } from "@/components/ui/button";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { cn } from "@/lib/utils";
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: "Draft",
@@ -66,14 +71,14 @@ export default async function JourneyManagePage({
   return (
     <main>
 
-      <div className="mx-auto max-w-[1400px] space-y-4 px-5 pb-16 pt-24 md:px-8">
+      <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "space-y-4")}>
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h1 className="mt-1 text-xl font-bold tracking-tight">{journey.title}</h1>
+              <PageTitle>{journey.title}</PageTitle>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted">
+              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink-muted">
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${
                     journey.status === "PUBLISHED" || journey.status === "DISCOVERY"
@@ -86,18 +91,15 @@ export default async function JourneyManagePage({
               </span>
               <JourneyPublishControl journeyId={journey.id} status={journey.status} />
               {journey.status !== "DRAFT" && (
-                <Link
-                  href={`/journeys/${journey.id}`}
-                  className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
-                >
-                  View public page →
-                </Link>
+                <Button variant="primary" href={`/journeys/${journey.id}`}>
+                  View Public Page →
+                </Button>
               )}
               <JourneyHeaderMenu journeyId={journey.id} status={journey.status} />
             </div>
           </div>
           {journey.status === "ARCHIVED" && (
-            <p className="mt-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
+            <p className={`mt-3 ${NOTICE}`}>
               This Journey is archived. It stays visible on your public profile, but it&apos;s no
               longer your active Journey.
             </p>

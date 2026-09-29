@@ -28,6 +28,7 @@ import { AddEpisodeButton } from "@/components/creator/AddEpisodeButton";
 import { AddChapterButton } from "@/components/creator/AddChapterButton";
 import { ChapterEditButton } from "@/components/creator/ChapterEditButton";
 import { NameLooseEpisodesButton } from "@/components/creator/NameLooseEpisodesButton";
+import { CardTitle } from "@/components/ui/heading";
 
 type Episode = {
   id: string;
@@ -279,7 +280,7 @@ export function ChaptersAndEpisodesPanel({
           <div>
             {hasChapters && (
               <div className="mb-2 flex items-center justify-between gap-3">
-                <h3 className="text-[0.72rem] uppercase tracking-wider text-ink-muted">No Chapter</h3>
+                <CardTitle>No Chapter</CardTitle>
                 {looseItems.length > 0 && <NameLooseEpisodesButton journeyId={journeyId} />}
               </div>
             )}
@@ -346,7 +347,7 @@ function ChapterBlock({
           >
             <GripVertical className="h-4 w-4" aria-hidden="true" />
           </button>
-          <h3 className="truncate text-[0.72rem] uppercase tracking-wider text-ink-muted">{chapter.title}</h3>
+          <CardTitle className="truncate">{chapter.title}</CardTitle>
         </div>
         <ChapterEditButton
           journeyId={journeyId}

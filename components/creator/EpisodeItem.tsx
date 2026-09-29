@@ -16,6 +16,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ROW } from "@/components/ui/panel";
 
 type EpisodeItemProps = {
   journeyId: string;
@@ -50,7 +52,7 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`flex items-center gap-3 rounded-xl border border-border bg-surface p-3 transition-colors hover:border-ink-muted ${
+      className={`${ROW} flex items-center gap-3 ${
         isDragging ? "opacity-50" : ""
       }`}
     >
@@ -68,7 +70,7 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
         {episode.posterUrl || coverUrl ? (
           <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="56px" draggable={false} className="object-cover" />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+          <div className="absolute inset-0 cover-placeholder" />
         )}
       </div>
 
@@ -76,16 +78,16 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
         <p className="flex items-center gap-2 truncate text-sm font-semibold text-ink">
           <span className="truncate">{episode.title}</span>
           <span
-            className={`shrink-0 rounded-full px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wider ${
+            className={`shrink-0 rounded-full px-2 py-0.5 text-sm font-bold uppercase tracking-wider ${
               episode.publishedAt
-                ? "border border-white/15 bg-white/5 text-ink-muted"
+                ? "border border-border bg-overlay-soft text-ink-muted"
                 : "bg-ember text-bg"
             }`}
           >
             {episode.publishedAt ? "Published" : "Draft"}
           </span>
         </p>
-        <p className="truncate text-xs text-ink-muted">
+        <p className="truncate text-sm text-ink-muted">
           {episode.occurredAt.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
           {episode.durationSec ? ` · ${formatDuration(episode.durationSec)}` : ""}
           {episode.caption ? ` · ${episode.caption}` : ""}
@@ -104,7 +106,7 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
       <button
         type="button"
         onClick={() => setDeleteOpen(true)}
-        className="shrink-0 text-xs font-medium text-danger hover:opacity-80"
+        className="shrink-0 text-sm font-medium text-danger hover:opacity-80"
       >
         Delete
       </button>
@@ -112,7 +114,7 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
       <Dialog open={editing} onOpenChange={setEditing}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Edit episode</DialogTitle>
+            <DialogTitle>Edit Episode</DialogTitle>
           </DialogHeader>
           <div className="p-4">
             <EpisodeForm journeyId={journeyId} chapters={chapters} episode={episode} />
@@ -131,19 +133,12 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
           <form action={deleteEpisode}>
             <input type="hidden" name="episodeId" value={episode.id} />
             <DialogFooter>
-              <button
-                type="button"
-                onClick={() => setDeleteOpen(false)}
-                className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-              >
+              <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
                 Cancel
-              </button>
-              <button
-                type="submit"
-                className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90"
-              >
+              </Button>
+              <Button variant="danger" type="submit">
                 Delete
-              </button>
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

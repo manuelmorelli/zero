@@ -1,6 +1,8 @@
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { EpisodeItem } from "@/components/creator/EpisodeItem";
+import { NOTICE, PANEL_DASHED } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
 
 type EpisodeListItem = {
   id: string;
@@ -55,7 +57,7 @@ export function EpisodeList({
     <SortableContext items={episodes.map((episode) => episode.id)} strategy={verticalListSortingStrategy}>
       <div ref={setNodeRef} className="space-y-2">
         {rows.length === 0 && (
-          <p className="rounded-xl border border-border bg-surface-2 p-5 text-sm text-ink-muted">
+          <p className={NOTICE}>
             You haven&apos;t added any episodes yet.
           </p>
         )}
@@ -63,7 +65,7 @@ export function EpisodeList({
           row.kind === "preview" ? (
             <div
               key="drop-preview"
-              className="rounded-xl border-2 border-dashed border-ember/50 bg-ember/10 p-3 text-xs font-medium text-ember"
+              className={cn(PANEL_DASHED, "p-3 text-sm font-medium text-ember")}
             >
               Drop “{previewTitle}” here
             </div>

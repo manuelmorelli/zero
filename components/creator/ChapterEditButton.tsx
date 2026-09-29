@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export function ChapterEditButton({
   journeyId,
@@ -31,7 +32,7 @@ export function ChapterEditButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 text-[0.72rem] text-ink-muted transition-colors hover:text-ember"
+        className="inline-flex items-center gap-1.5 text-sm text-ink-muted transition-colors hover:text-ember"
       >
         <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
         Edit
@@ -40,7 +41,7 @@ export function ChapterEditButton({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit chapter</DialogTitle>
+            <DialogTitle>Edit Chapter</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 p-5 pt-4">
             <ChapterForm journeyId={journeyId} chapter={chapter} />
@@ -48,7 +49,7 @@ export function ChapterEditButton({
               <button
                 type="button"
                 onClick={() => setDeleteOpen(true)}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-danger hover:opacity-80"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-danger hover:opacity-80"
               >
                 <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                 Delete chapter
@@ -71,19 +72,12 @@ export function ChapterEditButton({
           <form action={deleteChapter}>
             <input type="hidden" name="chapterId" value={chapter.id} />
             <DialogFooter>
-              <button
-                type="button"
-                onClick={() => setDeleteOpen(false)}
-                className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
-              >
+              <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
                 Cancel
-              </button>
-              <button
-                type="submit"
-                className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90"
-              >
+              </Button>
+              <Button variant="danger" type="submit">
                 Delete
-              </button>
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

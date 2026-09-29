@@ -12,11 +12,15 @@ import { formatDuration } from "@/lib/format/duration";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { ShareButton } from "@/components/common/ShareButton";
 import { ReportButton } from "@/components/common/ReportButton";
-import { Avatar } from "@/components/common/Avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
-import { ButtonPrimary, ButtonSecondary } from "@/components/common/Button";
+import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
 import { Reveal } from "@/components/common/Reveal";
 import type { TimelineEpisode } from "@/lib/journey/episodeTimeline";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { NOTICE, PANEL, ROW } from "@/components/ui/panel";
+import { PageTitle, SectionTitle } from "@/components/ui/heading";
+import { cn } from "@/lib/utils";
 
 export default async function PublicJourneyPage({
   params,
@@ -63,9 +67,9 @@ export default async function PublicJourneyPage({
   return (
     <main>
 
-      <div className="mx-auto max-w-[1400px] px-5 pb-10 pt-24 md:px-8">
+      <div className={`${PAGE_WIDTH.wide} ${PAGE_SPACING}`}>
         <Reveal>
-          <div className="grid gap-4 rounded-2xl border border-border bg-surface p-4 md:grid-cols-2 md:p-5">
+          <div className={cn(PANEL, "grid gap-4 md:grid-cols-2 md:p-5")}>
             <div className="relative aspect-video overflow-hidden rounded-xl border border-border bg-surface-2">
               {journeyCoverUrl ? (
                 <Image
@@ -77,16 +81,16 @@ export default async function PublicJourneyPage({
                   preload
                 />
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black" />
+                <div className="absolute inset-0 cover-placeholder" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-bg/70 via-bg/10 to-transparent" />
+              <div className="absolute inset-0 card-scrim" />
               {journey.category && (
-                <span className="absolute bottom-3 left-3 inline-flex rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[0.65rem] font-medium backdrop-blur-md">
+                <span className="absolute bottom-3 left-3 inline-flex rounded-full border border-border bg-overlay-soft px-2.5 py-1 text-sm font-medium text-on-photo backdrop-blur-md">
                   {journey.category}
                 </span>
               )}
               {journey.status === "ARCHIVED" && (
-                <span className="absolute right-3 top-3 rounded-full border border-white/15 bg-bg/70 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wider">
+                <span className="absolute right-3 top-3 rounded-full border border-border bg-scrim px-2.5 py-1 text-sm font-semibold uppercase tracking-wider">
                   Archived
                 </span>
               )}
@@ -94,18 +98,18 @@ export default async function PublicJourneyPage({
 
             <div className="flex flex-col justify-between gap-4">
               <div>
-                <p className="text-[0.6rem] tracking-[0.22em] text-ink-muted uppercase">
+                <p className="text-sm tracking-[0.22em] text-ink-muted uppercase">
                   Journey{journey.category ? ` · ${journey.category}` : ""}
                 </p>
-                <h1 className="mt-1.5 text-xl font-bold leading-tight tracking-tight md:text-2xl">
+                <PageTitle className="mt-1.5">
                   {journey.title}
-                </h1>
-                <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
+                </PageTitle>
+                <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-ink-muted">
                   <Link
                     href={`/profile/${journey.creator.userId}`}
                     className="flex min-w-0 items-center gap-2 transition-colors hover:text-ember"
                   >
-                    <Avatar name={journey.creator.displayName} className="h-7 w-7 text-[0.65rem]" />
+                    <Avatar name={journey.creator.displayName} size="sm" />
                     <span className="truncate">{journey.creator.displayName}</span>
                   </Link>
                   {trustScore !== null && <TrustScoreBadge score={trustScore} />}
@@ -132,7 +136,7 @@ export default async function PublicJourneyPage({
                 {firstEpisode && (
                   <ButtonSecondary
                     href={`/journeys/${journey.id}/episodes/${firstEpisode.id}`}
-                    className="px-4 py-2 text-[0.8rem]"
+                    className="px-4 py-2 text-sm"
                   >
                     <Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
                     Episode 1
@@ -156,9 +160,9 @@ export default async function PublicJourneyPage({
         </Reveal>
 
         <section className="mt-5">
-          <h2 className="text-base font-bold tracking-tight">Episodes</h2>
+          <SectionTitle>Episodes</SectionTitle>
           {flatEpisodes.length === 0 ? (
-            <p className="mt-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted">
+            <p className={`mt-3 ${NOTICE}`}>
               This Journey doesn&apos;t have any episodes yet.
             </p>
           ) : (
@@ -166,7 +170,7 @@ export default async function PublicJourneyPage({
               {groups.map((group) => (
                 <div key={group.chapterId ?? "loose"}>
                   {group.chapterTitle && (
-                    <p className="text-[0.6rem] tracking-[0.22em] text-ink-muted uppercase">
+                    <p className="text-sm tracking-[0.22em] text-ink-muted uppercase">
                       {group.chapterTitle}
                     </p>
                   )}
@@ -199,7 +203,7 @@ function EpisodeRow({
       <Link
         href={`/journeys/${journeyId}/episodes/${episode.id}`}
         id={episode.id}
-        className="group flex w-full max-w-[420px] scroll-mt-24 items-center gap-3 rounded-xl border border-border bg-surface p-2 text-left shadow-[0_20px_40px_-22px_rgba(0,0,0,45%)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-ember/40 hover:shadow-[0_20px_40px_-16px_rgba(226,145,77,50%)]"
+        className={cn(ROW, "group flex w-full max-w-[420px] scroll-mt-24 items-center gap-3 p-2 text-left hover:-translate-y-0.5")}
       >
         <span className="relative aspect-4/3 w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:w-44">
           {episode.posterUrl || coverUrl ? (
@@ -211,34 +215,29 @@ function EpisodeRow({
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface-2 to-black transition-transform duration-700 group-hover:scale-105" />
+            <div className="absolute inset-0 cover-placeholder transition-transform duration-700 group-hover:scale-105" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-bg/60 via-transparent to-transparent" />
-          {/* Glow al passaggio del mouse, stesso "poster style" di JourneyCard/VideoCard. */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(226,145,77,28%),_transparent_65%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          />
+          <div className="absolute inset-0 card-scrim" />
           <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-            <span className="grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-bg/60 backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
+            <span className="grid h-8 w-8 place-items-center rounded-full border border-border bg-scrim backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
               <Play className="h-3 w-3 translate-x-[1px] fill-current text-ember" aria-hidden="true" />
             </span>
           </span>
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
-            <span className="block text-[0.65rem] tracking-[0.18em] text-ink-muted uppercase">
+            <span className="block text-sm tracking-[0.18em] text-ink-muted uppercase">
               Episode {episode.number}
             </span>
             {episode.progress?.completedAt && (
-              <span className="text-[0.65rem] font-semibold text-ember">· Completed</span>
+              <span className="text-sm font-semibold text-ember">· Completed</span>
             )}
           </span>
           <span className="mt-0.5 block truncate text-sm font-semibold transition-colors group-hover:text-ember">
             {episode.title}
           </span>
           {episode.durationSec !== null && (
-            <span className="mt-0.5 block text-xs text-ink-muted">{formatDuration(episode.durationSec)}</span>
+            <span className="mt-0.5 block text-sm text-ink-muted">{formatDuration(episode.durationSec)}</span>
           )}
         </span>
       </Link>

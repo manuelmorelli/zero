@@ -12,6 +12,10 @@ import { captureVideoFrame } from "@/lib/media/captureVideoFrame";
 import { ALLOWED_VIDEO_TYPES, MAX_UPDATE_VIDEO_DURATION_SEC, MAX_UPDATE_VIDEO_SIZE_BYTES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { POLL_MAX_OPTIONS, POLL_MIN_OPTIONS, POLL_OPTION_MAX_LENGTH, UPDATE_TEXT_MAX_LENGTH } from "@/lib/constants/updates";
+import { FIELD } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { CHIP, CHIP_SELECTED, PANEL, PANEL_DASHED } from "@/components/ui/panel";
 
 type Chapter = { id: string; title: string };
 type Journey = { id: string; title: string; chapters: Chapter[] };
@@ -110,7 +114,7 @@ export function QuickUploadFab() {
       onClick={() => quickUpload?.openChoice()}
       aria-label="Add to your Journey or post an Update"
       style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
-      className="fixed right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-ink text-bg shadow-2xl shadow-black/40 transition-transform hover:scale-105 active:scale-95"
+      className="fixed right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-ink text-bg shadow-2xl transition-transform hover:scale-105 active:scale-95"
     >
       <PlusIcon className="h-6 w-6" />
     </button>
@@ -138,7 +142,7 @@ function QuickUploadModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-8"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-scrim px-4 py-8"
       onClick={onClose}
     >
       <div
@@ -148,7 +152,7 @@ function QuickUploadModal({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">
+          <p className="text-sm font-semibold uppercase tracking-wider text-ink-faint">
             {step === "choice" && "What do you want to share?"}
             {step === "compose" && "New episode"}
             {step === "updateType" && "Post an Update"}
@@ -219,29 +223,29 @@ function ChoiceStep({
     <div className="space-y-3">
       <Link
         href="/dashboard/journeys/new"
-        className="block w-full rounded-lg border border-border bg-surface px-4 py-4 text-left transition-colors hover:border-ink-muted"
+        className={cn(PANEL, "block w-full text-left transition-colors hover:border-ink-muted")}
       >
-        <span className="block text-sm font-semibold text-ink">Start a new Journey</span>
-        <span className="mt-1 block text-xs text-ink-muted">
-          Set it up properly first — title, category, cover — then add episodes.
+        <span className="block text-sm font-semibold text-ink">Start a New Journey</span>
+        <span className="mt-1 block text-sm text-ink-muted">
+          Set it up properly first (title, category, cover), then add episodes.
         </span>
       </Link>
       <button
         type="button"
         onClick={onPickJourney}
-        className="w-full rounded-lg border border-border bg-surface px-4 py-4 text-left transition-colors hover:border-ink-muted"
+        className={cn(PANEL, "w-full text-left transition-colors hover:border-ink-muted")}
       >
-        <span className="block text-sm font-semibold text-ink">Add to your Journey</span>
-        <span className="mt-1 block text-xs text-ink-muted">Upload a new episode video.</span>
+        <span className="block text-sm font-semibold text-ink">Add to Your Journey</span>
+        <span className="mt-1 block text-sm text-ink-muted">Upload a new episode video.</span>
       </button>
       <button
         type="button"
         onClick={onPickUpdate}
-        className="w-full rounded-lg border border-border bg-surface px-4 py-4 text-left transition-colors hover:border-ink-muted"
+        className={cn(PANEL, "w-full text-left transition-colors hover:border-ink-muted")}
       >
         <span className="block text-sm font-semibold text-ink">Post an Update</span>
-        <span className="mt-1 block text-xs text-ink-muted">
-          Text, photo, video, poll or question — disappears after 24 hours.
+        <span className="mt-1 block text-sm text-ink-muted">
+          Text, photo, video, poll or question. Disappears after 24 hours.
         </span>
       </button>
     </div>
@@ -465,16 +469,16 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
           <button
             type="button"
             onClick={() => videoInputRef.current?.click()}
-            className="flex w-full flex-col items-center gap-3 rounded-xl border-2 border-dashed border-border py-12 transition-colors hover:border-ink-muted sm:h-full sm:justify-center sm:py-0"
+            className={cn(PANEL_DASHED, "flex w-full flex-col items-center gap-3 py-12 sm:h-full sm:justify-center sm:py-0")}
           >
             <VideoIcon className="h-9 w-9 text-ink-muted" />
-            <span className="text-sm font-semibold text-ink">Select a video from your device</span>
-            <span className="text-xs text-ink-faint">Max {formatMB(MAX_VIDEO_SIZE_BYTES)}</span>
+            <span className="text-sm font-semibold text-ink">Select a Video from Your Device</span>
+            <span className="text-sm text-ink-faint">Max {formatMB(MAX_VIDEO_SIZE_BYTES)}</span>
           </button>
         ) : stillUploadingVideo ? (
-          <div className="flex w-full flex-col items-center gap-3 rounded-xl border border-border py-10 sm:h-full sm:justify-center sm:py-0">
+          <div className={cn(PANEL, "flex w-full flex-col items-center gap-3 sm:h-full sm:justify-center sm:py-0")}>
             <span className="text-2xl font-extrabold tracking-tight text-ink">{videoProgress}%</span>
-            <span className="text-xs text-ink-muted">Uploading video…</span>
+            <span className="text-sm text-ink-muted">Uploading Video…</span>
           </div>
         ) : (
           <>
@@ -494,7 +498,7 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
                 type="button"
                 onClick={handleRemoveVideo}
                 aria-label="Remove video"
-                className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+                className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-scrim text-on-photo transition-colors hover:bg-bg"
               >
                 <CloseIcon className="h-3.5 w-3.5" />
               </button>
@@ -502,8 +506,8 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
 
             {durationSec !== null && durationSec > 0.2 && (
               <div>
-                <label htmlFor={`${uid}-scrub`} className="text-xs font-medium text-ink-muted">
-                  Cover: drag to pick a moment
+                <label htmlFor={`${uid}-scrub`} className="text-sm font-medium text-ink-muted">
+                  Cover: Drag to Pick a Moment
                 </label>
                 <input
                   id={`${uid}-scrub`}
@@ -521,9 +525,9 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
             <button
               type="button"
               onClick={() => posterInputRef.current?.click()}
-              className="block text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
+              className="block text-sm font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
             >
-              Or upload your own cover photo
+              Or Upload Your Own Cover Photo
             </button>
           </>
         )}
@@ -542,7 +546,7 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
               id={`${uid}-journey`}
               value={journeyChoice}
               onChange={(event) => setJourneyChoice(event.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+              className={cn(FIELD, "mt-1.5")}
             >
               {journeys.map((journey) => (
                 <option key={journey.id} value={journey.id}>
@@ -568,14 +572,14 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
               value={newJourneyTitle}
               onChange={(event) => setNewJourneyTitle(event.target.value)}
               placeholder="e.g. My road to running a marathon"
-              className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+              className={cn(FIELD, "mt-1.5")}
             />
           </div>
         )}
 
         <div>
           <label htmlFor={`${uid}-title`} className="text-sm font-medium text-ink-muted">
-            Episode title
+            Episode Title
           </label>
           <input
             id={`${uid}-title`}
@@ -586,7 +590,7 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="Give this episode a title"
-            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "mt-1.5")}
           />
         </div>
 
@@ -601,14 +605,14 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
             value={caption}
             onChange={(event) => setCaption(event.target.value)}
             placeholder="Tell what happened in this episode."
-            className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "mt-1.5 resize-none")}
           />
         </div>
 
         <button
           type="button"
           onClick={() => setAdvanced((value) => !value)}
-          className="text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
+          className="text-sm font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
         >
           {advanced ? "Hide options" : chapters.length > 0 ? "More options (chapter, date)" : "More options (date)"}
         </button>
@@ -623,9 +627,9 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
                 id={`${uid}-chapter`}
                 value={chapterId}
                 onChange={(event) => setChapterId(event.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+                className={cn(FIELD, "mt-1.5")}
               >
-                <option value="">No chapter</option>
+                <option value="">No Chapter</option>
                 {chapters.map((chapter) => (
                   <option key={chapter.id} value={chapter.id}>
                     {chapter.title}
@@ -637,28 +641,23 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
 
           <div>
             <label htmlFor={`${uid}-occurredAt`} className="text-sm font-medium text-ink-muted">
-              When it actually happened
+              When It Actually Happened
             </label>
             <input
               id={`${uid}-occurredAt`}
               type="date"
               value={occurredAt}
               onChange={(event) => setOccurredAt(event.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+              className={cn(FIELD, "mt-1.5")}
             />
           </div>
         </div>
 
         {error && <p className="text-sm text-danger">{error}</p>}
 
-        <button
-          type="button"
-          onClick={handlePublish}
-          disabled={!canPublish}
-          className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-        >
+        <Button variant="primary" onClick={handlePublish} disabled={!canPublish} className="w-full">
           {publishing ? "Publishing…" : "Publish"}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -692,10 +691,10 @@ function UpdateTypeStep({ onPick }: { onPick: (kind: UpdateKind) => void }) {
           key={kind.key}
           type="button"
           onClick={() => onPick(kind.key)}
-          className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-left transition-colors hover:border-ink-muted"
+          className={cn(PANEL, "w-full text-left transition-colors hover:border-ink-muted")}
         >
           <span className="block text-sm font-semibold text-ink">{kind.label}</span>
-          <span className="mt-0.5 block text-xs text-ink-muted">{kind.hint}</span>
+          <span className="mt-0.5 block text-sm text-ink-muted">{kind.hint}</span>
         </button>
       ))}
     </div>
@@ -706,7 +705,7 @@ function CharCount({ value, max }: { value: string; max: number }) {
   const remaining = max - value.length;
   return (
     <p
-      className={`mt-1 text-right text-xs ${remaining <= 20 ? "text-danger" : "text-ink-faint"}`}
+      className={`mt-1 text-right text-sm ${remaining <= 20 ? "text-danger" : "text-ink-faint"}`}
     >
       {value.length}/{max}
     </p>
@@ -825,7 +824,7 @@ function UpdateFormStep({
                   ? "What do you want to ask your followers?"
                   : "Share a quick update with your followers… it disappears after 24 hours."
             }
-            className="w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "resize-none")}
           />
           <CharCount value={content} max={UPDATE_TEXT_MAX_LENGTH} />
         </div>
@@ -861,7 +860,7 @@ function UpdateFormStep({
                   ? "What do you want to ask your followers?"
                   : "Add a caption (optional)"
             }
-            className="w-full resize-none rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={cn(FIELD, "resize-none")}
           />
           <CharCount value={content} max={UPDATE_TEXT_MAX_LENGTH} />
         </div>
@@ -879,13 +878,9 @@ function UpdateFormStep({
 
       {(uploadError || state.error) && <p className="text-sm text-danger">{uploadError ?? state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={pending || stillUploading || (needsMedia && !mediaKey)}
-        className="w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted disabled:opacity-50"
-      >
+      <Button variant="primary" type="submit" disabled={pending || stillUploading || (needsMedia && !mediaKey)} className="w-full">
         {pending ? "Publishing…" : "Publish"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -924,15 +919,15 @@ function MediaPickerField({
           <video src={previewUrl} controls playsInline className="max-h-64 w-full rounded-lg" />
         )
       ) : progress !== null ? (
-        <div className="flex w-full flex-col items-center gap-3 rounded-xl border border-border py-10">
+        <div className={cn(PANEL, "flex w-full flex-col items-center gap-3")}>
           <span className="text-2xl font-extrabold tracking-tight text-ink">{progress}%</span>
-          <span className="text-xs text-ink-muted">Uploading…</span>
+          <span className="text-sm text-ink-muted">Uploading…</span>
         </div>
       ) : (
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="flex w-full flex-col items-center gap-3 rounded-xl border-2 border-dashed border-border py-10 transition-colors hover:border-ink-muted"
+          className={cn(PANEL_DASHED, "flex w-full flex-col items-center gap-3 py-10")}
         >
           {kind === "IMAGE" ? (
             <PhotoIcon className="h-8 w-8 text-ink-muted" />
@@ -942,7 +937,7 @@ function MediaPickerField({
           <span className="text-sm font-semibold text-ink">
             {kind === "IMAGE" ? "Select a photo" : "Select a video"}
           </span>
-          <span className="text-xs text-ink-faint">
+          <span className="text-sm text-ink-faint">
             {kind === "IMAGE"
               ? `Max ${formatMB(MAX_IMAGE_SIZE_BYTES)}`
               : `Max ${MAX_UPDATE_VIDEO_DURATION_SEC}s, ${formatMB(MAX_UPDATE_VIDEO_SIZE_BYTES)}`}
@@ -954,9 +949,9 @@ function MediaPickerField({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
+          className="text-sm font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
         >
-          Choose a different file
+          Choose a Different File
         </button>
       )}
     </div>
@@ -983,11 +978,7 @@ function UpdateExtraField({
           key={choice.key || "none"}
           type="button"
           onClick={() => onChange(choice.key)}
-          className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-            value === choice.key
-              ? "border-ink bg-ink text-bg"
-              : "border-border text-ink-muted hover:border-ink-muted"
-          }`}
+          className={value === choice.key ? CHIP_SELECTED : CHIP}
         >
           {choice.label}
         </button>
@@ -1017,7 +1008,7 @@ function PollOptionsField({
 
   return (
     <div className="space-y-2">
-      <p className="text-xs font-medium text-ink-muted">Options</p>
+      <p className="text-sm font-medium text-ink-muted">Options</p>
       {options.map((option, index) => (
         <div key={index} className="flex items-center gap-2">
           <input
@@ -1028,7 +1019,7 @@ function PollOptionsField({
             value={option}
             onChange={(event) => updateOption(index, event.target.value)}
             placeholder={`Option ${index + 1}`}
-            className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+            className={FIELD}
           />
           {options.length > POLL_MIN_OPTIONS && (
             <button
@@ -1046,7 +1037,7 @@ function PollOptionsField({
         <button
           type="button"
           onClick={addOption}
-          className="text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
+          className="text-sm font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
         >
           + Add option
         </button>
@@ -1071,7 +1062,7 @@ function LinkPickerField({
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="text-xs font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
+        className="text-sm font-semibold text-ink-muted underline underline-offset-2 hover:text-ink"
       >
         {open ? "Hide link option" : "Link to a Journey or Episode (optional)"}
       </button>
@@ -1079,9 +1070,9 @@ function LinkPickerField({
         <select
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ink-muted"
+          className={FIELD}
         >
-          <option value="">No link</option>
+          <option value="">No Link</option>
           {journeys.map((journey) => (
             <optgroup key={journey.id} label={journey.title}>
               <option value={`journey:${journey.id}`}>View the Journey</option>

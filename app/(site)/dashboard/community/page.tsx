@@ -6,6 +6,10 @@ import { DashboardPanel } from "@/components/creator/DashboardPanel";
 import { CommunityListingRow, EmptyListingRow, type ListingRowItem } from "@/components/creator/CommunityListingRow";
 import { Reveal } from "@/components/common/Reveal";
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
+import { PageTitle } from "@/components/ui/heading";
+import { Button } from "@/components/ui/button";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { cn } from "@/lib/utils";
 
 async function toRowItems(
   rows: Array<{
@@ -73,23 +77,20 @@ export default async function CommunityDashboardPage() {
 
   return (
     <main>
-      <div className="mx-auto max-w-[1000px] space-y-4 px-5 pb-16 pt-24 md:px-8">
+      <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "max-w-[1000px] space-y-4")}>
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-[0.7rem] uppercase tracking-[0.18em] text-ember">Creator area</p>
-              <h1 className="mt-1 text-xl font-bold tracking-tight">Community</h1>
+              <p className="text-sm uppercase tracking-[0.18em] text-ember">Creator Area</p>
+              <PageTitle>Community</PageTitle>
               <p className="mt-1 text-sm text-ink-muted">
                 Workshops, Events, Digital Products and 1:1 Services you offer on your Community page.
               </p>
             </div>
-            <Link
-              href="/dashboard/community/new"
-              className="inline-flex items-center gap-1.5 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-ink-muted"
-            >
+            <Button variant="primary" href="/dashboard/community/new">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Add
-            </Link>
+            </Button>
           </div>
         </Reveal>
 
