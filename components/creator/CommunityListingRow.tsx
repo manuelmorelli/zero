@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { CommunityListingMenu } from "@/components/creator/CommunityListingMenu";
 import type { CommunityListingType } from "@/lib/constants/communityListing";
 
 export type ListingRowItem = {
@@ -26,11 +27,15 @@ const STATUS_LABEL: Record<ListingRowItem["status"], string> = {
 // riproduzione no (una card Community non si "guarda").
 export function CommunityListingRow({ type, item }: { type: CommunityListingType; item: ListingRowItem }) {
   return (
-    <Link
-      href={`/dashboard/community/${type}/${item.id}`}
-      className="group flex w-full max-w-[420px] items-center gap-3 rounded-xl border border-border bg-surface-2 p-2 text-left shadow-[0_20px_40px_-22px_rgba(0,0,0,45%)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-ember/40 hover:shadow-[0_20px_40px_-16px_rgba(226,145,77,50%)]"
-    >
-      <span className="relative aspect-4/3 w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-surface sm:w-44">
+    <div className="group relative flex w-full max-w-[420px] items-center gap-3 rounded-xl border border-border bg-surface-2 p-2 shadow-[0_20px_40px_-22px_rgba(0,0,0,45%)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-ember/40 hover:shadow-[0_20px_40px_-16px_rgba(226,145,77,50%)]">
+      {/* Link "invisibile" a tutta la card: il menu a tre puntini sta sopra (z-10), separato
+       * invece che annidato in questo link, stesso trucco già usato in JourneyGrid.tsx. */}
+      <Link
+        href={`/dashboard/community/${type}/${item.id}`}
+        className="absolute inset-0 z-0"
+        aria-label={`Edit ${item.title}`}
+      />
+      <span className="relative z-[1] aspect-4/3 w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-surface pointer-events-none sm:w-44">
         {item.coverUrl ? (
           <Image
             src={item.coverUrl}
@@ -48,7 +53,7 @@ export function CommunityListingRow({ type, item }: { type: CommunityListingType
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(226,145,77,28%),_transparent_65%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         />
       </span>
-      <span className="min-w-0 flex-1">
+      <span className="relative z-[1] min-w-0 flex-1 pointer-events-none pr-8">
         <p className="truncate text-sm font-semibold text-ink transition-colors group-hover:text-ember">
           {item.title}
         </p>
@@ -67,7 +72,10 @@ export function CommunityListingRow({ type, item }: { type: CommunityListingType
           {STATUS_LABEL[item.status]}
         </span>
       </span>
-    </Link>
+      <div className="relative z-10 self-start">
+        <CommunityListingMenu listingId={item.id} listingType={type} title={item.title} status={item.status} />
+      </div>
+    </div>
   );
 }
 
