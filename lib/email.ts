@@ -23,7 +23,7 @@ ${html}`);
   const { Resend } = await import("resend");
   const resend = new Resend(apiKey);
   const { error } = await resend.emails.send({
-    from: "Zero <onboarding@resend.dev>", // TODO: sostituire con un dominio verificato su Resend
+    from: "Zero <noreply@zerojourneys.com>", // dominio verificato su Resend il 2026-09-29
     to,
     subject,
     html,
