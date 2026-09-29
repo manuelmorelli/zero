@@ -31,8 +31,8 @@ export function CommunityAiComposer({
 }) {
   return (
     // Bordo e alone arancioni identici a ButtonSecondary ("Create Your Journey" nella Home), più
-    // accesi mentre si scrive come quel bottone al passaggio del mouse.
-    <div className="rounded-[2rem] border border-ember/35 bg-surface shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] transition-all duration-300 focus-within:border-ember/70 focus-within:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)]">
+    // accesi al passaggio del mouse (come quel bottone) e mentre si scrive.
+    <div className="rounded-[2rem] border border-ember/35 bg-surface shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] transition-all duration-300 hover:border-ember/70 hover:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)] focus-within:border-ember/70 focus-within:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)]">
       <CommunityAiAttachmentPreview attachments={attachments} onRemove={onRemoveAttachment} />
       {attachmentError && <p className="px-5 pt-2 text-xs text-danger">{attachmentError}</p>}
       <div className="flex items-end gap-1 p-2">
