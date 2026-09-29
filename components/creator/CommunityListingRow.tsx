@@ -70,3 +70,15 @@ export function CommunityListingRow({ type, item }: { type: CommunityListingType
     </Link>
   );
 }
+
+/** Stesse dimensioni e stesso involucro di CommunityListingRow (miniatura + testo), per le
+ * sezioni senza ancora nessun elemento: non deve sembrare un pezzo di UI diverso solo perché
+ * non c'è ancora niente da mostrare. */
+export function EmptyListingRow() {
+  return (
+    <div className="flex w-full max-w-[420px] items-center gap-3 rounded-xl border border-dashed border-border bg-surface-2 p-2">
+      <span className="aspect-4/3 w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-gradient-to-br from-surface via-surface to-black sm:w-44" />
+      <span className="text-sm text-ink-muted">Nothing here yet.</span>
+    </div>
+  );
+}

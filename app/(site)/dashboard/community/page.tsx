@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
 import { DashboardPanel } from "@/components/creator/DashboardPanel";
-import { CommunityListingRow, type ListingRowItem } from "@/components/creator/CommunityListingRow";
+import { CommunityListingRow, EmptyListingRow, type ListingRowItem } from "@/components/creator/CommunityListingRow";
 import { Reveal } from "@/components/common/Reveal";
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 
@@ -97,9 +97,7 @@ export default async function CommunityDashboardPage() {
           <Reveal key={section.type} delayMs={40 + index * 30}>
             <DashboardPanel title={section.title}>
               {section.items.length === 0 ? (
-                <p className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-ink-muted">
-                  Nothing here yet.
-                </p>
+                <EmptyListingRow />
               ) : (
                 <div className="space-y-2.5">
                   {section.items.map((item) => (
