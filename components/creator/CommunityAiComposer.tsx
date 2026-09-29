@@ -7,9 +7,9 @@ import { CommunityAiAttachMenu } from "@/components/creator/CommunityAiAttachMen
 
 const MAX_MESSAGE_LENGTH = 2000;
 
-/** Il riquadro di scrittura della chat AI, come quello di Gemini: testo che va a capo e cresce
- * mentre si scrive, "+" in basso a sinistra, invio in basso a destra. Invio manda il messaggio,
- * Maiusc+Invio va a capo; un'immagine incollata con Ctrl+V diventa un allegato. */
+/** La barra di scrittura della chat AI, a pillola come quella di Gemini: "+" a sinistra, testo al
+ * centro (va a capo e cresce solo se il messaggio è lungo), invio a destra. Invio manda il
+ * messaggio, Maiusc+Invio va a capo; un'immagine incollata con Ctrl+V diventa un allegato. */
 export function CommunityAiComposer({
   value,
   onChange,
@@ -30,30 +30,30 @@ export function CommunityAiComposer({
   onRemoveAttachment: (id: string) => void;
 }) {
   return (
-    <div className="rounded-[1.75rem] border border-border bg-surface transition-colors focus-within:border-ink-muted">
+    <div className="rounded-[2rem] border border-border bg-surface shadow-2xl shadow-black/40 transition-colors focus-within:border-ink-muted">
       <CommunityAiAttachmentPreview attachments={attachments} onRemove={onRemoveAttachment} />
-      {attachmentError && <p className="px-4 pt-2 text-xs text-danger">{attachmentError}</p>}
-      <textarea
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-            onSend();
-          }
-        }}
-        onPaste={(event) => {
-          if (event.clipboardData.files.length === 0) return;
-          event.preventDefault();
-          onFiles(event.clipboardData.files);
-        }}
-        rows={1}
-        placeholder="Ask the AI, or describe what you want to create"
-        maxLength={MAX_MESSAGE_LENGTH}
-        className="block max-h-48 min-h-12 w-full resize-none bg-transparent px-5 pt-3.5 text-sm leading-relaxed text-ink outline-none [field-sizing:content] placeholder:text-ink-faint"
-      />
-      <div className="flex items-center justify-between px-2.5 pb-2.5">
+      {attachmentError && <p className="px-5 pt-2 text-xs text-danger">{attachmentError}</p>}
+      <div className="flex items-end gap-1 p-2">
         <CommunityAiAttachMenu onFiles={onFiles} />
+        <textarea
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              onSend();
+            }
+          }}
+          onPaste={(event) => {
+            if (event.clipboardData.files.length === 0) return;
+            event.preventDefault();
+            onFiles(event.clipboardData.files);
+          }}
+          rows={1}
+          placeholder="Ask the AI"
+          maxLength={MAX_MESSAGE_LENGTH}
+          className="max-h-48 min-h-10 flex-1 resize-none self-center bg-transparent px-2 py-2 text-base leading-relaxed text-ink outline-none [field-sizing:content] placeholder:text-ink-faint"
+        />
         <button
           type="button"
           onClick={onSend}

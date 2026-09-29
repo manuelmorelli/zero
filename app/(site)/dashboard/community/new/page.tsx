@@ -5,18 +5,11 @@ import { NewCommunityListingClient } from "@/components/creator/NewCommunityList
 export default async function NewCommunityListingPage() {
   const { user } = await requireCreator();
 
+  // Titolo e margini li decide NewCommunityListingClient: i passaggi normali hanno la pagina
+  // classica, la chat AI occupa tutto lo schermo come Gemini.
   return (
     <main>
-      <div className="mx-auto w-full max-w-xl px-6 pb-16 pt-24">
-        <h1 className="text-xl font-bold tracking-tight">Add to your Community</h1>
-        <p className="mt-2 text-sm text-ink-muted">
-          Create a Workshop, Event, Digital Product or 1:1 Service — it starts as a Draft, only you can see it.
-        </p>
-
-        <div className="mt-8">
-          <NewCommunityListingClient userId={user.id} creatorFirstName={firstNameOf(user.name)} />
-        </div>
-      </div>
+      <NewCommunityListingClient userId={user.id} creatorFirstName={firstNameOf(user.name)} />
     </main>
   );
 }

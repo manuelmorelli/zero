@@ -68,7 +68,7 @@ export default async function CommunityListingDetailPage({
     <main>
       <div className="mx-auto w-full max-w-2xl px-5 pb-16 pt-24">
         <Link href={`/profile/${handle}/community`} className="text-xs font-semibold text-ink-muted transition-colors hover:text-ink">
-          ← {listing.creator.displayName}&apos;s Community
+          {listing.creator.displayName}&apos;s Community
         </Link>
 
         <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-2xl border border-border bg-surface-2">
