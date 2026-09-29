@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { ArrowUp, Mic, Square } from "lucide-react";
 import type { PendingAttachment } from "@/hooks/useCommunityAiAttachments";
 import { useSpeechDictation } from "@/hooks/useSpeechDictation";
@@ -7,6 +8,8 @@ import { CommunityAiAttachmentPreview } from "@/components/creator/CommunityAiAt
 import { CommunityAiAttachMenu } from "@/components/creator/CommunityAiAttachMenu";
 
 const MAX_MESSAGE_LENGTH = 2000;
+// Solo con mouse/trackpad: sul telefono mettere il cursore da solo aprirebbe la tastiera.
+const FINE_POINTER_QUERY = "(pointer: fine)";
 
 /** La barra di scrittura della chat AI, a pillola come quella di Gemini: "+" a sinistra, testo al
  * centro (va a capo e cresce solo se il messaggio è lungo), a destra il microfono finché non c'è
@@ -32,10 +35,19 @@ export function CommunityAiComposer({
   onRemoveAttachment: (id: string) => void;
 }) {
   const dictation = useSpeechDictation(value, onChange);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Cursore già nella barra all'apertura, e di nuovo quando la barra passa dal centro al fondo
+  // dello schermo dopo il primo messaggio (lì è una barra nuova per il browser).
+  useEffect(() => {
+    if (window.matchMedia(FINE_POINTER_QUERY).matches) textareaRef.current?.focus();
+  }, []);
 
   function send() {
     dictation.cancel();
     onSend();
+    // Dopo l'invio il cursore torna nella barra, anche se si era cliccata la freccia.
+    textareaRef.current?.focus();
   }
 
   const showMic = dictation.supported && !dictation.listening && !canSend;
@@ -50,6 +62,7 @@ export function CommunityAiComposer({
       <div className="flex items-end gap-1 p-2">
         <CommunityAiAttachMenu onFiles={onFiles} />
         <textarea
+          ref={textareaRef}
           value={value}
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={(event) => {
