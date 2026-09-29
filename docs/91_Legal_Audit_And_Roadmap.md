@@ -49,6 +49,7 @@ prima di questa regola, non applicata retroattivamente.
 | Neon (Postgres) | Tutti i dati sopra (è il database primario) | **Collegato con account reale**, usato nei test end-to-end (corretto 2026-09-17, la voce precedente "placeholder" era superata) |
 | Cloudflare R2 | File binari (foto profilo/copertina, video episodi, media degli Update) via `lib/r2.ts` | **Collegato con account reale** (corretto 2026-09-17) |
 | Resend | Email di reset password e verifica email (indirizzo email + nome utente), via `lib/email.ts` | **Collegato con account reale** (corretto 2026-09-17); resta da fare solo il passaggio "da test a produzione" (dominio email verificato) |
+| Google Gemini | Testi e immagini da moderare (`lib/moderation.ts`), conversazioni e allegati foto/PDF della chat AI Community (`lib/ai/`) | **Collegato, piano gratuito** (dal 2026-09-25): Google può usare i dati per migliorare i suoi prodotti. Dichiarato nella Privacy Policy il 2026-09-29, con l'impegno a passare al piano a pagamento prima del lancio |
 | Stripe | **Nessuno**: nessuna chiamata Stripe nel codice, solo campo `stripeId` nello schema (`Payment.stripeId`) mai popolato da codice reale | Non implementato, per scelta: collegato solo appena prima del lancio online (Punto 7) |
 
 **Nota sulla pagina `/how-it-works`**: contiene il testo "payments go through

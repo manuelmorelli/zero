@@ -35,7 +35,7 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 | 5 | Trust & Safety (Trust Score + moderazione contenuti) | ✅ Chiuso (2026-09-21) |
 | 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ✅ Chiuso (2026-09-22) |
 | 7 | Struttura pagine Creator Economy (Community Premium, Prodotti/Servizi, Workshop/Eventi — le "Strumenti" mai costruiti di `07_Creator_Experience.md`) | ✅ Chiuso (2026-09-22) |
-| 8 | AI sulla piattaforma (nuovo, mai discusso prima, portato da Manuel da una conversazione separata con Claude) | 🟢 Costruito (2026-09-25/27) — chiusura formale da confermare con Manuel |
+| 8 | AI sulla piattaforma (nuovo, mai discusso prima, portato da Manuel da una conversazione separata con Claude) | 🟡 In corso, non terminato (confermato da Manuel il 2026-09-29): manca la chat AI identica all'app Gemini; la creazione immagini resta spenta fino all'attivazione dei servizi a pagamento |
 | 9 | Business Plan / Dossier investitori (Mercato, Team, Trazione, Piano Finanziario, la Richiesta) | ⬜ Da fare |
 | 10 | Infrastruttura tecnica e pagamenti (hosting, sicurezza, test, monitoraggio, Stripe Connect reale) | ⬜ Da fare |
 | 11 | Piano di lancio | ⬜ Da fare |

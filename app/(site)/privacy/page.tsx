@@ -20,6 +20,8 @@ const sections: Section[] = [
       "Account information: your name, email address, a securely hashed password (**we never store or see your actual password**), and your date of birth, collected to confirm you meet the minimum age to use Zero.",
       "Profile information you choose to share: username, bio, profile photo, cover photo, location, and the interest categories you pick. All of this is shown on your public profile.",
       "Content you create: your Journeys, Episodes, Updates, and any messages you send to other users.",
+      "Community content: the workshops, events, digital products, and 1:1 services you create, and the free events you sign up for with \"I'm going\".",
+      "Conversations with Zero's AI assistant: the messages you write and any photos or PDFs you attach while using it to prepare a Community listing.",
       "Technical information tied to your login sessions: IP address and browser/device information, used to keep your account secure.",
     ],
   },
@@ -35,6 +37,7 @@ const sections: Section[] = [
     title: "Who we share it with",
     body: [
       "Zero runs on a small set of infrastructure providers who process data on our behalf, under their own security commitments: Neon (our database, which stores the information above), Cloudflare R2 (stores the photos and videos you upload), and Resend (sends the account emails described above).",
+      "Google (Gemini) powers two features: the automatic check that screens new text and images for content that breaks our Community Guidelines, and the AI assistant that helps creators prepare Community listings. For these, Google receives the text and images being checked, and your conversations with the assistant, including any attachments. **Zero currently uses Google's free tier, under which Google may use this data to improve its own products.** We'll move to Google's paid tier, where that doesn't happen, before public launch.",
       "**We don't sell personal data to anyone, and we don't use advertising or analytics trackers.** See the Cookie Policy for the full, short list of cookies we use.",
       "Zero doesn't process payments yet. When payments launch, Stripe will handle that data directly, and this policy will be updated to reflect it before that happens.",
     ],

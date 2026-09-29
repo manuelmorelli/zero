@@ -45,9 +45,11 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ☑ Segnalazioni contenuti, costruite nel Punto 5 dell'allineamento (Trust & Safety, 2026-09-21): pulsante "Report" su pagina Journey e su profilo (non sulle Update, escluse volutamente da Manuel perché sono contenuto effimero, sparisce da solo entro 24h). Scrive nel modello `Report` già esistente nello schema; mail di avviso a `ADMIN_NOTIFICATION_EMAIL` (via Resend, oggi disattivato: l'avviso resta visibile solo nei log del server finché Resend non viene riattivato). Nessun pannello di gestione: le segnalazioni si vedono/chiudono da Prisma Studio.
 
-☑ Primo filtro automatico su testo e immagini appena caricati, costruito nello stesso punto: usa l'endpoint di moderazione di OpenAI (`lib/moderation.ts`, nessuna libreria aggiuntiva). Copre bio, titoli/descrizioni di Journey/Episodi, testo delle Update, e le immagini caricate (copertine, foto profilo, foto delle Update), non ancora i video. Codice pronto, ma finché `OPENAI_API_KEY` non è configurata non blocca nulla, stesso principio già in uso per Resend prima del collegamento.
+☑ Primo filtro automatico su testo e immagini appena caricati, costruito nello stesso punto (`lib/moderation.ts`). Copre bio, titoli/descrizioni di Journey/Episodi, testo delle Update, contenuti Community e le immagini caricate (copertine, foto profilo, foto delle Update), mai i video (decisione esplicita di Manuel). **Attivo**: nato su OpenAI (rimasto spento perché la chiave richiedeva carta di credito e acquisto minimo), spostato su **Gemini** al Punto 8 (2026-09-25), che usa la `GEMINI_API_KEY` gratuita già configurata. OpenAI non serve più.
 
-☐ [Attivazione rimandata, decisione presa 2026-09-21] Il controllo automatico in sé non ha un costo per chiamata, ma creare la chiave OpenAI richiede comunque collegare una carta di credito e un primo acquisto minimo di crediti (circa 5 dollari): non è gratuito come Neon/R2/Resend all'iscrizione. Manuel ha deciso di rimandare questa spesa a quando ci saranno utenti reali, coerente con la regola generale di non attivare servizi a pagamento prima del necessario. Per attivarlo: creare un account su platform.openai.com, collegare una carta, fare l'acquisto minimo, generare una API key, e aggiungerla come `OPENAI_API_KEY` in `.env`.
+☑ Privacy Policy aggiornata (2026-09-29): Google (Gemini) aggiunto tra i fornitori, con cosa riceve (testi/immagini da moderare, conversazioni e allegati della chat AI Community) e la dichiarazione che nel piano gratuito Google può usare quei dati per migliorare i suoi prodotti; impegno a passare al piano a pagamento prima del lancio. Aggiunti anche contenuti Community, iscrizioni "I'm going" e conversazioni con l'AI tra i dati raccolti.
+
+☐ **Passare Gemini al piano a pagamento prima del lancio pubblico**: promessa scritta nella Privacy Policy (nel piano gratuito Google può usare i dati inviati per migliorare i suoi prodotti). Da fare insieme all'attivazione delle immagini AI, che richiede comunque la fatturazione sullo stesso account.
 
 ## Registrazione & Sicurezza account
 
@@ -77,6 +79,18 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ☑ Ridotti i clic per creare qualcosa in Community (Workshop/Event/Digital Product/1:1 Service), segnalato da Manuel come priorità del Punto 8 (2026-09-27/28): il percorso reale era menu → Dashboard → Community → Add → scegli AI o a mano → conferma → Pubblica, **8 clic** (non serviva già tornare alla lista per pubblicare: `createCommunityListing` reindirizza già alla pagina di dettaglio con il pulsante Pubblica visibile). Aggiunta una voce diretta "Add to Community" nel menu laterale (`components/layout/SideMenu.tsx`, sezione "You"), che porta dritto a `/dashboard/community/new` saltando Dashboard e la lista: **6 clic**.
 
+☐ **Campo "Dove" per Workshop ed Eventi** (trovato il 2026-09-29 rileggendo i documenti): nello schema non esiste un campo per luogo o link online, quindi chi preme "I'm going" non sa dove andare se il creator non l'ha scritto nella descrizione. Decisione di Manuel: il luogo/link è visibile a tutti, non solo a chi partecipa.
+
+☐ **Email di contatto nella pagina `/contact`** (oggi "Coming soon"): da aggiungere appena il dominio zerojourneys.com è collegato a Resend (vedi "Infrastruttura & costi"). La Privacy Policy oggi rimanda al Report per le richieste sui dati.
+
+## Sicurezza utenti
+
+☐ **Impostazioni Privacy (`/settings/privacy`)**: blocca utente e account privato. Pagina rimasta "Coming soon" dalla creazione dell'area Impostazioni (2026-08-31) perché le due funzioni non erano mai state decise. Bloccare un utente è diventato importante da quando esiste la messaggistica privata. Confermato da Manuel come lavoro da fare (2026-09-29).
+
+## Discovery
+
+☐ **Most Completed Journeys, solo nella pagina `/journeys`**: classifica dei Journey che la gente guarda fino alla fine (base dati già pronta in `EpisodeProgress`). Era nel piano Discovery di agosto, poi eliminata; Manuel (2026-09-29) vuole ridarle uno spazio, ma solo nella pagina Journeys, non in Home.
+
 ## Business futuro (idee, nessun piano richiesto ora)
 
 ☐ [Idea] Sezione dove le aziende possono proporsi per sponsorizzare Zero/i creator, stile Instagram.
@@ -103,7 +117,7 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☐ **Prodotti digitali** (parola presente nei documenti ma mai definita, chiarita al Punto 3) — file scaricabili venduti dal creator (e-book, guide, corsi, template). Stesso gruppo economico di Community Premium.
 
-☐ **Tag "contenuto sponsorizzato" obbligatoria** — quando un creator promuove un prodotto per accordo diretto con un brand (fuori piattaforma), Zero non trattiene nulla ma richiede una dichiarazione visibile. Priorità più alta delle altre voci di questa sezione: costa poco costruire (solo una tag/etichetta) e riduce rischio legale.
+☐ **Tag "contenuto sponsorizzato" obbligatoria** — quando un creator promuove un prodotto per accordo diretto con un brand (fuori piattaforma), Zero non trattiene nulla ma richiede una dichiarazione visibile. Priorità più alta delle altre voci di questa sezione: costa poco costruire (solo una tag/etichetta) e riduce rischio legale. **Confermata da costruire da Manuel il 2026-09-29.**
 
 ☐ [Idea, non prioritaria] **Marketplace sponsorizzazioni creator-brand** — Zero mette in contatto creator e aziende, trattiene una commissione del 10% solo dal brand (modello TikTok Creator Marketplace). Stesso concetto delle due idee già in questa lista (sezione sponsor, marketplace UGC) — quando si costruirà, unificare i tre in un solo lavoro.
 
@@ -115,4 +129,8 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☑ Compressione automatica delle foto caricate, interamente nel browser prima dell'upload (nessun costo, nessuna nuova dipendenza): sopra 2MB la foto viene ridimensionata (lato più lungo max 2000px) e ricompressa come JPEG (qualità 0.82). Limite massimo assoluto alzato da 8MB a 20MB, ora che la compressione gestisce i file pesanti da sola. Nuovo `lib/compressImage.ts` usato dai flussi senza ritaglio (poster episodio in `EpisodeForm.tsx`, poster/foto Update in `QuickUploadButton.tsx`); `lib/cropImage.ts` (avatar, copertina profilo, copertina Journey) esteso con lo stesso limite di dimensione. Non riguarda i video, gestiti a parte (vedi `95_Video_Scaling_Future_Option.md`).
 
-☐ Verificare se esiste un limite di tempo per utenti/sessioni inattive (sessione di login vs account dormienti — da chiarire con Manuel quale dei due). Controllato 2026-09-15: `lib/auth.ts` non ha configurazione esplicita, usa i default di Better Auth.
+☐ Verificare se esiste un limite di tempo per utenti/sessioni inattive (sessione di login vs account dormienti — da chiarire con Manuel quale dei due). Controllato 2026-09-15: `lib/auth.ts` non ha configurazione esplicita, usa i default di Better Auth. Manuel (2026-09-29): "valutiamolo", da discutere prima di decidere.
+
+☐ **Collegare il dominio zerojourneys.com a Resend** (comprato il 2026-09-23): oggi le email partono da `onboarding@resend.dev`, indirizzo di test che Yahoo blocca in silenzio. Serve verificare il dominio su Resend (record DNS su Cloudflare, gratuito) e cambiare il mittente in `lib/email.ts`. Sblocca anche l'email di contatto su `/contact`.
+
+☐ Schermate di caricamento (sagome grigie delle card al posto della pagina bianca) e pagine di errore dedicate ("riprova" invece di un messaggio tecnico). Voci della Roadmap in `99_Current_Project_Status.md`, Fase 2; Manuel (2026-09-29): "va bene così credo", priorità bassa.
