@@ -139,7 +139,7 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
         {!videoUrl && (
           <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
             <VideoIcon className="h-3.5 w-3.5" aria-hidden="true" />
-            Who I am
+            That&apos;s me
           </CardTitle>
         )}
 
@@ -174,7 +174,7 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
               )}
 
               <div className="absolute inset-x-0 bottom-0 p-3">
-                <CoverTitle className="truncate">Who I Am</CoverTitle>
+                <CoverTitle className="truncate">That&apos;s me</CoverTitle>
               </div>
             </div>
 

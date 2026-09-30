@@ -34,6 +34,7 @@ import { NOTICE } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
 import { SectionTitle } from "@/components/ui/heading";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
+import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
 import { cn } from "@/lib/utils";
 
 /** Quante Published Journeys mostrare in anteprima nell'Overview prima del link "View all"
@@ -200,31 +201,23 @@ export default async function PublicProfilePage({
               <Button variant="secondary" href="/dashboard">
                 Dashboard
               </Button>
+              <Button variant="secondary" href="/dashboard/community">
+                Community
+              </Button>
               <ShareProfileButton />
             </>
           ) : (
             <>
               <FollowButton userId={user.id} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} />
               {canMessageUser && <MessageButton userId={user.id} />}
+              {creator && <CreatorEconomyLinks username={username} />}
               {isLoggedIn && <ReportButton targetType="USER" targetId={user.id} />}
             </>
           )
         }
       />
 
-      <ProfileTabs
-        basePath={`/profile/${username}`}
-        activeTab={activeTab}
-        actions={
-          isOwnProfile ? (
-            <Button variant="secondary" href="/dashboard/community" className="shrink-0">
-              Community
-            </Button>
-          ) : creator ? (
-            <CreatorEconomyLinks username={username} />
-          ) : undefined
-        }
-      />
+      <ProfileTabs basePath={`/profile/${username}`} activeTab={activeTab} />
 
       <div className={cn(PAGE_WIDTH.wideCover, "py-4")}>
         {activeTab === "overview" && (
@@ -246,61 +239,8 @@ export default async function PublicProfilePage({
               </Reveal>
             )}
 
-            {/* 2. Recent Episodes: riga a scorrimento laterale stile Netflix, non una griglia —
-                 circa 4 card visibili alla volta sui monitor desktop, il resto si scopre
-                 scorrendo (stesso componente HorizontalScrollRow di Journeys/Journeyers). */}
+            {/* 2. Published Journeys (anteprima, "View all" -> tab Journeys) */}
             <Reveal delayMs={40} className="mt-6 block">
-              {episodeFeedItems.length > 0 ? (
-                <HorizontalScrollRow title="Recent Episodes">
-                  {episodeFeedItems.map((item, index) => (
-                    <ContentCard
-                      key={item.episodeId}
-                      className="w-56 shrink-0 sm:w-72 lg:w-80"
-                      href={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
-                      imageUrl={item.coverUrl}
-                      imageAlt={item.title}
-                      title={item.title}
-                      category={item.category}
-                      trust={item.journeyScore !== undefined ? Math.round(item.journeyScore) : undefined}
-                      isVideo
-                      emptyMessage={
-                        isDemoFeed ? (
-                          <span
-                            className={`text-sm font-semibold leading-snug ${DEMO_MESSAGE_COLORS[index % DEMO_MESSAGE_COLORS.length]}`}
-                          >
-                            {item.caption}
-                          </span>
-                        ) : undefined
-                      }
-                      menu={
-                        !isDemoFeed ? (
-                          <ShareButton
-                            path={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
-                            label={item.title}
-                            updateCaption={
-                              isOwnProfile
-                                ? `New episode: ${item.title}`
-                                : `Check out this episode by ${user.name}: ${item.title}`
-                            }
-                            linkedEpisodeId={item.episodeId}
-                          />
-                        ) : undefined
-                      }
-                    />
-                  ))}
-                </HorizontalScrollRow>
-              ) : (
-                <section>
-                  <SectionTitle>Recent Episodes</SectionTitle>
-                  <p className={`mt-4 ${NOTICE}`}>
-                    {`${user.name} hasn't shared any episode yet.`}
-                  </p>
-                </section>
-              )}
-            </Reveal>
-
-            {/* 3. Published Journeys (anteprima, "View all" -> tab Journeys) */}
-            <Reveal delayMs={120} className="mt-6 block">
               <section>
                 <div className="flex items-center justify-between gap-3">
                   <SectionTitle>Published Journeys</SectionTitle>
@@ -353,6 +293,62 @@ export default async function PublicProfilePage({
                   </p>
                 )}
               </section>
+            </Reveal>
+
+            {/* 3. Recent Episodes: riga a scorrimento laterale stile Netflix, non una griglia —
+                 formato rettangolare "episode" (4:3), stesso usato dalle card video altrove nel
+                 sito (es. VideoCard in Home) — circa 4 card visibili alla volta sui monitor
+                 desktop, il resto si scopre scorrendo (stesso componente HorizontalScrollRow di
+                 Journeys/Journeyers). */}
+            <Reveal delayMs={120} className="mt-6 block">
+              {episodeFeedItems.length > 0 ? (
+                <HorizontalScrollRow title="Recent Episodes">
+                  {episodeFeedItems.map((item, index) => (
+                    <ContentCard
+                      key={item.episodeId}
+                      format="episode"
+                      className={CARD_ROW_ITEM.episode}
+                      href={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
+                      imageUrl={item.coverUrl}
+                      imageAlt={item.title}
+                      title={item.title}
+                      category={item.category}
+                      trust={item.journeyScore !== undefined ? Math.round(item.journeyScore) : undefined}
+                      isVideo
+                      emptyMessage={
+                        isDemoFeed ? (
+                          <span
+                            className={`text-sm font-semibold leading-snug ${DEMO_MESSAGE_COLORS[index % DEMO_MESSAGE_COLORS.length]}`}
+                          >
+                            {item.caption}
+                          </span>
+                        ) : undefined
+                      }
+                      menu={
+                        !isDemoFeed ? (
+                          <ShareButton
+                            path={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
+                            label={item.title}
+                            updateCaption={
+                              isOwnProfile
+                                ? `New episode: ${item.title}`
+                                : `Check out this episode by ${user.name}: ${item.title}`
+                            }
+                            linkedEpisodeId={item.episodeId}
+                          />
+                        ) : undefined
+                      }
+                    />
+                  ))}
+                </HorizontalScrollRow>
+              ) : (
+                <section>
+                  <SectionTitle>Recent Episodes</SectionTitle>
+                  <p className={`mt-4 ${NOTICE}`}>
+                    {`${user.name} hasn't shared any episode yet.`}
+                  </p>
+                </section>
+              )}
             </Reveal>
           </>
         )}
@@ -411,11 +407,9 @@ export default async function PublicProfilePage({
  * Manuel), che raccoglie al suo interno anche eventi gratuiti, Shop, Workshop & Events e 1:1
  * Consulting (deciso con Manuel il 2026-09-22: niente pagamento reale dietro per ora). */
 function CreatorEconomyLinks({ username }: { username: string }) {
-  const linkClassName =
-    "shrink-0 rounded-full border border-ember-line bg-ember-soft px-4 py-2 text-sm text-on-photo opacity-70 shadow-glow transition-all duration-300 hover:opacity-100";
   return (
-    <Link href={`/profile/${username}/community`} className={linkClassName}>
+    <Button variant="secondary" href={`/profile/${username}/community`}>
       Community
-    </Link>
+    </Button>
   );
 }

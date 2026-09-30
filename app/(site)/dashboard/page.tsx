@@ -8,7 +8,6 @@ import { Reveal } from "@/components/common/Reveal";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { getCreatorPrivateStats } from "@/lib/dashboard/creatorStats";
 import { PageTitle } from "@/components/ui/heading";
-import { Button } from "@/components/ui/button";
 import { NOTICE, PANEL } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
@@ -90,11 +89,6 @@ export default async function CreatorDashboardPage() {
               <PageTitle>
                 Hi, {creator.displayName}
               </PageTitle>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="primary" href="/dashboard/journeys/new">
-                New Journey
-              </Button>
             </div>
           </div>
         </Reveal>

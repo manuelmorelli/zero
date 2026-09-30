@@ -90,11 +90,36 @@ html {
   /* Manopola "tutto il resto" (spazi/layout): tutte le unità rem di Tailwind si restringono di
    * conseguenza. Il testo non ne risente: vedi --text-scale sopra. */
   font-size: calc(var(--layout-scale) * 100%);
+  /* Spazio della scrollbar sempre riservato: quando un menu a tendina (es. Condividi) blocca
+   * temporaneamente lo scroll della pagina, la scrollbar sparisce e la larghezza disponibile
+   * cambierebbe, allargando visibilmente il contenuto. Riservarlo sempre evita quel salto. */
+  scrollbar-gutter: stable;
 }
 
 body {
   background-color: var(--color-bg);
   color: var(--color-ink);
+}
+
+/* Scrollbar nello stile del sito, al posto di quella grigia di sistema. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-2) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-surface-2);
+  border-radius: 999px;
+  border: 2px solid var(--color-bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-ember);
 }
 
 /* Sfumatura verso lo sfondo con curva "ad S" (non lineare): l'oscuramento parte quasi

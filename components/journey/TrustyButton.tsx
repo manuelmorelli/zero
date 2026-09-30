@@ -86,7 +86,7 @@ function TrustyTooltip({ locked }: { locked: boolean }) {
     <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-48 -translate-x-1/2 rounded-lg border border-border bg-surface px-3 py-2 text-center text-sm leading-snug text-ink-muted opacity-0 shadow-lg transition-opacity md:group-hover:block md:group-hover:opacity-100">
       {locked
         ? "Watch the episode to the end to unlock Trusty."
-        : "Give a Trusty when you trust this content, it helps build the creator's Trust Score."}
+        : "Give a Trusty once you've finished watching, it helps build the creator's Trust Score."}
     </span>
   );
 }

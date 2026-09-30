@@ -84,6 +84,17 @@ function communityPagePath(listing: { creator: { user: { username: string | null
   return `/profile/${handle}/community`;
 }
 
+// Copertina caricata a mano durante la creazione (prima che la Bozza esista): stessa idea delle
+// immagini AI (isOwnAiImageKey), una chiave "propria" sotto una cartella scoped all'utente, così
+// createCommunityListing può verificare che non sia stata rubata da un altro creator prima di
+// copiarla sotto community-covers. Aggiunta dopo il test di Manuel del 2026-09-29: dover creare la
+// Bozza al buio e aggiungere la foto solo dopo, in un secondo passaggio identico al primo, sembrava
+// una pagina ripetuta due volte invece di un unico modulo di creazione.
+const DRAFT_COVER_PREFIX = "community-covers-draft";
+function isOwnDraftCoverKey(userId: string, key: string): boolean {
+  return key.startsWith(`${DRAFT_COVER_PREFIX}/${userId}/`) && !key.includes("..");
+}
+
 const TitleDescriptionSchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
   description: z.string().trim().max(2000).optional(),
@@ -105,10 +116,15 @@ function parsePrice(
   return { price: Math.round(value * 100) / 100 };
 }
 
-function parseStartsAt(raw: FormDataEntryValue | null): Date | null {
-  if (typeof raw !== "string" || !raw) return null;
+/** Un valore non vuoto che non forma una data valida non va mai scartato in silenzio: capitava
+ * quando il modulo aveva un solo campo "datetime-local" (giorno/mese/anno/ora digitati a mano
+ * potevano sovrapporsi per errore, senza nessun avviso) — vedi anche CommunityListingForm, che ora
+ * separa data e ora in due campi più semplici da compilare. */
+function parseStartsAt(raw: FormDataEntryValue | null): { startsAt: Date | null } | { error: string } {
+  if (typeof raw !== "string" || !raw) return { startsAt: null };
   const date = new Date(raw);
-  return Number.isNaN(date.getTime()) ? null : date;
+  if (Number.isNaN(date.getTime())) return { error: "That date doesn't look valid. Please check it and try again." };
+  return { startsAt: date };
 }
 
 export async function createCommunityListing(
@@ -142,16 +158,22 @@ export async function createCommunityListing(
   };
   if (listingSupportsFree(type)) data.isFree = isFree;
   if (listingHasDate(type)) {
-    data.startsAt = parseStartsAt(formData.get("startsAt"));
+    const startsAtResult = parseStartsAt(formData.get("startsAt"));
+    if ("error" in startsAtResult) return { error: startsAtResult.error };
+    data.startsAt = startsAtResult.startsAt;
     const loc = formData.get("location");
     data.location = typeof loc === "string" && loc.trim() ? loc.trim() : null;
   }
 
-  // Alla creazione l'unica copertina possibile è un'immagine creata dall'AI nella chat ("Use as
-  // cover"): le altre si caricano dopo, quando la bozza esiste già. Viene copiata sotto
-  // community-covers, così cancellare la chat o la copertina non rompe l'altra.
+  // Copertina alla creazione: un'immagine creata dall'AI nella chat ("Use as cover") o una caricata
+  // a mano (vedi DRAFT_COVER_PREFIX sopra). In entrambi i casi viene copiata sotto
+  // community-covers, così cancellare la chat/il file originale non rompe la copertina salvata.
   const coverKey = formData.get("coverKey");
-  if (typeof coverKey === "string" && coverKey && isOwnAiImageKey(user.id, coverKey)) {
+  if (
+    typeof coverKey === "string" &&
+    coverKey &&
+    (isOwnAiImageKey(user.id, coverKey) || isOwnDraftCoverKey(user.id, coverKey))
+  ) {
     const coverModeration = await moderateImageUrl(await getImagePlaybackUrl(coverKey));
     if (coverModeration.flagged) return { error: MODERATION_REJECTION_MESSAGE };
     data.coverUrl = await copyImage(coverKey, "community-covers");
@@ -190,7 +212,9 @@ export async function updateCommunityListing(
   };
   if (listingSupportsFree(ref.type)) data.isFree = isFree;
   if (listingHasDate(ref.type)) {
-    data.startsAt = parseStartsAt(formData.get("startsAt"));
+    const startsAtResult = parseStartsAt(formData.get("startsAt"));
+    if ("error" in startsAtResult) return { error: startsAtResult.error };
+    data.startsAt = startsAtResult.startsAt;
     const loc = formData.get("location");
     data.location = typeof loc === "string" && loc.trim() ? loc.trim() : null;
   }
@@ -246,10 +270,25 @@ export async function createCommunityListingFileUploadUrl(
   return { uploadUrl, key };
 }
 
-/** URL temporaneo per caricare la copertina di un Workshop/Evento/Prodotto/Consulenza, dopo che la
- * Bozza esiste già — stesso schema in due passaggi già usato per la copertina del Journey. Aggiunta
- * il 2026-09-26 dopo test reale di Manuel: creare un evento senza poter caricare una foto sembrava
- * incompleto. */
+/** URL temporaneo per caricare la copertina PRIMA che la Bozza esista (durante la creazione): la
+ * chiave vive sotto una cartella propria dell'utente (community-covers-draft/{userId}/...),
+ * spostata sotto community-covers da createCommunityListing solo alla creazione vera e propria. */
+export async function createDraftCommunityListingCoverUploadUrl(
+  contentType: string
+): Promise<{ uploadUrl: string; key: string } | { error: string }> {
+  const { user } = await requireCreator();
+
+  if (!ALLOWED_IMAGE_TYPES.has(contentType)) {
+    return { error: "Unsupported image format." };
+  }
+
+  const key = newImageKey(`${DRAFT_COVER_PREFIX}/${user.id}`, contentType);
+  const uploadUrl = await getImageUploadUrl(key, contentType);
+  return { uploadUrl, key };
+}
+
+/** URL temporaneo per caricare la copertina di un Workshop/Evento/Prodotto/Consulenza già
+ * esistente (pagina di modifica). */
 export async function createCommunityListingCoverUploadUrl(
   type: CommunityListingType,
   listingId: string,

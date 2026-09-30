@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { BUTTON_VARIANTS } from "@/components/ui/button";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { cn } from "@/lib/utils";
@@ -14,11 +13,9 @@ const TABS: { key: ProfileTab; label: string }[] = [
 type ProfileTabsProps = {
   basePath: string;
   activeTab: ProfileTab;
-  /** Bottoni Creator Economy (Become a Member / Shop), allineati a destra sulla stessa riga. */
-  actions?: ReactNode;
 };
 
-export function ProfileTabs({ basePath, activeTab, actions }: ProfileTabsProps) {
+export function ProfileTabs({ basePath, activeTab }: ProfileTabsProps) {
   return (
     <div className="py-1">
       <div className={cn("no-scrollbar flex items-center gap-2.5 overflow-x-auto", PAGE_WIDTH.wideCover)}>
@@ -39,8 +36,6 @@ export function ProfileTabs({ basePath, activeTab, actions }: ProfileTabsProps) 
             </Link>
           );
         })}
-
-        {actions}
       </div>
     </div>
   );

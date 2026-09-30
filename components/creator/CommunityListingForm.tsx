@@ -7,6 +7,7 @@ import {
   createCommunityListing,
   createCommunityListingCoverUploadUrl,
   createCommunityListingFileUploadUrl,
+  createDraftCommunityListingCoverUploadUrl,
   deleteCommunityListing,
   updateCommunityListing,
 } from "@/lib/actions/communityListing";
@@ -89,9 +90,26 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
   const [price, setPrice] = useState(
     listing?.price?.toString() ?? initialDraft?.price?.toString() ?? ""
   );
+  // Data e ora vivono in un solo valore (formato "AAAA-MM-GGTHH:mm", quello che il server si
+  // aspetta), ma sono mostrate come due campi separati più semplici da compilare a mano: un solo
+  // campo "datetime-local" lasciava sovrapporre giorno/mese/anno/ora per errore, producendo una
+  // data non valida scartata in silenzio (bug segnalato da Manuel, 2026-09-29).
   const [startsAt, setStartsAt] = useState(
     toDatetimeLocal(listing?.startsAt ?? initialDraft?.startsAt ?? null)
-  )
+  );
+  const startsAtDate = startsAt.slice(0, 10);
+  const startsAtTime = startsAt.slice(11, 16);
+
+  function handleStartsAtDateChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const date = event.target.value;
+    setStartsAt(date ? `${date}T${startsAtTime || "00:00"}` : "");
+  }
+
+  function handleStartsAtTimeChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const time = event.target.value || "00:00";
+    setStartsAt(startsAtDate ? `${startsAtDate}T${time}` : "");
+  }
+
   const [location, setLocation] = useState(listing?.location ?? initialDraft?.location ?? "");
 
   const [fileKey, setFileKey] = useState("");
@@ -166,12 +184,13 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
 
   async function handleCropConfirm(blob: Blob) {
     setCropImageSrc(null);
-    if (!listing) return;
 
     setCoverError(null);
     setCoverProgress(0);
     try {
-      const result = await createCommunityListingCoverUploadUrl(type, listing.id, blob.type);
+      const result = listing
+        ? await createCommunityListingCoverUploadUrl(type, listing.id, blob.type)
+        : await createDraftCommunityListingCoverUploadUrl(blob.type);
       if ("error" in result) {
         setCoverError(result.error);
         setCoverProgress(null);
@@ -198,46 +217,43 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
         }}
         className="space-y-4"
       >
-        {(listing || coverPreview) && (
-          <div>
-            <span className="text-sm font-medium text-ink-muted">Cover</span>
-            <div className="relative mt-1.5 aspect-video w-full max-w-xs overflow-hidden rounded-xl border border-border bg-surface-2">
-              {coverPreview ? (
-                <Image
-                  src={coverPreview}
-                  alt=""
-                  fill
-                  sizes="320px"
-                  unoptimized={coverPreview.startsWith("/api/")}
-                  className="object-cover"
-                />
-              ) : (
-                <div className="absolute inset-0 cover-placeholder" />
+        <div>
+          <span className="text-sm font-medium text-ink-muted">Cover <span className="text-ink-faint">(optional)</span></span>
+          <div className="relative mt-1.5 aspect-video w-full max-w-xs overflow-hidden rounded-xl border border-border bg-surface-2">
+            {coverPreview ? (
+              <Image
+                src={coverPreview}
+                alt=""
+                fill
+                sizes="320px"
+                unoptimized={coverPreview.startsWith("/api/")}
+                className="object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 cover-placeholder" />
+            )}
+            <button
+              type="button"
+              onClick={() => coverInputRef.current?.click()}
+              aria-label={coverPreview ? "Change cover photo" : "Add cover photo"}
+              className={cn(
+                "absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-transparent text-sm font-semibold transition-colors hover:bg-bg hover:text-on-photo",
+                coverPreview ? "text-transparent" : "text-ink-muted"
               )}
-              {listing && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => coverInputRef.current?.click()}
-                    aria-label="Change cover photo"
-                    className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-transparent text-sm font-semibold text-transparent transition-colors hover:bg-bg hover:text-on-photo"
-                  >
-                    <ImagePlus className="h-4 w-4" aria-hidden="true" />
-                    {coverProgress !== null ? `${coverProgress}%` : "Change"}
-                  </button>
-                  <input
-                    ref={coverInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCoverChosen}
-                    className="hidden"
-                  />
-                </>
-              )}
-            </div>
-            {coverError && <p className="mt-1.5 text-sm text-danger">{coverError}</p>}
+            >
+              <ImagePlus className="h-4 w-4" aria-hidden="true" />
+              {coverProgress !== null ? `${coverProgress}%` : coverPreview ? "Change" : "Add cover"}
+            </button>
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleCoverChosen}
+              className="hidden"
+            />
           </div>
-        )}
+          {coverError && <p className="mt-1.5 text-sm text-danger">{coverError}</p>}
+        </div>
         {listing ? (
           <>
             <input type="hidden" name="listingId" value={listing.id} />
@@ -282,17 +298,28 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
         {hasDate && (
           <>
             <div>
-              <label htmlFor="startsAt" className="text-sm font-medium text-ink-muted">
+              <label htmlFor="startsAtDate" className="text-sm font-medium text-ink-muted">
                 Date {COMMUNITY_LISTING_LABELS[type] === "Event" ? "and time" : ""}
               </label>
-              <input
-                id="startsAt"
-                name="startsAt"
-                type="datetime-local"
-                value={startsAt}
-                onChange={(event) => setStartsAt(event.target.value)}
-                className={cn(FIELD, "mt-1.5")}
-              />
+              <div className="mt-1.5 flex gap-2">
+                <input
+                  id="startsAtDate"
+                  type="date"
+                  value={startsAtDate}
+                  onChange={handleStartsAtDateChange}
+                  className={cn(FIELD, "flex-1")}
+                />
+                <input
+                  id="startsAtTime"
+                  aria-label="Time"
+                  type="time"
+                  value={startsAtTime}
+                  onChange={handleStartsAtTimeChange}
+                  disabled={!startsAtDate}
+                  className={cn(FIELD, "w-32")}
+                />
+              </div>
+              <input type="hidden" name="startsAt" value={startsAt} />
             </div>
             <div>
               <label htmlFor="location" className="text-sm font-medium text-ink-muted">

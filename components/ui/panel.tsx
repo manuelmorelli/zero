@@ -8,6 +8,10 @@ import { cn } from "@/lib/utils";
 export const PANEL = "rounded-2xl border border-border bg-surface p-5";
 /** Stesso riquadro con il bordo arancione, per metterlo in risalto (ex riquadri arancioni). */
 export const PANEL_ACCENT = "rounded-2xl border border-ember-line bg-surface p-5";
+/** Vetro traslucido arancione: per i riquadri che galleggiano sopra una foto (es. la card del
+ * messaggio a rotazione nella Hero), stesso trattamento del bottone secondario invece dello
+ * sfondo pieno di PANEL_ACCENT. */
+export const PANEL_GLASS = "rounded-2xl border border-ember-line bg-ember-soft p-5";
 export const NOTICE = "rounded-xl border border-border bg-surface px-4 py-3 text-sm text-ink-muted";
 /** Etichetta tonda (stato, categoria, conteggi) su sfondo normale. */
 export const BADGE = "inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-sm font-semibold text-ink-muted";

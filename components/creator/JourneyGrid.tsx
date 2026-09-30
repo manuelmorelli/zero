@@ -47,8 +47,8 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
         return (
           <li key={journey.id} className="group">
             <div
-              className={`relative w-full overflow-hidden rounded-xl border transition-colors ${
-                needsAttention ? "border-ember-line hover:border-ember" : "border-border hover:border-ink-muted"
+              className={`relative w-full overflow-hidden rounded-xl border shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow ${
+                needsAttention ? "border-ember-line" : "border-border"
               }`}
             >
               <Link

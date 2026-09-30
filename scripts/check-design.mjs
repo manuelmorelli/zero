@@ -111,7 +111,7 @@ const has = (cls, re) => cls.split(/\s+/).some((c) => re.test(stripVariants(c)))
 /** Solo le classi "a riposo" (senza hover:, sm:...): sono quelle che decidono la forma di un elemento. */
 const hasBase = (cls, re) => cls.split(/\s+/).some((c) => !c.includes(":") && re.test(c.replace(/^!/, "")));
 /** Costanti ufficiali di components/ui/: se il className le usa, la forma viene dai mattoncini. */
-const KIT = /\b(PANEL|PANEL_ACCENT|PANEL_DANGER|PANEL_DASHED|ROW|NOTICE|BADGE|CHIP|CHIP_SELECTED|FIELD|PILL_FIELD|PILL_FIELD_INPUT|PILL_FIELD_ON_PHOTO|BUTTON_VARIANTS|PAGE_WIDTH|PAGE_SPACING|CARD_GRID|CARD_ROW_ITEM|COVER_PLACEHOLDER)\b/;
+const KIT = /\b(PANEL|PANEL_ACCENT|PANEL_GLASS|PANEL_DANGER|PANEL_DASHED|ROW|NOTICE|BADGE|CHIP|CHIP_SELECTED|FIELD|PILL_FIELD|PILL_FIELD_INPUT|PILL_FIELD_ON_PHOTO|BUTTON_VARIANTS|PAGE_WIDTH|PAGE_SPACING|CARD_GRID|CARD_ROW_ITEM|COVER_PLACEHOLDER)\b/;
 
 function literalText(node) {
   const out = [];

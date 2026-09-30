@@ -28,7 +28,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
             <li key={episode.id}>
               <Link
                 href={`/journeys/${journeyId}/episodes/${episode.id}`}
-                className={cn(ROW, "group gap-3", active ? "border-ember-line bg-ember-soft" : "bg-transparent")}
+                className={cn(ROW, "group flex items-center gap-3", active ? "border-ember-line bg-ember-soft" : "bg-transparent")}
               >
                 <span className="relative aspect-4/3 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
                   {episode.posterUrl || coverUrl ? (
