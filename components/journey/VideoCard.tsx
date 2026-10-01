@@ -12,7 +12,7 @@ type VideoCardProps = {
 /** Card di un episodio (formato ufficiale 21A: orizzontale 4:3, quattro per riga): copertina
  * del Journey come anteprima, link diretto all'episodio. */
 export function VideoCard({ video, className }: VideoCardProps) {
-  const { journeyId, episodeId, title, coverUrl, category, creatorName, journeyScore } = video;
+  const { journeyId, episodeId, title, coverUrl, category, creatorName, creatorAvatarUrl, journeyScore } = video;
 
   return (
     <CoverFrame
@@ -33,7 +33,7 @@ export function VideoCard({ video, className }: VideoCardProps) {
           <CoverTitle className="mt-2">{title}</CoverTitle>
           <div className="mt-2 flex items-center justify-between gap-2 text-sm">
             <span className="flex min-w-0 items-center gap-1.5">
-              <Avatar name={creatorName} size="xs" />
+              <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" />
               <span className="truncate">{creatorName}</span>
             </span>
             {journeyScore !== undefined && (

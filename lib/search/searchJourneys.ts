@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
-import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { withResolvedJourneyCardUrls } from "@/lib/media/resolveCoverUrl";
 import { toSearchWords } from "@/lib/search/queryWords";
 import type { JourneyCategory } from "@/lib/constants/categories";
 import { JOURNEY_DATE_PRESETS, type JourneyDatePreset } from "@/lib/constants/journeyDatePresets";
@@ -48,7 +48,7 @@ export async function searchJourneys(
   const scoreById = new Map(freshScores.map((journey) => [journey.id, journey.journeyScore]));
 
   const items = selected.map((journey) => toJourneyCardData(journey, scoreById.get(journey.id)));
-  return withResolvedCoverUrls(items);
+  return withResolvedJourneyCardUrls(items);
 }
 
 async function findMatchingJourneys(query: string, filters: JourneySearchFilters) {
@@ -77,7 +77,7 @@ async function findMatchingJourneys(query: string, filters: JourneySearchFilters
         ],
       })),
     },
-    include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
+    include: { creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } } },
     orderBy: { publishedAt: "desc" },
     take: 50,
   });
@@ -102,6 +102,6 @@ function toJourneyCardData(journey: JourneyWithCreator, journeyScore?: number): 
     coverUrl: journey.coverUrl,
     category: journey.category,
     journeyScore,
-    creator: { displayName: journey.creator.displayName },
+    creator: { displayName: journey.creator.displayName, avatarUrl: journey.creator.user.avatarUrl },
   };
 }

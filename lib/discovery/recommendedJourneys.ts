@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { getFollowedCreatorIds, getOwnCreatorId, getFollowedCategories } from "@/lib/discovery/follows";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
-import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { withResolvedJourneyCardUrls } from "@/lib/media/resolveCoverUrl";
 import { isAlgorithmicRankingUnlocked } from "@/lib/discovery/algorithmUnlock";
 
 type JourneyWithCreator = Awaited<ReturnType<typeof findPublishedJourneys>>[number];
@@ -74,7 +74,7 @@ export async function getRecommendedJourneys({
     }
   }
 
-  return withResolvedCoverUrls(selected.map(toJourneyCardData));
+  return withResolvedJourneyCardUrls(selected.map(toJourneyCardData));
 }
 
 async function findPublishedJourneys(filters: {
@@ -95,7 +95,7 @@ async function findPublishedJourneys(filters: {
 
   return prisma.journey.findMany({
     where,
-    include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
+    include: { creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } } },
   });
 }
 
@@ -120,6 +120,6 @@ function toJourneyCardData(journey: JourneyWithCreator): JourneyCardData {
     coverUrl: journey.coverUrl,
     category: journey.category,
     journeyScore: journey.journeyScore,
-    creator: { displayName: journey.creator.displayName },
+    creator: { displayName: journey.creator.displayName, avatarUrl: journey.creator.user.avatarUrl },
   };
 }

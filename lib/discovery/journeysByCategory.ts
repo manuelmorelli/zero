@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
-import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { resolveAvatarUrl, withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { getStableWildcardPicks } from "@/lib/discovery/wildcard";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 
@@ -24,7 +24,7 @@ export async function getJourneysByCategory(): Promise<JourneyCategoryRow[]> {
   const journeys = await prisma.journey.findMany({
     where: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null, category: { not: null } },
     orderBy: { publishedAt: "desc" },
-    include: { creator: true },
+    include: { creator: { include: { user: { select: { avatarUrl: true } } } } },
   });
   // Il badge del punteggio si mostra solo per i Journey già PUBLISHED: quelli in Discovery Phase
   // non partecipano al Journey Score (vedi lib/scoring/journeyScore.ts).
@@ -57,14 +57,19 @@ export async function getJourneysByCategory(): Promise<JourneyCategoryRow[]> {
     rows.push({
       category,
       slug: categoryToSlug(category),
-      journeys: list.slice(0, JOURNEYS_PER_ROW).map((journey) => ({
-        id: journey.id,
-        title: journey.title,
-        coverUrl: journey.coverUrl,
-        category: journey.category,
-        journeyScore: scoreById.get(journey.id),
-        creator: { displayName: journey.creator.displayName },
-      })),
+      journeys: await Promise.all(
+        list.slice(0, JOURNEYS_PER_ROW).map(async (journey) => ({
+          id: journey.id,
+          title: journey.title,
+          coverUrl: journey.coverUrl,
+          category: journey.category,
+          journeyScore: scoreById.get(journey.id),
+          creator: {
+            displayName: journey.creator.displayName,
+            avatarUrl: await resolveAvatarUrl(journey.creator.user.avatarUrl),
+          },
+        }))
+      ),
       wildcardJourneyId: wildcardPicks.get(category) ?? null,
     });
   }

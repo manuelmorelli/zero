@@ -35,7 +35,7 @@ export default async function DiscoveringNowPage() {
                     title: journey.title,
                     coverUrl: journey.coverUrl,
                     category: journey.category,
-                    creator: { displayName: journey.creatorName },
+                    creator: { displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
                   }}
                   footer={
                     <p className="mt-2 text-sm text-ink-muted">

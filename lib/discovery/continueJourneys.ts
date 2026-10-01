@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
-import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 
 export type ContinueJourneyItem = {
   journeyId: string;
@@ -10,6 +10,7 @@ export type ContinueJourneyItem = {
   coverUrl: string | null;
   category: string | null;
   creatorName: string;
+  creatorAvatarUrl: string | null;
   episodeId: string | null;
   episodeTitle: string | null;
   /** Journey Score (0-100): assente se il Journey è ancora in Discovery Phase (vedi
@@ -30,7 +31,7 @@ export async function getContinueJourneys(
       journey: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
     },
     orderBy: { updatedAt: "desc" },
-    include: { journey: { include: { creator: true } } },
+    include: { journey: { include: { creator: { include: { user: { select: { avatarUrl: true } } } } } } },
   });
 
   const episodeIds = progresses
@@ -61,10 +62,17 @@ export async function getContinueJourneys(
       coverUrl: episode?.posterKey ?? progress.journey.coverUrl,
       category: progress.journey.category,
       creatorName: progress.journey.creator.displayName,
+      creatorAvatarUrl: progress.journey.creator.user.avatarUrl,
       episodeId: episode?.id ?? null,
       episodeTitle: episode?.title ?? null,
       journeyScore: scoreByJourneyId.get(progress.journeyId),
     };
   });
-  return withResolvedCoverUrls(items);
+  return Promise.all(
+    items.map(async (item) => ({
+      ...item,
+      coverUrl: await resolveCoverUrl(item.coverUrl),
+      creatorAvatarUrl: await resolveAvatarUrl(item.creatorAvatarUrl),
+    }))
+  );
 }

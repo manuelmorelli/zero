@@ -15,6 +15,7 @@ export type JourneyCardData = {
   journeyScore?: number;
   creator: {
     displayName: string;
+    avatarUrl: string | null;
   };
 };
 
@@ -50,7 +51,7 @@ export function JourneyCard({ journey, className, badge, footer }: JourneyCardPr
             <CoverTitle className="mt-2">{title}</CoverTitle>
             <div className="mt-2 flex items-center justify-between gap-2 text-sm">
               <span className="flex min-w-0 items-center gap-1.5">
-                <Avatar name={creator.displayName} size="xs" />
+                <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="xs" />
                 <span className="truncate">{creator.displayName}</span>
               </span>
               {journeyScore !== undefined && (

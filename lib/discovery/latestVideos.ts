@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
-import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 
 export type LatestVideoItem = {
   episodeId: string;
@@ -10,6 +10,7 @@ export type LatestVideoItem = {
   coverUrl: string | null;
   category: string | null;
   creatorName: string;
+  creatorAvatarUrl: string | null;
   createdAt: Date;
   /** Journey Score (0-100) del Journey a cui appartiene l'episodio: gli episodi non hanno un
    * punteggio proprio, quindi mostrano quello del loro Journey. Assente se il Journey è ancora
@@ -40,7 +41,7 @@ export async function getLatestVideos({
     orderBy: { createdAt: "desc" },
     take: pool,
     include: {
-      journey: { include: { creator: true } },
+      journey: { include: { creator: { include: { user: { select: { avatarUrl: true } } } } } },
     },
   });
 
@@ -78,8 +79,15 @@ export async function getLatestVideos({
     coverUrl: episode.posterKey ?? episode.journey.coverUrl,
     category: episode.journey.category,
     creatorName: episode.journey.creator.displayName,
+    creatorAvatarUrl: episode.journey.creator.user.avatarUrl,
     createdAt: episode.createdAt,
     journeyScore: scoreByJourneyId.get(episode.journey.id),
   }));
-  return withResolvedCoverUrls(items);
+  return Promise.all(
+    items.map(async (item) => ({
+      ...item,
+      coverUrl: await resolveCoverUrl(item.coverUrl),
+      creatorAvatarUrl: await resolveAvatarUrl(item.creatorAvatarUrl),
+    }))
+  );
 }

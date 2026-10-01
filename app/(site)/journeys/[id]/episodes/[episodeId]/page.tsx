@@ -5,7 +5,7 @@ import { getImagePlaybackUrl, getVideoPlaybackUrl } from "@/lib/r2";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
-import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
+import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { EpisodePlayer } from "@/components/journey/EpisodePlayer";
 import { UpNextList } from "@/components/journey/UpNextList";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
@@ -21,7 +21,7 @@ export default async function EpisodePlayerPage({
   await promoteExpiredDiscoveryJourneys();
   const journey = await prisma.journey.findUnique({
     where: { id },
-    include: { creator: true },
+    include: { creator: { include: { user: { select: { avatarUrl: true } } } } },
   });
   if (!journey || journey.deletedAt || !isPubliclyReachableJourneyStatus(journey.status)) notFound();
 
@@ -49,9 +49,10 @@ export default async function EpisodePlayerPage({
   // Versione leggera per connessioni lente (Cloudflare Stream): usata solo quando pronta, il
   // player ricade sull'originale (videoSrc) finché non lo è — vedi components/journey/EpisodePlayer.
   const lightVideoSrc = episode.lightVideoStatus === "READY" ? episode.lightVideoPlaybackUrl : null;
-  const [journeyCoverUrl, episodePosterUrl] = await Promise.all([
+  const [journeyCoverUrl, episodePosterUrl, creatorAvatarUrl] = await Promise.all([
     resolveCoverUrl(journey.coverUrl),
     episode.posterKey ? getImagePlaybackUrl(episode.posterKey) : Promise.resolve(null),
+    resolveAvatarUrl(journey.creator.user.avatarUrl),
   ]);
 
   return (
@@ -62,7 +63,7 @@ export default async function EpisodePlayerPage({
           journeyId={journey.id}
           journeyTitle={journey.title}
           journeyCategory={journey.category}
-          creator={{ userId: journey.creator.userId, displayName: journey.creator.displayName }}
+          creator={{ userId: journey.creator.userId, displayName: journey.creator.displayName, avatarUrl: creatorAvatarUrl }}
           trustScore={trustScore}
           episode={{
             id: episode.id,

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 
 export type DiscoveringNowItem = {
   id: string;
@@ -7,6 +7,7 @@ export type DiscoveringNowItem = {
   coverUrl: string | null;
   category: string | null;
   creatorName: string;
+  creatorAvatarUrl: string | null;
   followersCount: number;
   /** Giorni rimanenti prima che il Journey esca dalla Discovery Phase (minimo 1). */
   daysLeft: number;
@@ -24,7 +25,7 @@ export async function getDiscoveringNowJourneys(limit = 10): Promise<Discovering
     where: { status: "DISCOVERY", deletedAt: null },
     orderBy: { publishedAt: "desc" },
     take: limit,
-    include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
+    include: { creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } } },
   });
 
   const now = Date.now();
@@ -34,10 +35,17 @@ export async function getDiscoveringNowJourneys(limit = 10): Promise<Discovering
     coverUrl: journey.coverUrl,
     category: journey.category,
     creatorName: journey.creator.displayName,
+    creatorAvatarUrl: journey.creator.user.avatarUrl,
     followersCount: journey.creator.user._count.followers,
     daysLeft: journey.discoveryEndsAt
       ? Math.max(1, Math.ceil((journey.discoveryEndsAt.getTime() - now) / (24 * 60 * 60 * 1000)))
       : 1,
   }));
-  return withResolvedCoverUrls(items);
+  return Promise.all(
+    items.map(async (item) => ({
+      ...item,
+      coverUrl: await resolveCoverUrl(item.coverUrl),
+      creatorAvatarUrl: await resolveAvatarUrl(item.creatorAvatarUrl),
+    }))
+  );
 }

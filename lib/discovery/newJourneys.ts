@@ -3,7 +3,7 @@ import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
-import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { withResolvedJourneyCardUrls } from "@/lib/media/resolveCoverUrl";
 
 /**
  * Ultimi Journey pubblicati su tutta la piattaforma. Se l'utente ha interessi dichiarati, quelli
@@ -24,7 +24,7 @@ export async function getNewJourneys(
     where: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null, id: { notIn: excludeJourneyIds } },
     orderBy: { publishedAt: "desc" },
     take: pool,
-    include: { creator: true },
+    include: { creator: { include: { user: { select: { avatarUrl: true } } } } },
   });
 
   if (journeys.length === 0) {
@@ -63,7 +63,7 @@ export async function getNewJourneys(
     coverUrl: journey.coverUrl,
     category: journey.category,
     journeyScore: scoreById.get(journey.id),
-    creator: { displayName: journey.creator.displayName },
+    creator: { displayName: journey.creator.displayName, avatarUrl: journey.creator.user.avatarUrl },
   }));
-  return withResolvedCoverUrls(items);
+  return withResolvedJourneyCardUrls(items);
 }

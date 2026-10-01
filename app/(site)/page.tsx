@@ -179,7 +179,7 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
                   <CoverTitle className="mt-2">{item.episodeTitle ?? item.title}</CoverTitle>
                   <div className="mt-2 flex items-center justify-between gap-2 text-sm">
                     <span className="flex min-w-0 items-center gap-1.5">
-                      <Avatar name={item.creatorName} size="xs" />
+                      <Avatar name={item.creatorName} avatarUrl={item.creatorAvatarUrl} size="xs" />
                       <span className="truncate">{item.creatorName}</span>
                     </span>
                     {item.journeyScore !== undefined && (
@@ -224,7 +224,7 @@ function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
                 title: journey.title,
                 coverUrl: journey.coverUrl,
                 category: journey.category,
-                creator: { displayName: journey.creatorName },
+                creator: { displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
               }}
               footer={
                 <p className="mt-2 text-sm text-ink-muted">
@@ -292,7 +292,7 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
                 coverUrl: journey.coverUrl,
                 category: journey.category,
                 journeyScore: journey.journeyScore,
-                creator: { displayName: journey.creatorName },
+                creator: { displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
               }}
               footer={
                 <p className="mt-2 text-sm text-ink-muted">

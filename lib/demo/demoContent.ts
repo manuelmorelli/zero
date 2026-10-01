@@ -127,24 +127,24 @@ export const DEMO_CREATORS: CreatorSearchResult[] = [
 ];
 
 export const DEMO_LATEST_VIDEOS: LatestVideoItem[] = [
-  { episodeId: "demo-ep-1", journeyId: "demo-1", title: "Day 1: starting from Zero", coverUrl: null, category: "Mental Health", creatorName: "Marco R.", createdAt: hoursAgo(2), journeyScore: 86 },
-  { episodeId: "demo-ep-2", journeyId: "demo-2", title: "The workout that changed my mind", coverUrl: null, category: "Fitness", creatorName: "Sara J.", createdAt: hoursAgo(11), journeyScore: 88 },
-  { episodeId: "demo-ep-3", journeyId: "demo-3", title: "First solo ride", coverUrl: null, category: "Sports", creatorName: "David L.", createdAt: hoursAgo(26), journeyScore: 82 },
-  { episodeId: "demo-ep-4", journeyId: "demo-4", title: "Finding a new perspective", coverUrl: null, category: "Creativity", creatorName: "Emma W.", createdAt: hoursAgo(40), journeyScore: 90 },
+  { episodeId: "demo-ep-1", journeyId: "demo-1", title: "Day 1: starting from Zero", coverUrl: null, category: "Mental Health", creatorName: "Marco R.", creatorAvatarUrl: null, createdAt: hoursAgo(2), journeyScore: 86 },
+  { episodeId: "demo-ep-2", journeyId: "demo-2", title: "The workout that changed my mind", coverUrl: null, category: "Fitness", creatorName: "Sara J.", creatorAvatarUrl: null, createdAt: hoursAgo(11), journeyScore: 88 },
+  { episodeId: "demo-ep-3", journeyId: "demo-3", title: "First solo ride", coverUrl: null, category: "Sports", creatorName: "David L.", creatorAvatarUrl: null, createdAt: hoursAgo(26), journeyScore: 82 },
+  { episodeId: "demo-ep-4", journeyId: "demo-4", title: "Finding a new perspective", coverUrl: null, category: "Creativity", creatorName: "Emma W.", creatorAvatarUrl: null, createdAt: hoursAgo(40), journeyScore: 90 },
 ];
 
 export const DEMO_DISCOVERING_NOW: DiscoveringNowItem[] = [
-  { id: "demo-discovery-1", title: "Learning to sail at 40", coverUrl: null, category: "Sports", creatorName: "Nora K.", followersCount: 340, daysLeft: 11 },
-  { id: "demo-discovery-2", title: "Quitting sugar, day by day", coverUrl: null, category: "Nutrition", creatorName: "Leo P.", followersCount: 180, daysLeft: 6 },
-  { id: "demo-discovery-3", title: "Teaching myself to paint", coverUrl: null, category: "Creativity", creatorName: "Ana M.", followersCount: 95, daysLeft: 14 },
-  { id: "demo-discovery-4", title: "Waking up at 5am for a month", coverUrl: null, category: "Habits", creatorName: "Tom B.", followersCount: 60, daysLeft: 9 },
-  { id: "demo-discovery-5", title: "My first vegetable garden", coverUrl: null, category: "Gardening & Plants", creatorName: "Giulia F.", followersCount: 120, daysLeft: 3 },
+  { id: "demo-discovery-1", title: "Learning to sail at 40", coverUrl: null, category: "Sports", creatorName: "Nora K.", creatorAvatarUrl: null, followersCount: 340, daysLeft: 11 },
+  { id: "demo-discovery-2", title: "Quitting sugar, day by day", coverUrl: null, category: "Nutrition", creatorName: "Leo P.", creatorAvatarUrl: null, followersCount: 180, daysLeft: 6 },
+  { id: "demo-discovery-3", title: "Teaching myself to paint", coverUrl: null, category: "Creativity", creatorName: "Ana M.", creatorAvatarUrl: null, followersCount: 95, daysLeft: 14 },
+  { id: "demo-discovery-4", title: "Waking up at 5am for a month", coverUrl: null, category: "Habits", creatorName: "Tom B.", creatorAvatarUrl: null, followersCount: 60, daysLeft: 9 },
+  { id: "demo-discovery-5", title: "My first vegetable garden", coverUrl: null, category: "Gardening & Plants", creatorName: "Giulia F.", creatorAvatarUrl: null, followersCount: 120, daysLeft: 3 },
 ];
 
 export const DEMO_TOP_JOURNEYS: TopJourneyItem[] = [
-  { id: "demo-5", title: "Build my startup", coverUrl: null, category: "Career", creatorName: "James T.", followersCount: 29000, episodesCount: 14, journeyScore: 92 },
-  { id: "demo-3", title: "Ride the unknown", coverUrl: null, category: "Sports", creatorName: "David L.", followersCount: 31000, episodesCount: 22, journeyScore: 89 },
-  { id: "demo-1", title: "From burnout to balance", coverUrl: null, category: "Mental Health", creatorName: "Marco R.", followersCount: 24000, episodesCount: 9, journeyScore: 87 },
-  { id: "demo-2", title: "Stronger every day", coverUrl: null, category: "Fitness", creatorName: "Sara J.", followersCount: 18000, episodesCount: 17, journeyScore: 85 },
-  { id: "demo-4", title: "See the world differently", coverUrl: null, category: "Creativity", creatorName: "Emma W.", followersCount: 16000, episodesCount: 11, journeyScore: 84 },
+  { id: "demo-5", title: "Build my startup", coverUrl: null, category: "Career", creatorName: "James T.", creatorAvatarUrl: null, followersCount: 29000, episodesCount: 14, journeyScore: 92 },
+  { id: "demo-3", title: "Ride the unknown", coverUrl: null, category: "Sports", creatorName: "David L.", creatorAvatarUrl: null, followersCount: 31000, episodesCount: 22, journeyScore: 89 },
+  { id: "demo-1", title: "From burnout to balance", coverUrl: null, category: "Mental Health", creatorName: "Marco R.", creatorAvatarUrl: null, followersCount: 24000, episodesCount: 9, journeyScore: 87 },
+  { id: "demo-2", title: "Stronger every day", coverUrl: null, category: "Fitness", creatorName: "Sara J.", creatorAvatarUrl: null, followersCount: 18000, episodesCount: 17, journeyScore: 85 },
+  { id: "demo-4", title: "See the world differently", coverUrl: null, category: "Creativity", creatorName: "Emma W.", creatorAvatarUrl: null, followersCount: 16000, episodesCount: 11, journeyScore: 84 },
 ];

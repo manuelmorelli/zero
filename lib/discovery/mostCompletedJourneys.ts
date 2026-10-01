@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { computeViewerStatsByJourney, MIN_SAMPLE_SIZE } from "@/lib/scoring/journeyScore";
-import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { withResolvedJourneyCardUrls } from "@/lib/media/resolveCoverUrl";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 
 /**
@@ -18,7 +18,7 @@ export async function getMostCompletedJourneys(limit = 10): Promise<JourneyCardD
       title: true,
       coverUrl: true,
       category: true,
-      creator: { select: { displayName: true } },
+      creator: { select: { displayName: true, user: { select: { avatarUrl: true } } } },
     },
   });
   if (candidates.length === 0) return [];
@@ -45,8 +45,8 @@ export async function getMostCompletedJourneys(limit = 10): Promise<JourneyCardD
       title: journey.title,
       coverUrl: journey.coverUrl,
       category: journey.category,
-      creator: { displayName: journey.creator.displayName },
+      creator: { displayName: journey.creator.displayName, avatarUrl: journey.creator.user.avatarUrl },
     }));
 
-  return withResolvedCoverUrls(ranked);
+  return withResolvedJourneyCardUrls(ranked);
 }

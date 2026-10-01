@@ -7,7 +7,7 @@ import { getViewerSession } from "@/lib/session";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
-import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
+import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { formatDuration } from "@/lib/format/duration";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { ShareButton } from "@/components/common/ShareButton";
@@ -32,7 +32,7 @@ export default async function PublicJourneyPage({
   await promoteExpiredDiscoveryJourneys();
   const journey = await prisma.journey.findUnique({
     where: { id },
-    include: { creator: true },
+    include: { creator: { include: { user: { select: { avatarUrl: true } } } } },
   });
 
   if (!journey || journey.deletedAt || !isPubliclyReachableJourneyStatus(journey.status)) notFound();
@@ -41,7 +41,10 @@ export default async function PublicJourneyPage({
   // visitatore/sessione nell'MVP, coerente con l'approccio minimo già scelto altrove.
   void prisma.journey.update({ where: { id: journey.id }, data: { viewsCount: { increment: 1 } } }).catch(() => {});
 
-  const journeyCoverUrl = await resolveCoverUrl(journey.coverUrl);
+  const [journeyCoverUrl, creatorAvatarUrl] = await Promise.all([
+    resolveCoverUrl(journey.coverUrl),
+    resolveAvatarUrl(journey.creator.user.avatarUrl),
+  ]);
 
   const session = await getViewerSession();
   const { groups, flatEpisodes } = await getEpisodeTimeline(journey.id, { userId: session?.user.id });
@@ -109,7 +112,7 @@ export default async function PublicJourneyPage({
                     href={`/profile/${journey.creator.userId}`}
                     className="flex min-w-0 items-center gap-2 transition-colors hover:text-ember"
                   >
-                    <Avatar name={journey.creator.displayName} size="sm" />
+                    <Avatar name={journey.creator.displayName} avatarUrl={creatorAvatarUrl} size="sm" />
                     <span className="truncate">{journey.creator.displayName}</span>
                   </Link>
                   {trustScore !== null && <TrustScoreBadge score={trustScore} />}

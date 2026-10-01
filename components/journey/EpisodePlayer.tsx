@@ -22,7 +22,7 @@ type EpisodePlayerProps = {
   journeyId: string;
   journeyTitle: string;
   journeyCategory: string | null;
-  creator: { userId: string; displayName: string };
+  creator: { userId: string; displayName: string; avatarUrl: string | null };
   trustScore: number | null;
   episode: {
     id: string;
@@ -205,7 +205,7 @@ export function EpisodePlayer({
                 href={`/profile/${creator.userId}`}
                 className="flex min-w-0 items-center gap-1.5 transition-colors hover:text-ember"
               >
-                <Avatar name={creator.displayName} size="sm" />
+                <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="sm" />
                 <span className="truncate">{creator.displayName}</span>
               </Link>
               {trustScore !== null && <TrustScoreBadge score={trustScore} />}

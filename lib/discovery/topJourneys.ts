@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
-import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { isAlgorithmicRankingUnlocked } from "@/lib/discovery/algorithmUnlock";
 
 export type TopJourneyItem = {
@@ -9,6 +9,7 @@ export type TopJourneyItem = {
   coverUrl: string | null;
   category: string | null;
   creatorName: string;
+  creatorAvatarUrl: string | null;
   followersCount: number;
   episodesCount: number;
   /** Journey Score (0-100, lib/scoring/journeyScore.ts): qui sempre presente, solo Journey
@@ -40,7 +41,7 @@ export async function getTopJourneys({
   const journeys = await prisma.journey.findMany({
     where: { id: { in: candidateIds.map((journey) => journey.id) } },
     include: {
-      creator: { include: { user: { include: { _count: { select: { followers: true } } } } } },
+      creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } },
       chapters: {
         where: { deletedAt: null },
         select: { _count: { select: { episodes: { where: { deletedAt: null, publishedAt: { not: null } } } } } },
@@ -61,15 +62,26 @@ export async function getTopJourneys({
     coverUrl: journey.coverUrl,
     category: journey.category,
     creatorName: journey.creator.displayName,
+    creatorAvatarUrl: journey.creator.user.avatarUrl,
     followersCount: journey.creator.user._count.followers,
     episodesCount: journey.chapters.reduce((sum, chapter) => sum + chapter._count.episodes, 0),
     journeyScore: journey.journeyScore,
   }));
 
-  if (interests.length === 0) return withResolvedCoverUrls(sorted.slice(0, limit));
+  if (interests.length === 0) return resolveTopJourneyUrls(sorted.slice(0, limit));
 
   const interestSet = new Set(interests);
   const matching = sorted.filter((journey) => journey.category && interestSet.has(journey.category));
   const rest = sorted.filter((journey) => !(journey.category && interestSet.has(journey.category)));
-  return withResolvedCoverUrls([...matching, ...rest].slice(0, limit));
+  return resolveTopJourneyUrls([...matching, ...rest].slice(0, limit));
+}
+
+function resolveTopJourneyUrls(items: TopJourneyItem[]): Promise<TopJourneyItem[]> {
+  return Promise.all(
+    items.map(async (item) => ({
+      ...item,
+      coverUrl: await resolveCoverUrl(item.coverUrl),
+      creatorAvatarUrl: await resolveAvatarUrl(item.creatorAvatarUrl),
+    }))
+  );
 }
