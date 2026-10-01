@@ -3,7 +3,13 @@
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/utils";
 
-const DropdownMenu = DropdownMenuPrimitive.Root;
+/** modal=false: di base Radix blocca lo scroll di tutta la pagina quando il menu è aperto e
+ * compensa lo spazio della scrollbar sparita con un padding, il che faceva "saltare" la larghezza
+ * della pagina (bug segnalato da Manuel sul bottone Condividi, 2026-09-30). Un menu piccolo come
+ * questo non ha bisogno di quel blocco. */
+function DropdownMenu(props: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
+  return <DropdownMenuPrimitive.Root modal={false} {...props} />;
+}
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 
 function DropdownMenuContent({
