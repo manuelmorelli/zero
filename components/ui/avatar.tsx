@@ -9,10 +9,10 @@ import { cn } from "@/lib/utils";
  */
 
 const SIZE = {
-  xs: "h-7 w-7 text-xs",
-  sm: "h-9 w-9 text-sm",
-  md: "h-13 w-13 text-base",
-  xl: "h-22 w-22 text-xl",
+  xs: "h-8 w-8 text-xs",
+  sm: "h-10 w-10 text-sm",
+  md: "h-14 w-14 text-base",
+  xl: "h-24 w-24 text-xl",
 } as const;
 
 export type AvatarSize = keyof typeof SIZE;
