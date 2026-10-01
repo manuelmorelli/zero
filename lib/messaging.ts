@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { isBlockedEitherWay } from "@/lib/block";
 
 /**
  * Le due persone di una Conversation sono salvate in ordine normalizzato (userAId sempre
@@ -11,10 +12,12 @@ export function orderedPair(userId1: string, userId2: string): [string, string] 
 
 /**
  * Basta che una delle due persone segua l'altra, non serve il follow reciproco (vedi
- * 00-project-context.md, sezione "Follow universale", revisione 2026-08-12).
+ * 00-project-context.md, sezione "Follow universale", revisione 2026-08-12). Un blocco in
+ * qualunque direzione chiude comunque la messaggistica, anche se un follow fosse rimasto.
  */
 export async function canMessage(userId1: string, userId2: string): Promise<boolean> {
   if (userId1 === userId2) return false;
+  if (await isBlockedEitherWay(userId1, userId2)) return false;
   const follow = await prisma.follow.findFirst({
     where: {
       OR: [

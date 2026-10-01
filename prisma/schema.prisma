@@ -154,6 +154,13 @@ model User {
   deletedAt           DateTime?
   scheduledDeletionAt DateTime?
 
+  // Impostazioni Privacy (Settings > Privacy, 2026-10-01): chi non segue ancora questo utente
+  // vede solo nome/foto/bio col tasto Segui, non Journey/Update. Il "segui" resta istantaneo
+  // come oggi, nessuna richiesta da approvare. Pensato per chi guarda contenuti (categorie
+  // delicate come Recovery & Sobriety/Mental Health), non per i creator: un Journey pubblicato
+  // resta comunque scopribile in Discovery/Ricerca, vedi lib/profile/profileVisibility.ts.
+  isPrivate Boolean @default(false)
+
   // Preferenze notifiche (Settings > Notifications): quali eventi generano una notifica per
   // questo utente. Regola opt-out (default true) per non silenziare tutti al lancio della
   // funzione. Vedi lib/notifications.ts per dove vengono lette.
@@ -192,6 +199,10 @@ model User {
   conversationsAsB   Conversation[]    @relation("ConversationsAsB")
   messagesSent       Message[]
   aiImageGenerations AiImageGeneration[]
+  // "blocksMade" = righe in cui questo utente ha bloccato qualcuno, "blockedBy" quelle in cui
+  // è lui ad essere stato bloccato. Vedi model Block.
+  blocksMade Block[] @relation("BlocksMade")
+  blockedBy  Block[] @relation("BlockedBy")
 
   @@map("users")
 }
@@ -811,6 +822,24 @@ model Follow {
 
   @@unique([followerId, followingId])
   @@map("follows")
+}
+
+// Blocco utente (Settings > Privacy, 2026-10-01): bloccare qualcuno annulla subito ogni "segui"
+// reciproco tra i due (lib/actions/block.ts), impedisce nuovi follow e messaggi in entrambe le
+// direzioni finché dura, e rende il profilo "non disponibile" per entrambi. Non simmetrico nei
+// dati (solo blockerId→blockedId), ma i controlli (lib/actions/block.ts, isBlockedEitherWay)
+// guardano sempre entrambe le direzioni: bloccare è un'azione di una persona verso l'altra, non
+// serve un blocco reciproco perché l'effetto da entrambi i lati è lo stesso.
+model Block {
+  id        String   @id @default(uuid())
+  blockerId String
+  blocker   User     @relation("BlocksMade", fields: [blockerId], references: [id])
+  blockedId String
+  blocked   User     @relation("BlockedBy", fields: [blockedId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+  @@map("blocks")
 }
 
 // Pick "Wildcard" stabile per categoria, pagina /journeys (lib/discovery/wildcard.ts): una sola

@@ -11,7 +11,8 @@ import { prisma } from "@/lib/prisma";
 // Sotto questa soglia di spettatori distinti, completamento ed engagement non contribuiscono
 // (né in positivo né in negativo): troppo pochi dati per fidarsene, un Journey nuovo resta nella
 // fascia base — mai nascosto né penalizzato, coerente con la fascia "0-25%" del documento.
-const MIN_SAMPLE_SIZE = 5;
+// Esportata perché anche lib/discovery/mostCompletedJourneys.ts usa la stessa soglia minima.
+export const MIN_SAMPLE_SIZE = 5;
 
 const FOLLOWERS_CAP = 500;
 const RECENCY_WINDOW_DAYS = 60;
@@ -79,9 +80,18 @@ export async function ensureFreshJourneyScores(journeyIds: string[]): Promise<vo
   );
 }
 
-async function computeJourneyScores(inputs: ScoreInput[]): Promise<Map<string, number>> {
-  const journeyIds = inputs.map((input) => input.journeyId);
+export type ViewerStats = { started: number; completed: number };
 
+/**
+ * Per Journey, episodi pubblicati e statistiche per spettatore distinto: quanti episodi ha
+ * iniziato e quanti finiti (`EpisodeProgress.completedAt`). Estratta da `computeJourneyScores`
+ * perché serve anche a `lib/discovery/mostCompletedJourneys.ts`, stesso concetto di
+ * "completamento", soglia di affidabilità diversa (qui nessuna, decide il chiamante).
+ */
+export async function computeViewerStatsByJourney(journeyIds: string[]): Promise<{
+  episodesByJourney: Map<string, { id: string; createdAt: Date }[]>;
+  viewerStatsByJourney: Map<string, Map<string, ViewerStats>>;
+}> {
   const episodes = await prisma.episode.findMany({
     where: {
       journeyId: { in: journeyIds },
@@ -110,9 +120,7 @@ async function computeJourneyScores(inputs: ScoreInput[]): Promise<Map<string, n
     episodesByJourney.set(episode.journeyId, list);
   }
 
-  // Per Journey, statistiche per spettatore distinto: quanti episodi ha iniziato e quanti finiti
-  // (EpisodeProgress.completedAt). Base sia per il completamento a fasce sia per l'engagement.
-  const viewerStatsByJourney = new Map<string, Map<string, { started: number; completed: number }>>();
+  const viewerStatsByJourney = new Map<string, Map<string, ViewerStats>>();
   for (const row of progress) {
     const journeyId = episodeToJourney.get(row.episodeId);
     if (!journeyId) continue;
@@ -123,6 +131,13 @@ async function computeJourneyScores(inputs: ScoreInput[]): Promise<Map<string, n
     journeyViewers.set(row.userId, viewer);
     viewerStatsByJourney.set(journeyId, journeyViewers);
   }
+
+  return { episodesByJourney, viewerStatsByJourney };
+}
+
+async function computeJourneyScores(inputs: ScoreInput[]): Promise<Map<string, number>> {
+  const journeyIds = inputs.map((input) => input.journeyId);
+  const { episodesByJourney, viewerStatsByJourney } = await computeViewerStatsByJourney(journeyIds);
 
   const scores = new Map<string, number>();
   const now = Date.now();

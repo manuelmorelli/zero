@@ -8,6 +8,7 @@ import { FollowButton } from "@/components/profile/FollowButton";
 import { ContentCard } from "@/components/profile/ContentCard";
 import { ShareButton } from "@/components/common/ShareButton";
 import { ReportButton } from "@/components/common/ReportButton";
+import { BlockButton } from "@/components/profile/BlockButton";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
 import { JourneyCardMenu } from "@/components/profile/JourneyCardMenu";
 import { Reveal } from "@/components/common/Reveal";
@@ -22,6 +23,7 @@ import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
 import { getCreatorFeed } from "@/lib/profile/creatorFeed";
 import { getCreatorActiveStory } from "@/lib/discovery/stories";
 import { canMessage } from "@/lib/messaging";
+import { isBlockedEitherWay } from "@/lib/block";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
 import { getFeaturedJourney } from "@/lib/profile/featuredJourney";
 import { PUBLICLY_REACHABLE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
@@ -32,8 +34,8 @@ import { FreeEventsSection } from "@/components/profile/FreeEventsSection";
 import { getFreeEventItems } from "@/lib/community/freeEvents";
 import { NOTICE } from "@/components/ui/panel";
 import { Button, BUTTON_VARIANTS } from "@/components/ui/button";
-import { SectionTitle } from "@/components/ui/heading";
-import { PAGE_WIDTH } from "@/components/ui/page-container";
+import { PageTitle, SectionTitle } from "@/components/ui/heading";
+import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
 import { cn } from "@/lib/utils";
 
@@ -64,8 +66,47 @@ export default async function PublicProfilePage({
   const user = await findUserByUsernameOrId(username);
   if (!user || user.deletedAt) notFound();
 
+  const session = await getViewerSession();
+  const isOwnProfile = session?.user.id === user.id;
+  const isLoggedIn = Boolean(session);
+
+  // Blocco (Settings > Privacy): se uno dei due ha bloccato l'altro, il profilo non è
+  // raggiungibile in nessuna direzione, controllato subito prima di qualunque altra query.
+  if (session && !isOwnProfile && (await isBlockedEitherWay(session.user.id, user.id))) {
+    return (
+      <main className="flex min-h-screen flex-col justify-center">
+        <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
+          <PageTitle>Profile unavailable</PageTitle>
+          <p className="mt-2 text-sm text-ink-muted">This profile isn&apos;t available.</p>
+        </div>
+      </main>
+    );
+  }
+
   await promoteExpiredDiscoveryJourneys();
-  const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
+
+  // Follow è persona-segue-persona (vedi 00-project-context.md, sezione "Modello utente
+  // unico"): ogni profilo è seguibile, non solo quello di un creator.
+  const [followersCount, followingCount] = await Promise.all([
+    prisma.follow.count({ where: { followingId: user.id } }),
+    prisma.follow.count({ where: { followerId: user.id } }),
+  ]);
+  const isFollowing =
+    session && !isOwnProfile
+      ? Boolean(
+          await prisma.follow.findUnique({
+            where: { followerId_followingId: { followerId: session.user.id, followingId: user.id } },
+          })
+        )
+      : false;
+
+  // Account privato (Settings > Privacy): chi non segue ancora vede solo nome/foto/bio, mai i
+  // Journey/Update qui sotto — ma i suoi Journey pubblicati restano scopribili in
+  // Discovery/Ricerca, che non passano da questa pagina. Non si applica al proprietario né a
+  // chi già segue.
+  const isPrivateGateActive = !isOwnProfile && user.isPrivate && !isFollowing;
+
+  const creator = isPrivateGateActive ? null : await prisma.creator.findUnique({ where: { userId: user.id } });
 
   // Journey live (pubblicati o in Discovery Phase) sono mostrati insieme a quelli archiviati:
   // archiviare un Journey lo ritira dalla gestione attiva, ma resta visibile sul profilo pubblico
@@ -83,10 +124,6 @@ export default async function PublicProfilePage({
   const liveJourneys = journeys.filter((journey) => journey.status === "PUBLISHED" || journey.status === "DISCOVERY");
   const featuredJourney = await getFeaturedJourney(liveJourneys);
 
-  const session = await getViewerSession();
-  const isOwnProfile = session?.user.id === user.id;
-  const isLoggedIn = Boolean(session);
-
   // Iniziative gratuite (Punto 8 dell'allineamento, 2026-09-25): anteprima sul profilo pubblico
   // (Manuel, 2026-09-26: "la card in home page personale non mi dispiace"), l'elenco completo vive
   // nella pagina Community (ex Subscribe) insieme alle offerte a pagamento.
@@ -98,21 +135,6 @@ export default async function PublicProfilePage({
     user.avatarUrl ? getImagePlaybackUrl(user.avatarUrl) : Promise.resolve(null),
     user.coverUrl ? getImagePlaybackUrl(user.coverUrl) : Promise.resolve(null),
   ]);
-
-  // Follow è persona-segue-persona (vedi 00-project-context.md, sezione "Modello utente
-  // unico"): ogni profilo è seguibile, non solo quello di un creator.
-  const [followersCount, followingCount] = await Promise.all([
-    prisma.follow.count({ where: { followingId: user.id } }),
-    prisma.follow.count({ where: { followerId: user.id } }),
-  ]);
-  const isFollowing =
-    session && !isOwnProfile
-      ? Boolean(
-          await prisma.follow.findUnique({
-            where: { followerId_followingId: { followerId: session.user.id, followingId: user.id } },
-          })
-        )
-      : false;
 
   // Basta che una delle due persone segua l'altra per potersi scrivere (vedi
   // 00-project-context.md, sezione "Follow universale"), non serve il follow reciproco.
@@ -208,6 +230,7 @@ export default async function PublicProfilePage({
               <FollowButton userId={user.id} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} />
               {canMessageUser && <MessageButton userId={user.id} />}
               {isLoggedIn && <ReportButton targetType="USER" targetId={user.id} />}
+              {isLoggedIn && <BlockButton userId={user.id} name={user.name} />}
             </>
           )
         }
@@ -303,7 +326,9 @@ export default async function PublicProfilePage({
                   </div>
                 ) : (
                   <p className={`mt-4 ${NOTICE}`}>
-                    {`${user.name} hasn't published any Journey yet.`}
+                    {isPrivateGateActive
+                      ? `This account is private. Follow ${user.name} to see their Journeys.`
+                      : `${user.name} hasn't published any Journey yet.`}
                   </p>
                 )}
               </section>
@@ -359,7 +384,9 @@ export default async function PublicProfilePage({
                 <section>
                   <SectionTitle>Recent Episodes</SectionTitle>
                   <p className={`mt-4 ${NOTICE}`}>
-                    {`${user.name} hasn't shared any episode yet.`}
+                    {isPrivateGateActive
+                      ? `This account is private. Follow ${user.name} to see their Updates.`
+                      : `${user.name} hasn't shared any episode yet.`}
                   </p>
                 </section>
               )}
@@ -371,7 +398,9 @@ export default async function PublicProfilePage({
           <section>
             {journeys.length === 0 ? (
               <p className={NOTICE}>
-                {`${user.name} hasn't published any Journey yet.`}
+                {isPrivateGateActive
+                  ? `This account is private. Follow ${user.name} to see their Journeys.`
+                  : `${user.name} hasn't published any Journey yet.`}
               </p>
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

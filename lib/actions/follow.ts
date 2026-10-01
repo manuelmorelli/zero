@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
 import { getFollowersList, getFollowingList, type FollowListPerson } from "@/lib/profile/followList";
 import { notifyNewFollower } from "@/lib/notifications";
+import { isBlockedEitherWay } from "@/lib/block";
 
 export async function toggleFollow(
   targetUserId: string
@@ -17,6 +18,10 @@ export async function toggleFollow(
 
   const targetUser = await prisma.user.findUnique({ where: { id: targetUserId } });
   if (!targetUser) return { error: "User not found." };
+
+  if (await isBlockedEitherWay(session.user.id, targetUserId)) {
+    return { error: "You can't follow this person." };
+  }
 
   const existing = await prisma.follow.findUnique({
     where: { followerId_followingId: { followerId: session.user.id, followingId: targetUserId } },

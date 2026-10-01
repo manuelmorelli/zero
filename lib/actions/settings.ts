@@ -122,6 +122,25 @@ export async function updateNotificationPreferences(
   return { error: null };
 }
 
+/** Settings > Privacy: chi non ti segue ancora vede solo nome/foto/bio, non Journey/Update (vedi
+ * app/profile/[username]/page.tsx). Non impedisce ai Journey pubblicati di comparire in
+ * Discovery/Ricerca: quelle sezioni non leggono questo campo, solo il Profilo lo fa. */
+export async function updatePrivateAccount(
+  _prevState: { error: string | null },
+  formData: FormData
+): Promise<{ error: string | null }> {
+  const { user } = await requireSession();
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { isPrivate: formData.has("isPrivate") },
+  });
+
+  revalidatePath("/settings/privacy");
+  revalidatePath(`/profile/${user.id}`);
+  return { error: null };
+}
+
 const CreatorNotificationPreferencesSchema = z.object({
   notifyNewFollower: z.coerce.boolean(),
 });
