@@ -7,8 +7,7 @@ import { getImagePlaybackUrl, getVideoPlaybackUrl } from "@/lib/r2";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { ContentCard } from "@/components/profile/ContentCard";
 import { ShareButton } from "@/components/common/ShareButton";
-import { ReportButton } from "@/components/common/ReportButton";
-import { BlockButton } from "@/components/profile/BlockButton";
+import { ProfileActionsMenu } from "@/components/profile/ProfileActionsMenu";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
 import { JourneyCardMenu } from "@/components/profile/JourneyCardMenu";
 import { Reveal } from "@/components/common/Reveal";
@@ -229,8 +228,7 @@ export default async function PublicProfilePage({
             <>
               <FollowButton userId={user.id} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} />
               {canMessageUser && <MessageButton userId={user.id} />}
-              {isLoggedIn && <ReportButton targetType="USER" targetId={user.id} />}
-              {isLoggedIn && <BlockButton userId={user.id} name={user.name} />}
+              {isLoggedIn && <ProfileActionsMenu userId={user.id} name={user.name} />}
             </>
           )
         }

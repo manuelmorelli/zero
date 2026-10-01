@@ -11,7 +11,7 @@ import { FIELD } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const REPORT_REASONS = ["Spam", "Inappropriate content", "Copyright violation", "Harassment", "Other"] as const;
+export const REPORT_REASONS = ["Spam", "Inappropriate content", "Copyright violation", "Harassment", "Other"] as const;
 
 type ReportButtonProps = {
   targetType: ReportTargetType;
