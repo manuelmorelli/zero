@@ -79,9 +79,9 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ☑ Ridotti i clic per creare qualcosa in Community (Workshop/Event/Digital Product/1:1 Service), segnalato da Manuel come priorità del Punto 8 (2026-09-27/28): il percorso reale era menu → Dashboard → Community → Add → scegli AI o a mano → conferma → Pubblica, **8 clic** (non serviva già tornare alla lista per pubblicare: `createCommunityListing` reindirizza già alla pagina di dettaglio con il pulsante Pubblica visibile). Aggiunta una voce diretta "Add to Community" nel menu laterale (`components/layout/SideMenu.tsx`, sezione "You"), che porta dritto a `/dashboard/community/new` saltando Dashboard e la lista: **6 clic**.
 
-☐ **Campo "Dove" per Workshop ed Eventi** (trovato il 2026-09-29 rileggendo i documenti): nello schema non esiste un campo per luogo o link online, quindi chi preme "I'm going" non sa dove andare se il creator non l'ha scritto nella descrizione. Decisione di Manuel: il luogo/link è visibile a tutti, non solo a chi partecipa.
+☑ **Campo "Dove" per Workshop ed Eventi** (trovato il 2026-09-29 rileggendo i documenti): nello schema non esiste un campo per luogo o link online, quindi chi preme "I'm going" non sa dove andare se il creator non l'ha scritto nella descrizione. Decisione di Manuel: il luogo/link è visibile a tutti, non solo a chi partecipa. Fatto (commit `5850ff2`).
 
-☐ **Email di contatto nella pagina `/contact`** (oggi "Coming soon"): da aggiungere appena il dominio zerojourneys.com è collegato a Resend (vedi "Infrastruttura & costi"). La Privacy Policy oggi rimanda al Report per le richieste sui dati.
+☑ **Email di contatto nella pagina `/contact`** (prima "Coming soon"): aggiunta dopo che il dominio zerojourneys.com è stato collegato a Resend (vedi "Infrastruttura & costi"). Fatto (commit `7cb1dc6`).
 
 ## Sicurezza utenti
 
@@ -131,6 +131,6 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☐ Verificare se esiste un limite di tempo per utenti/sessioni inattive (sessione di login vs account dormienti — da chiarire con Manuel quale dei due). Controllato 2026-09-15: `lib/auth.ts` non ha configurazione esplicita, usa i default di Better Auth. Manuel (2026-09-29): "valutiamolo", da discutere prima di decidere.
 
-☐ **Collegare il dominio zerojourneys.com a Resend** (comprato il 2026-09-23): oggi le email partono da `onboarding@resend.dev`, indirizzo di test che Yahoo blocca in silenzio. Serve verificare il dominio su Resend (record DNS su Cloudflare, gratuito) e cambiare il mittente in `lib/email.ts`. Sblocca anche l'email di contatto su `/contact`.
+☑ **Collegare il dominio zerojourneys.com a Resend** (comprato il 2026-09-23): dominio verificato su Resend (record DNS su Cloudflare), mittente in `lib/email.ts` aggiornato, testato con un invio reale arrivato su Yahoo (commit `5ac5476` + `7cb1dc6`).
 
 ☐ Schermate di caricamento (sagome grigie delle card al posto della pagina bianca) e pagine di errore dedicate ("riprova" invece di un messaggio tecnico). Voci della Roadmap in `99_Current_Project_Status.md`, Fase 2; Manuel (2026-09-29): "va bene così credo", priorità bassa.
