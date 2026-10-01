@@ -101,6 +101,8 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ☐ [Idea, 2026-09-27] Pulsante "Download as PDF" sotto le risposte lunghe della chat AI Community: trasformare testo in PDF non richiede l'AI, quindi è gratis. Utile soprattutto per i Digital product (l'AI scrive la guida, il creator la scarica e la carica come file da vendere). Messa da parte da Manuel per non complicare troppo il giro, da riprendere con calma.
 
+☐ [Idea, 2026-10-01] **Condividere un profilo negli Update** (repost di una persona, non solo di un Journey/episodio): richiede lavoro vero, non solo riuso — il modello `Update` ha solo `linkedJourneyId`/`linkedEpisodeId`, serve aggiungere `linkedUserId` (migrazione) + aggiornare `shareToUpdate` + un nuovo modo di mostrare questo tipo di Update ovunque compaiono (Home, profilo, visualizzatore a schermo intero). Per ora nel menu "..." del profilo c'è solo "Copia link".
+
 ## Monetizzazione
 
 Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator`, `/pricing`, `/settings/subscription`) esistono ma mostrano solo "Coming soon". Percentuali e ordine di attivazione decisi al Punto 3 dell'allineamento (`93_Project_Alignment_Recap.md`), dettagli in `10_Monetization.md` v4.0.
