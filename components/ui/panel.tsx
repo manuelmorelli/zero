@@ -46,5 +46,8 @@ export const CHIP_SELECTED =
 export const PANEL_DANGER = "rounded-2xl border border-danger-line bg-danger-soft p-5";
 /** Riquadro tratteggiato: spazi vuoti da riempire (carica un file, aggiungi qualcosa). */
 export const PANEL_DASHED = "rounded-2xl border border-dashed border-border p-5";
-/** Riga cliccabile dentro un elenco (miniatura + testo): stesso bordo dei riquadri, meno spazio interno. */
-export const ROW = "rounded-xl border border-border bg-surface p-2 transition-colors hover:border-ink-muted";
+/** Riga cliccabile dentro un elenco (miniatura + testo): stesso bordo dei riquadri, meno spazio
+ * interno. Bordo arancione + bagliore al passaggio del mouse, stesso trattamento di tutte le
+ * altre card illuminate del sito (CoverFrame, card Journey della Dashboard): mai un bordo bianco
+ * all'hover (richiesto da Manuel, 2026-10-01). */
+export const ROW = "rounded-xl border border-border bg-surface p-2 shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow";
