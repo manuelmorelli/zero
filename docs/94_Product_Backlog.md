@@ -85,11 +85,11 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ## Sicurezza utenti
 
-☐ **Impostazioni Privacy (`/settings/privacy`)**: blocca utente e account privato. Pagina rimasta "Coming soon" dalla creazione dell'area Impostazioni (2026-08-31) perché le due funzioni non erano mai state decise. Bloccare un utente è diventato importante da quando esiste la messaggistica privata. Confermato da Manuel come lavoro da fare (2026-09-29).
+☑ **Impostazioni Privacy (`/settings/privacy`)**: blocca utente e account privato (2026-10-01). Bloccare annulla il segue reciproco, chiude i messaggi e nasconde i profili tra le due parti (`lib/block.ts`, `lib/actions/block.ts`). Account privato (scelta "stile YouTube" scartata, vedi discussione: YouTube non ha un vero account privato, solo visibilità per-video): chi non ti segue vede solo nome/foto/bio, non Journey/Update — ma i Journey pubblicati restano scopribili in Discovery/Ricerca, decisione esplicita per non penalizzare chi crea contenuti. `User.isPrivate` + model `Block`, gate in `app/profile/[username]/page.tsx`.
 
 ## Discovery
 
-☐ **Most Completed Journeys, solo nella pagina `/journeys`**: classifica dei Journey che la gente guarda fino alla fine (base dati già pronta in `EpisodeProgress`). Era nel piano Discovery di agosto, poi eliminata; Manuel (2026-09-29) vuole ridarle uno spazio, ma solo nella pagina Journeys, non in Home.
+☑ **Most Completed Journeys, solo nella pagina `/journeys`** (2026-10-01): classifica dei Journey ordinata per quota di spettatori che finiscono almeno il 90% degli episodi (stesso criterio di "completamento" di Journey Score), non per il punteggio misto di Top Journeys. Un Journey entra in classifica solo con almeno 5 spettatori distinti, altrimenti la riga semplicemente non lo include — mai una percentuale mostrata. `lib/discovery/mostCompletedJourneys.ts`, riusa `computeViewerStatsByJourney` estratta da `lib/scoring/journeyScore.ts`.
 
 ## Business futuro (idee, nessun piano richiesto ora)
 
