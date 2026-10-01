@@ -246,7 +246,7 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
 function HeroSlideCard({ slide }: { slide: HeroSlide }) {
   if (slide.kind === "demo") {
     return (
-      <div className={cn(PANEL_GLASS, "rounded-xl p-3.5 shadow-glow backdrop-blur-md")}>
+      <div className={cn(PANEL_GLASS, "rounded-xl p-3.5 shadow-glow")}>
         <Quote className="h-3.5 w-3.5 text-ember" aria-hidden="true" />
         <p className="mt-2 text-sm leading-relaxed text-ink">{slide.quote}</p>
         <p className="mt-2 text-hero-caption text-ink-muted">{slide.author}</p>
@@ -257,7 +257,7 @@ function HeroSlideCard({ slide }: { slide: HeroSlide }) {
   return (
     <Link
       href={`/journeys/${slide.id}`}
-      className={cn(PANEL_GLASS, "block rounded-xl p-3.5 shadow-glow backdrop-blur-md transition-colors duration-300 hover:border-ember")}
+      className={cn(PANEL_GLASS, "block rounded-xl p-3.5 shadow-glow transition-colors duration-300 hover:border-ember")}
     >
       {slide.category && (
         <p className="text-hero-tag uppercase tracking-[0.2em] text-ember">{slide.category}</p>
