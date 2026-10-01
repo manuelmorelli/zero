@@ -31,7 +31,7 @@ import { findUserByUsernameOrId } from "@/lib/profile/findUserByUsernameOrId";
 import { FreeEventsSection } from "@/components/profile/FreeEventsSection";
 import { getFreeEventItems } from "@/lib/community/freeEvents";
 import { NOTICE } from "@/components/ui/panel";
-import { Button } from "@/components/ui/button";
+import { Button, BUTTON_VARIANTS } from "@/components/ui/button";
 import { SectionTitle } from "@/components/ui/heading";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
@@ -201,23 +201,37 @@ export default async function PublicProfilePage({
               <Button variant="secondary" href="/dashboard">
                 Dashboard
               </Button>
-              <Button variant="secondary" href="/dashboard/community">
-                Community
-              </Button>
               <ShareProfileButton />
             </>
           ) : (
             <>
               <FollowButton userId={user.id} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} />
               {canMessageUser && <MessageButton userId={user.id} />}
-              {creator && <CreatorEconomyLinks username={username} />}
               {isLoggedIn && <ReportButton targetType="USER" targetId={user.id} />}
             </>
           )
         }
       />
 
-      <ProfileTabs basePath={`/profile/${username}`} activeTab={activeTab} />
+      <ProfileTabs
+        basePath={`/profile/${username}`}
+        activeTab={activeTab}
+        actions={
+          isOwnProfile ? (
+            <Link
+              href="/dashboard/community"
+              className={cn(
+                BUTTON_VARIANTS.secondary,
+                "text-on-photo shadow-glow backdrop-blur-md opacity-70 transition-all duration-300 hover:opacity-100"
+              )}
+            >
+              Community
+            </Link>
+          ) : creator ? (
+            <CreatorEconomyLinks username={username} />
+          ) : undefined
+        }
+      />
 
       <div className={cn(PAGE_WIDTH.wideCover, "py-4")}>
         {activeTab === "overview" && (
@@ -408,8 +422,14 @@ export default async function PublicProfilePage({
  * Consulting (deciso con Manuel il 2026-09-22: niente pagamento reale dietro per ora). */
 function CreatorEconomyLinks({ username }: { username: string }) {
   return (
-    <Button variant="secondary" href={`/profile/${username}/community`}>
+    <Link
+      href={`/profile/${username}/community`}
+      className={cn(
+        BUTTON_VARIANTS.secondary,
+        "text-on-photo shadow-glow backdrop-blur-md opacity-70 transition-all duration-300 hover:opacity-100"
+      )}
+    >
       Community
-    </Button>
+    </Link>
   );
 }

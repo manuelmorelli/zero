@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { BUTTON_VARIANTS } from "@/components/ui/button";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { cn } from "@/lib/utils";
@@ -13,9 +14,12 @@ const TABS: { key: ProfileTab; label: string }[] = [
 type ProfileTabsProps = {
   basePath: string;
   activeTab: ProfileTab;
+  /** Altri link nella stessa riga, stesso stile dei tab (es. Community): sempre subito dopo
+   * Overview/Journeys, mai separati in un'altra riga (richiesto da Manuel, 2026-10-01). */
+  actions?: ReactNode;
 };
 
-export function ProfileTabs({ basePath, activeTab }: ProfileTabsProps) {
+export function ProfileTabs({ basePath, activeTab, actions }: ProfileTabsProps) {
   return (
     <div className="py-1">
       <div className={cn("no-scrollbar flex items-center gap-2.5 overflow-x-auto", PAGE_WIDTH.wideCover)}>
@@ -36,6 +40,7 @@ export function ProfileTabs({ basePath, activeTab }: ProfileTabsProps) {
             </Link>
           );
         })}
+        {actions}
       </div>
     </div>
   );
