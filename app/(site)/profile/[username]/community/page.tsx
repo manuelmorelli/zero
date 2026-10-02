@@ -18,7 +18,9 @@ import { FadeImage } from "@/components/common/FadeImage";
 import { prisma } from "@/lib/prisma";
 import { getViewerSession } from "@/lib/session";
 import { getFreeEventItems } from "@/lib/community/freeEvents";
+import { getForumJourneys } from "@/lib/community/forumJourneys";
 import { FreeEventsSection } from "@/components/profile/FreeEventsSection";
+import { ForumJourneyList } from "@/components/community/ForumJourneyList";
 import { NOTICE, PANEL_ACCENT } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
 import { PageTitle, SectionTitle } from "@/components/ui/heading";
@@ -77,7 +79,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
   const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
   const session = await getViewerSession();
 
-  const [paidWorkshops, paidEvents, digitalProducts, personalServices, freeEvents] = creator
+  const [paidWorkshops, paidEvents, digitalProducts, personalServices, freeEvents, forumJourneys] = creator
     ? await Promise.all([
         prisma.workshop.findMany({
           where: { creatorId: creator.id, deletedAt: null, status: "ACTIVE", isFree: false },
@@ -96,8 +98,9 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
           orderBy: { createdAt: "desc" },
         }),
         getFreeEventItems(creator.id, session?.user.id ?? null),
+        getForumJourneys(creator.id),
       ])
-    : [[], [], [], [], []];
+    : [[], [], [], [], [], []];
 
   const shopItems: OfferingCard[] = await Promise.all(
     digitalProducts.map(async (item) => ({
@@ -204,8 +207,15 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
           </div>
         </section>
 
+        <section className="mt-10">
+          <SectionTitle>Activities</SectionTitle>
+          <p className="mt-1 text-sm text-ink-muted">
+            Everything {user.name.split(" ")[0]} organizes: membership perks, workshops, events, products and 1:1 sessions.
+          </p>
+        </section>
+
         {freeEvents.length > 0 && (
-          <div className="mt-10">
+          <div className="mt-6">
             <FreeEventsSection items={freeEvents} isLoggedIn={Boolean(session)} />
           </div>
         )}
@@ -252,6 +262,14 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
           description={`Book a call with ${user.name.split(" ")[0]}, sold individually by duration.`}
           items={consultingSessions}
         />
+
+        <section className="mt-14 border-t border-border pt-10">
+          <SectionTitle>Forum</SectionTitle>
+          <p className="mt-1 text-sm text-ink-muted">
+            Text-only discussion between people doing {user.name.split(" ")[0]}&apos;s Journeys and {user.name.split(" ")[0]}, separate from Activities.
+          </p>
+          <ForumJourneyList journeys={forumJourneys} />
+        </section>
       </div>
     </main>
   );

@@ -198,6 +198,7 @@ model User {
   conversationsAsA   Conversation[]    @relation("ConversationsAsA")
   conversationsAsB   Conversation[]    @relation("ConversationsAsB")
   messagesSent       Message[]
+  forumMessages      ForumMessage[]
   aiImageGenerations AiImageGeneration[]
   // "blocksMade" = righe in cui questo utente ha bloccato qualcuno, "blockedBy" quelle in cui
   // è lui ad essere stato bloccato. Vedi model Block.
@@ -327,6 +328,7 @@ model Journey {
   analyticsSnapshots Analytics[]
   linkedByUpdates Update[]
   wildcardPicks WildcardPick[]
+  forumMessages ForumMessage[]
 
   @@index([creatorId, order])
   @@map("journeys")
@@ -426,6 +428,31 @@ model EpisodeProgress {
 
   @@unique([userId, episodeId])
   @@map("episode_progresses")
+}
+
+// ------------------------------------------------------------
+// FORUM (Community > Forum, una bacheca per Journey)
+// ------------------------------------------------------------
+
+// Bacheca di discussione testuale legata a un Journey (non alla Community in generale): chi lo sta
+// seguendo e il creator si confrontano qui, separata dalle Activities (Workshop/Event/Shop/1:1).
+// V1 volutamente semplice (richiesto da Manuel, 2026-10-02): un'unica bacheca per Journey, ordine
+// cronologico, nessuna divisione per Capitolo e nessuna risposta a thread — entrambe annotate come
+// upgrade futuri in docs/94_Product_Backlog.md. Solo testo, niente foto/video.
+model ForumMessage {
+  id        String    @id @default(uuid())
+  journeyId String
+  journey   Journey   @relation(fields: [journeyId], references: [id])
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id])
+  content   String
+  createdAt DateTime  @default(now())
+  // Cancellazione propria (autore) o moderazione del creator sul forum del proprio Journey:
+  // soft delete, stesso pattern già in uso altrove nello schema (Episode, Journey...).
+  deletedAt DateTime?
+
+  @@index([journeyId, createdAt])
+  @@map("forum_messages")
 }
 
 // ------------------------------------------------------------
