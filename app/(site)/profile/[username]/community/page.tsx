@@ -1,17 +1,5 @@
-import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import {
-  Check,
-  FileText,
-  Lock,
-  Map,
-  MapPin,
-  MessageCircle,
-  Play,
-  Video,
-  type LucideIcon,
-} from "lucide-react";
+import { Check, FileText, Lock, Map, MapPin, MessageCircle, Play, Video, type LucideIcon } from "lucide-react";
 import { findUserByUsernameOrId } from "@/lib/profile/findUserByUsernameOrId";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { FadeImage } from "@/components/common/FadeImage";
@@ -21,7 +9,8 @@ import { getFreeEventItems } from "@/lib/community/freeEvents";
 import { getForumJourneys } from "@/lib/community/forumJourneys";
 import { FreeEventsSection } from "@/components/profile/FreeEventsSection";
 import { ForumJourneyList } from "@/components/community/ForumJourneyList";
-import { NOTICE, PANEL_ACCENT } from "@/components/ui/panel";
+import { ListingCard, COMMUNITY_CARD_GRID } from "@/components/community/ListingCard";
+import { PANEL_ACCENT } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
 import { PageTitle, SectionTitle } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
@@ -29,10 +18,10 @@ import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
 /** Pagina "Community" del profilo (ex "Subscribe", rinominata il 2026-09-26 su richiesta di
  * Manuel: un follower deve poter vedere qui TUTTO quello che il creator organizza, gratis o a
- * pagamento, non solo le offerte a pagamento). In cima resta l'abbonamento mensile a pagamento
- * (Punto 7 dell'allineamento, "Struttura pagine Creator Economy", nessun pagamento reale ancora),
- * sotto gli eventi gratuiti (stessa sezione mostrata in anteprima sul profilo principale) e le
- * offerte a pagamento (Shop, Workshop & Events, 1:1 Consulting), tutte reali (Punto 8). */
+ * pagamento, non solo le offerte a pagamento). Il riquadro in cima (abbonamento mensile, Punto 7
+ * dell'allineamento) resta fisso e invariato; sotto, due colonne affiancate (2026-10-03, richiesto
+ * da Manuel): Activities a sinistra (eventi gratuiti, Shop, Workshop & Eventi, 1:1 Consulting) e
+ * Forum a destra — spazi separati, mai uniti in un'unica colonna verticale. */
 const MONTHLY_PRICE = "€9";
 
 const benefits = [
@@ -54,8 +43,7 @@ type OfferingCard = {
   type: "workshop" | "event" | "digital_product" | "personal_service";
   coverUrl: string | null;
   title: string;
-  description: string;
-  meta: string;
+  chipLabel: string;
   price: string;
   ctaLabel: string;
 };
@@ -109,8 +97,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
       type: "digital_product" as const,
       coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
-      description: item.description ?? "",
-      meta: "Digital product",
+      chipLabel: "Digital product",
       price: formatPrice(item.price),
       ctaLabel: "Buy",
     }))
@@ -123,8 +110,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
       type: "workshop" as const,
       coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
-      description: item.description ?? "",
-      meta: `Workshop · ${formatEventMeta(item.startsAt)}`,
+      chipLabel: `Workshop · ${formatEventMeta(item.startsAt)}`,
       price: formatPrice(item.price),
       ctaLabel: "Reserve",
     })),
@@ -134,8 +120,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
       type: "event" as const,
       coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
-      description: item.description ?? "",
-      meta: `Event · ${formatEventMeta(item.startsAt)}`,
+      chipLabel: `Event · ${formatEventMeta(item.startsAt)}`,
       price: formatPrice(item.price),
       ctaLabel: "Reserve",
     })),
@@ -148,8 +133,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
       type: "personal_service" as const,
       coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
-      description: item.description ?? "",
-      meta: "1:1 Service",
+      chipLabel: "1:1 Service",
       price: formatPrice(item.price),
       ctaLabel: "Book a call",
     }))
@@ -157,8 +141,8 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
 
   return (
     <main>
-      <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "max-w-4xl")}>
-        <section className={cn(PANEL_ACCENT, "sm:p-8")}>
+      <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING)}>
+        <section className={cn(PANEL_ACCENT, "mx-auto max-w-4xl sm:p-8")}>
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <div className="flex items-center gap-3">
@@ -207,69 +191,73 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
           </div>
         </section>
 
-        <section className="mt-10">
-          <SectionTitle>Activities</SectionTitle>
-          <p className="mt-1 text-sm text-ink-muted">
-            Everything {user.name.split(" ")[0]} organizes: membership perks, workshops, events, products and 1:1 sessions.
-          </p>
-        </section>
+        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-2">
+          <div>
+            <SectionTitle>Activities</SectionTitle>
+            <p className="mt-1 text-sm text-ink-muted">
+              Everything {user.name.split(" ")[0]} organizes: membership perks, workshops, events, products and 1:1
+              sessions.
+            </p>
 
-        {freeEvents.length > 0 && (
-          <div className="mt-6">
-            <FreeEventsSection items={freeEvents} isLoggedIn={Boolean(session)} />
-          </div>
-        )}
-
-        <section className="mt-10">
-          <SectionTitle>What&apos;s Inside</SectionTitle>
-          <p className="mt-1 text-sm text-ink-muted">A preview of what members unlock.</p>
-
-          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {insideItems.map((item) => (
-              <div key={item.title} className="overflow-hidden rounded-xl border border-border bg-surface">
-                <div className="relative flex aspect-video items-center justify-center border-b border-border bg-surface-2">
-                  {item.kind === "video" && <Play className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
-                  {item.kind === "document" && <FileText className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
-                  {item.kind === "map" && <Map className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
-                  <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-ember-line bg-ember-soft px-2 py-0.5 text-sm font-semibold uppercase tracking-wide text-ink-muted backdrop-blur-md">
-                    <Lock className="h-3 w-3" aria-hidden="true" />
-                    Locked
-                  </span>
-                </div>
-                <div className="p-3.5">
-                  <p className="truncate text-sm font-semibold text-ink">{item.title}</p>
-                  <p className="mt-0.5 text-sm text-ink-muted">{item.meta}</p>
-                </div>
+            {freeEvents.length > 0 && (
+              <div className="mt-6">
+                <FreeEventsSection items={freeEvents} isLoggedIn={Boolean(session)} gridClassName={COMMUNITY_CARD_GRID} />
               </div>
-            ))}
+            )}
+
+            <section className="mt-10">
+              <SectionTitle>What&apos;s Inside</SectionTitle>
+              <p className="mt-1 text-sm text-ink-muted">A preview of what members unlock.</p>
+
+              <div className={`mt-4 ${COMMUNITY_CARD_GRID}`}>
+                {insideItems.map((item) => (
+                  <div key={item.title} className="overflow-hidden rounded-xl border border-border bg-surface">
+                    <div className="relative flex aspect-video items-center justify-center border-b border-border bg-surface-2">
+                      {item.kind === "video" && <Play className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
+                      {item.kind === "document" && <FileText className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
+                      {item.kind === "map" && <Map className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
+                      <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-ember-line bg-ember-soft px-2 py-0.5 text-sm font-semibold uppercase tracking-wide text-ink-muted backdrop-blur-md">
+                        <Lock className="h-3 w-3" aria-hidden="true" />
+                        Locked
+                      </span>
+                    </div>
+                    <div className="p-3.5">
+                      <p className="truncate text-sm font-semibold text-ink">{item.title}</p>
+                      <p className="mt-0.5 text-sm text-ink-muted">{item.meta}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <OfferingSection
+              title="Shop"
+              description={`Digital products from ${user.name.split(" ")[0]}, sold individually.`}
+              items={shopItems}
+            />
+
+            <OfferingSection
+              title="Workshops & Events"
+              description="Live sessions and meetups, booked individually."
+              items={workshopsAndEvents}
+            />
+
+            <OfferingSection
+              title="1:1 Consulting"
+              description={`Book a call with ${user.name.split(" ")[0]}, sold individually by duration.`}
+              items={consultingSessions}
+            />
           </div>
-        </section>
 
-        <OfferingSection
-          title="Shop"
-          description={`Digital products from ${user.name.split(" ")[0]}, sold individually.`}
-          items={shopItems}
-        />
-
-        <OfferingSection
-          title="Workshops & Events"
-          description="Live sessions and meetups, booked individually."
-          items={workshopsAndEvents}
-        />
-
-        <OfferingSection
-          title="1:1 Consulting"
-          description={`Book a call with ${user.name.split(" ")[0]}, sold individually by duration.`}
-          items={consultingSessions}
-        />
-
-        <section className="mt-14 border-t border-border pt-10">
-          <SectionTitle>Forum</SectionTitle>
-          <p className="mt-1 text-sm text-ink-muted">
-            Text-only discussion between people doing {user.name.split(" ")[0]}&apos;s Journeys and {user.name.split(" ")[0]}, separate from Activities.
-          </p>
-          <ForumJourneyList journeys={forumJourneys} />
-        </section>
+          <div>
+            <SectionTitle>Forum</SectionTitle>
+            <p className="mt-1 text-sm text-ink-muted">
+              Text-only discussion between people doing {user.name.split(" ")[0]}&apos;s Journeys and{" "}
+              {user.name.split(" ")[0]}, separate from Activities.
+            </p>
+            <ForumJourneyList journeys={forumJourneys} />
+          </div>
+        </div>
       </div>
     </main>
   );
@@ -277,7 +265,8 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
 
 /** Griglia di card riutilizzata per Shop/Workshop/Consulenza: ognuna è un'offerta indipendente
  * creata dal creator, con il proprio prezzo, non inclusa nell'abbonamento sopra. Ogni card apre la
- * sua pagina di dettaglio pubblica e condivisibile (2026-09-26, richiesto da Manuel). */
+ * sua pagina di dettaglio pubblica e condivisibile (2026-09-26, richiesto da Manuel). Nessun
+ * elemento = sezione invisibile (2026-10-03): mai più un riquadro "Nothing here yet".*/
 function OfferingSection({
   title,
   description,
@@ -287,51 +276,36 @@ function OfferingSection({
   description: string;
   items: OfferingCard[];
 }) {
+  if (items.length === 0) return null;
+
   return (
     <section className="mt-10">
       <SectionTitle>{title}</SectionTitle>
       <p className="mt-1 text-sm text-ink-muted">{description}</p>
 
-      {items.length === 0 ? (
-        <p className={`mt-4 ${NOTICE}`}>
-          Nothing here yet.
-        </p>
-      ) : (
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.id}
-                href={`/community/${item.type}/${item.id}`}
-                className="flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-ink-muted"
-              >
-                <div className="relative flex aspect-video items-center justify-center border-b border-border bg-surface-2">
-                  {item.coverUrl ? (
-                    <Image src={item.coverUrl} alt={item.title} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-cover" />
-                  ) : (
-                    <Icon className="h-8 w-8 text-ink-faint" aria-hidden="true" />
-                  )}
-                </div>
-                <div className="flex flex-1 flex-col p-3.5">
-                  <p className="text-sm font-semibold uppercase tracking-wide text-ink-faint">{item.meta}</p>
-                  <p className="mt-1 text-sm font-semibold leading-snug text-ink">{item.title}</p>
-                  <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-ink-muted">{item.description}</p>
-                  <div className="mt-auto flex items-center justify-between gap-2 pt-3">
-                    <span className="text-base font-bold text-ink">{item.price}</span>
-                    <span
-                      title="Coming soon: payments aren't connected yet"
-                      className="cursor-not-allowed rounded-full bg-surface-2 px-3.5 py-1.5 text-sm font-semibold text-ink-faint"
-                    >
-                      {item.ctaLabel}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      )}
+      <div className={`mt-4 ${COMMUNITY_CARD_GRID}`}>
+        {items.map((item) => (
+          <ListingCard
+            key={item.id}
+            href={`/community/${item.type}/${item.id}`}
+            coverUrl={item.coverUrl}
+            icon={item.icon}
+            chipLabel={item.chipLabel}
+            title={item.title}
+            footer={
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-base font-bold text-ink">{item.price}</span>
+                <span
+                  title="Coming soon: payments aren't connected yet"
+                  className="cursor-not-allowed rounded-full bg-surface-2 px-3.5 py-1.5 text-sm font-semibold text-ink-faint"
+                >
+                  {item.ctaLabel}
+                </span>
+              </div>
+            }
+          />
+        ))}
+      </div>
     </section>
   );
 }

@@ -8,7 +8,6 @@ import { FORUM_MESSAGE_MAX_LENGTH } from "@/lib/constants/forum";
 import { Avatar } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Notice } from "@/components/ui/panel";
 
 type ForumComposerProps = {
   journeyId: string;
@@ -25,9 +24,9 @@ export function ForumComposer({ journeyId, canWrite, isLoggedIn, viewerName, vie
 
   if (!canWrite) {
     return (
-      <Notice className="mt-4">
+      <p className="mt-4 text-sm text-ink-muted">
         {isLoggedIn ? "Start this Journey to join the conversation." : "Log in and start this Journey to join the conversation."}
-      </Notice>
+      </p>
     );
   }
 

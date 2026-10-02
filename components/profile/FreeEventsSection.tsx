@@ -17,7 +17,17 @@ export type FreeEventItem = {
  * Manuel): un'iniziativa gratuita è contenuto pubblico come i Journey, non un'offerta a pagamento —
  * compare solo se il creator ne ha pubblicata almeno una, altrimenti la sezione non si mostra.
  * Riusata anche nella pagina Community stessa (2026-09-26), dove diventa l'elenco completo. */
-export function FreeEventsSection({ items, isLoggedIn }: { items: FreeEventItem[]; isLoggedIn: boolean }) {
+export function FreeEventsSection({
+  items,
+  isLoggedIn,
+  gridClassName = CARD_GRID.event,
+}: {
+  items: FreeEventItem[];
+  isLoggedIn: boolean;
+  /** Di base la griglia a pagina intera; la pagina Community passa una griglia più stretta
+   * (COMMUNITY_CARD_GRID) perché qui questa sezione vive dentro mezza pagina, non tutta. */
+  gridClassName?: string;
+}) {
   if (items.length === 0) return null;
 
   return (
@@ -28,7 +38,7 @@ export function FreeEventsSection({ items, isLoggedIn }: { items: FreeEventItem[
           segnalato da Manuel il 2026-09-26). Il pulsante Partecipo sta fuori da CoverFrame (non
           annidato nel suo Link): bordo/annidamento <a> non validi rompono click e layout, stesso
           principio già seguito da JourneyGrid per il suo menu "···". */}
-      <div className={`mt-4 ${CARD_GRID.event}`}>
+      <div className={`mt-4 ${gridClassName}`}>
         {items.map((item) => (
           <div key={`${item.kind}-${item.id}`} className="flex flex-col gap-2">
             <CoverFrame

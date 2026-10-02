@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CommunityListingMenu } from "@/components/creator/CommunityListingMenu";
 import type { CommunityListingType } from "@/lib/constants/communityListing";
-import { ROW, PANEL_DASHED } from "@/components/ui/panel";
+import { ROW } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
 
 export type ListingRowItem = {
@@ -73,18 +73,6 @@ export function CommunityListingRow({ type, item }: { type: CommunityListingType
       <div className="relative z-10 self-start">
         <CommunityListingMenu listingId={item.id} listingType={type} title={item.title} status={item.status} />
       </div>
-    </div>
-  );
-}
-
-/** Stesse dimensioni e stesso involucro di CommunityListingRow (miniatura + testo), per le
- * sezioni senza ancora nessun elemento: non deve sembrare un pezzo di UI diverso solo perché
- * non c'è ancora niente da mostrare. */
-export function EmptyListingRow() {
-  return (
-    <div className={cn(PANEL_DASHED, "flex w-full max-w-[420px] items-center gap-3 p-2")}>
-      <span className="aspect-4/3 w-36 shrink-0 overflow-hidden rounded-lg border border-border cover-placeholder sm:w-44" />
-      <span className="text-sm text-ink-muted">Nothing here yet.</span>
     </div>
   );
 }

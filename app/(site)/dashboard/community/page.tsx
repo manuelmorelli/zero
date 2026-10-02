@@ -1,12 +1,12 @@
-import Link from "next/link";
 import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
-import { DashboardPanel } from "@/components/creator/DashboardPanel";
-import { CommunityListingRow, EmptyListingRow, type ListingRowItem } from "@/components/creator/CommunityListingRow";
+import { getForumJourneys } from "@/lib/community/forumJourneys";
+import { CommunityListingRow, type ListingRowItem } from "@/components/creator/CommunityListingRow";
+import { ForumListingRow } from "@/components/creator/ForumListingRow";
 import { Reveal } from "@/components/common/Reveal";
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
-import { PageTitle } from "@/components/ui/heading";
+import { PageTitle, SectionTitle } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,7 @@ async function toRowItems(
 export default async function CommunityDashboardPage() {
   const { creator } = await requireCreator();
 
-  const [workshops, events, digitalProducts, personalServices] = await Promise.all([
+  const [workshops, events, digitalProducts, personalServices, forumJourneys] = await Promise.all([
     prisma.workshop.findMany({
       where: { creatorId: creator.id, deletedAt: null },
       orderBy: { createdAt: "desc" },
@@ -59,6 +59,7 @@ export default async function CommunityDashboardPage() {
       where: { creatorId: creator.id, deletedAt: null },
       orderBy: { createdAt: "desc" },
     }),
+    getForumJourneys(creator.id),
   ]);
 
   const [workshopItems, eventItems, digitalProductItems, personalServiceItems] = await Promise.all([
@@ -77,7 +78,7 @@ export default async function CommunityDashboardPage() {
 
   return (
     <main>
-      <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "max-w-[1000px] space-y-4")}>
+      <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "max-w-[1000px] space-y-8")}>
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -94,21 +95,43 @@ export default async function CommunityDashboardPage() {
           </div>
         </Reveal>
 
-        {sections.map((section, index) => (
-          <Reveal key={section.type} delayMs={40 + index * 30}>
-            <DashboardPanel title={section.title}>
-              {section.items.length === 0 ? (
-                <EmptyListingRow />
-              ) : (
-                <div className="space-y-2.5">
-                  {section.items.map((item) => (
-                    <CommunityListingRow key={item.id} type={section.type} item={item} />
-                  ))}
-                </div>
-              )}
-            </DashboardPanel>
+        {sections.map(
+          (section, index) =>
+            section.items.length > 0 && (
+              <Reveal key={section.type} delayMs={40 + index * 30}>
+                <section>
+                  <SectionTitle>{section.title}</SectionTitle>
+                  <div className="mt-3 space-y-2.5">
+                    {section.items.map((item) => (
+                      <CommunityListingRow key={item.id} type={section.type} item={item} />
+                    ))}
+                  </div>
+                </section>
+              </Reveal>
+            )
+        )}
+
+        {forumJourneys.length > 0 && (
+          <Reveal delayMs={40 + sections.length * 30}>
+            <section>
+              <SectionTitle>Forum</SectionTitle>
+              <p className="mt-1 text-sm text-ink-muted">
+                Open a Journey&apos;s forum to read the conversation and moderate it.
+              </p>
+              <div className="mt-3 space-y-2.5">
+                {forumJourneys.map((journey) => (
+                  <ForumListingRow
+                    key={journey.id}
+                    id={journey.id}
+                    title={journey.title}
+                    coverUrl={journey.coverUrl}
+                    messageCount={journey.messageCount}
+                  />
+                ))}
+              </div>
+            </section>
           </Reveal>
-        ))}
+        )}
       </div>
     </main>
   );

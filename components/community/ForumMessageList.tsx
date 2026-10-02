@@ -3,7 +3,7 @@ import type { ForumMessageItem } from "@/lib/community/forumMessages";
 import { ReportButton } from "@/components/common/ReportButton";
 import { ForumMessageDeleteButton } from "@/components/community/ForumMessageDeleteButton";
 import { Avatar } from "@/components/ui/avatar";
-import { PANEL, PANEL_GLASS, Notice } from "@/components/ui/panel";
+import { PANEL, PANEL_GLASS } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
 
 type ForumMessageListProps = {
@@ -21,9 +21,9 @@ function formatTimestamp(iso: string): string {
 export function ForumMessageList({ messages, currentUserId, isCreatorViewer, searchQuery }: ForumMessageListProps) {
   if (messages.length === 0) {
     return (
-      <Notice className="mt-4">
+      <p className="mt-4 text-sm text-ink-muted">
         {searchQuery ? `No messages match "${searchQuery}".` : "No messages yet, be the first to start the conversation."}
-      </Notice>
+      </p>
     );
   }
 
