@@ -40,8 +40,3 @@ export function ListingCard({
     </div>
   );
 }
-
-/** Griglia di card condivisa dalla colonna Activities e dalla colonna Forum: mai più di 2 per riga,
- * perché qui vivono dentro una colonna larga metà pagina (CARD_GRID.event di cover-card.tsx assume
- * invece la pagina intera, diventerebbe troppo stretta in due colonne). */
-export const COMMUNITY_CARD_GRID = "grid grid-cols-1 gap-4 sm:grid-cols-2";

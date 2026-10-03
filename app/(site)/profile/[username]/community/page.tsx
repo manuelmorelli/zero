@@ -1,27 +1,28 @@
 import { notFound } from "next/navigation";
-import { Check, FileText, Lock, Map, MapPin, MessageCircle, Play, Video, type LucideIcon } from "lucide-react";
+import { Check, FileText, MapPin, MessageCircle, Video, type LucideIcon } from "lucide-react";
 import { findUserByUsernameOrId } from "@/lib/profile/findUserByUsernameOrId";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { FadeImage } from "@/components/common/FadeImage";
+import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
+import { RsvpButton } from "@/components/profile/RsvpButton";
 import { prisma } from "@/lib/prisma";
 import { getViewerSession } from "@/lib/session";
 import { getFreeEventItems } from "@/lib/community/freeEvents";
 import { getForumJourneys } from "@/lib/community/forumJourneys";
-import { FreeEventsSection } from "@/components/profile/FreeEventsSection";
 import { ForumJourneyList } from "@/components/community/ForumJourneyList";
-import { ListingCard, COMMUNITY_CARD_GRID } from "@/components/community/ListingCard";
+import { ListingCard } from "@/components/community/ListingCard";
+import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
 import { PANEL_ACCENT } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
-import { PageTitle, SectionTitle } from "@/components/ui/heading";
+import { PageTitle } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
-/** Pagina "Community" del profilo (ex "Subscribe", rinominata il 2026-09-26 su richiesta di
- * Manuel: un follower deve poter vedere qui TUTTO quello che il creator organizza, gratis o a
- * pagamento, non solo le offerte a pagamento). Il riquadro in cima (abbonamento mensile, Punto 7
- * dell'allineamento) resta fisso e invariato; sotto, due colonne affiancate (2026-10-03, richiesto
- * da Manuel): Activities a sinistra (eventi gratuiti, Shop, Workshop & Eventi, 1:1 Consulting) e
- * Forum a destra — spazi separati, mai uniti in un'unica colonna verticale. */
+/** Pagina "Community" del profilo, vista da chi visita. Il riquadro in cima (abbonamento mensile,
+ * Punto 7 dell'allineamento) resta fisso. Sotto due righe, ciascuna con il suo scorrimento laterale
+ * come Journey e Journeyers (2026-10-03, richiesto da Manuel): Activities (tutte le attività in un'unica
+ * riga, ordinate per data) e Forum (una card per Journey, su una riga sua). Una categoria vuota non
+ * compare mai. */
 const MONTHLY_PRICE = "€9";
 
 const benefits = [
@@ -31,19 +32,20 @@ const benefits = [
   "A member badge next to your name everywhere on Zero",
 ];
 
-const insideItems = [
-  { kind: "video" as const, title: "Extended behind-the-scenes cut", meta: "Video · Members only" },
-  { kind: "document" as const, title: "The recovery worksheet", meta: "PDF · Members only" },
-  { kind: "map" as const, title: "Route map and guide", meta: "Guide · Members only" },
-];
+type ActivityEntry = {
+  key: string;
+  startsAt: Date | null;
+  element: React.ReactNode;
+};
 
-type OfferingCard = {
+type OfferingItem = {
   icon: LucideIcon;
   id: string;
   type: "workshop" | "event" | "digital_product" | "personal_service";
   coverUrl: string | null;
   title: string;
   chipLabel: string;
+  startsAt: Date | null;
   price: string;
   ctaLabel: string;
 };
@@ -63,6 +65,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
   if (!user || user.deletedAt) notFound();
 
   const avatarUrl = user.avatarUrl ? await getImagePlaybackUrl(user.avatarUrl) : null;
+  const firstName = user.name.split(" ")[0];
 
   const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
   const session = await getViewerSession();
@@ -90,7 +93,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
       ])
     : [[], [], [], [], [], []];
 
-  const shopItems: OfferingCard[] = await Promise.all(
+  const shopItems: OfferingItem[] = await Promise.all(
     digitalProducts.map(async (item) => ({
       icon: FileText,
       id: item.id,
@@ -98,12 +101,13 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
       coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
       chipLabel: "Digital product",
+      startsAt: null,
       price: formatPrice(item.price),
       ctaLabel: "Buy",
     }))
   );
 
-  const workshopsAndEvents: OfferingCard[] = await Promise.all([
+  const workshopsAndEvents: OfferingItem[] = await Promise.all([
     ...paidWorkshops.map(async (item) => ({
       icon: Video,
       id: item.id,
@@ -111,6 +115,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
       coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
       chipLabel: `Workshop · ${formatEventMeta(item.startsAt)}`,
+      startsAt: item.startsAt,
       price: formatPrice(item.price),
       ctaLabel: "Reserve",
     })),
@@ -121,12 +126,13 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
       coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
       chipLabel: `Event · ${formatEventMeta(item.startsAt)}`,
+      startsAt: item.startsAt,
       price: formatPrice(item.price),
       ctaLabel: "Reserve",
     })),
   ]);
 
-  const consultingSessions: OfferingCard[] = await Promise.all(
+  const consultingSessions: OfferingItem[] = await Promise.all(
     personalServices.map(async (item) => ({
       icon: MessageCircle,
       id: item.id,
@@ -134,10 +140,74 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
       coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
       chipLabel: "1:1 Service",
+      startsAt: null,
       price: formatPrice(item.price),
       ctaLabel: "Book a call",
     }))
   );
+
+  const activities: ActivityEntry[] = [
+    ...freeEvents.map((item) => {
+      const startsAt = item.startsAt ? new Date(item.startsAt) : null;
+      const kindLabel = item.kind === "workshop" ? "Workshop" : "Event";
+      return {
+        key: `free-${item.kind}-${item.id}`,
+        startsAt,
+        element: (
+          <ListingCard
+            href={`/community/${item.kind}/${item.id}`}
+            coverUrl={item.coverUrl}
+            icon={item.kind === "workshop" ? Video : MapPin}
+            chipLabel={`Free · ${kindLabel} · ${formatEventMeta(startsAt)}`}
+            title={item.title}
+            footer={
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate text-base text-ink-muted">{item.rsvpCount} going</span>
+                <RsvpButton
+                  kind={item.kind}
+                  id={item.id}
+                  initialGoing={item.going}
+                  isLoggedIn={Boolean(session)}
+                />
+              </div>
+            }
+          />
+        ),
+      };
+    }),
+    ...[...shopItems, ...workshopsAndEvents, ...consultingSessions].map((item) => ({
+      key: `${item.type}-${item.id}`,
+      startsAt: item.startsAt,
+      element: (
+        <ListingCard
+          href={`/community/${item.type}/${item.id}`}
+          coverUrl={item.coverUrl}
+          icon={item.icon}
+          chipLabel={item.chipLabel}
+          title={item.title}
+          footer={
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-lg font-bold text-ink">{item.price}</span>
+              <span
+                title="Coming soon: payments aren't connected yet"
+                className="cursor-not-allowed rounded-full bg-surface-2 px-3.5 py-1.5 text-sm font-semibold text-ink-faint"
+              >
+                {item.ctaLabel}
+              </span>
+            </div>
+          }
+        />
+      ),
+    })),
+  ];
+
+  // Prima le attività con data, dalla più vicina; poi quelle senza data (prodotti, consulenze).
+  activities.sort((a, b) => {
+    if (a.startsAt && b.startsAt) return a.startsAt.getTime() - b.startsAt.getTime();
+    if (a.startsAt) return -1;
+    if (b.startsAt) return 1;
+    return 0;
+  });
 
   return (
     <main>
@@ -162,8 +232,8 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
               </div>
 
               <p className="mt-5 max-w-[48ch] text-sm leading-relaxed text-ink-muted">
-                Everything {user.name.split(" ")[0]} organizes, free and paid: upcoming events, exclusive
-                membership perks, workshops, digital products and 1:1 sessions.
+                Everything {firstName} organizes, free and paid: upcoming events, exclusive membership perks,
+                workshops, digital products and 1:1 sessions.
               </p>
 
               <ul className="mt-5 space-y-2.5">
@@ -191,121 +261,29 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
           </div>
         </section>
 
-        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-2">
-          <div>
-            <SectionTitle>Activities</SectionTitle>
-            <p className="mt-1 text-sm text-ink-muted">
-              Everything {user.name.split(" ")[0]} organizes: membership perks, workshops, events, products and 1:1
-              sessions.
-            </p>
-
-            {freeEvents.length > 0 && (
-              <div className="mt-6">
-                <FreeEventsSection items={freeEvents} isLoggedIn={Boolean(session)} gridClassName={COMMUNITY_CARD_GRID} />
-              </div>
-            )}
-
-            <section className="mt-10">
-              <SectionTitle>What&apos;s Inside</SectionTitle>
-              <p className="mt-1 text-sm text-ink-muted">A preview of what members unlock.</p>
-
-              <div className={`mt-4 ${COMMUNITY_CARD_GRID}`}>
-                {insideItems.map((item) => (
-                  <div key={item.title} className="overflow-hidden rounded-xl border border-border bg-surface">
-                    <div className="relative flex aspect-video items-center justify-center border-b border-border bg-surface-2">
-                      {item.kind === "video" && <Play className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
-                      {item.kind === "document" && <FileText className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
-                      {item.kind === "map" && <Map className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
-                      <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-ember-line bg-ember-soft px-2 py-0.5 text-sm font-semibold uppercase tracking-wide text-ink-muted backdrop-blur-md">
-                        <Lock className="h-3 w-3" aria-hidden="true" />
-                        Locked
-                      </span>
-                    </div>
-                    <div className="p-3.5">
-                      <p className="truncate text-sm font-semibold text-ink">{item.title}</p>
-                      <p className="mt-0.5 text-sm text-ink-muted">{item.meta}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <OfferingSection
-              title="Shop"
-              description={`Digital products from ${user.name.split(" ")[0]}, sold individually.`}
-              items={shopItems}
-            />
-
-            <OfferingSection
-              title="Workshops & Events"
-              description="Live sessions and meetups, booked individually."
-              items={workshopsAndEvents}
-            />
-
-            <OfferingSection
-              title="1:1 Consulting"
-              description={`Book a call with ${user.name.split(" ")[0]}, sold individually by duration.`}
-              items={consultingSessions}
-            />
+        {activities.length > 0 && (
+          <div className="mt-12">
+            <HorizontalScrollRow title="Activities" subtitle={`Everything ${firstName} organizes, in one place.`}>
+              {activities.map((activity) => (
+                <div key={activity.key} className={CARD_ROW_ITEM.event}>
+                  {activity.element}
+                </div>
+              ))}
+            </HorizontalScrollRow>
           </div>
+        )}
 
-          <div>
-            <SectionTitle>Forum</SectionTitle>
-            <p className="mt-1 text-sm text-ink-muted">
-              Text-only discussion between people doing {user.name.split(" ")[0]}&apos;s Journeys and{" "}
-              {user.name.split(" ")[0]}, separate from Activities.
-            </p>
-            <ForumJourneyList journeys={forumJourneys} />
+        {forumJourneys.length > 0 && (
+          <div className="mt-12">
+            <HorizontalScrollRow
+              title="Forum"
+              subtitle={`Text-only discussion between people doing ${firstName}'s Journeys and ${firstName}.`}
+            >
+              <ForumJourneyList journeys={forumJourneys} />
+            </HorizontalScrollRow>
           </div>
-        </div>
+        )}
       </div>
     </main>
-  );
-}
-
-/** Griglia di card riutilizzata per Shop/Workshop/Consulenza: ognuna è un'offerta indipendente
- * creata dal creator, con il proprio prezzo, non inclusa nell'abbonamento sopra. Ogni card apre la
- * sua pagina di dettaglio pubblica e condivisibile (2026-09-26, richiesto da Manuel). Nessun
- * elemento = sezione invisibile (2026-10-03): mai più un riquadro "Nothing here yet".*/
-function OfferingSection({
-  title,
-  description,
-  items,
-}: {
-  title: string;
-  description: string;
-  items: OfferingCard[];
-}) {
-  if (items.length === 0) return null;
-
-  return (
-    <section className="mt-10">
-      <SectionTitle>{title}</SectionTitle>
-      <p className="mt-1 text-sm text-ink-muted">{description}</p>
-
-      <div className={`mt-4 ${COMMUNITY_CARD_GRID}`}>
-        {items.map((item) => (
-          <ListingCard
-            key={item.id}
-            href={`/community/${item.type}/${item.id}`}
-            coverUrl={item.coverUrl}
-            icon={item.icon}
-            chipLabel={item.chipLabel}
-            title={item.title}
-            footer={
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-base font-bold text-ink">{item.price}</span>
-                <span
-                  title="Coming soon: payments aren't connected yet"
-                  className="cursor-not-allowed rounded-full bg-surface-2 px-3.5 py-1.5 text-sm font-semibold text-ink-faint"
-                >
-                  {item.ctaLabel}
-                </span>
-              </div>
-            }
-          />
-        ))}
-      </div>
-    </section>
   );
 }
