@@ -40,6 +40,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☐ **S17.** Punto 9: business plan e dossier investitori
 ☐ **S18.** Punto 10: infrastruttura tecnica
 ☐ **S19.** Punto 11: piano di lancio
+☑ **S20.** Portare il lavoro da "design-wow-experiment" a "master" (3 ott 2026: master spostato e caricato su GitHub, stessa punta ffd7338). Poi, sempre il 3 ott 2026, il ramo aperto nella cartella è passato su "master" e "design-wow-experiment" è stato cancellato (locale e GitHub) su ok esplicito di Manuel. Esiste solo "master".
 
 Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programmato: sponsor aziende, marketplace UGC. In pausa per scelta: video leggeri e compressione video.
 
