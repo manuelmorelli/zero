@@ -54,7 +54,10 @@ export function HorizontalScrollRow({ id, title, subtitle, children }: Horizonta
       </div>
 
       <div className="relative mt-4">
-        <div ref={scrollRef} className="no-scrollbar flex items-start gap-4 overflow-x-auto scroll-smooth pb-1">
+        {/* Il contenitore scorrevole taglia tutto ciò che esce dai suoi bordi: il padding dà spazio
+            al sollevamento e al bagliore della card al passaggio del mouse, i margini negativi lo
+            compensano così l'impaginazione non cambia. */}
+        <div ref={scrollRef} className="no-scrollbar -mx-2 -mt-3 -mb-5 flex items-start gap-4 overflow-x-auto scroll-smooth px-2 pt-3 pb-5">
           {children}
         </div>
 
