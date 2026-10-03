@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toggleLike } from "@/lib/actions/like";

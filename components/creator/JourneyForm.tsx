@@ -158,7 +158,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
                 className={cn(FIELD, "mt-1.5 resize-none")}
               />
               <p className="mt-1.5 text-sm text-ink-faint">
-                This is the line people will see first if your journey gets featured on Zero's homepage.
+                This is the line people will see first if your journey gets featured on Zero&apos;s homepage.
               </p>
             </div>
 

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useActionState, useId, useRef, useState } from "react";
 import { Video as VideoIcon, X as CloseIcon } from "lucide-react";
 import { createEpisode, createQuickPosterUploadUrl, createQuickVideoUploadUrl } from "@/lib/actions/episode";
