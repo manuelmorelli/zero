@@ -15,6 +15,42 @@ related_docs:
 
 Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa costruire" — separato dall'iniziativa di allineamento generale in `93_Project_Alignment_Recap.md`, che è un audit descrittivo, non un elenco di lavori. ☐ da fare, ☑ fatto. Si lavora un punto alla volta, in ordine libero salvo dipendenze segnalate.
 
+## Lista di lavoro (le uniche caselle da spuntare)
+
+Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le descrizioni dettagliate sono nel resto del documento. Le caselle ☐ del corpo sono solo descrizioni, non si spuntano.
+
+### Struttura del sito (chat "struttura")
+
+☐ **S1.** Tag "contenuto sponsorizzato" obbligatoria (priorità alta, lavoro piccolo)
+☐ **S2.** Pannello per gestire le segnalazioni, visibile solo a Manuel
+☐ **S3.** Decidere il limite di tempo per utenti inattivi, poi costruirlo
+☐ **S4.** Decidere: abbonamento o acquisto singolo
+☐ **S5.** Immagini AI (serve la fatturazione Google)
+☐ **S6.** Mappa dei Momenti: riattivare e testare
+☐ **S7.** Gemini al piano a pagamento (prima del lancio)
+☐ **S8.** Pubblicità contestuale
+☐ **S9.** Tips e donazioni
+☐ **S10.** Community Premium
+☐ **S11.** Eventi e workshop a pagamento
+☐ **S12.** Consulenze 1:1
+☐ **S13.** Prodotti digitali
+☐ **S14.** Stripe e pagamenti reali (Punto 10)
+☐ **S15.** Sicurezza account Google: verifica in due passaggi
+☐ **S16.** Collegare zerojourneys.com a un sito
+☐ **S17.** Punto 9: business plan e dossier investitori
+☐ **S18.** Punto 10: infrastruttura tecnica
+☐ **S19.** Punto 11: piano di lancio
+
+Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programmato: sponsor aziende, marketplace UGC. In pausa per scelta: video leggeri e compressione video.
+
+### Design (chat "design", dedicata)
+
+☐ **D1.** Pagina Dashboard Community/nuova: controllare font, frecce, colori
+☐ **D2.** Schermate di caricamento: sagome grigie al posto della pagina bianca
+☐ **D3.** Pagine di errore con "riprova" in parole semplici
+☐ **D4.** Tema chiaro: interruttore in Impostazioni, default scuro
+☐ **D5.** Mobile, pagina per pagina (dopo che il desktop è finito)
+
 ## Ricerca & Discovery
 
 ☑ Filtri di ricerca stile YouTube sulla pagina `/search`: categoria e data, non solo ricerca testuale — funzionano anche senza testo scritto (si può navigare per soli filtri). Ricerca YouTube reale (aggiornamento 2026) usata come riferimento: tenuti categoria/data, **scartato deliberatamente "ordina per popolarità"** perché in conflitto diretto con "Quality Over Virality"/"Trust First" già scritti nell'algoritmo. **Scoperta in corso d'opera:** "categoria" e "interesse" in Zero sono già la stessa identica lista fissa (`JOURNEY_CATEGORIES`) — un Journey ha una categoria, un utente ha una o più "interessi" scelti dalla stessa lista in Onboarding. Quindi non servono due filtri separati: un solo filtro categoria copre entrambi i concetti. Implementato in `lib/search/searchJourneys.ts` + `components/search/SearchFilters.tsx`. **Fix (2026-09-21), causa reale:** `SearchFilters` (componente client) importava una costante da `lib/search/searchJourneys.ts`, che carica anche il client Prisma — non eseguibile nel browser. Next.js restituiva un errore 500 reale su `/search` (non un problema di visualizzazione). Prima ipotesi (Suspense/`useSearchParams`) era sbagliata, corretta contestualmente ma non la causa. Risolto spostando le costanti di data (`JOURNEY_DATE_PRESETS`) in `lib/constants/journeyDatePresets.ts`, un file senza alcuna dipendenza server-only. Verificato con una richiesta reale contro il server di sviluppo di Manuel: 500 prima del fix, 200 con i due filtri presenti nell'HTML dopo.
@@ -108,12 +144,6 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 ☐ [Idea] Sezione dove le aziende possono proporsi per sponsorizzare Zero/i creator, stile Instagram.
 
 ☐ [Idea] Marketplace interno per contenuti UGC: le aziende cercano creator per contenuti, Zero trattiene una commissione sulla transazione. Collegato al punto sopra.
-
-☐ [Da definire dove] Dare risalto pubblico al principio "nessun pagamento influenza il ranking dei Journey" (vedi `10_Monetization.md`) — dove mostrarlo è ancora da decidere (pagina Journey? footer? sezione "Come funziona"?).
-
-☐ [Idea, 2026-09-27] Pulsante "Download as PDF" sotto le risposte lunghe della chat AI Community: trasformare testo in PDF non richiede l'AI, quindi è gratis. Utile soprattutto per i Digital product (l'AI scrive la guida, il creator la scarica e la carica come file da vendere). Messa da parte da Manuel per non complicare troppo il giro, da riprendere con calma.
-
-☐ [Idea, 2026-10-01] **Condividere un profilo negli Update** (repost di una persona, non solo di un Journey/episodio): richiede lavoro vero, non solo riuso — il modello `Update` ha solo `linkedJourneyId`/`linkedEpisodeId`, serve aggiungere `linkedUserId` (migrazione) + aggiornare `shareToUpdate` + un nuovo modo di mostrare questo tipo di Update ovunque compaiono (Home, profilo, visualizzatore a schermo intero). Per ora nel menu "..." del profilo c'è solo "Copia link".
 
 ## Monetizzazione
 
