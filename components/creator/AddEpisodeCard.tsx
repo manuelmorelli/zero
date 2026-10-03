@@ -11,6 +11,7 @@ import { captureVideoFrame } from "@/lib/media/captureVideoFrame";
 import { FIELD } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { PANEL_DASHED, PANEL } from "@/components/ui/panel";
 
 type Chapter = { id: string; title: string };
@@ -55,6 +56,7 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
   const [chapterId, setChapterId] = useState(defaultChapterId ?? "");
   const [occurredAt, setOccurredAt] = useState(todayInputValue());
   const [published, setPublished] = useState(false);
+  const [isSponsored, setIsSponsored] = useState(false);
 
   const videoInputRef = useRef<HTMLInputElement>(null);
 
@@ -297,6 +299,14 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
             />
           </div>
         </div>
+
+        <Switch
+          name="isSponsored"
+          label="Sponsored content"
+          description="Turn on if a brand paid you or gave you something to feature it."
+          checked={isSponsored}
+          onChange={setIsSponsored}
+        />
 
         <label
           className={`flex items-center gap-2 rounded-lg border border-border bg-surface px-3.5 py-2 ${

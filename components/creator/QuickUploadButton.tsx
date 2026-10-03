@@ -15,6 +15,7 @@ import { POLL_MAX_OPTIONS, POLL_MIN_OPTIONS, POLL_OPTION_MAX_LENGTH, UPDATE_TEXT
 import { FIELD } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { CHIP, CHIP_SELECTED, PANEL, PANEL_DASHED } from "@/components/ui/panel";
 
 type Chapter = { id: string; title: string };
@@ -280,6 +281,7 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
   const [advanced, setAdvanced] = useState(false);
   const [chapterId, setChapterId] = useState("");
   const [occurredAt, setOccurredAt] = useState(todayInputValue());
+  const [isSponsored, setIsSponsored] = useState(false);
 
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -443,6 +445,7 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
       if (durationSec) formData.set("durationSec", String(durationSec));
       if (chapterId) formData.set("chapterId", chapterId);
       formData.set("occurredAt", occurredAt);
+      if (isSponsored) formData.set("isSponsored", "on");
 
       const result = await quickComposeEpisode({ error: null, done: false }, formData);
       if (result.error) {
@@ -652,6 +655,13 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
             />
           </div>
         </div>
+
+        <Switch
+          label="Sponsored content"
+          description="Turn on if a brand paid you or gave you something to feature it."
+          checked={isSponsored}
+          onChange={setIsSponsored}
+        />
 
         {error && <p className="text-sm text-danger">{error}</p>}
 

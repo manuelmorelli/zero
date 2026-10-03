@@ -378,6 +378,10 @@ model Episode {
   lightVideoId          String? // uid del video su Cloudflare Stream, serve per cancellarlo se il video originale viene sostituito
   lightVideoPlaybackUrl String? // URL manifest HLS restituito da Cloudflare Stream, valorizzato solo quando lightVideoStatus = READY
   caption     String?
+  // Dichiarazione "contenuto sponsorizzato" del creator (accordo diretto con un brand, fuori
+  // piattaforma: Zero non trattiene nulla, vedi docs/10_Monetization.md). Solo un'etichetta
+  // informativa, non influenza mai il ranking.
+  isSponsored Boolean  @default(false)
   // Data reale in cui l'evento è accaduto, separata dall'ordine narrativo
   // (vedi 05_Journey.md: ordine narrativo e cronologia reale sono informazioni distinte).
   occurredAt  DateTime @default(now())

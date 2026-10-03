@@ -28,6 +28,7 @@ import { autoPublishDraftJourney, nextJourneyOrder } from "@/lib/actions/journey
 const EpisodeSchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
   caption: z.string().trim().max(10000).optional(),
+  isSponsored: z.boolean().default(false),
   videoKey: z.string().trim().max(500).optional().or(z.literal("")),
   posterKey: z.string().trim().optional(),
   durationSec: z.coerce.number().int().positive().optional(),
@@ -227,6 +228,7 @@ async function insertEpisode(
       chapterId,
       title: data.title,
       caption: data.caption,
+      isSponsored: data.isSponsored,
       videoKey: data.videoKey || undefined,
       posterKey: data.posterKey || undefined,
       durationSec: data.durationSec,
@@ -276,6 +278,7 @@ export async function createEpisode(
   const parsed = EpisodeSchema.safeParse({
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
+    isSponsored: formData.get("isSponsored") === "on",
     videoKey: formData.get("videoKey") || undefined,
     posterKey: formData.get("posterKey") || undefined,
     durationSec: formData.get("durationSec") || undefined,
@@ -308,6 +311,7 @@ const QuickComposeSchema = z.object({
   newJourneyTitle: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100).optional(),
   title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
   caption: z.string().trim().max(10000).optional(),
+  isSponsored: z.boolean().default(false),
   videoKey: z.string().trim().min(1, "Add a video before publishing."),
   posterKey: z.string().trim().optional(),
   durationSec: z.coerce.number().int().positive().optional(),
@@ -329,6 +333,7 @@ export async function quickComposeEpisode(
     newJourneyTitle: formData.get("newJourneyTitle") || undefined,
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
+    isSponsored: formData.get("isSponsored") === "on",
     videoKey: formData.get("videoKey"),
     posterKey: formData.get("posterKey") || undefined,
     durationSec: formData.get("durationSec") || undefined,
@@ -373,6 +378,7 @@ export async function quickComposeEpisode(
     {
       title: parsed.data.title,
       caption: parsed.data.caption,
+      isSponsored: parsed.data.isSponsored,
       videoKey: parsed.data.videoKey,
       posterKey: parsed.data.posterKey,
       durationSec: parsed.data.durationSec,
@@ -401,6 +407,7 @@ export async function updateEpisode(
   const parsed = EpisodeSchema.safeParse({
     title: formData.get("title"),
     caption: formData.get("caption") || undefined,
+    isSponsored: formData.get("isSponsored") === "on",
     videoKey: formData.get("videoKey") || undefined,
     posterKey: formData.get("posterKey") || undefined,
     durationSec: formData.get("durationSec") || undefined,
@@ -451,6 +458,7 @@ export async function updateEpisode(
       chapterId,
       title: parsed.data.title,
       caption: parsed.data.caption,
+      isSponsored: parsed.data.isSponsored,
       videoKey: newVideoKeyValue,
       ...(replacesPoster ? { posterKey: newPosterKeyValue } : {}),
       durationSec: replacesVideo ? parsed.data.durationSec : (parsed.data.durationSec ?? episode.durationSec),

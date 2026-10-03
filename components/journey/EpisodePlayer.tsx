@@ -10,6 +10,7 @@ import { TrustyButton } from "@/components/journey/TrustyButton";
 import { ShareButton } from "@/components/common/ShareButton";
 import { VideoPlayer, type VideoPlayerHandle } from "@/components/common/VideoPlayer";
 import { PageTitle } from "@/components/ui/heading";
+import { SponsoredLabel } from "@/components/common/SponsoredLabel";
 
 // Sotto questa quota non vale la pena riprendere da dove si era arrivati (praticamente l'inizio).
 const RESUME_THRESHOLD_SEC = 5;
@@ -28,6 +29,7 @@ type EpisodePlayerProps = {
     id: string;
     title: string;
     caption: string | null;
+    isSponsored: boolean;
     number: number;
     videoSrc: string | null;
     // URL del manifest HLS su Cloudflare Stream, valorizzato solo quando la versione leggera è
@@ -209,6 +211,7 @@ export function EpisodePlayer({
                 <span className="truncate">{creator.displayName}</span>
               </Link>
               {trustScore !== null && <TrustScoreBadge score={trustScore} />}
+              {episode.isSponsored && <SponsoredLabel />}
             </div>
             {episode.caption && (
               <p className="mt-1 whitespace-pre-wrap text-sm text-ember">{episode.caption}</p>

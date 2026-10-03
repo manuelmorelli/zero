@@ -4,6 +4,7 @@ import type { TimelineEpisode } from "@/lib/journey/episodeTimeline";
 import { SectionTitle } from "@/components/ui/heading";
 import { ROW } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
+import { SponsoredLabel } from "@/components/common/SponsoredLabel";
 
 type UpNextListProps = {
   journeyId: string;
@@ -48,6 +49,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                   >
                     {episode.title}
                   </span>
+                  {episode.isSponsored && <SponsoredLabel className="mt-1" />}
                   {episode.progress?.completedAt && (
                     <span className="mt-0.5 block text-sm text-ink-muted">Completed</span>
                   )}

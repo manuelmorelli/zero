@@ -21,7 +21,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 
 ### Struttura del sito (chat "struttura")
 
-☐ **S1.** Tag "contenuto sponsorizzato" obbligatoria (priorità alta, lavoro piccolo)
+☑ **S1.** Tag "contenuto sponsorizzato" obbligatoria (priorità alta, lavoro piccolo)
 ☐ **S2.** Pannello per gestire le segnalazioni, visibile solo a Manuel
 ☐ **S3.** Decidere il limite di tempo per utenti inattivi, poi costruirlo
 ☐ **S4.** Decidere: abbonamento o acquisto singolo
@@ -161,7 +161,7 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☐ **Prodotti digitali** (parola presente nei documenti ma mai definita, chiarita al Punto 3) — file scaricabili venduti dal creator (e-book, guide, corsi, template). Stesso gruppo economico di Community Premium.
 
-☐ **Tag "contenuto sponsorizzato" obbligatoria** — quando un creator promuove un prodotto per accordo diretto con un brand (fuori piattaforma), Zero non trattiene nulla ma richiede una dichiarazione visibile. Priorità più alta delle altre voci di questa sezione: costa poco costruire (solo una tag/etichetta) e riduce rischio legale. **Confermata da costruire da Manuel il 2026-09-29.**
+☐ **Tag "contenuto sponsorizzato" obbligatoria** — quando un creator promuove un prodotto per accordo diretto con un brand (fuori piattaforma), Zero non trattiene nulla ma richiede una dichiarazione visibile. Priorità più alta delle altre voci di questa sezione: costa poco costruire (solo una tag/etichetta) e riduce rischio legale. **Confermata da costruire da Manuel il 2026-09-29. Costruita il 2026-10-03 come interruttore on/off "Sponsored content" (spento di default) su ogni episodio, nel form completo, nella card "Add episode" e nel "+" rapido; se acceso compare l'etichetta nella pagina di visione, nella lista "Up next" e nella Dashboard. Non è una scelta forzata: l'obbligo resta nelle regole (Termini e Linee guida), il sito offre lo strumento. Solo sugli episodi, non sul Journey intero.**
 
 ☐ [Idea, non prioritaria] **Marketplace sponsorizzazioni creator-brand** — Zero mette in contatto creator e aziende, trattiene una commissione del 10% solo dal brand (modello TikTok Creator Marketplace). Stesso concetto delle due idee già in questa lista (sezione sponsor, marketplace UGC) — quando si costruirà, unificare i tre in un solo lavoro.
 

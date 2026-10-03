@@ -5,6 +5,7 @@ export type TimelineEpisode = {
   id: string;
   title: string;
   caption: string | null;
+  isSponsored: boolean;
   occurredAt: Date;
   videoKey: string | null;
   videoSrc?: string;
@@ -34,6 +35,7 @@ type EpisodeRow = {
   id: string;
   title: string;
   caption: string | null;
+  isSponsored: boolean;
   occurredAt: Date;
   videoKey: string | null;
   posterKey: string | null;
@@ -107,6 +109,7 @@ export async function getEpisodeTimeline(
         id: episode.id,
         title: episode.title,
         caption: episode.caption,
+        isSponsored: episode.isSponsored,
         occurredAt: episode.occurredAt,
         videoKey: episode.videoKey,
         posterUrl: null,

@@ -73,6 +73,8 @@ Nella sezione **Community** del proprio profilo, il creator può proporre:
 
 Per creare una di queste offerte può scrivere una semplice descrizione a un assistente AI, che prepara automaticamente la bozza da confermare, capendo anche foto e documenti allegati. È inoltre pronta (ma non ancora accesa, perché a pagamento) la generazione di immagini di copertina direttamente dall'AI.
 
+Ogni episodio ha un interruttore "Sponsored content": se il creator lo accende (perché un brand l'ha pagato o gli ha regalato qualcosa per mostrarlo), l'episodio riporta in bella vista l'etichetta, in linea con le Linee guida. L'etichetta serve solo a informare chi guarda e non cambia in alcun modo la posizione del Journey nelle classifiche.
+
 Un pulsante dedicato permette al creator di avvisare manualmente i propri follower quando pubblica una nuova offerta Community, sempre per sua scelta esplicita, mai in automatico.
 
 ## Sicurezza e privacy

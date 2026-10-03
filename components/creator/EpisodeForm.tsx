@@ -18,6 +18,7 @@ import { formatDuration } from "@/lib/format/duration";
 import { FIELD } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 
 type EpisodeFormProps = {
   journeyId: string;
@@ -28,6 +29,7 @@ type EpisodeFormProps = {
     id: string;
     title: string;
     caption: string | null;
+    isSponsored: boolean;
     videoKey: string | null;
     /** Link temporaneo già risolto della copertina propria dell'Episodio (se impostata). */
     posterUrl?: string | null;
@@ -58,6 +60,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [published, setPublished] = useState(Boolean(episode?.publishedAt));
+  const [isSponsored, setIsSponsored] = useState(episode?.isSponsored ?? false);
 
   const [posterKey, setPosterKey] = useState("");
   const [posterPreview, setPosterPreview] = useState<string | null>(episode?.posterUrl ?? null);
@@ -274,6 +277,14 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
           className="hidden"
         />
       </div>
+
+      <Switch
+        name="isSponsored"
+        label="Sponsored content"
+        description="Turn on if a brand paid you or gave you something to feature it."
+        checked={isSponsored}
+        onChange={setIsSponsored}
+      />
 
       <label
         className={`flex items-center gap-2 rounded-lg border border-border bg-surface px-3.5 py-2 ${

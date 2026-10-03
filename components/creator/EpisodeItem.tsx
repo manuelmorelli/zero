@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ROW } from "@/components/ui/panel";
+import { SponsoredLabel } from "@/components/common/SponsoredLabel";
 
 type EpisodeItemProps = {
   journeyId: string;
@@ -29,6 +30,7 @@ type EpisodeItemProps = {
     id: string;
     title: string;
     caption: string | null;
+    isSponsored: boolean;
     videoKey: string | null;
     posterUrl?: string | null;
     durationSec: number | null;
@@ -86,6 +88,7 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
           >
             {episode.publishedAt ? "Published" : "Draft"}
           </span>
+          {episode.isSponsored && <SponsoredLabel />}
         </p>
         <p className="truncate text-sm text-ink-muted">
           {episode.occurredAt.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}

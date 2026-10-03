@@ -69,6 +69,7 @@ export default async function EpisodePlayerPage({
             id: episode.id,
             title: episode.title,
             caption: episode.caption,
+            isSponsored: episode.isSponsored,
             number: currentNumber,
             videoSrc,
             lightVideoSrc,

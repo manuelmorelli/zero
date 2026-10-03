@@ -8,6 +8,7 @@ type EpisodeListItem = {
   id: string;
   title: string;
   caption: string | null;
+  isSponsored: boolean;
   videoKey: string | null;
   posterUrl?: string | null;
   durationSec: number | null;
