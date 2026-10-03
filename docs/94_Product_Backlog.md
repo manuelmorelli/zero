@@ -99,6 +99,10 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 ☑ **Most Completed Journeys, solo nella pagina `/journeys`** (2026-10-01): classifica dei Journey ordinata per quota di spettatori che finiscono almeno il 90% degli episodi (stesso criterio di "completamento" di Journey Score), non per il punteggio misto di Top Journeys. Un Journey entra in classifica solo con almeno 5 spettatori distinti, altrimenti la riga semplicemente non lo include — mai una percentuale mostrata. `lib/discovery/mostCompletedJourneys.ts`, riusa `computeViewerStatsByJourney` estratta da `lib/scoring/journeyScore.ts`.
 
+## AI
+
+☐ **Attivare e testare sul serio la Mappa dei Momenti prima di chiudere tutti i lavori** (`MOMENTS_LIBRARY_ENABLED`, oggi spenta): costruita e verificata su pochi episodi di prova il 2026-10-02/03 (`lib/ai/episodeMoments.ts`, dettagli in `93_Project_Alignment_Recap.md` Punto 8), ma Manuel vuole rilanciarla su tutta la libreria solo quando ci saranno episodi più rappresentativi del prodotto reale (oggi quasi tutti clip di prova brevissime). **Promemoria esplicito di Manuel: non va dimenticata prima della chiusura finale del progetto.** Da lì seguono, in ordine: ricerca semantica, trailer automatico (sostituisce la foto statica nella Hero), e infine il "Percorso su Misura" (Journey composto dall'AI con momenti presi da creator diversi in base alla situazione di chi cerca).
+
 ## Business futuro (idee, nessun piano richiesto ora)
 
 ☐ [Idea] Sezione dove le aziende possono proporsi per sponsorizzare Zero/i creator, stile Instagram.
