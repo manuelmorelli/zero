@@ -49,6 +49,22 @@ export async function getVideoSize(key: string): Promise<number | null> {
   }
 }
 
+/** Contenuto di un video già su R2, per mandarlo all'AI da guardare (Mappa dei Momenti, vedi
+ * lib/ai/episodeMoments.ts). Come getImageBytes ma per i video: agli episodi di oggi (pochi
+ * secondi/minuti) sta comodamente in memoria; se un giorno gli episodi diventassero regolarmente
+ * vicini al limite di caricamento (MAX_VIDEO_SIZE_BYTES, 1GB) andrebbe riscritta per lo streaming
+ * invece di caricare tutto il file in RAM. */
+export async function getVideoBytes(key: string): Promise<{ data: Buffer; contentType: string } | null> {
+  try {
+    const result = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    if (!result.Body) return null;
+    const bytes = await result.Body.transformToByteArray();
+    return { data: Buffer.from(bytes), contentType: result.ContentType ?? "video/mp4" };
+  } catch {
+    return null;
+  }
+}
+
 export async function deleteVideo(key: string): Promise<void> {
   await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key })).catch(() => {});
 }

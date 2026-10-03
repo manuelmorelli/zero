@@ -392,9 +392,31 @@ model Episode {
 
   progress    EpisodeProgress[]
   linkedByUpdates Update[]
+  moments     EpisodeMoment[]
 
   @@index([journeyId, chapterId, order])
   @@map("episodes")
+}
+
+// La "Mappa dei Momenti": appunti scritti che l'AI ricava da un episodio guardandolo una volta sola
+// (lib/ai/episodeMoments.ts), così ricerca semantica, trailer automatico e un futuro "Percorso su
+// Misura" leggono solo testo già pronto invece di far rianalizzare il video ogni volta. Il video
+// originale su R2 resta sempre la fonte vera e non viene mai toccato: questi appunti sono materiale
+// aggiuntivo, rigenerabile in qualunque momento riprocessando l'episodio.
+model EpisodeMoment {
+  id           String   @id @default(uuid())
+  episodeId    String
+  episode      Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  timestampSec Int
+  description  String
+  // Embedding testuale (gemini-embedding-2): confrontato in codice applicativo quando servirà la
+  // ricerca semantica, non con una query SQL vettoriale — alla scala attuale della libreria non
+  // serve l'estensione pgvector, si può aggiungere in futuro se il volume crescerà molto.
+  embedding    Json
+  createdAt    DateTime @default(now())
+
+  @@index([episodeId])
+  @@map("episode_moments")
 }
 
 // Tiene traccia di "Continua il tuo Journey": solo il puntatore all'ultimo episodio visto.

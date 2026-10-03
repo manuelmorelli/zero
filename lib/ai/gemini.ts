@@ -1,3 +1,5 @@
+import https from "node:https";
+
 // Client generico per l'Interactions API di Gemini (endpoint verificato dal vivo il 2026-09-25,
 // sostituisce la vecchia API generateContent/contents che compare nei training set più datati —
 // stesso tipo di avviso di AGENTS.md per Next.js, valido anche per servizi esterni che cambiano
@@ -13,7 +15,13 @@ const GEMINI_MODEL = "gemini-3.5-flash-lite";
 export type GeminiInputPart =
   | { type: "text"; text: string }
   | { type: "image"; data: string; mime_type: string }
-  | { type: "document"; data: string; mime_type: string };
+  | { type: "document"; data: string; mime_type: string }
+  // Sempre un file già caricato (uri), mai inline: i video degli episodi possono arrivare fino a
+  // 1GB (MAX_VIDEO_SIZE_BYTES), ben oltre il limite di 100MB per i dati inline delle Interactions
+  // API. "processing: agentic" fa decidere all'AI quali parti del video guardare con attenzione
+  // invece di analizzarlo per intero a ritmo fisso (molto più economico, verificato nella
+  // documentazione Google del 2026).
+  | { type: "video"; uri: string; mime_type: string; processing?: "agentic" };
 
 type GeminiCallParams = {
   input: string | GeminiInputPart[];
@@ -224,4 +232,210 @@ export function parseGeminiJson<T>(text: string): T | null {
     console.error("[gemini] failed to parse JSON response", error, text);
     return null;
   }
+}
+
+const FILES_UPLOAD_ENDPOINT = "https://generativelanguage.googleapis.com/upload/v1beta/files";
+
+type GeminiFileResult = { uri: string; name: string } | { error: string };
+
+type RawHttpResponse = { status: number; headers: Record<string, string | string[] | undefined>; text: string };
+
+// Episodi reali possono pesare centinaia di MB (video non compressi, vedi lib/constants/video.ts):
+// scrivere tutto il corpo in un colpo solo con un singolo write() rischia di saturare il buffer
+// interno del socket, che poi resta fermo in attesa che si svuoti finché Node non lo segnala come
+// bloccato — visto dal vivo il 2026-10-02 su un file di 459MB ("Request timed out" dopo 10 minuti
+// di nessuna attività). Scrivere a blocchi da 1MB, aspettando l'evento "drain" quando il socket è
+// pieno, evita il blocco e mantiene il timeout "vivo" perché il socket resta sempre attivo.
+const UPLOAD_CHUNK_BYTES = 1024 * 1024;
+
+function writeInChunks(req: import("node:http").ClientRequest, body: Uint8Array): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let offset = 0;
+    req.on("error", reject);
+    function writeNext() {
+      if (offset >= body.length) {
+        req.end();
+        resolve();
+        return;
+      }
+      const chunk = body.subarray(offset, Math.min(offset + UPLOAD_CHUNK_BYTES, body.length));
+      offset += chunk.length;
+      if (req.write(chunk)) writeNext();
+      else req.once("drain", writeNext);
+    }
+    writeNext();
+  });
+}
+
+/**
+ * Richiesta HTTP con il modulo nativo `https` di Node invece di `fetch`: verificato dal vivo che
+ * `fetch` (basato su undici) chiude la connessione con "HeadersTimeoutError" sugli upload di video
+ * di dimensione reale, anche quando il video stesso è solo di pochi minuti — probabile limite
+ * interno pensato per richieste normali, non per invii pesanti. Usata solo qui, per l'unico punto
+ * del progetto che manda file di decine/centinaia di MB in un corpo di richiesta. Timeout alto (30
+ * minuti): un episodio vicino al limite di caricamento (1GB) può impiegare a lungo su una linea non
+ * velocissima, meglio aspettare che fallire un'elaborazione altrimenti riuscita.
+ */
+function httpsRequest(params: {
+  url: string;
+  method: string;
+  headers: Record<string, string>;
+  body?: Uint8Array;
+}): Promise<RawHttpResponse> {
+  return new Promise((resolve, reject) => {
+    const target = new URL(params.url);
+    const req = https.request(
+      {
+        hostname: target.hostname,
+        path: `${target.pathname}${target.search}`,
+        method: params.method,
+        headers: params.headers,
+        timeout: 30 * 60 * 1000,
+      },
+      (res) => {
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk) => chunks.push(chunk));
+        res.on("end", () => {
+          resolve({ status: res.statusCode ?? 0, headers: res.headers, text: Buffer.concat(chunks).toString("utf-8") });
+        });
+      }
+    );
+    req.on("timeout", () => req.destroy(new Error("Request timed out")));
+    req.on("error", reject);
+    if (params.body) writeInChunks(req, params.body).catch(reject);
+    else req.end();
+  });
+}
+
+/**
+ * Carica un file pesante (un video) sui server di Gemini perché l'AI possa guardarlo: usato solo
+ * per i video, troppo grandi per stare "inline" dentro l'input come invece fanno immagini e PDF.
+ * Protocollo "resumable" in due passi, verificato dalla documentazione Google del 2026 (nessuna
+ * libreria ufficiale, come il resto di questo file). Il file caricato è temporaneo (Google lo
+ * cancella da solo dopo circa 48 ore): la memoria vera e permanente di Zero è quella scritta nel
+ * nostro database da chi chiama questa funzione (lib/ai/episodeMoments.ts), non questo file.
+ */
+export async function uploadGeminiFile(bytes: Buffer, mimeType: string): Promise<GeminiFileResult> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return { error: "AI assistant is not configured." };
+
+  let start: RawHttpResponse;
+  try {
+    start = await httpsRequest({
+      url: `${FILES_UPLOAD_ENDPOINT}?key=${apiKey}`,
+      method: "POST",
+      headers: {
+        "X-Goog-Upload-Protocol": "resumable",
+        "X-Goog-Upload-Command": "start",
+        "X-Goog-Upload-Header-Content-Length": String(bytes.length),
+        "X-Goog-Upload-Header-Content-Type": mimeType,
+        "Content-Type": "application/json",
+      },
+      body: new TextEncoder().encode(JSON.stringify({ file: { display_name: "zero-episode" } })),
+    });
+  } catch (error) {
+    console.error("[gemini-file] upload start failed", error);
+    return { error: "Video upload is unavailable right now." };
+  }
+  const uploadUrlHeader = start.headers["x-goog-upload-url"];
+  const uploadUrl = Array.isArray(uploadUrlHeader) ? uploadUrlHeader[0] : uploadUrlHeader;
+  if (start.status < 200 || start.status >= 300 || !uploadUrl) {
+    console.error(`[gemini-file] upload start failed: ${start.status} ${start.text}`);
+    return { error: "Video upload is unavailable right now." };
+  }
+
+  let finish: RawHttpResponse;
+  try {
+    finish = await httpsRequest({
+      url: uploadUrl,
+      method: "POST",
+      headers: {
+        "Content-Length": String(bytes.length),
+        "X-Goog-Upload-Offset": "0",
+        "X-Goog-Upload-Command": "upload, finalize",
+      },
+      body: new Uint8Array(bytes),
+    });
+  } catch (error) {
+    console.error("[gemini-file] upload finalize failed", error);
+    return { error: "Video upload is unavailable right now." };
+  }
+  if (finish.status < 200 || finish.status >= 300) {
+    console.error(`[gemini-file] upload finalize failed: ${finish.status} ${finish.text}`);
+    return { error: "Video upload is unavailable right now." };
+  }
+
+  const data = JSON.parse(finish.text);
+  const file = data.file as { uri?: string; name?: string } | undefined;
+  if (!file?.uri || !file?.name) return { error: "Video upload didn't return a usable file." };
+  return { uri: file.uri, name: file.name };
+}
+
+/**
+ * Un video appena caricato resta per qualche secondo in elaborazione ("PROCESSING") prima di poter
+ * essere analizzato. Controlla ogni 5 secondi, fino a 2 minuti in tutto (i video brevi diventano
+ * pronti in pochi secondi); oltre quel tempo rinuncia invece di bloccare la richiesta a lungo.
+ */
+export async function waitForGeminiFileActive(fileName: string): Promise<boolean> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return false;
+
+  for (let attempt = 0; attempt < 24; attempt++) {
+    let response: Response;
+    try {
+      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${fileName}`, {
+        headers: { "x-goog-api-key": apiKey },
+      });
+    } catch (error) {
+      console.error("[gemini-file] status check failed", error);
+      return false;
+    }
+    if (!response.ok) return false;
+    const data = await response.json();
+    if (data.state === "ACTIVE") return true;
+    if (data.state === "FAILED") return false;
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
+  return false;
+}
+
+const EMBEDDING_MODEL = "gemini-embedding-2";
+
+/**
+ * La "firma numerica" del significato di un testo: due descrizioni che parlano della stessa cosa
+ * hanno numeri vicini anche se usano parole diverse. Serve per cercare nella Mappa dei Momenti per
+ * senso invece che per parola esatta (ricerca semantica, non ancora costruita: questa funzione
+ * prepara solo il dato). Endpoint diverso dall'Interactions API, verificato a parte.
+ */
+export async function embedGeminiText(text: string): Promise<number[] | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+
+  let response: Response;
+  try {
+    response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:embedContent`,
+      {
+        method: "POST",
+        headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ content: { parts: [{ text }] } }),
+      }
+    );
+  } catch (error) {
+    console.error("[gemini-embed] request failed", error);
+    return null;
+  }
+  if (!response.ok) {
+    console.error(`[gemini-embed] request failed: ${response.status} ${await response.text().catch(() => "")}`);
+    return null;
+  }
+  const data = await response.json();
+  // Verificato dal vivo il 2026-10-02: il campo è "embedding.values" (singolare), non
+  // "embeddings[0].values" come indicato da un riassunto di terze parti della documentazione.
+  const values = data.embedding?.values;
+  if (!Array.isArray(values)) {
+    console.error("[gemini-embed] unexpected response shape", JSON.stringify(data).slice(0, 300));
+    return null;
+  }
+  return values;
 }
