@@ -1,11 +1,10 @@
 import type { LucideIcon } from "lucide-react";
 import { CoverChip, CoverFrame, CoverTitle } from "@/components/ui/cover-card";
 
-/** Card fotografica condivisa da ogni griglia della pagina Community (Shop, Workshop & Eventi,
- * 1:1 Consulting, Forum): stessa card ufficiale già usata per gli Eventi gratuiti (`CoverFrame`),
- * non più un riquadro fatto a parte per sezione (richiesto da Manuel, 2026-10-03 — "le stesse card
- * che hai utilizzato per gli eventi"). `footer` sta fuori da `CoverFrame`/`Link` apposta: un bottone
- * reale non può stare annidato in un `<a>`, stesso principio di `FreeEventsSection`. */
+/** Card fotografica condivisa da ogni riga della Community (pagina visitatore e Dashboard): stessa
+ * card ufficiale già usata per gli Eventi gratuiti (`CoverFrame`). `footer` e `menu` stanno fuori da
+ * `CoverFrame`/`Link` apposta: un bottone reale non può stare annidato in un `<a>`, stesso principio
+ * di `FreeEventsSection`. `menu` è il menu del proprietario (es. i tre puntini in Dashboard). */
 export function ListingCard({
   href,
   coverUrl,
@@ -13,6 +12,7 @@ export function ListingCard({
   chipLabel,
   title,
   footer,
+  menu,
 }: {
   href: string;
   coverUrl: string | null;
@@ -20,6 +20,7 @@ export function ListingCard({
   chipLabel: string;
   title: string;
   footer?: React.ReactNode;
+  menu?: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -29,6 +30,7 @@ export function ListingCard({
         imageUrl={coverUrl}
         imageAlt={title}
         placeholder={<Icon className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
+        menu={menu}
         overlay={
           <>
             <CoverChip>{chipLabel}</CoverChip>
