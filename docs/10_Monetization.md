@@ -1,7 +1,7 @@
 ---
 title: Monetization
 doc_id: 10-monetization
-version: "4.0"
+version: "4.1"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -76,10 +76,12 @@ Le percentuali variano in base al meccanismo economico della fonte: non è un'un
 | Fonte | Quota creator | Quota Zero | Cadenza di pagamento |
 |---|---|---|---|
 | Pubblicità contestuale | 60% | 40% | Mensile, soglia minima di pagamento ~100 (valuta locale) |
-| Tips e donazioni | 90% | 10% | Mensile, soglia minima ~100 |
+| Tips e donazioni | 100% | 0% | Mensile, soglia minima ~100 |
 | Community Premium, eventi/workshop, consulenze 1:1, prodotti digitali | 90% | 10% | Mensile, soglia minima ~100 |
-| Marketplace sponsorizzazioni creator-brand (intermediato da Zero) | 100% del compenso pattuito | 10% trattenuto dal brand, non dal creator | Alla chiusura dell'accordo |
+| Marketplace sponsorizzazioni creator-brand (intermediato da Zero) | Compenso pattuito, meno le commissioni Stripe | 10% trattenuto dal brand, non dal creator | Alla chiusura dell'accordo |
 | Sponsorizzazioni dirette creator-brand (accordo fuori piattaforma) | 100% del compenso pattuito | Zero non trattiene nulla | Non gestito da Zero |
+
+**Commissioni Stripe.** Le commissioni che Stripe applica sui pagamenti sono a carico di chi riceve il denaro. Per i tips e per le altre fonti in cui il creator riceve un pagamento, la quota del creator è quindi al netto di queste commissioni. Zero non paga nulla su quelle transazioni e non aggiunge nessun importo a carico dell'utente: chi paga versa la cifra indicata, senza supplementi.
 
 Queste percentuali sono un punto di partenza e possono evolvere nel tempo senza modificare i principi descritti in questo documento. I dettagli fiscali specifici per paese (soglie di reporting, IVA su prodotti digitali, differenze tra Unione Europea, Svizzera e resto del mondo) sono trattati nell'audit legale (`91_Legal_Audit_And_Roadmap.md`), non in questo documento.
 

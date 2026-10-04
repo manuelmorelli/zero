@@ -377,3 +377,7 @@ Fino a oggi le segnalazioni arrivavano nel database e basta: per leggerle bisogn
 ## Capitolo 31 — Chi pubblica sceglie di farlo
 
 Fino a oggi chiunque si registrava diventava creator in automatico, e questo rendeva impossibile distinguere chi guarda da chi pubblica. Manuel ha cambiato la regola: la modalità Creator è una scelta esplicita, da fare in registrazione o in Impostazioni, con default Visitatore. Chi non pubblica da tempo riceve tre email (a 6, 9 e 10 mesi), e alla fine la modalità si chiude: i Journey vengono nascosti e restano recuperabili per 30 giorni, poi si cancellano con i file video. Chi ha già pubblicato è stato attivato in automatico, una volta sola. La pausa per il creator è arrivata nel capitolo successivo; la parte sui guadagni resta da fare.
+
+## Capitolo 32 — I tips tornano interamente al creator
+
+Il modello economico ha cambiato un punto: i tips e le donazioni non prevedono più una quota per Zero, che resta a 0%, e il creator riceve tutto. Insieme a questo, Manuel ha deciso che le commissioni Stripe le paga chi riceve il denaro, quindi il creator incassa la sua quota al netto di queste commissioni, e Zero non aggiunge nessun supplemento a carico di chi paga. Le sponsorizzazioni mediate da Zero seguono la stessa regola. Per ora si tratta di scelte scritte nei documenti: nessun pagamento è ancora collegato a Stripe.

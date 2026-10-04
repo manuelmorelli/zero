@@ -152,7 +152,7 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☐ **Pubblicità contestuale** (prima fonte da costruire) — collegare una rete pubblicitaria contestuale (es. Media.net, Ezoic/Humix, Primis — alternative a Google AdSense adatte a piattaforme piccole/video), split 60% creator / 40% Zero, pagamento mensile con soglia minima ~100 nella valuta locale.
 
-☐ **Tips e donazioni** (seconda fonte) — meccanismo di pagamento diretto utente→creator, commissione Zero 10%.
+☐ **Tips e donazioni** (seconda fonte) — meccanismo di pagamento diretto utente→creator, commissione Zero 0% (il creator riceve tutto, meno le commissioni Stripe, come per tutti i pagamenti ricevuti). Cambiato il 2026-10-04, vedi `10_Monetization.md` v4.1.
 
 ☐ **Community Premium** — abbonamento mensile di un utente verso un singolo creator per contenuti/spazi riservati (modello Patreon/Skool). Da progettare da zero, Manuel non ha esperienza diretta da cui partire — servirà un giro di riferimenti concreti prima di disegnarla.
 
