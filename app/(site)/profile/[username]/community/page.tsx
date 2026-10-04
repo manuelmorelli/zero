@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
-import { Check, FileText, MapPin, MessageCircle, Video, type LucideIcon } from "lucide-react";
+import { FileText, MapPin, MessageCircle, Video, type LucideIcon } from "lucide-react";
 import { findUserByUsernameOrId } from "@/lib/profile/findUserByUsernameOrId";
 import { getImagePlaybackUrl } from "@/lib/r2";
-import { FadeImage } from "@/components/common/FadeImage";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
 import { RsvpButton } from "@/components/profile/RsvpButton";
 import { prisma } from "@/lib/prisma";
@@ -11,26 +10,18 @@ import { getFreeEventItems } from "@/lib/community/freeEvents";
 import { getForumJourneys } from "@/lib/community/forumJourneys";
 import { ForumJourneyList } from "@/components/community/ForumJourneyList";
 import { ListingCard } from "@/components/community/ListingCard";
+import { SubscribeCard } from "@/components/community/SubscribeCard";
+import { ChallengeRow } from "@/components/community/ChallengeRow";
+import { MembersRoomRow } from "@/components/community/MembersRoomRow";
 import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
-import { PANEL_ACCENT } from "@/components/ui/panel";
-import { Button } from "@/components/ui/button";
-import { PageTitle } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
-/** Pagina "Community" del profilo, vista da chi visita. Il riquadro in cima (abbonamento mensile,
- * Punto 7 dell'allineamento) resta fisso. Sotto due righe, ciascuna con il suo scorrimento laterale
- * come Journey e Journeyers (2026-10-03, richiesto da Manuel): Activities (tutte le attività in un'unica
- * riga, ordinate per data) e Forum (una card per Journey, su una riga sua). Una categoria vuota non
+/** Pagina "Community" del profilo, vista da chi visita. In cima il riquadro dell'abbonamento
+ * (prezzo scelto dal creator, sfida, stanza degli abbonati, regalo di un mese). Sotto le righe
+ * a scorrimento: Challenges e Members room (ancora vuote), poi Activities (tutte le attività in
+ * un'unica riga, ordinate per data) e Forum (una card per Journey). Una categoria vuota non
  * compare mai. */
-const MONTHLY_PRICE = "€9";
-
-const benefits = [
-  "Exclusive video episodes, published only for members",
-  "Downloadable documents and PDF worksheets",
-  "Practical maps and step-by-step guides",
-  "A member badge next to your name everywhere on Zero",
-];
 
 type ActivityEntry = {
   key: string;
@@ -69,6 +60,8 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
 
   const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
   const session = await getViewerSession();
+  const community = creator ? await prisma.community.findUnique({ where: { creatorId: creator.id } }) : null;
+  const priceLabel = community && !community.isFree && community.price ? `€${Number(community.price)} per month` : null;
 
   const [paidWorkshops, paidEvents, digitalProducts, personalServices, freeEvents, forumJourneys] = creator
     ? await Promise.all([
@@ -212,54 +205,15 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
   return (
     <main>
       <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING)}>
-        <section className={cn(PANEL_ACCENT, "mx-auto max-w-4xl sm:p-8")}>
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex items-center gap-3">
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-surface-2">
-                  {avatarUrl ? (
-                    <FadeImage src={avatarUrl} alt={user.name} fill sizes="48px" className="object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-lg font-bold text-ink-muted">
-                      {user.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <PageTitle className="truncate">{user.name}</PageTitle>
-                  <p className="truncate text-sm text-ink-muted">@{user.username ?? username}</p>
-                </div>
-              </div>
+        <SubscribeCard
+          name={user.name}
+          username={user.username ?? username}
+          avatarUrl={avatarUrl}
+          priceLabel={priceLabel}
+        />
 
-              <p className="mt-5 max-w-[48ch] text-sm leading-relaxed text-ink-muted">
-                Everything {firstName} organizes, free and paid: upcoming events, exclusive membership perks,
-                workshops, digital products and 1:1 sessions.
-              </p>
-
-              <ul className="mt-5 space-y-2.5">
-                {benefits.map((benefit) => (
-                  <li key={benefit} className="flex items-start gap-2.5 text-sm text-ink">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-ember" aria-hidden="true" />
-                    <span>{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="flex shrink-0 flex-col items-start gap-3 sm:w-48 sm:items-stretch">
-              <div>
-                <p className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold tracking-tight text-ink">{MONTHLY_PRICE}</span>
-                  <span className="text-sm text-ink-muted">/month</span>
-                </p>
-                <p className="mt-1 text-sm text-ink-muted">Cancel anytime.</p>
-              </div>
-              <Button variant="secondary" disabled title="Coming soon: payments aren't connected yet">
-                Subscribe (Coming Soon)
-              </Button>
-            </div>
-          </div>
-        </section>
+        <ChallengeRow firstName={firstName} />
+        <MembersRoomRow firstName={firstName} />
 
         {activities.length > 0 && (
           <div className="mt-12">

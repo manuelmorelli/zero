@@ -93,6 +93,8 @@ Contiene:
 - prodotti e servizi (se offerti);
 - workshop ed eventi (se organizzati).
 
+La pagina Community del profilo (`/profile/[username]/community`) parte dal riquadro dell'abbonamento: prezzo scelto dal creator (da 5 euro in su), tre cose incluse ogni mese, e due azioni accanto a Subscribe: regalare un mese (Gift a month) e inviare un tip (Send a tip). Sotto ci sono le righe Walk the Path With Me (sfida) e Members room (stanza degli abbonati), ancora vuote finché non vengono costruite, poi Activities e Forum. I pagamenti non sono ancora collegati: i pulsanti rispondono con un breve avviso.
+
 ---
 
 ### Pagina Journey

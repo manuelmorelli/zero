@@ -45,8 +45,10 @@
   --color-glass: oklch(1 0 0 / 8%);
   --color-glass-strong: oklch(1 0 0 / 15%);
 
-  /* Un solo bagliore arancione e una sola ombra per le card */
+  /* Un solo bagliore arancione e una sola ombra per le card. Il bagliore forte compare solo
+   * al passaggio del mouse sui bottoni dell'abbonamento Community (Subscribe, Gift, Tip). */
   --shadow-glow: 0 0 22px -8px oklch(76.9% 0.188 70.08 / 55%);
+  --shadow-glow-strong: 0 0 30px -6px oklch(76.9% 0.188 70.08 / 85%);
   --shadow-card: 0 20px 40px -22px oklch(0% 0 0 / 70%);
 
   /* Un'unica famiglia di font, pesi diversi */
