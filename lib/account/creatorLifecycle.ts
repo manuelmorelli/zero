@@ -8,16 +8,19 @@ import { deleteLightVideo } from "@/lib/stream";
  * e, alla fine, perde i Journey online. Il ciclo parte solo per chi ha scelto Creator: un Visitatore
  * non riceve mai avvisi.
  *
- * Stadi: 0 nessun avviso, 1 avviso a 6 mesi, 2 secondo avviso a 9 mesi, 3 chiusura a 10 mesi.
- * Il conteggio parte dall'ultima pubblicazione (Journey, Episodio o Update), o da quando è stata
- * attivata la modalità Creator se non ha mai pubblicato nulla.
+ * Stadi: 0 nessun avviso, 1 primo avviso, 2 secondo avviso, 3 chiusura della modalità.
+ * Senza pausa: avvisi a 6, 9 e 10 mesi dall'ultima pubblicazione.
+ * Con pausa: avvisi a 10, 13 e 14 mesi dall'inizio della pausa (il primo avviso arriva dopo 10 mesi).
  */
 
 export const NOTICE_STAGE = { NONE: 0, FIRST: 1, SECOND: 2, CLOSURE: 3 } as const;
 export type NoticeStage = (typeof NOTICE_STAGE)[keyof typeof NOTICE_STAGE];
 
-/** Mesi di inattività dopo i quali scatta ciascuno stadio. */
+/** Mesi dal punto di partenza dopo i quali scatta ciascuno stadio, senza pausa. */
 export const NOTICE_MONTHS: Record<Exclude<NoticeStage, 0>, number> = { 1: 6, 2: 9, 3: 10 };
+
+/** Mesi dall'inizio della pausa dopo i quali scatta ciascuno stadio. */
+export const PAUSE_NOTICE_MONTHS: Record<Exclude<NoticeStage, 0>, number> = { 1: 10, 2: 13, 3: 14 };
 
 /** Giorni tra la chiusura e la cancellazione definitiva, durante i quali si può riattivare. */
 export const RESTORE_WINDOW_DAYS = 30;
@@ -33,36 +36,46 @@ export function addMonths(date: Date, months: number): Date {
   return result;
 }
 
-/** Stadio che corrisponde al tempo trascorso dall'ultima pubblicazione. */
-export function dueNoticeStage(lastActivityAt: Date, now: Date): NoticeStage {
-  if (now >= addMonths(lastActivityAt, NOTICE_MONTHS[3])) return NOTICE_STAGE.CLOSURE;
-  if (now >= addMonths(lastActivityAt, NOTICE_MONTHS[2])) return NOTICE_STAGE.SECOND;
-  if (now >= addMonths(lastActivityAt, NOTICE_MONTHS[1])) return NOTICE_STAGE.FIRST;
+/** Stadio dovuto oggi, contando i mesi dal punto di partenza (ultima attività o inizio pausa). */
+export function dueNoticeStage(
+  anchorAt: Date,
+  now: Date,
+  months: Record<Exclude<NoticeStage, 0>, number> = NOTICE_MONTHS
+): NoticeStage {
+  if (now >= addMonths(anchorAt, months[3])) return NOTICE_STAGE.CLOSURE;
+  if (now >= addMonths(anchorAt, months[2])) return NOTICE_STAGE.SECOND;
+  if (now >= addMonths(anchorAt, months[1])) return NOTICE_STAGE.FIRST;
   return NOTICE_STAGE.NONE;
 }
 
 /**
- * Stadio da applicare oggi. Se il creator ha pubblicato dopo l'ultimo avviso, il ciclo riparte
- * da zero: l'avviso vecchio non deve restare valido.
+ * Stadio da applicare oggi. Se c'è stata un'attività dopo l'ultimo avviso, il ciclo riparte da zero:
+ * l'avviso vecchio non deve restare valido.
  */
 export function resolveNoticeStage(input: {
   storedStage: NoticeStage;
   storedNoticeAt: Date | null;
-  lastActivityAt: Date;
+  anchorAt: Date;
   now: Date;
+  months?: Record<Exclude<NoticeStage, 0>, number>;
 }): NoticeStage {
-  const { storedStage, storedNoticeAt, lastActivityAt, now } = input;
-  const publishedAfterNotice = storedNoticeAt !== null && lastActivityAt > storedNoticeAt;
-  const currentStage = publishedAfterNotice ? NOTICE_STAGE.NONE : storedStage;
-  const dueStage = dueNoticeStage(lastActivityAt, now);
+  const { storedStage, storedNoticeAt, anchorAt, now, months } = input;
+  const activeAfterNotice = storedNoticeAt !== null && anchorAt > storedNoticeAt;
+  const currentStage = activeAfterNotice ? NOTICE_STAGE.NONE : storedStage;
+  const dueStage = dueNoticeStage(anchorAt, now, months);
   return dueStage > currentStage ? dueStage : currentStage;
 }
 
-/** Ultima attività del creator: pubblicazione di Journey, Episodio o Update, o inizio della modalità. */
-export async function getLastActivityAt(input: {
-  creatorId: string;
-  baseDate: Date;
-}): Promise<Date> {
+/** Inizio del conto per la modalità: creazione del profilo Creator o ultima ripresa, il più recente. */
+function getModeStartAt(input: { creatorModeAt: Date | null; createdAt: Date; resumedAt: Date | null }): Date {
+  const dates = [input.creatorModeAt ?? input.createdAt, input.resumedAt].filter(
+    (date): date is Date => date instanceof Date
+  );
+  return new Date(Math.max(...dates.map((date) => date.getTime())));
+}
+
+/** Ultima pubblicazione del creator (Journey, Episodio o Update), oppure l'inizio del conto se più recente. */
+export async function getLastPublishedAt(input: { creatorId: string; modeStartAt: Date }): Promise<Date> {
   const [journey, episode, update] = await Promise.all([
     prisma.journey.findFirst({
       where: { creatorId: input.creatorId },
@@ -81,13 +94,16 @@ export async function getLastActivityAt(input: {
     }),
   ]);
 
-  const dates = [input.baseDate, journey?.createdAt, episode?.createdAt, update?.createdAt].filter(
+  const dates = [input.modeStartAt, journey?.createdAt, episode?.createdAt, update?.createdAt].filter(
     (date): date is Date => date instanceof Date
   );
   return new Date(Math.max(...dates.map((date) => date.getTime())));
 }
 
-/** Attiva la modalità Creator. Ripristina i Journey nascosti da una chiusura precedente, se ancora recuperabili. */
+/**
+ * Attiva la modalità Creator. Riattiva i Journey nascosti da uno spegnimento precedente, se ancora
+ * entro la finestra di 30 giorni.
+ */
 export async function turnOnCreatorMode(userId: string): Promise<void> {
   const now = new Date();
   const user = await prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { name: true } });
@@ -98,91 +114,96 @@ export async function turnOnCreatorMode(userId: string): Promise<void> {
     select: { id: true },
   });
 
-  const hiddenJourneys = await prisma.journey.findMany({
-    where: { creatorId: creator.id, lifecycleDeleteAt: { gt: now } },
-    select: { id: true, lifecycleStatusBefore: true },
-  });
-
   await prisma.$transaction([
     prisma.user.update({ where: { id: userId }, data: { creatorMode: true, creatorModeAt: now } }),
     prisma.creator.update({
       where: { id: creator.id },
-      data: { inactivityNoticeStage: NOTICE_STAGE.NONE, inactivityNoticeAt: null },
+      data: { inactivityNoticeStage: NOTICE_STAGE.NONE, inactivityNoticeAt: null, pausedAt: null, resumedAt: null },
     }),
-    ...hiddenJourneys.map((journey) =>
-      prisma.journey.update({
-        where: { id: journey.id },
-        data: {
-          status: journey.lifecycleStatusBefore ?? "DRAFT",
-          lifecycleStatusBefore: null,
-          lifecycleDeleteAt: null,
-        },
-      })
-    ),
+    prisma.journey.updateMany({
+      where: { creatorId: creator.id, deletedAt: { not: null }, lifecycleDeleteAt: { gt: now } },
+      data: { deletedAt: null, lifecycleDeleteAt: null },
+    }),
   ]);
 }
 
 /**
- * Chiude la modalità Creator: i Journey attivi vengono nascosti (archiviati) e programmati per la
- * cancellazione tra 30 giorni. Usato sia dallo spegnimento volontario sia dalla chiusura automatica.
- * Gli Journey già archiviati a mano dal creator non vengono toccati.
+ * Spegne la modalità Creator: i Journey vengono nascosti e programmati per la cancellazione tra 30
+ * giorni. Usato sia dallo spegnimento volontario sia dalla chiusura automatica.
  */
 export async function turnOffCreatorMode(userId: string): Promise<number> {
   const now = new Date();
   const deleteAt = new Date(now.getTime() + RESTORE_WINDOW_DAYS * 24 * 60 * 60 * 1000);
 
-  const journeys = await prisma.journey.findMany({
-    where: { creator: { userId }, status: { not: "ARCHIVED" }, deletedAt: null },
-    select: { id: true, status: true },
+  const result = await prisma.journey.updateMany({
+    where: { creator: { userId }, deletedAt: null },
+    data: { deletedAt: now, lifecycleDeleteAt: deleteAt },
   });
 
   await prisma.$transaction([
     prisma.user.update({ where: { id: userId }, data: { creatorMode: false } }),
     prisma.creator.updateMany({
       where: { userId },
-      data: { inactivityNoticeStage: NOTICE_STAGE.NONE, inactivityNoticeAt: null },
+      data: { inactivityNoticeStage: NOTICE_STAGE.NONE, inactivityNoticeAt: null, pausedAt: null, resumedAt: null },
     }),
-    ...journeys.map((journey) =>
-      prisma.journey.update({
-        where: { id: journey.id },
-        data: {
-          status: "ARCHIVED",
-          lifecycleStatusBefore: journey.status,
-          lifecycleDeleteAt: deleteAt,
-        },
-      })
-    ),
   ]);
 
-  return journeys.length;
+  return result.count;
 }
 
 /** Quanti Journey verrebbero nascosti spegnendo la modalità Creator (per la domanda di conferma). */
 export async function countJourneysToHide(userId: string): Promise<number> {
-  return prisma.journey.count({
-    where: { creator: { userId }, status: { not: "ARCHIVED" }, deletedAt: null },
+  return prisma.journey.count({ where: { creator: { userId }, deletedAt: null } });
+}
+
+/** Mette in pausa il conto dell'inattività: primo avviso dopo 10 mesi. I Journey restano online. */
+export async function startCreatorPause(userId: string): Promise<void> {
+  await prisma.creator.updateMany({
+    where: { userId },
+    data: { pausedAt: new Date(), inactivityNoticeStage: NOTICE_STAGE.NONE, inactivityNoticeAt: null },
+  });
+}
+
+/** Riprende dalla pausa: il conto dell'inattività riparte da adesso, con i tempi normali. */
+export async function endCreatorPause(userId: string): Promise<void> {
+  const now = new Date();
+  await prisma.creator.updateMany({
+    where: { userId },
+    data: { pausedAt: null, resumedAt: now, inactivityNoticeStage: NOTICE_STAGE.NONE, inactivityNoticeAt: null },
   });
 }
 
 const EMAIL_LINK = `${process.env.BETTER_AUTH_URL ?? ""}/settings/creator`;
 
-const NOTICE_EMAILS: Record<Exclude<NoticeStage, 0>, { subject: string; body: string }> = {
-  1: {
-    subject: "Your Zero Creator account has been quiet for 6 months",
-    body: "It has been 6 months since you last published on Zero. Your Journeys are still online. If you are done with Creator mode, you can switch it off in your settings. If nothing changes, we will send you one more reminder in 3 months.",
-  },
-  2: {
-    subject: "Your Zero Creator account: one month left",
-    body: "It has been 9 months since you last published on Zero. If you do not publish in the next month, we will close Creator mode. Your Journeys will then be hidden, and permanently deleted 30 days later unless you turn Creator mode back on.",
-  },
-  3: {
-    subject: "Your Zero Creator mode has been closed",
-    body: "Creator mode has been closed after 10 months without publishing. Your Journeys are now hidden from Zero. You can turn Creator mode back on within 30 days to restore them. After 30 days they will be permanently deleted.",
-  },
-};
+function noticeEmail(stage: Exclude<NoticeStage, 0>, paused: boolean): { subject: string; body: string } {
+  const months = paused ? PAUSE_NOTICE_MONTHS : NOTICE_MONTHS;
+  const sinceLabel = paused ? "on a break" : "since you last published";
 
-async function sendNoticeEmail(input: { to: string; name: string; stage: Exclude<NoticeStage, 0> }) {
-  const notice = NOTICE_EMAILS[input.stage];
+  if (stage === NOTICE_STAGE.FIRST) {
+    return {
+      subject: `Your Zero Creator account has been quiet for ${months[1]} months`,
+      body: `It has been ${months[1]} months ${sinceLabel} on Zero. Your Journeys are still online. If you are done with Creator mode, you can switch it off in your settings. If nothing changes, we will send you one more reminder soon.`,
+    };
+  }
+  if (stage === NOTICE_STAGE.SECOND) {
+    return {
+      subject: "Your Zero Creator account: one month left",
+      body: `It has been ${months[2]} months ${sinceLabel} on Zero. If you do not publish in the next month, we will close Creator mode. Your Journeys will then be hidden, and permanently deleted 30 days later unless you turn Creator mode back on.`,
+    };
+  }
+  return {
+    subject: "Your Zero Creator mode has been closed",
+    body: `Creator mode has been closed after ${months[3]} months ${sinceLabel}. Your Journeys are now hidden from Zero. You can turn Creator mode back on within 30 days to restore them. After 30 days they will be permanently deleted.`,
+  };
+}
+
+async function sendNoticeEmail(input: {
+  to: string;
+  name: string;
+  stage: Exclude<NoticeStage, 0>;
+  paused: boolean;
+}) {
+  const notice = noticeEmail(input.stage, input.paused);
   await sendEmail({
     to: input.to,
     subject: notice.subject,
@@ -192,8 +213,8 @@ async function sendNoticeEmail(input: { to: string; name: string; stage: Exclude
 
 /**
  * Esegue un giro del ciclo per tutti i creator attivi: invia l'avviso dovuto (una sola volta per
- * stadio) e chiude la modalità quando scatta la chiusura. Poi cancella per sempre i Journey
- * nascosti la cui finestra di recupero è scaduta. Chiamato una volta al giorno dal cron.
+ * stadio) e chiude la modalità quando scatta la chiusura. Poi cancella per sempre i Journey nascosti la
+ * cui finestra di recupero è scaduta. Chiamato una volta al giorno dal cron.
  */
 export async function runCreatorLifecycle(now: Date = new Date()): Promise<{
   noticesSent: number;
@@ -208,7 +229,9 @@ export async function runCreatorLifecycle(now: Date = new Date()): Promise<{
       email: true,
       createdAt: true,
       creatorModeAt: true,
-      creator: { select: { id: true, inactivityNoticeStage: true, inactivityNoticeAt: true } },
+      creator: {
+        select: { id: true, inactivityNoticeStage: true, inactivityNoticeAt: true, pausedAt: true, resumedAt: true },
+      },
     },
   });
 
@@ -218,18 +241,34 @@ export async function runCreatorLifecycle(now: Date = new Date()): Promise<{
   for (const user of users) {
     // Chi ha scelto Creator in registrazione può non avere ancora la riga Creator: la creiamo qui.
     const creator =
-      user.creator ?? (await prisma.creator.create({ data: { userId: user.id, displayName: user.name }, select: { id: true, inactivityNoticeStage: true, inactivityNoticeAt: true } }));
+      user.creator ??
+      (await prisma.creator.create({
+        data: { userId: user.id, displayName: user.name },
+        select: { id: true, inactivityNoticeStage: true, inactivityNoticeAt: true, pausedAt: true, resumedAt: true },
+      }));
 
-    const storedStage = creator.inactivityNoticeStage as NoticeStage;
-    const lastActivityAt = await getLastActivityAt({
-      creatorId: creator.id,
-      baseDate: user.creatorModeAt ?? user.createdAt,
+    const modeStartAt = getModeStartAt({
+      creatorModeAt: user.creatorModeAt,
+      createdAt: user.createdAt,
+      resumedAt: creator.resumedAt,
     });
+    const lastPublishedAt = await getLastPublishedAt({ creatorId: creator.id, modeStartAt });
+
+    // Pubblicare durante la pausa la chiude: si riparte dalla pubblicazione.
+    let pausedAt = creator.pausedAt;
+    if (pausedAt && lastPublishedAt > pausedAt) {
+      await prisma.creator.update({ where: { id: creator.id }, data: { pausedAt: null, resumedAt: lastPublishedAt } });
+      pausedAt = null;
+    }
+
+    const paused = pausedAt !== null;
+    const storedStage = creator.inactivityNoticeStage as NoticeStage;
     const stage = resolveNoticeStage({
       storedStage,
       storedNoticeAt: creator.inactivityNoticeAt,
-      lastActivityAt,
+      anchorAt: pausedAt ?? lastPublishedAt,
       now,
+      months: paused ? PAUSE_NOTICE_MONTHS : NOTICE_MONTHS,
     });
 
     if (stage === storedStage) continue;
@@ -242,7 +281,7 @@ export async function runCreatorLifecycle(now: Date = new Date()): Promise<{
       continue;
     }
 
-    await sendNoticeEmail({ to: user.email, name: user.name, stage });
+    await sendNoticeEmail({ to: user.email, name: user.name, stage, paused });
     noticesSent += 1;
 
     if (stage === NOTICE_STAGE.CLOSURE) {
@@ -260,7 +299,7 @@ export async function runCreatorLifecycle(now: Date = new Date()): Promise<{
   return { noticesSent, closed, journeysDeleted };
 }
 
-/** Cancella per sempre i Journey nascosti la cui finestra di recupero è scaduta, file su R2 compresi. */
+/** Cancella per sempre i Journey nascosti la cui finestra di recupero è scaduta, file su R2 e Stream compresi. */
 export async function deleteExpiredHiddenJourneys(now: Date = new Date()): Promise<number> {
   const expired = await prisma.journey.findMany({
     where: { lifecycleDeleteAt: { lte: now } },

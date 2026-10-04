@@ -58,6 +58,11 @@ export default function CreatorInfoPage() {
               Creator mode back on.
             </li>
           </ul>
+          <p className="text-sm text-ink-muted">
+            Between Journeys? Turn on <span className="font-semibold text-ink">Take a break</span> in Settings. Your
+            Journeys stay online, and the first email only comes 10 months after you start the break. Turn it off, or
+            publish, to restart the count.
+          </p>
         </div>
 
         <SectionTitle className="mt-8">If you turn Creator mode off</SectionTitle>

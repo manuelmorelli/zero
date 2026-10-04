@@ -184,7 +184,8 @@ Permette la gestione di:
 - notifiche;
 - privacy;
 - preferenze;
-- modalità Creator (Visitatore o Creator), con una domanda di conferma prima di nascondere i Journey.
+- modalità Creator (Visitatore o Creator), con una domanda di conferma prima di nascondere i Journey;
+- pausa del creator (nessun avviso per i primi 10 mesi, Journey online).
 
 ### Pagina informativa Creator (`/creator`)
 

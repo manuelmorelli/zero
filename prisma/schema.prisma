@@ -289,6 +289,10 @@ model Creator {
   // avvisi a 6 e 9 mesi, 3 = chiusura a 10 mesi. inactivityNoticeAt = quando è cambiato l'ultimo stadio.
   inactivityNoticeStage Int       @default(0)
   inactivityNoticeAt    DateTime?
+  // Pausa (lib/account/creatorLifecycle.ts): pausedAt non null = pausa attiva, con avvisi a 10, 13 e 14
+  // mesi da quando è iniziata. resumedAt = ultima ripresa: il conto dell'inattività riparte da lì.
+  pausedAt  DateTime?
+  resumedAt DateTime?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   deletedAt    DateTime?
@@ -333,11 +337,11 @@ model Journey {
   updatedAt      DateTime      @updatedAt
   publishedAt    DateTime? // valorizzato solo la prima volta che il Journey passa da Draft a Published; non cambia più in seguito
   deletedAt      DateTime?
-  // Valorizzati solo quando la modalità Creator viene chiusa (lib/account/creatorLifecycle.ts): il
-  // Journey è archiviato, lifecycleStatusBefore ricorda lo stato precedente per il ripristino,
-  // lifecycleDeleteAt è la data della cancellazione definitiva (30 giorni dopo).
-  lifecycleStatusBefore JourneyStatus?
-  lifecycleDeleteAt     DateTime?
+  // Valorizzato solo quando la modalità Creator viene spenta o chiusa (lib/account/creatorLifecycle.ts):
+  // il Journey è nascosto tramite deletedAt (come ogni altro contenuto nascosto), e lifecycleDeleteAt
+  // è la data della cancellazione definitiva, 30 giorni dopo. Riattivando la modalità entro quella
+  // data, deletedAt torna null e il Journey ricompare com'era.
+  lifecycleDeleteAt DateTime?
 
   chapters    Chapter[]
   episodes    Episode[]

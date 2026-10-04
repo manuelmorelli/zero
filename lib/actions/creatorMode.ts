@@ -2,7 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/session";
-import { turnOffCreatorMode, turnOnCreatorMode } from "@/lib/account/creatorLifecycle";
+import {
+  endCreatorPause,
+  startCreatorPause,
+  turnOffCreatorMode,
+  turnOnCreatorMode,
+} from "@/lib/account/creatorLifecycle";
 
 /** Interruttore Visitatore/Creator in Impostazioni. Spegnere nasconde i Journey (recuperabili 30 giorni). */
 export async function setCreatorMode(enabled: boolean): Promise<{ error: string | null }> {
@@ -16,5 +21,19 @@ export async function setCreatorMode(enabled: boolean): Promise<{ error: string 
 
   revalidatePath("/settings/creator");
   revalidatePath("/dashboard");
+  return { error: null };
+}
+
+/** Pausa del creator: nessun avviso per i primi 10 mesi, i Journey restano online. */
+export async function setCreatorPause(paused: boolean): Promise<{ error: string | null }> {
+  const { user } = await requireSession();
+
+  if (paused) {
+    await startCreatorPause(user.id);
+  } else {
+    await endCreatorPause(user.id);
+  }
+
+  revalidatePath("/settings/creator");
   return { error: null };
 }

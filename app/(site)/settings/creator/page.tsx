@@ -3,6 +3,7 @@ import { requireSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { CreatorNotificationsForm } from "@/components/settings/CreatorNotificationsForm";
 import { CreatorModeSwitch } from "@/components/settings/CreatorModeSwitch";
+import { CreatorPauseSwitch } from "@/components/settings/CreatorPauseSwitch";
 import { countJourneysToHide } from "@/lib/account/creatorLifecycle";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { PageTitle, SectionTitle } from "@/components/ui/heading";
@@ -13,7 +14,7 @@ export default async function SettingsCreatorPage() {
   const { user } = await requireSession();
   const preferences = await prisma.user.findUniqueOrThrow({
     where: { id: user.id },
-    select: { notifyNewFollower: true, creatorMode: true },
+    select: { notifyNewFollower: true, creatorMode: true, creator: { select: { pausedAt: true } } },
   });
   const journeyCount = await countJourneysToHide(user.id);
 
@@ -24,8 +25,9 @@ export default async function SettingsCreatorPage() {
         <p className="mt-2 text-sm text-ink-muted">Notifications and tools for what you publish on Zero.</p>
 
         <SectionTitle className="mt-8">Account type</SectionTitle>
-        <div className="mt-3">
+        <div className="mt-3 space-y-3">
           <CreatorModeSwitch creatorMode={preferences.creatorMode} journeyCount={journeyCount} />
+          {preferences.creatorMode && <CreatorPauseSwitch paused={preferences.creator?.pausedAt != null} />}
         </div>
         <Link href="/creator" className="mt-3 inline-block text-sm text-ink-muted underline underline-offset-4">
           How Creator mode works
