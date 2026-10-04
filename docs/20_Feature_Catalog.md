@@ -81,7 +81,7 @@ Un pulsante dedicato permette al creator di avvisare manualmente i propri follow
 
 - **Blocco utente**: interrompe ogni rapporto reciproco (follow, messaggi, visibilità del profilo) tra due persone.
 - **Account privato**: chi non segue vede solo nome, foto e bio, non i contenuti pubblicati.
-- **Segnalazioni**: ogni Journey e ogni profilo può essere segnalato; le segnalazioni confermate riducono il punteggio di fiducia del creator segnalato.
+- **Segnalazioni**: ogni Journey e ogni profilo può essere segnalato; le segnalazioni confermate riducono il punteggio di fiducia del creator segnalato. Le segnalazioni si gestiscono da un pannello riservato agli amministratori.
 - **Età minima 16 anni**, verificata in fase di registrazione e non aggirabile.
 - **Cancellazione account** con 10 giorni di tempo per ripensarci prima che tutto venga eliminato in modo definitivo.
 - **Regole di contenuto dettagliate**, con tolleranza zero esplicita su minori, incitamento alla violenza e autolesionismo/suicidio.
