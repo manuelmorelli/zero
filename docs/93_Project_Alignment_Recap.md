@@ -406,3 +406,20 @@ L'idea che ha convinto di più, dopo un secondo giro di ricerca mirato: un **"Pe
 Due bug reali trovati ed emersi solo testando su episodi veri (non su dati finti): l'invio del video via `fetch` falliva con timeout su file pesanti (video non compressi: uno degli episodi di prova pesava 459MB) — risolto passando al modulo nativo `https` di Node con scrittura a blocchi e backpressure, invece di un singolo invio monolitico. Il campo della risposta di Google per l'embedding era documentato in un riassunto di terze parti come `embeddings[0].values`, mentre dal vivo è risultato `embedding.values` (singolare) — corretto dopo una chiamata diretta di verifica. Testato con successo su tre episodi reali (5s, 142MB/145s, 459MB/201s): il contenuto estratto su un episodio narrativo vero ha riconosciuto correttamente inizio, ostacoli, risultato e conclusione della storia, non solo una descrizione generica delle immagini.
 
 **Promemoria esplicito di Manuel**: la libreria resta volutamente spenta finché non ci saranno episodi più rappresentativi su cui testarla (quelli attuali sono quasi tutti clip di prova brevissime). Da non dimenticare prima di considerare chiuso il progetto: **attivarla e testarla sul serio** (vedi `94_Product_Backlog.md`, sezione AI) prima di passare oltre ricerca semantica, trailer automatico e Percorso su Misura, tutti ancora da costruire sopra questa base.
+
+## Decisione S4: abbonamento o acquisto singolo (5 ottobre 2026)
+
+**Situazione di partenza.** Nei documenti la Community era già descritta come abbonamento mensile, ma nel codice esisteva solo un prezzo unico per creator, senza periodo di rinnovo, e nessun controllo di accesso era collegato. La scelta era quindi ancora aperta.
+
+**Decisione presa da Manuel.**
+- Abbonamento mensile per creator, un solo livello, prezzo scelto dal creator da 5 euro in su, senza tetto.
+- Chi si abbona riceve la sfida "Fai il percorso con lui" e la stanza degli abbonati (domande in forma scritta, nessuna diretta).
+- Se il creator non pubblica nulla nel mese, il mese è gratis per chi paga.
+- Chi si abbona può regalare un mese, senza obblighi per chi lo riceve.
+- Chi completa la sfida può aprire un Journey collegato a quello del creator (staffetta).
+- Workshop, consulenze e prodotti digitali restano acquisti separati.
+- Esclusi: video singoli a pagamento, emoji, badge, pagella delle promesse, co-autore nei crediti, Journey personale, backstage a orario, archivio a sblocco, domande in diretta.
+
+**Perché.** Rispetto a Patreon la commissione è la stessa, 10%: il creator guadagna solo pochi decimi di euro in più, per via dei costi di pagamento più bassi. Il vantaggio reale sta nella trasparenza e nella qualità dell'esperienza, non nel prezzo. Un video singolo da pochi euro lascerebbe al creator una quota troppo bassa dopo le commissioni Stripe. Le idee scelte puntano sul rapporto tra creator e abbonato, non sull'elenco di funzioni.
+
+**Stato.** Nessun codice è stato scritto. Prima si disegnano le schermate, da approvare, poi si costruisce. I pagamenti veri dipendono da Stripe (voce S14).

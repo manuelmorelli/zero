@@ -24,7 +24,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☑ **S1.** Tag "contenuto sponsorizzato" obbligatoria (priorità alta, lavoro piccolo)
 ☑ **S2.** Pannello per gestire le segnalazioni, visibile solo a Manuel (4 ott 2026: pagina `/admin/reports`, visibile solo agli indirizzi in `ADMIN_EMAILS`, con voce nel menu laterale; risolvere una segnalazione su un creator toglie 10 punti di Trust Score)
 ☑ **S3.** Limite di tempo per utenti inattivi (4 ott 2026): la modalità Creator è una scelta esplicita (registrazione e Impostazioni), con default Visitatore. Chi pubblica riceve avvisi a 6, 9 e 10 mesi dall'ultima pubblicazione; a 10 mesi la modalità si chiude, i Journey vengono nascosti e cancellati dopo 30 giorni salvo riattivazione. Pagina `/creator` informativa. Pausa creator fatta (primo avviso dopo 10 mesi di pausa). Resta da fare la monetizzazione, voce a parte
-☐ **S4.** Decidere: abbonamento o acquisto singolo
+☑ **S4.** Decidere: abbonamento o acquisto singolo (5 ott 2026: abbonamento mensile per creator, un solo livello, prezzo scelto dal creator da 5 euro in su, nessun tetto. Chi si abbona riceve la sfida "Fai il percorso con lui" e la stanza degli abbonati. Se il creator non pubblica nulla nel mese, il mese è gratis per chi paga. Workshop, consulenze e prodotti digitali restano vendite a parte. Esclusi i video singoli a pagamento)
 ☐ **S5.** Immagini AI (serve la fatturazione Google)
 ☐ **S6.** Mappa dei Momenti: riattivare e testare
 ☐ **S7.** Gemini al piano a pagamento (prima del lancio)
@@ -154,7 +154,15 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☐ **Tips e donazioni** (seconda fonte) — meccanismo di pagamento diretto utente→creator, commissione Zero 0% (il creator riceve tutto, meno le commissioni Stripe, come per tutti i pagamenti ricevuti). Cambiato il 2026-10-04, vedi `10_Monetization.md` v4.1.
 
-☐ **Community Premium** — abbonamento mensile di un utente verso un singolo creator per contenuti/spazi riservati (modello Patreon/Skool). Da progettare da zero, Manuel non ha esperienza diretta da cui partire — servirà un giro di riferimenti concreti prima di disegnarla.
+☐ **Community Premium** — abbonamento mensile di un utente verso un singolo creator. Decisione S4 (5 ott 2026): un solo livello, prezzo scelto dal creator da 5 euro in su, senza tetto. Da costruire dopo Stripe (S14), con il design delle schermate da approvare prima del codice.
+
+☐ **Sfida "Fai il percorso con lui"** (dentro l'abbonamento): il creator propone una sfida reale per alcune settimane, e ogni abbonato fa la sua versione dello stesso percorso e pubblica i suoi progressi nella stanza degli abbonati.
+
+☐ **Stanza degli abbonati** (dentro l'abbonamento): spazio riservato agli abbonati dove il creator risponde alle domande in forma scritta. Niente diretta.
+
+☐ **Journey a staffetta**: chi completa la sfida può aprire un proprio Journey collegato a quello del creator. Il creator vede quanti percorsi ha ispirato.
+
+☐ **Regalo di un mese**: chi si abbona può regalare un mese a un amico. Chi lo riceve non ha nessun obbligo: può usare il mese, ignorarlo o iniziare la sfida solo se vuole.
 
 ☐ **Eventi/workshop** — stesso gruppo economico di Community Premium (90% creator / 10% Zero), da definire come si organizzano tecnicamente (prenotazione, streaming live?, semplice pagina con link esterno?).
 
