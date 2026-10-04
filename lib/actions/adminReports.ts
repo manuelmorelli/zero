@@ -8,7 +8,7 @@ import { isAdminEmail } from "@/lib/admin";
 
 const ADMIN_REPORTS_PATH = "/admin/reports";
 
-const StatusSchema = z.enum(["PENDING", "REVIEWING", "RESOLVED", "DISMISSED"]);
+const StatusSchema = z.enum(["PENDING", "REVIEWING", "RESOLVED"]);
 
 /** Controllo sul server: la pagina nascosta non basta, ogni azione verifica di nuovo. */
 async function requireAdmin() {
@@ -38,11 +38,24 @@ export async function setReportStatus(reportId: string, status: string): Promise
   const parsedId = z.string().min(1).safeParse(reportId);
   if (!parsedStatus.success || !parsedId.success) return { error: "Richiesta non valida." };
 
-  const isClosed = parsedStatus.data === "RESOLVED" || parsedStatus.data === "DISMISSED";
+  const isResolved = parsedStatus.data === "RESOLVED";
   await prisma.report.update({
     where: { id: parsedId.data },
-    data: { status: parsedStatus.data, resolvedAt: isClosed ? new Date() : null },
+    data: { status: parsedStatus.data, resolvedAt: isResolved ? new Date() : null },
   });
+
+  revalidatePath(ADMIN_REPORTS_PATH);
+  return { error: null };
+}
+
+/** Cancellazione definitiva: la riga sparisce dal database, non si recupera. */
+export async function deleteReport(reportId: string): Promise<{ error: string | null }> {
+  await requireAdmin();
+
+  const parsedId = z.string().min(1).safeParse(reportId);
+  if (!parsedId.success) return { error: "Richiesta non valida." };
+
+  await prisma.report.delete({ where: { id: parsedId.data } });
 
   revalidatePath(ADMIN_REPORTS_PATH);
   return { error: null };

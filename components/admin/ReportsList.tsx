@@ -5,9 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { Report } from "@/generated/prisma/client";
-import { setReportStatus } from "@/lib/actions/adminReports";
+import { deleteReport, setReportStatus } from "@/lib/actions/adminReports";
 import { formatRelativeDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Badge, CHIP, CHIP_SELECTED, Notice, Panel } from "@/components/ui/panel";
 import { CardTitle } from "@/components/ui/heading";
 
@@ -18,7 +26,6 @@ const FILTERS = [
   { value: "PENDING", label: "Da vedere" },
   { value: "REVIEWING", label: "In revisione" },
   { value: "RESOLVED", label: "Risolte" },
-  { value: "DISMISSED", label: "Respinte" },
 ] as const;
 
 type Filter = (typeof FILTERS)[number]["value"];
@@ -49,6 +56,7 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>("ALL");
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [toDelete, setToDelete] = useState<ReportWithUser | null>(null);
 
   const visible = filter === "ALL" ? reports : reports.filter((report) => report.status === filter);
 
@@ -56,6 +64,19 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
     setPendingId(reportId);
     const result = await setReportStatus(reportId, status);
     setPendingId(null);
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    router.refresh();
+  }
+
+  async function handleDelete() {
+    if (!toDelete) return;
+    setPendingId(toDelete.id);
+    const result = await deleteReport(toDelete.id);
+    setPendingId(null);
+    setToDelete(null);
     if (result.error) {
       toast.error(result.error);
       return;
@@ -82,7 +103,7 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
 
       {visible.map((report) => {
         const href = contentHref(report);
-        const isClosed = report.status === "RESOLVED" || report.status === "DISMISSED";
+        const isClosed = report.status === "RESOLVED";
         const busy = pendingId === report.id;
 
         return (
@@ -120,8 +141,8 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
                   <Button variant="primary" disabled={busy} onClick={() => handleStatus(report.id, "RESOLVED")}>
                     Risolvi
                   </Button>
-                  <Button variant="secondary" disabled={busy} onClick={() => handleStatus(report.id, "DISMISSED")}>
-                    Respingi
+                  <Button variant="secondary" disabled={busy} onClick={() => setToDelete(report)}>
+                    Respingi e cancella
                   </Button>
                 </>
               )}
@@ -134,6 +155,25 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
           </Panel>
         );
       })}
+
+      <Dialog open={toDelete !== null} onOpenChange={(open) => !open && setToDelete(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Cancellare questa segnalazione?</DialogTitle>
+            <DialogDescription>
+              Sparisce per sempre dal database. Non si può annullare.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setToDelete(null)}>
+              Annulla
+            </Button>
+            <Button variant="danger" disabled={pendingId !== null} onClick={handleDelete}>
+              Cancella
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
