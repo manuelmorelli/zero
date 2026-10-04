@@ -5,6 +5,10 @@
       "schedule": "0 3 * * *"
     },
     {
+      "path": "/api/cron/creator-lifecycle",
+      "schedule": "30 3 * * *"
+    },
+    {
       "path": "/api/cron/sync-light-videos",
       "schedule": "0 4 * * *"
     }

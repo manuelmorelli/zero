@@ -61,6 +61,8 @@ Intorno ai contenuti c'è un livello social completo:
 
 ## Cosa può fare oggi un creator
 
+Ogni account nasce **Visitatore**: può guardare, seguire, mettere like e scrivere messaggi, ma non pubblicare. Per pubblicare bisogna attivare la **modalità Creator**, scelta esplicita sia in registrazione sia in Impostazioni (con una pagina che spiega come funziona). Chi non pubblica da tempo riceve avvisi via email a 6 e 9 mesi; a 10 mesi la modalità si chiude e i Journey vengono nascosti, recuperabili per 30 giorni prima della cancellazione definitiva. Lo stesso vale se il creator spegne la modalità volontariamente, con una domanda di conferma prima.
+
 Un creator costruisce un Journey organizzandolo in capitoli (facoltativi) ed episodi, carica i video, scrive la presentazione, sceglie la categoria, e decide quando pubblicare. Ogni Journey appena pubblicato ottiene 15 giorni di visibilità garantita a tutti, indipendentemente dagli interessi di ciascuno, per dargli una possibilità reale di farsi notare.
 
 Dalla propria Dashboard il creator gestisce tutti i suoi Journey (bozza, pubblicato, archiviato), gli Update, e ha accesso a statistiche reali: visualizzazioni totali, tasso medio di completamento, quante persone hanno finito l'intero percorso, quante interazioni ha ricevuto.
@@ -94,6 +96,7 @@ Per onestà verso chi legge questo documento, ecco cosa oggi non è ancora reale
 - **Nessun pagamento vero è ancora collegato.** Abbonamenti Community, vendita di eventi/prodotti/consulenze, pubblicità, donazioni: tutto ha già percentuali e meccanismo decisi, ma nessuna riga di codice si collega oggi a un pagamento reale. È una scelta di sequenza (prima il prodotto, poi i pagamenti), non una dimenticanza, e il collegamento a Stripe è predisposto per essere attivabile in pochi passaggi quando sarà il momento.
 - **La generazione di immagini AI** è pronta ma spenta, perché ha un costo reale per immagine e serve attivare la fatturazione sul nostro account Google.
 - **La versione video a qualità adattiva per connessioni lente** (per far partire i video più in fretta su internet lento) è pronta ma spenta per lo stesso motivo: costa, e aspettiamo utenti reali prima di accenderla.
+- **La pausa per i creator** (fermarsi per un periodo senza subire gli avvisi) non è ancora disponibile: oggi conta solo la data dell'ultima pubblicazione.
 - **La messaggistica resta volutamente semplice**: solo testo, solo conversazioni uno a uno, senza gruppi né allegati, per scelta della prima versione.
 - **Non esiste ancora moderazione automatica dei video** (solo testo e immagini sono filtrati oggi).
 - **Zero non è ancora un'azienda registrata**: è dichiarato apertamente anche nei Termini di Servizio del sito.

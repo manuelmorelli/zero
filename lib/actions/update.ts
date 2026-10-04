@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { requireCreator } from "@/lib/creator";
+import { requireCreator, creatorModeError } from "@/lib/creator";
 import { getCurrentSession } from "@/lib/session";
 import { deleteExpiredUpdates, UPDATE_LIFETIME_MS } from "@/lib/updates";
 import { notifyQuestionAnswered } from "@/lib/notifications";
@@ -118,6 +118,8 @@ export async function shareToUpdate(params: {
   content: string;
 }): Promise<{ error: string | null }> {
   const { creator } = await requireCreator();
+  const modeError = await creatorModeError(creator.userId);
+  if (modeError) return { error: modeError };
 
   const content = params.content.trim();
   if (!content) return { error: "Nothing to share." };
@@ -160,6 +162,8 @@ export async function publishUpdate(
   formData: FormData
 ): Promise<PublishUpdateState> {
   const { creator } = await requireCreator();
+  const modeError = await creatorModeError(creator.userId);
+  if (modeError) return { error: modeError, done: false };
 
   const rawType = formData.get("type");
   if (

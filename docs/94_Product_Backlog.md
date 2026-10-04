@@ -23,7 +23,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 
 ☑ **S1.** Tag "contenuto sponsorizzato" obbligatoria (priorità alta, lavoro piccolo)
 ☑ **S2.** Pannello per gestire le segnalazioni, visibile solo a Manuel (4 ott 2026: pagina `/admin/reports`, visibile solo agli indirizzi in `ADMIN_EMAILS`, con voce nel menu laterale; risolvere una segnalazione su un creator toglie 10 punti di Trust Score)
-☐ **S3.** Decidere il limite di tempo per utenti inattivi, poi costruirlo
+☑ **S3.** Limite di tempo per utenti inattivi (4 ott 2026): la modalità Creator è una scelta esplicita (registrazione e Impostazioni), con default Visitatore. Chi pubblica riceve avvisi a 6, 9 e 10 mesi dall'ultima pubblicazione; a 10 mesi la modalità si chiude, i Journey vengono nascosti e cancellati dopo 30 giorni salvo riattivazione. Pagina `/creator` informativa. Pausa creator e monetizzazione restano da fare (la monetizzazione è una voce a parte)
 ☐ **S4.** Decidere: abbonamento o acquisto singolo
 ☐ **S5.** Immagini AI (serve la fatturazione Google)
 ☐ **S6.** Mappa dei Momenti: riattivare e testare

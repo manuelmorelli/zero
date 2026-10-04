@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireCreator, getPublishReadiness, publishGateMessage } from "@/lib/creator";
+import { requireCreator, getPublishReadiness, publishGateMessage, creatorModeError } from "@/lib/creator";
 import {
   copyImage,
   deleteImage,
@@ -327,6 +327,8 @@ export async function quickComposeEpisode(
   formData: FormData
 ): Promise<QuickComposeState> {
   const { creator } = await requireCreator();
+  const modeError = await creatorModeError(creator.userId);
+  if (modeError) return { error: modeError, done: false };
 
   const parsed = QuickComposeSchema.safeParse({
     journeyId: formData.get("journeyId") || undefined,

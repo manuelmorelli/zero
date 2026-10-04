@@ -154,6 +154,14 @@ model User {
   deletedAt           DateTime?
   scheduledDeletionAt DateTime?
 
+  // Modalità Creator (S3, 2026-10-04): scelta esplicita tra Visitatore e Creator, in registrazione
+  // o in Impostazioni. Default false = Visitatore: non può pubblicare e non riceve avvisi di
+  // inattività (vedi lib/account/creatorLifecycle.ts).
+  creatorMode   Boolean   @default(false)
+  // Ultima volta che la modalità Creator è stata attivata dalle Impostazioni. Null per chi l'ha
+  // scelta in registrazione: in quel caso il conto dell'inattività parte da createdAt.
+  creatorModeAt DateTime?
+
   // Impostazioni Privacy (Settings > Privacy, 2026-10-01): chi non segue ancora questo utente
   // vede solo nome/foto/bio col tasto Segui, non Journey/Update. Il "segui" resta istantaneo
   // come oggi, nessuna richiesta da approvare. Pensato per chi guarda contenuti (categorie
@@ -277,6 +285,10 @@ model Creator {
   // creati prima di questa regola.
   guidelinesAcceptedAt DateTime?
   status       CreatorStatus @default(ACTIVE)
+  // Ciclo di inattività (lib/account/creatorLifecycle.ts): 0 = nessun avviso inviato, 1 e 2 =
+  // avvisi a 6 e 9 mesi, 3 = chiusura a 10 mesi. inactivityNoticeAt = quando è cambiato l'ultimo stadio.
+  inactivityNoticeStage Int       @default(0)
+  inactivityNoticeAt    DateTime?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   deletedAt    DateTime?
@@ -321,6 +333,11 @@ model Journey {
   updatedAt      DateTime      @updatedAt
   publishedAt    DateTime? // valorizzato solo la prima volta che il Journey passa da Draft a Published; non cambia più in seguito
   deletedAt      DateTime?
+  // Valorizzati solo quando la modalità Creator viene chiusa (lib/account/creatorLifecycle.ts): il
+  // Journey è archiviato, lifecycleStatusBefore ricorda lo stato precedente per il ripristino,
+  // lifecycleDeleteAt è la data della cancellazione definitiva (30 giorni dopo).
+  lifecycleStatusBefore JourneyStatus?
+  lifecycleDeleteAt     DateTime?
 
   chapters    Chapter[]
   episodes    Episode[]

@@ -183,7 +183,12 @@ Permette la gestione di:
 - account;
 - notifiche;
 - privacy;
-- preferenze.
+- preferenze;
+- modalità Creator (Visitatore o Creator), con una domanda di conferma prima di nascondere i Journey.
+
+### Pagina informativa Creator (`/creator`)
+
+Pagina statica che spiega cos'è la modalità Creator: chi può pubblicare, come iniziare, cosa succede dopo 6, 9 e 10 mesi senza pubblicare, e cosa succede se la modalità viene spenta. La sezione sui guadagni resta "in arrivo" finché la monetizzazione non è decisa. È raggiungibile dal form di registrazione e dalle Impostazioni.
 
 ---
 

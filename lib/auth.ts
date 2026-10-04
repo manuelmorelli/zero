@@ -58,6 +58,13 @@ export const auth = betterAuth({
         required: true,
         input: true,
       },
+      // Visitatore (false) o Creator (true), scelta esplicita in registrazione (S3, 2026-10-04).
+      creatorMode: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: true,
+      },
     },
   },
   databaseHooks: {

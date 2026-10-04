@@ -19,13 +19,23 @@ export async function requireCreator() {
   return { user, creator };
 }
 
-export type PublishRequirement = "profile" | "presentation" | "guidelines";
+export type PublishRequirement = "creatorMode" | "profile" | "presentation" | "guidelines";
 
 const PUBLISH_REQUIREMENT_LABELS: Record<PublishRequirement, string> = {
+  creatorMode: "Creator mode turned on in Settings",
   profile: "a complete profile (username, photo and bio)",
   presentation: "your presentation video",
   guidelines: "acceptance of the Community Guidelines",
 };
+
+export const CREATOR_MODE_REQUIRED_MESSAGE =
+  "Turn on Creator mode in Settings before you can create or publish.";
+
+/** Controllo per le azioni che creano o pubblicano senza passare da getPublishReadiness (Journey, Update). */
+export async function creatorModeError(userId: string): Promise<string | null> {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { creatorMode: true } });
+  return user?.creatorMode ? null : CREATOR_MODE_REQUIRED_MESSAGE;
+}
 
 /**
  * Requisiti per poter pubblicare per la prima volta (Punto 6 dell'allineamento, deciso con
@@ -41,10 +51,11 @@ export async function getPublishReadiness(): Promise<{
   const { user, creator } = await requireCreator();
   const profile = await prisma.user.findUniqueOrThrow({
     where: { id: user.id },
-    select: { username: true, avatarUrl: true, bio: true },
+    select: { username: true, avatarUrl: true, bio: true, creatorMode: true },
   });
 
   const missing: PublishRequirement[] = [];
+  if (!profile.creatorMode) missing.push("creatorMode");
   const hasCompleteProfile = Boolean(profile.username && profile.avatarUrl && profile.bio?.trim());
   if (!hasCompleteProfile) missing.push("profile");
   if (!creator.presentationVideoUrl) missing.push("presentation");

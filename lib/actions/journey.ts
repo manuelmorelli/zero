@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireCreator, getPublishReadiness, publishGateMessage } from "@/lib/creator";
+import { requireCreator, getPublishReadiness, publishGateMessage, creatorModeError } from "@/lib/creator";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { DISCOVERY_PHASE_DAYS, PUBLICLY_REACHABLE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewJourney } from "@/lib/notifications";
@@ -75,6 +75,8 @@ export async function createJourney(
   formData: FormData
 ): Promise<{ error: string | null }> {
   const { creator } = await requireCreator();
+  const modeError = await creatorModeError(creator.userId);
+  if (modeError) return { error: modeError };
 
   const parsed = JourneySchema.safeParse({
     title: formData.get("title"),

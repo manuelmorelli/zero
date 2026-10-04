@@ -8,6 +8,7 @@ import { AuthHeader } from "@/components/layout/AuthHeader";
 import { FIELD } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { PageTitle } from "@/components/ui/heading";
 
 export default function RegisterPage() {
@@ -64,6 +65,7 @@ function RegisterForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [creatorMode, setCreatorMode] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
@@ -88,6 +90,7 @@ function RegisterForm() {
       email,
       password,
       dateOfBirth: new Date(dateOfBirth),
+      creatorMode,
       callbackURL: "/onboarding",
     });
     setLoading(false);
@@ -141,6 +144,17 @@ function RegisterForm() {
         max={maxDateOfBirth()}
         required
       />
+      <div>
+        <Switch
+          label="Creator mode"
+          description="Off: you can watch, follow and like. On: you can publish Journeys. You can change this anytime in Settings."
+          checked={creatorMode}
+          onChange={setCreatorMode}
+        />
+        <Link href="/creator" className="mt-2 inline-block text-sm text-ink-muted underline underline-offset-4">
+          How Creator mode works
+        </Link>
+      </div>
       <PasswordField
         id="password"
         label="Password"
