@@ -21,9 +21,8 @@ type CreateReportInput = {
 };
 
 /**
- * Segnalazione contenuti: nessun pannello di gestione per ora, il modello Report esiste già nello
- * schema. Manuel vede e chiude le segnalazioni da Prisma Studio; la mail qui sotto è solo un
- * avviso, non una coda di lavoro vera e propria — coerente con il volume atteso oggi.
+ * Segnalazione contenuti: salva la riga nel modello Report. Gli amministratori la gestiscono da
+ * /admin/reports (vedi lib/actions/adminReports.ts); la mail qui sotto è solo un avviso.
  */
 export async function createReport(input: CreateReportInput): Promise<{ error: string | null }> {
   const { user } = await requireSession();

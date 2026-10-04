@@ -22,7 +22,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ### Struttura del sito (chat "struttura")
 
 ☑ **S1.** Tag "contenuto sponsorizzato" obbligatoria (priorità alta, lavoro piccolo)
-☐ **S2.** Pannello per gestire le segnalazioni, visibile solo a Manuel
+☑ **S2.** Pannello per gestire le segnalazioni, visibile solo a Manuel (4 ott 2026: pagina `/admin/reports`, visibile solo agli indirizzi in `ADMIN_EMAILS`, con voce nel menu laterale; risolvere una segnalazione su un creator toglie 10 punti di Trust Score)
 ☐ **S3.** Decidere il limite di tempo per utenti inattivi, poi costruirlo
 ☐ **S4.** Decidere: abbonamento o acquisto singolo
 ☐ **S5.** Immagini AI (serve la fatturazione Google)

@@ -96,6 +96,5 @@ Per onestà verso chi legge questo documento, ecco cosa oggi non è ancora reale
 - **La versione video a qualità adattiva per connessioni lente** (per far partire i video più in fretta su internet lento) è pronta ma spenta per lo stesso motivo: costa, e aspettiamo utenti reali prima di accenderla.
 - **La messaggistica resta volutamente semplice**: solo testo, solo conversazioni uno a uno, senza gruppi né allegati, per scelta della prima versione.
 - **Non esiste ancora moderazione automatica dei video** (solo testo e immagini sono filtrati oggi).
-- **Nessuna interfaccia per gestire le segnalazioni**: oggi si leggono manualmente dal database.
 - **Zero non è ancora un'azienda registrata**: è dichiarato apertamente anche nei Termini di Servizio del sito.
 - **Non è stato fatto nessun audit di sicurezza formale** e la piattaforma non è ancora online in produzione per il pubblico.

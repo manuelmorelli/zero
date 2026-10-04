@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 import { SignOutButton } from "@/components/common/SignOutButton";
+import { isCurrentUserAdmin } from "@/lib/actions/adminReports";
 
 type NavLink = { label: string; href: string };
 
@@ -38,6 +39,12 @@ export function SideMenu() {
   const [mounted, setMounted] = useState(false);
   const { data } = useSession();
   const isLoggedIn = !!data;
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!open || !isLoggedIn) return;
+    isCurrentUserAdmin().then(setIsAdmin);
+  }, [open, isLoggedIn]);
 
   useEffect(() => {
     // Il portale può montarsi solo lato client (document.body non esiste in SSR).
@@ -125,6 +132,11 @@ export function SideMenu() {
                   <MenuLink href="/settings" onClick={close}>
                     Settings
                   </MenuLink>
+                  {isAdmin && (
+                    <MenuLink href="/admin/reports" onClick={close}>
+                      Segnalazioni
+                    </MenuLink>
+                  )}
                   <SignOutButton className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink">
                     Sign out
                   </SignOutButton>
