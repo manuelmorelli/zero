@@ -89,11 +89,13 @@ Contiene:
 
 - informazioni della persona;
 - Journey pubblicati (se presenti);
-- Community Premium (se attiva);
+- Community: eventi gratuiti e forum al lancio; abbonamento Post-MVP;
 - prodotti e servizi (se offerti);
 - workshop ed eventi (se organizzati).
 
-La pagina Community del profilo (`/profile/[username]/community`) parte dal riquadro dell'abbonamento: prezzo scelto dal creator (da 5 euro in su), tre cose incluse ogni mese, e due azioni accanto a Subscribe: regalare un mese (Gift a month) e inviare un tip (Send a tip). Sotto ci sono le righe Walk the Path With Me (sfida) e Members room (stanza degli abbonati), ancora vuote finché non vengono costruite, poi Activities e Forum. I pagamenti non sono ancora collegati: i pulsanti rispondono con un breve avviso.
+La pagina Community del profilo (`/profile/[username]/community`) esiste già al lancio, ma mostra solo le parti gratuite: eventi e workshop gratuiti con iscrizione, e il forum per Journey. In cima c'è il pulsante per inviare un tip (Send a tip), attivo dal lancio quando i pagamenti saranno collegati.
+
+L'abbonamento Community (Post-MVP) non è visibile: il riquadro con Subscribe, il regalo di un mese (Gift a month), le righe Walk the Path With Me e Members room e le offerte a pagamento (workshop, eventi, consulenze, prodotti) restano nel codice ma nascosti finché non vengono attivati. Il pulsante di pagamento non è ancora collegato a Stripe: al clic mostra un breve avviso.
 
 ---
 
@@ -137,7 +139,7 @@ Permette di:
 - gestire Episodi;
 - gestire facoltativamente i Capitoli;
 - pubblicare Updates (testo, foto, video, sondaggi, domande);
-- gestire Community Premium;
+- gestire l'abbonamento Community (Post-MVP);
 - gestire prodotti;
 - consultare Analytics.
 

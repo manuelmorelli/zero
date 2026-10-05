@@ -24,12 +24,12 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☑ **S1.** Tag "contenuto sponsorizzato" obbligatoria (priorità alta, lavoro piccolo)
 ☑ **S2.** Pannello per gestire le segnalazioni, visibile solo a Manuel (4 ott 2026: pagina `/admin/reports`, visibile solo agli indirizzi in `ADMIN_EMAILS`, con voce nel menu laterale; risolvere una segnalazione su un creator toglie 10 punti di Trust Score)
 ☑ **S3.** Limite di tempo per utenti inattivi (4 ott 2026): la modalità Creator è una scelta esplicita (registrazione e Impostazioni), con default Visitatore. Chi pubblica riceve avvisi a 6, 9 e 10 mesi dall'ultima pubblicazione; a 10 mesi la modalità si chiude, i Journey vengono nascosti e cancellati dopo 30 giorni salvo riattivazione. Pagina `/creator` informativa. Pausa creator fatta (primo avviso dopo 10 mesi di pausa). Resta da fare la monetizzazione, voce a parte
-☑ **S4.** Decidere: abbonamento o acquisto singolo (5 ott 2026: abbonamento mensile per creator, un solo livello, prezzo scelto dal creator da 5 euro in su, nessun tetto. Chi si abbona riceve la sfida "Fai il percorso con lui" e la stanza degli abbonati. Se il creator non pubblica nulla nel mese, il mese è gratis per chi paga. Workshop, consulenze e prodotti digitali restano vendite a parte. Esclusi i video singoli a pagamento)
+☑ **S4.** Decidere: abbonamento o acquisto singolo (decisa il 5 ott 2026, Post-MVP: l'abbonamento non è al lancio, le tips sì. Modello: abbonamento mensile per creator, un solo livello, prezzo scelto dal creator da 5 euro in su, nessun tetto. Chi si abbona riceve la sfida "Fai il percorso con lui" e la stanza degli abbonati. Se il creator non pubblica nulla nel mese, il mese è gratis per chi paga. Workshop, consulenze e prodotti digitali restano vendite a parte. Esclusi i video singoli a pagamento)
 ☐ **S5.** Immagini AI (serve la fatturazione Google)
 ☐ **S6.** Mappa dei Momenti: riattivare e testare
 ☐ **S7.** Gemini al piano a pagamento (prima del lancio)
 ☐ **S8.** Pubblicità contestuale
-☐ **S9.** Tips e donazioni
+☐ **S9.** Tips e donazioni (Launch)
 ☐ **S10.** Community Premium
 ☐ **S11.** Eventi e workshop a pagamento
 ☐ **S12.** Consulenze 1:1
@@ -152,23 +152,25 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☐ **Pubblicità contestuale** (prima fonte da costruire) — collegare una rete pubblicitaria contestuale (es. Media.net, Ezoic/Humix, Primis — alternative a Google AdSense adatte a piattaforme piccole/video), split 60% creator / 40% Zero, pagamento mensile con soglia minima ~100 nella valuta locale.
 
-☐ **Tips e donazioni** (seconda fonte) — meccanismo di pagamento diretto utente→creator, commissione Zero 0% (il creator riceve tutto, meno le commissioni Stripe, come per tutti i pagamenti ricevuti). Cambiato il 2026-10-04, vedi `10_Monetization.md` v4.1.
+☐ **Tips e donazioni** (Launch, seconda fonte) — meccanismo di pagamento diretto utente→creator, commissione Zero 0% (il creator riceve tutto, meno le commissioni Stripe, come per tutti i pagamenti ricevuti). Cambiato il 2026-10-04, vedi `10_Monetization.md` v4.1.
 
-☐ **Community Premium** — abbonamento mensile di un utente verso un singolo creator. Decisione S4 (5 ott 2026): un solo livello, prezzo scelto dal creator da 5 euro in su, senza tetto. Da costruire dopo Stripe (S14), con il design delle schermate da approvare prima del codice.
+☐ **Community Premium (Post-MVP)** — abbonamento mensile di un utente verso un singolo creator. Decisione S4 (5 ott 2026): un solo livello, prezzo scelto dal creator da 5 euro in su, senza tetto. Da costruire dopo Stripe (S14), con il design delle schermate da approvare prima del codice.
 
-☐ **Sfida "Fai il percorso con lui"** (dentro l'abbonamento): il creator propone una sfida reale per alcune settimane, e ogni abbonato fa la sua versione dello stesso percorso e pubblica i suoi progressi nella stanza degli abbonati.
+☐ **Sfida "Fai il percorso con lui"** (Post-MVP, dentro l'abbonamento): il creator propone una sfida reale per alcune settimane, e ogni abbonato fa la sua versione dello stesso percorso e pubblica i suoi progressi nella stanza degli abbonati.
 
-☐ **Stanza degli abbonati** (dentro l'abbonamento): spazio riservato agli abbonati dove il creator risponde alle domande in forma scritta. Niente diretta.
+☐ **Stanza degli abbonati** (Post-MVP, dentro l'abbonamento): spazio riservato agli abbonati dove il creator risponde alle domande in forma scritta. Niente diretta.
 
-☐ **Journey a staffetta**: chi completa la sfida può aprire un proprio Journey collegato a quello del creator. Il creator vede quanti percorsi ha ispirato.
+☐ **Journey a staffetta** (Post-MVP): chi completa la sfida può aprire un proprio Journey collegato a quello del creator. Il creator vede quanti percorsi ha ispirato.
 
-☐ **Regalo di un mese**: chi si abbona può regalare un mese a un amico. Chi lo riceve non ha nessun obbligo: può usare il mese, ignorarlo o iniziare la sfida solo se vuole.
+☐ **Regalo di un mese** (Post-MVP): chi si abbona può regalare un mese a un amico. Chi lo riceve non ha nessun obbligo: può usare il mese, ignorarlo o iniziare la sfida solo se vuole.
 
-☐ **Eventi/workshop** — stesso gruppo economico di Community Premium (90% creator / 10% Zero), da definire come si organizzano tecnicamente (prenotazione, streaming live?, semplice pagina con link esterno?).
+☐ **Video singoli a pagamento**: esclusi, non previsti né al lancio né dopo.
 
-☐ **Consulenze 1:1** (era "servizi professionali", chiarito e confermato al Punto 3) — un creator vende una videochiamata/mentoring a pagamento tramite Zero. Stesso gruppo economico di Community Premium.
+☐ **Eventi/workshop a pagamento** (Post-MVP; quelli gratuiti con iscrizione sono al lancio) — stesso gruppo economico di Community Premium (90% creator / 10% Zero), da definire come si organizzano tecnicamente (prenotazione, streaming live?, semplice pagina con link esterno?).
 
-☐ **Prodotti digitali** (parola presente nei documenti ma mai definita, chiarita al Punto 3) — file scaricabili venduti dal creator (e-book, guide, corsi, template). Stesso gruppo economico di Community Premium.
+☐ **Consulenze 1:1 a pagamento** (Post-MVP, acquisto singolo) (era "servizi professionali", chiarito e confermato al Punto 3) — un creator vende una videochiamata/mentoring a pagamento tramite Zero. Stesso gruppo economico di Community Premium.
+
+☐ **Prodotti digitali a pagamento** (Post-MVP, acquisto singolo; parola presente nei documenti ma mai definita, chiarita al Punto 3) — file scaricabili venduti dal creator (e-book, guide, corsi, template). Stesso gruppo economico di Community Premium.
 
 ☐ **Tag "contenuto sponsorizzato" obbligatoria** — quando un creator promuove un prodotto per accordo diretto con un brand (fuori piattaforma), Zero non trattiene nulla ma richiede una dichiarazione visibile. Priorità più alta delle altre voci di questa sezione: costa poco costruire (solo una tag/etichetta) e riduce rischio legale. **Confermata da costruire da Manuel il 2026-09-29. Costruita il 2026-10-03 come interruttore on/off "Sponsored content" (spento di default) su ogni episodio, nel form completo, nella card "Add episode" e nel "+" rapido; se acceso compare l'etichetta nella pagina di visione, nella lista "Up next" e nella Dashboard. Non è una scelta forzata: l'obbligo resta nelle regole (Termini e Linee guida), il sito offre lo strumento. Solo sugli episodi, non sul Journey intero.**
 

@@ -17,11 +17,16 @@ import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
 import { cn } from "@/lib/utils";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
-/** Pagina "Community" del profilo, vista da chi visita. In cima il riquadro dell'abbonamento
- * (prezzo scelto dal creator, sfida, stanza degli abbonati, regalo di un mese). Sotto le righe
- * a scorrimento: Challenges e Members room (ancora vuote), poi Activities (tutte le attività in
- * un'unica riga, ordinate per data) e Forum (una card per Journey). Una categoria vuota non
+/** Pagina "Community" del profilo, vista da chi visita. Al lancio mostra solo le parti gratuite:
+ * il riquadro con il pulsante per inviare un tip, poi Activities (eventi e workshop gratuiti) e
+ * Forum (una card per Journey). Le parti a pagamento (abbonamento, sfida, stanza, offerte a
+ * pagamento) sono nascoste finché PAID_COMMUNITY_ENABLED non viene acceso. Una categoria vuota non
  * compare mai. */
+
+/** Post-MVP: abbonamento, sfida, stanza, regalo e offerte a pagamento. Spento al lancio: i componenti
+ * restano nel codice e si riaccendono qui quando questi elementi vengono attivati. Le tips e gli
+ * eventi gratuiti non dipendono da questo interruttore. */
+const PAID_COMMUNITY_ENABLED = false;
 
 type ActivityEntry = {
   key: string;
@@ -168,7 +173,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
         ),
       };
     }),
-    ...[...shopItems, ...workshopsAndEvents, ...consultingSessions].map((item) => ({
+    ...(PAID_COMMUNITY_ENABLED ? [...shopItems, ...workshopsAndEvents, ...consultingSessions] : []).map((item) => ({
       key: `${item.type}-${item.id}`,
       startsAt: item.startsAt,
       element: (
@@ -210,10 +215,15 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
           username={user.username ?? username}
           avatarUrl={avatarUrl}
           priceLabel={priceLabel}
+          paidEnabled={PAID_COMMUNITY_ENABLED}
         />
 
-        <ChallengeRow firstName={firstName} />
-        <MembersRoomRow firstName={firstName} />
+        {PAID_COMMUNITY_ENABLED && (
+          <>
+            <ChallengeRow firstName={firstName} />
+            <MembersRoomRow firstName={firstName} />
+          </>
+        )}
 
         {activities.length > 0 && (
           <div className="mt-12">

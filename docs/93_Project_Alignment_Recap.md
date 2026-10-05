@@ -423,3 +423,9 @@ Due bug reali trovati ed emersi solo testando su episodi veri (non su dati finti
 **Perché.** Rispetto a Patreon la commissione è la stessa, 10%: il creator guadagna solo pochi decimi di euro in più, per via dei costi di pagamento più bassi. Il vantaggio reale sta nella trasparenza e nella qualità dell'esperienza, non nel prezzo. Un video singolo da pochi euro lascerebbe al creator una quota troppo bassa dopo le commissioni Stripe. Le idee scelte puntano sul rapporto tra creator e abbonato, non sull'elenco di funzioni.
 
 **Stato.** Nessun codice è stato scritto. Prima si disegnano le schermate, da approvare, poi si costruisce. I pagamenti veri dipendono da Stripe (voce S14).
+
+### Perimetro Launch e Post-MVP (aggiornamento 5 ottobre 2026)
+
+La decisione S4 resta valida, ma la sua parte economica è Post-MVP: l'abbonamento Community non è al lancio. Restano validi il modello (abbonamento mensile, un solo livello, prezzo scelto dal creator da 5 euro in su, senza tetto), Walk the Path With Me, Members Room, mese gratis se il creator non pubblica, Gift Month, Staffetta, e i workshop, le consulenze e i prodotti digitali come acquisti separati.
+
+Al lancio ci sono invece le tips ai creator e la pubblicità contestuale. La Community esiste già al lancio, ma con le sole parti gratuite (eventi gratuiti con iscrizione e forum per Journey). I video singoli a pagamento restano esclusi.

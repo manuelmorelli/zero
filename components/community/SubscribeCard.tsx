@@ -20,9 +20,11 @@ type SubscribeCardProps = {
   avatarUrl: string | null;
   /** Price chosen by the creator, e.g. "€7 per month". Null while no price is set. */
   priceLabel: string | null;
+  /** Post-MVP: off at launch, so the subscription and gift actions stay hidden. */
+  paidEnabled: boolean;
 };
 
-export function SubscribeCard({ name, username, avatarUrl, priceLabel }: SubscribeCardProps) {
+export function SubscribeCard({ name, username, avatarUrl, priceLabel, paidEnabled }: SubscribeCardProps) {
   return (
     <section className={cn(PANEL_ACCENT, "mx-auto max-w-4xl sm:p-8")}>
       <div className="flex items-center gap-3">
@@ -41,24 +43,32 @@ export function SubscribeCard({ name, username, avatarUrl, priceLabel }: Subscri
         </div>
       </div>
 
-      <ul className="mt-5 space-y-2.5">
-        {BENEFITS.map((benefit) => (
-          <li key={benefit} className="flex items-start gap-2.5 text-sm text-ink">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-ember" aria-hidden="true" />
-            <span>{benefit}</span>
-          </li>
-        ))}
-      </ul>
+      {paidEnabled && (
+        <>
+          <ul className="mt-5 space-y-2.5">
+            {BENEFITS.map((benefit) => (
+              <li key={benefit} className="flex items-start gap-2.5 text-sm text-ink">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-ember" aria-hidden="true" />
+                <span>{benefit}</span>
+              </li>
+            ))}
+          </ul>
 
-      <p className="mt-5 text-sm text-ink-muted">
-        Cancel anytime. If nothing new is published in a month, that month is free.
-      </p>
+          <p className="mt-5 text-sm text-ink-muted">
+            Cancel anytime. If nothing new is published in a month, that month is free.
+          </p>
+        </>
+      )}
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <ComingSoonButton className="hover:shadow-glow-strong">
-          {priceLabel ? `Subscribe, ${priceLabel}` : "Subscribe"}
-        </ComingSoonButton>
-        <GiftMonthPanel />
+        {paidEnabled && (
+          <>
+            <ComingSoonButton className="hover:shadow-glow-strong">
+              {priceLabel ? `Subscribe, ${priceLabel}` : "Subscribe"}
+            </ComingSoonButton>
+            <GiftMonthPanel />
+          </>
+        )}
         <TipPanel />
       </div>
     </section>

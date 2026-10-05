@@ -64,8 +64,14 @@ Un creator può avere più Journey attivi (non archiviati) in parallelo (vedi `0
 
 - Seguire creator.
 - Notifiche interne al sito per i creator seguiti (nuovo Journey pubblicato, nuovo Episodio aggiunto a un Journey già pubblicato).
-- Gestione della Community Premium.
-- Accesso ai contenuti riservati.
+- Pagina Community del creator con le parti gratuite: eventi e workshop gratuiti con iscrizione, forum per Journey.
+
+---
+
+### Monetizzazione
+
+- Tips ai creator: il creator riceve l'intero importo, meno le commissioni di pagamento.
+- Pubblicità contestuale sui Journey, con una quota per il creator.
 
 ---
 
@@ -82,7 +88,6 @@ Un creator può avere più Journey attivi (non archiviati) in parallelo (vedi `0
 - Gestione dei Journey.
 - Gestione degli Updates.
 - Analisi di base.
-- Gestione Community Premium.
 
 ---
 
@@ -103,6 +108,9 @@ Le seguenti funzionalità non fanno parte dell'MVP:
 - Marketplace avanzato.
 - Algoritmi avanzati di raccomandazione.
 - Moderazione automatica tramite AI.
+- Abbonamento Community (Community Premium, Post-MVP), con le funzioni che lo richiedono: sfida "Walk the Path With Me", stanza degli abbonati, staffetta dei Journey, regalo di un mese, contenuti riservati agli abbonati.
+- Workshop, eventi, consulenze 1:1 e prodotti digitali a pagamento (Post-MVP: restano acquisti singoli).
+- Video singoli a pagamento (esclusi).
 
 ## Criteri di inclusione
 
