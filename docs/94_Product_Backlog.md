@@ -21,9 +21,9 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 
 ### Orizzonti (decisioni del 5 ott 2026)
 
-- **Prima del lancio:** S7, S9 (Tips, tramite link esterno), S17, S18, S19 (piano di lancio).
+- **Prima del lancio:** S7, S9 (Tips, tramite link esterno), S17, S18, S19 (piano di lancio), S22 (controllo di sicurezza del sito).
 - **Post-MVP:** S4, S5, S6, S8, S10, S11, S12, S13, S14, S21, il gruppo Community Premium (sfida "Fai il percorso con lui", stanza degli abbonati, Journey a staffetta, regalo di un mese), eventi a pagamento, consulenze 1:1, prodotti digitali, ricerca semantica, trailer automatico, Percorso su Misura.
-- **Da decidere:** S15, S16 (nessuna decisione presa, non spostate).
+- **Da decidere:** S16 (collegare il dominio al sito, nessuna decisione presa, non spostata).
 
 ### Struttura del sito (chat "struttura")
 
@@ -35,7 +35,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☐ **S6.** Mappa dei Momenti (Post-MVP, con ricerca semantica, trailer automatico e Percorso su Misura)
 ☐ **S7.** Gemini al piano a pagamento (PRE-LAUNCH: prima del lancio pubblico)
 ☐ **S8.** Pubblicità contestuale
-☑ **S9.** Tips e donazioni (Launch). Fatto il 5 ott 2026 con un link esterno: il creator inserisce nelle Impostazioni Creator la pagina dove ricevere le donazioni, e il profilo mostra il pulsante "Support this Creator" solo se il link c'è. Il pagamento avviene fuori da Zero: Zero non raccoglie denaro, non trattiene nulla e non gestisce rimborsi o payout. Il campo è generico, non legato a nessun fornitore. La vecchia funzione finta sulla pagina Community è stata tolta
+☑ **S9.** Tips e donazioni (Launch). Fatto il 5 ott 2026 con un link esterno: il creator inserisce nelle Impostazioni Creator la pagina dove ricevere le donazioni, e la card Community mostra una spiegazione con il pulsante "Support this Creator" solo se il link c'è. Il pagamento avviene fuori da Zero: Zero non raccoglie denaro, non trattiene nulla e non gestisce rimborsi o payout. Il campo è generico, non legato a nessun fornitore. La vecchia funzione finta sulla pagina Community è stata tolta
 ☐ **S10.** Community Premium
 ☐ **S11.** Eventi e workshop a pagamento
 ☐ **S12.** Consulenze 1:1
@@ -47,6 +47,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☐ **S18.** Punto 10: infrastruttura tecnica
 ☐ **S21.** Lista paesi del sistema di pagamento per i creator (Post-MVP, non urgente, siamo prototipo). La sede legale di Zero non è ancora decisa. Con sede in Svizzera o a Cipro i pagamenti tra paesi diversi coprono i creator dei paesi supportati (lista ufficiale di 103 paesi verificata il 2026-10-05, Brasile, India e Indonesia esclusi). Altre sedi: da verificare. Quando la sede è scelta, chiedere al fornitore la lista esatta e cosa succede se un creator si trasferisce. Vedi `10_Monetization.md`, sezione costi di pagamento.
 ☐ **S19.** Punto 11: piano di lancio
+☐ **S22.** Controllo di sicurezza del sito prima del lancio (verifica delle vulnerabilità, limiti ai tentativi di accesso, controllo dei dati). Prima del lancio, non blocca la costruzione.
 ☑ **S20.** Portare il lavoro da "design-wow-experiment" a "master" (3 ott 2026: master spostato e caricato su GitHub, stessa punta ffd7338). Poi, sempre il 3 ott 2026, il ramo aperto nella cartella è passato su "master" e "design-wow-experiment" è stato cancellato (locale e GitHub) su ok esplicito di Manuel. Esiste solo "master".
 
 Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programmato: sponsor aziende, marketplace UGC. In pausa per scelta: video leggeri e compressione video.
