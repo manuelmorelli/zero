@@ -216,6 +216,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
           avatarUrl={avatarUrl}
           priceLabel={priceLabel}
           paidEnabled={PAID_COMMUNITY_ENABLED}
+          supportLinkUrl={creator?.supportLinkUrl ?? null}
         />
 
         {PAID_COMMUNITY_ENABLED && (

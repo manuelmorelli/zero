@@ -2,6 +2,7 @@ import { Check } from "lucide-react";
 import { FadeImage } from "@/components/common/FadeImage";
 import { ComingSoonButton } from "@/components/community/ComingSoonButton";
 import { GiftMonthPanel } from "@/components/community/GiftMonthPanel";
+import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/heading";
 import { PANEL_ACCENT } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
@@ -21,9 +22,11 @@ type SubscribeCardProps = {
   priceLabel: string | null;
   /** Post-MVP: off at launch, so the subscription and gift actions stay hidden. */
   paidEnabled: boolean;
+  /** External support page of the creator (S9). Null when no link is set: the tip block stays hidden. */
+  supportLinkUrl: string | null;
 };
 
-export function SubscribeCard({ name, username, avatarUrl, priceLabel, paidEnabled }: SubscribeCardProps) {
+export function SubscribeCard({ name, username, avatarUrl, priceLabel, paidEnabled, supportLinkUrl }: SubscribeCardProps) {
   return (
     <section className={cn(PANEL_ACCENT, "mx-auto max-w-4xl sm:p-8")}>
       <div className="flex items-center gap-3">
@@ -65,6 +68,23 @@ export function SubscribeCard({ name, username, avatarUrl, priceLabel, paidEnabl
             {priceLabel ? `Subscribe, ${priceLabel}` : "Subscribe"}
           </ComingSoonButton>
           <GiftMonthPanel />
+        </div>
+      )}
+
+      {supportLinkUrl && (
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-ink-muted">
+            Help {name} with a one-time tip. The payment happens on the creator&apos;s external page, not on Zero.
+          </p>
+          <Button
+            variant="secondary"
+            href={supportLinkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0"
+          >
+            Support this Creator
+          </Button>
         </div>
       )}
     </section>
