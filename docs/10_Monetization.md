@@ -96,12 +96,12 @@ L'obiettivo è creare un sistema pubblicitario sostenibile per la piattaforma e 
 
 #### Tips ai creator
 
-- Le Tips sono disponibili al lancio.
+- Le Tips sono disponibili al lancio, tramite un link esterno che il creator inserisce nel proprio profilo (decisione del 5 ottobre 2026).
 - Le Tips appartengono al creator: sono uno strumento di monetizzazione del creator, non una fonte di ricavo di Zero.
-- Zero trattiene lo 0%.
-- Il creator riceve il 100% dell'importo, al netto delle commissioni applicate dal provider di pagamento.
-- Il provider di pagamento non è ancora scelto.
-- L'integrazione tecnica non è ancora stata costruita.
+- Zero trattiene lo 0%. Zero non raccoglie denaro, non processa pagamenti e non gestisce rimborsi, versamenti o verifiche dell'identità per le Tips.
+- Il pagamento avviene fuori da Zero, sulla pagina esterna scelta dal creator. Le commissioni di quella piattaforma sono fuori dal sistema Zero.
+- Il creator è responsabile del proprio account esterno e del rapporto con la piattaforma che usa.
+- Zero non integra nessun fornitore di pagamento per le Tips. Il campo del link è generico e non dipende da un fornitore.
 
 ### Regola generale sui pagamenti ai creator
 

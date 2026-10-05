@@ -93,7 +93,7 @@ Un pulsante dedicato permette al creator di avvisare manualmente i propri follow
 
 Per onestà verso chi legge questo documento, ecco cosa oggi non è ancora reale, raggruppato per non confonderlo con le funzioni già attive:
 
-- **Nessun pagamento vero è ancora collegato.** Abbonamenti Community, vendita di eventi/prodotti/consulenze, pubblicità, donazioni: tutto ha già percentuali e meccanismo decisi, ma nessuna riga di codice si collega oggi a un pagamento reale. È una scelta di sequenza (prima il prodotto, poi i pagamenti), non una dimenticanza, e il collegamento ai pagamenti è predisposto per essere attivabile in pochi passaggi quando sarà il momento.
+- **Nessun pagamento vero è ancora collegato.** Abbonamenti Community, vendita di eventi/prodotti/consulenze, pubblicità: tutto ha già percentuali e meccanismo decisi, ma nessuna riga di codice si collega oggi a un pagamento reale. Le donazioni (Tips) funzionano con un link esterno scelto dal creator: il pagamento avviene fuori da Zero. È una scelta di sequenza (prima il prodotto, poi i pagamenti), non una dimenticanza, e il collegamento ai pagamenti è predisposto per essere attivabile in pochi passaggi quando sarà il momento.
 - **La generazione di immagini AI** è prevista dopo il lancio (Post-MVP): ha un costo reale per immagine e richiederà la fatturazione sul nostro account Google.
 - **La versione video a qualità adattiva per connessioni lente** (per far partire i video più in fretta su internet lento) è pronta ma spenta per lo stesso motivo: costa, e aspettiamo utenti reali prima di accenderla.
 - **La messaggistica resta volutamente semplice**: solo testo, solo conversazioni uno a uno, senza gruppi né allegati, per scelta della prima versione.

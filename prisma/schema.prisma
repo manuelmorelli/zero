@@ -279,6 +279,9 @@ model Creator {
   // Video/card di presentazione da caricare per attivare il Trust Score (lib/profile/trustScore.ts).
   // Null finché non lo carica: il Trust Score resta disattivato (nessun badge) fino ad allora.
   presentationVideoUrl String?
+  // Link esterno di supporto (S9, Tips): il creator incassa fuori da Zero, Zero mostra solo il pulsante "Support this Creator".
+  // Il campo è generico, non legato a nessun fornitore di pagamento. Null = nessun pulsante.
+  supportLinkUrl String?
   // Data di accettazione delle Community Guidelines, richiesta (insieme a profilo compilato e
   // video di presentazione) prima di poter pubblicare per la prima volta, vedi lib/creator.ts
   // (getPublishReadiness). Null = non ancora accettate, nessun grandfathering per gli account

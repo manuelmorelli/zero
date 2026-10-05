@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { CreatorNotificationsForm } from "@/components/settings/CreatorNotificationsForm";
 import { CreatorModeSwitch } from "@/components/settings/CreatorModeSwitch";
 import { CreatorPauseSwitch } from "@/components/settings/CreatorPauseSwitch";
+import { SupportLinkForm } from "@/components/settings/SupportLinkForm";
 import { countJourneysToHide } from "@/lib/account/creatorLifecycle";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { PageTitle, SectionTitle } from "@/components/ui/heading";
@@ -14,7 +15,11 @@ export default async function SettingsCreatorPage() {
   const { user } = await requireSession();
   const preferences = await prisma.user.findUniqueOrThrow({
     where: { id: user.id },
-    select: { notifyNewFollower: true, creatorMode: true, creator: { select: { pausedAt: true } } },
+    select: {
+      notifyNewFollower: true,
+      creatorMode: true,
+      creator: { select: { pausedAt: true, supportLinkUrl: true } },
+    },
   });
   const journeyCount = await countJourneysToHide(user.id);
 
@@ -49,6 +54,15 @@ export default async function SettingsCreatorPage() {
           </span>
           <ChevronIcon className="h-4 w-4 shrink-0 text-ink-faint" />
         </Link>
+
+        {preferences.creatorMode && (
+          <>
+            <SectionTitle className="mt-8">Support link</SectionTitle>
+            <div className={`mt-3 ${PANEL}`}>
+              <SupportLinkForm supportLinkUrl={preferences.creator?.supportLinkUrl ?? null} />
+            </div>
+          </>
+        )}
 
         <SectionTitle className="mt-8">Payouts</SectionTitle>
         <p className={`mt-3 ${NOTICE}`}>

@@ -2,7 +2,6 @@ import { Check } from "lucide-react";
 import { FadeImage } from "@/components/common/FadeImage";
 import { ComingSoonButton } from "@/components/community/ComingSoonButton";
 import { GiftMonthPanel } from "@/components/community/GiftMonthPanel";
-import { TipPanel } from "@/components/community/TipPanel";
 import { PageTitle } from "@/components/ui/heading";
 import { PANEL_ACCENT } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
@@ -60,17 +59,14 @@ export function SubscribeCard({ name, username, avatarUrl, priceLabel, paidEnabl
         </>
       )}
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-        {paidEnabled && (
-          <>
-            <ComingSoonButton className="hover:shadow-glow-strong">
-              {priceLabel ? `Subscribe, ${priceLabel}` : "Subscribe"}
-            </ComingSoonButton>
-            <GiftMonthPanel />
-          </>
-        )}
-        <TipPanel />
-      </div>
+      {paidEnabled && (
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <ComingSoonButton className="hover:shadow-glow-strong">
+            {priceLabel ? `Subscribe, ${priceLabel}` : "Subscribe"}
+          </ComingSoonButton>
+          <GiftMonthPanel />
+        </div>
+      )}
     </section>
   );
 }

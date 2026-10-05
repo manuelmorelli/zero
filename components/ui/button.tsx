@@ -31,6 +31,9 @@ type ButtonProps = {
   href?: string;
   className?: string;
   children: React.ReactNode;
+  /** Solo per i link (prop href): apertura in nuova scheda e attributi di sicurezza. */
+  target?: string;
+  rel?: string;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function Button({ variant = "primary", href, className, children, type = "button", ...rest }: ButtonProps) {

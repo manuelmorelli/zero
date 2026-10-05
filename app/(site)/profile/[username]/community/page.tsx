@@ -18,14 +18,14 @@ import { cn } from "@/lib/utils";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
 /** Pagina "Community" del profilo, vista da chi visita. Al lancio mostra solo le parti gratuite:
- * il riquadro con il pulsante per inviare un tip, poi Activities (eventi e workshop gratuiti) e
+ * Activities (eventi e workshop gratuiti) e
  * Forum (una card per Journey). Le parti a pagamento (abbonamento, sfida, stanza, offerte a
  * pagamento) sono nascoste finché PAID_COMMUNITY_ENABLED non viene acceso. Una categoria vuota non
  * compare mai. */
 
 /** Post-MVP: abbonamento, sfida, stanza, regalo e offerte a pagamento. Spento al lancio: i componenti
- * restano nel codice e si riaccendono qui quando questi elementi vengono attivati. Le tips e gli
- * eventi gratuiti non dipendono da questo interruttore. */
+ * restano nel codice e si riaccendono qui quando questi elementi vengono attivati. Gli eventi
+ * gratuiti non dipendono da questo interruttore. */
 const PAID_COMMUNITY_ENABLED = false;
 
 type ActivityEntry = {

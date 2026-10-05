@@ -21,7 +21,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 
 ### Orizzonti (decisioni del 5 ott 2026)
 
-- **Prima del lancio:** S7, S9 (Tips, con la parte minima del sistema di pagamento che serve alle Tips), S17, S18, S19 (piano di lancio).
+- **Prima del lancio:** S7, S9 (Tips, tramite link esterno), S17, S18, S19 (piano di lancio).
 - **Post-MVP:** S4, S5, S6, S8, S10, S11, S12, S13, S14, S21, il gruppo Community Premium (sfida "Fai il percorso con lui", stanza degli abbonati, Journey a staffetta, regalo di un mese), eventi a pagamento, consulenze 1:1, prodotti digitali, ricerca semantica, trailer automatico, Percorso su Misura.
 - **Da decidere:** S15, S16 (nessuna decisione presa, non spostate).
 
@@ -35,12 +35,12 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☐ **S6.** Mappa dei Momenti (Post-MVP, con ricerca semantica, trailer automatico e Percorso su Misura)
 ☐ **S7.** Gemini al piano a pagamento (PRE-LAUNCH: prima del lancio pubblico)
 ☐ **S8.** Pubblicità contestuale
-☐ **S9.** Tips e donazioni (Launch)
+☑ **S9.** Tips e donazioni (Launch). Fatto il 5 ott 2026 con un link esterno: il creator inserisce nelle Impostazioni Creator la pagina dove ricevere le donazioni, e il profilo mostra il pulsante "Support this Creator" solo se il link c'è. Il pagamento avviene fuori da Zero: Zero non raccoglie denaro, non trattiene nulla e non gestisce rimborsi o payout. Il campo è generico, non legato a nessun fornitore. La vecchia funzione finta sulla pagina Community è stata tolta
 ☐ **S10.** Community Premium
 ☐ **S11.** Eventi e workshop a pagamento
 ☐ **S12.** Consulenze 1:1
 ☐ **S13.** Prodotti digitali
-☐ **S14.** Sistema di pagamento completo (Punto 10, Post-MVP). La parte minima per le Tips è dentro S9.
+☐ **S14.** Sistema di pagamento completo (Punto 10, Post-MVP). Le Tips non ne dipendono: passano dal link esterno di S9.
 ☑ **S15.** Sicurezza account Google: verifica in due passaggi (5 ott 2026: attiva sull'account team.zerojourneys@gmail.com, con telefono come metodo principale e codici di backup conservati su carta, file dal desktop cancellato)
 ☐ **S16.** Collegare zerojourneys.com a un sito
 ☐ **S17.** Punto 9: business plan e dossier investitori
@@ -159,7 +159,7 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☐ **Pubblicità contestuale** [POST-MVP] (era la prima fonte da costruire) — collegare una rete pubblicitaria contestuale (es. Media.net, Ezoic/Humix, Primis — alternative a Google AdSense adatte a piattaforme piccole/video), split 60% creator / 40% Zero, pagamento mensile con soglia minima ~100 nella valuta locale.
 
-☐ **Tips e donazioni** [LANCIO] (seconda fonte) — meccanismo di pagamento diretto utente→creator, commissione Zero 0% (il creator riceve tutto, meno le commissioni di pagamento, come per tutti i pagamenti ricevuti). Cambiato il 2026-10-04, vedi `10_Monetization.md` v4.1.
+☐ **Tips e donazioni** [LANCIO] (seconda fonte), commissione Zero 0%. Modello del 5 ott 2026: link esterno scelto dal creator, pagamento fuori da Zero (vedi S9 nella lista di lavoro). Il creator è responsabile del proprio account esterno e delle sue commissioni.
 
 ☐ **Community Premium (Post-MVP)** — abbonamento mensile di un utente verso un singolo creator. Decisione S4 (5 ott 2026): un solo livello, prezzo scelto dal creator da 5 euro in su, senza tetto. Da costruire dopo il sistema di pagamento completo (S14), con il design delle schermate da approvare prima del codice.
 
@@ -183,7 +183,7 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☐ [POST-MVP, idea non prioritaria] **Marketplace sponsorizzazioni creator-brand** — Zero mette in contatto creator e aziende, trattiene una commissione del 10% solo dal brand (modello TikTok Creator Marketplace). Stesso concetto delle due idee già in questa lista (sezione sponsor, marketplace UGC) — quando si costruirà, unificare i tre in un solo lavoro.
 
-☐ **Meccanismo tecnico dei pagamenti** [POST-MVP] — scegliere il tipo di conto del fornitore quando si arriva a costruire il sistema completo (Punto 7 dell'allineamento). La parte minima per le Tips è [LANCIO] e va decisa insieme alla voce S9. Non blocca le decisioni di percentuali/ordine già prese.
+☐ **Meccanismo tecnico dei pagamenti** [POST-MVP] — scegliere il tipo di conto del fornitore quando si arriva a costruire il sistema completo (Punto 7 dell'allineamento). Le Tips non ne hanno bisogno: usano un link esterno (S9). Non blocca le decisioni di percentuali/ordine già prese.
 
 ## Infrastruttura & costi
 

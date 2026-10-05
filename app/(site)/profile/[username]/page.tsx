@@ -186,6 +186,13 @@ export default async function PublicProfilePage({
   // aprire — vengono mostrati altrove, nel visualizzatore a schermo intero della Hero).
   const episodeFeedItems = feedItems?.filter((item) => item.type === "episode") ?? [];
 
+  // Pulsante verso la pagina di supporto esterna del creator (S9): compare solo se il link è configurato.
+  const supportButton = creator?.supportLinkUrl ? (
+    <Button variant="secondary" href={creator.supportLinkUrl} target="_blank" rel="noopener noreferrer">
+      Support this Creator
+    </Button>
+  ) : null;
+
   return (
     <main>
 
@@ -222,12 +229,14 @@ export default async function PublicProfilePage({
               <Button variant="secondary" href="/dashboard">
                 Dashboard
               </Button>
+              {supportButton}
               <ShareProfileButton />
             </>
           ) : (
             <>
               <FollowButton userId={user.id} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} />
               {canMessageUser && <MessageButton userId={user.id} />}
+              {supportButton}
               {isLoggedIn && <ProfileActionsMenu userId={user.id} name={user.name} />}
             </>
           )
