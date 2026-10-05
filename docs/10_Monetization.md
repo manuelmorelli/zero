@@ -1,7 +1,7 @@
 ---
 title: Monetization
 doc_id: 10-monetization
-version: "4.1"
+version: "5.0"
 status: approved
 related_docs:
   - 00_PROJECT_CONTEXT
@@ -57,47 +57,34 @@ Ogni creator decide quali strumenti utilizzare.
 
 Nessuna funzionalità di monetizzazione è obbligatoria.
 
-## Fonti di monetizzazione e ordine di attivazione
+## Come leggere questo documento
 
-Zero attiva le fonti di monetizzazione in ordine di priorità, non tutte insieme. L'ordine riflette sia l'importanza economica per Zero e per i creator sia la semplicità di costruzione:
+Il documento è diviso in tre parti, da non confondere:
 
-1. **Pubblicità contestuale** — prima fonte, sia per Zero sia per i creator, attiva fin dal lancio.
-2. **Tips e donazioni**.
-3. **Community Premium, eventi/workshop, consulenze 1:1, prodotti digitali** — stesso gruppo, stesso meccanismo economico (il creator incassa un pagamento diretto da un utente), costruiti insieme.
+- **A. Decisioni di business**: ciò che Zero ha deciso, diviso tra ciò che parte al lancio e ciò che viene dopo l'MVP.
+- **B. Implementazione tecnica da definire**: tutto ciò che dipende dal sistema di pagamento, che non è ancora scelto. Nessun punto di questa parte è una regola di Zero.
+- **C. Ricerca di mercato (non vincolante)**: confronti con altre piattaforme. Non sono regole di Zero.
 
-Le sponsorizzazioni dei creator (vedi sezione dedicata più sotto) non seguono questo ordine di costruzione: non richiedono sviluppo prioritario, solo una regola di trasparenza.
+## A. Decisioni di business
 
-Nuove fonti di ricavo potranno essere introdotte mantenendo gli stessi principi descritti in questo documento.
+### Launch
 
-## Commissioni
+Al lancio sono attive solo due forme di monetizzazione: la pubblicità contestuale e le Tips.
 
-Le percentuali variano in base al meccanismo economico della fonte: non è un'unica percentuale fissa per tutto.
-
-| Fonte | Quota creator | Quota Zero | Cadenza di pagamento |
+| Fonte | Quota creator | Quota Zero | Natura |
 |---|---|---|---|
-| Pubblicità contestuale | 60% | 40% | Mensile, soglia minima di pagamento ~100 (valuta locale) |
-| Tips e donazioni | 100% | 0% | Mensile, soglia minima ~100 |
-| Community Premium, eventi/workshop, consulenze 1:1, prodotti digitali | 90% | 10% | Mensile, soglia minima ~100 |
-| Marketplace sponsorizzazioni creator-brand (intermediato da Zero) | Compenso pattuito, meno le commissioni Stripe | 10% trattenuto dal brand, non dal creator | Alla chiusura dell'accordo |
-| Sponsorizzazioni dirette creator-brand (accordo fuori piattaforma) | 100% del compenso pattuito | Zero non trattiene nulla | Non gestito da Zero |
+| Pubblicità contestuale | 60% | 40% | Fonte di ricavo di Zero |
+| Tips ai creator | 100%, al netto delle commissioni del provider di pagamento | 0% | Monetizzazione del creator, non ricavo di Zero |
 
-**Commissioni Stripe.** Le commissioni che Stripe applica sui pagamenti sono a carico di chi riceve il denaro. Per i tips e per le altre fonti in cui il creator riceve un pagamento, la quota del creator è quindi al netto di queste commissioni. Zero non paga nulla su quelle transazioni e non aggiunge nessun importo a carico dell'utente: chi paga versa la cifra indicata, senza supplementi.
+#### Pubblicità contestuale
 
-Queste percentuali sono un punto di partenza e possono evolvere nel tempo senza modificare i principi descritti in questo documento. I dettagli fiscali specifici per paese (soglie di reporting, IVA su prodotti digitali, differenze tra Unione Europea, Svizzera e resto del mondo) sono trattati nell'audit legale (`91_Legal_Audit_And_Roadmap.md`), non in questo documento.
+La pubblicità è la prima fonte di ricavo della piattaforma, attiva fin dal lancio.
 
-## Pubblicità contestuale
-
-La pubblicità rappresenta la prima fonte di ricavo della piattaforma, attiva fin dal lancio.
-
-A differenza delle altre fonti, qui Zero non trattiene una quota da un pagamento del creator: è Zero a incassare dagli inserzionisti in base alle visualizzazioni generate dai contenuti, e a girare al creator la quota indicata nella tabella sopra.
+Qui Zero non trattiene una quota da un pagamento del creator: è Zero a incassare dagli inserzionisti in base alle visualizzazioni generate dai contenuti, e a girare al creator la quota indicata nella tabella sopra (60% creator, 40% Zero).
 
 Gli annunci devono essere pertinenti al contesto di navigazione, alla categoria del Journey e agli interessi dell'utente, con l'obiettivo di risultare utili e non invasivi.
 
-## Principi della pubblicità
-
-La pubblicità deve rispettare i principi fondamentali di Zero.
-
-In particolare:
+La pubblicità deve rispettare i principi fondamentali di Zero. In particolare:
 
 - non influenza il ranking dei Journey;
 - non può essere acquistata per ottenere maggiore visibilità organica;
@@ -107,14 +94,100 @@ In particolare:
 
 L'obiettivo è creare un sistema pubblicitario sostenibile per la piattaforma e utile per gli utenti, mantenendo sempre al centro la qualità dell'esperienza.
 
-## Sponsorizzazioni dei creator
+#### Tips ai creator
+
+- Le Tips sono disponibili al lancio.
+- Le Tips appartengono al creator: sono uno strumento di monetizzazione del creator, non una fonte di ricavo di Zero.
+- Zero trattiene lo 0%.
+- Il creator riceve il 100% dell'importo, al netto delle commissioni applicate dal provider di pagamento.
+- Il provider di pagamento non è ancora scelto.
+- L'integrazione tecnica non è ancora stata costruita.
+
+### Regola generale sui pagamenti ai creator
+
+I pagamenti ai creator hanno cadenza mensile, con una soglia minima di pagamento di circa 100 nella valuta locale (decisione del Punto 3, vedi `93_Project_Alignment_Recap.md`). È una decisione di modello. Il meccanismo tecnico con cui verrà realizzata non è ancora deciso (vedi parte B).
+
+Le commissioni del provider di pagamento sono a carico di chi riceve il denaro, e Zero non aggiunge supplementi a carico di chi paga (decisione del 2026-10-04, vedi `93_Project_Alignment_Recap.md`).
+
+I dettagli fiscali specifici per paese (soglie di reporting, IVA su prodotti digitali, differenze tra Unione Europea, Svizzera e resto del mondo) sono trattati nell'audit legale (`91_Legal_Audit_And_Roadmap.md`), non in questo documento.
+
+### Post-MVP
+
+Le forme di monetizzazione seguenti restano valide come modello futuro, ma non partono al lancio e non devono essere implementate nell'MVP. Tutte le decisioni sono conservate.
+
+Nell'ordine di attivazione originale, la pubblicità e le Tips venivano per prime, e il gruppo qui sotto per ultimo. Le fonti si attivano in ordine di priorità, non tutte insieme.
+
+| Fonte | Quota creator | Quota Zero |
+|---|---|---|
+| Community Premium, workshop, eventi, consulenze 1:1, prodotti digitali | 90% | 10% |
+| Marketplace sponsorizzazioni creator-brand (intermediato da Zero) | Compenso pattuito, al netto delle commissioni del provider di pagamento | 10% trattenuto dal brand, non dal creator |
+| Sponsorizzazioni dirette creator-brand (accordo fuori piattaforma) | 100% del compenso pattuito | Zero non trattiene nulla |
+
+Queste percentuali sono un punto di partenza e possono evolvere nel tempo senza modificare i principi di questo documento.
+
+#### Community Premium (decisione S4, 5 ottobre 2026)
+
+- Abbonamento mensile per creator, un solo livello.
+- Prezzo scelto dal creator, da 5 euro in su, senza tetto.
+- Chi si abbona riceve la sfida "Fai il percorso con lui" e la Members Room (stanza degli abbonati, domande in forma scritta, nessuna diretta).
+- Se il creator non pubblica nulla nel mese, il mese è gratis per chi paga.
+- Chi si abbona può regalare un mese (Gift Month), senza obblighi per chi lo riceve.
+- Chi completa la sfida può aprire un Journey collegato a quello del creator (Staffetta).
+- Workshop, consulenze 1:1 e prodotti digitali restano acquisti separati.
+- Esclusi: video singoli a pagamento, emoji, badge, pagella delle promesse, co-autore nei crediti, Journey personale, backstage a orario, archivio a sblocco, domande in diretta.
+
+#### Workshop, eventi, consulenze 1:1, prodotti digitali
+
+Stesso gruppo economico della Community Premium, stesso meccanismo (il creator incassa un pagamento diretto da un utente). Per "prodotti digitali" si intendono file e accessi vendibili senza spedizione fisica (e-book, corsi, template, guide scaricabili).
+
+#### Sponsorizzazioni dei creator
 
 Un creator può accettare di promuovere il prodotto di un'azienda in cambio di un pagamento diretto, indipendente dalla pubblicità automatica gestita da Zero.
 
 - Se l'accordo avviene fuori dalla piattaforma (creator e brand si mettono d'accordo da soli), Zero non tocca il pagamento e non trattiene nulla. L'unico obbligo è che il contenuto sia dichiarato in modo visibile come sponsorizzato.
-- Se l'accordo avviene tramite un marketplace interno che mette in contatto creator e brand (idea futura, non ancora costruita — vedi `94_Product_Backlog.md`), Zero trattiene una commissione solo dal brand, non dal creator.
+- Se l'accordo avviene tramite un marketplace interno che mette in contatto creator e brand (idea futura, non ancora costruita, vedi `94_Product_Backlog.md`), Zero trattiene una commissione solo dal brand, non dal creator.
 
-In entrambi i casi, la sponsorizzazione non deve influenzare il ranking del Journey, coerente con la regola generale di questo documento.
+In entrambi i casi, la sponsorizzazione non deve influenzare il ranking del Journey.
+
+## B. Implementazione tecnica da definire
+
+Nessun punto di questa parte è una decisione. Ogni voce va definita o verificata quando verrà scelto il sistema di pagamento. L'ordine da seguire è: prima il modello di pagamento, poi la verifica di ciò che permette il provider, poi le regole operative.
+
+- **Provider di pagamento:** non ancora scelto. DA DEFINIRE.
+- **Integrazione tecnica:** non ancora costruita. DA DEFINIRE.
+- **Meccanismo di cadenza mensile e soglia minima:** DA DEFINIRE.
+- **Verifica dell'identità dei creator (KYC):** DA VERIFICARE alla scelta del provider.
+- **Costi dei versamenti ai creator e a carico di chi:** DA DEFINIRE.
+- **Rimborsi:** DA DEFINIRE.
+- **Contestazioni (chargeback):** DA DEFINIRE.
+- **Saldi negativi:** DA DEFINIRE.
+- **Riserve o trattenute dei fondi:** DA DEFINIRE.
+- **Chiusura account e saldo residuo:** DA DEFINIRE.
+- **Responsabilità del provider e di Zero:** DA VERIFICARE.
+- **Cambio valuta:** chi sostiene la commissione quando si paga in una valuta diversa da quella del creator. DA DEFINIRE.
+- **Paesi supportati e sede legale di Zero:** DA VERIFICARE.
+- **Base di calcolo delle quote di Zero** (sul prezzo pagato oppure sull'importo netto), per le fonti Post-MVP con quota Zero: DA DEFINIRE.
+- **Rete pubblicitaria:** scelta della rete, sue trattenute e se il 40% di Zero si calcola prima o dopo di esse. DA DEFINIRE.
+- **Pagamenti dentro le app per iPhone e Android:** DA VERIFICARE prima di costruire l'app.
+- **Divieto di acquistare i propri contenuti (Tips comprese):** DA VERIFICARE nel codice.
+- **IVA e ritenute fiscali:** DA VERIFICARE nell'audit legale (`91_Legal_Audit_And_Roadmap.md`).
+
+## C. Ricerca di mercato (non vincolante)
+
+Questa sezione raccoglie confronti con altre piattaforme. Non sono regole di Zero e non sono decisioni. Le fonti sono in gran parte guide di terze parti, raccolte il 2026-10-05, e vanno riverificate sulle pagine ufficiali prima di usarle. La ricerca dei Punti precedenti è in `93_Project_Alignment_Recap.md`.
+
+- **YouTube, pubblicità (AdSense):** pagamento mensile, tra il 21 e il 26 del mese. I guadagni del mese precedente si chiudono il 3 del mese. Se la soglia non è raggiunta, il saldo passa al mese successivo. Alla chiusura dell'account c'è una trattenuta di 30 giorni prima del pagamento finale.
+- **YouTube, Super Thanks:** secondo guide di terze parti, il creator riceve il 70% al netto di tasse e commissioni dei negozi di app. Le fonti non concordano su chi paghi la commissione della carta.
+- **Ko-fi:** donazioni allo 0% nel piano gratuito, 5% su negozio e abbonamenti, 0% con il piano a pagamento. Le commissioni del processore di pagamento sono a carico del creator.
+- **Patreon:** commissione della piattaforma del 10% per le pagine create dopo agosto 2025, e il creator tiene in media circa l'85-88% considerando i costi di pagamento. Rimborso richiesto dal membro entro 60 giorni. Fondi in attesa fino a 7 giorni per i contenuti digitali, fino a 75 giorni per gli acquisti da iPhone. Conversione di valuta indicata al 2,5% da guide di terze parti.
+- **Substack:** rimborso se richiesto entro 7 giorni dal pagamento.
+- **Gumroad:** saldo trattenuto almeno 7 giorni, blocco a rotazione di 30 giorni indicato da guide di terze parti. Pagamenti sospesi se le contestazioni superano il 3%.
+- **TikTok (regali nelle dirette):** circa il 50% alla piattaforma, secondo stime di settore (non dichiarato da TikTok).
+- **Instagram (abbonamenti, regali):** nessuna quota di Meta secondo fonti di terze parti. I negozi di app trattengono circa il 15-30% sugli acquisti dentro l'app.
+- **Finestra delle contestazioni bancarie:** in genere 120 giorni per le carte.
+- **Costi tipici dei processori di pagamento:** circa 2,9% più 0,30 dollari per transazione (citato per Ko-fi e Patreon), e circa 15 dollari per ogni contestazione. Alcuni processori applicano anche costi per account attivo e per versamento. Da verificare sul listino del provider scelto.
+- **Negozi di app (Apple):** dal maggio 2025, sul negozio degli Stati Uniti le app possono rimandare al pagamento sul sito web senza la commissione Apple. Fuori dagli Stati Uniti, per i beni digitali serve l'acquisto dentro l'app oppure un permesso regionale. Europa e Google Play non verificati.
+- **Piattaforme in paesi non supportati dal processore di pagamento:** Gumroad ha esteso i bonifici diretti a più di 100 paesi, Patreon offre alternative come PayPal o Payoneer, YouTube non offre la monetizzazione nei paesi non ammessi.
 
 ## Regole
 
