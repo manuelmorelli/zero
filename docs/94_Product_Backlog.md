@@ -41,7 +41,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☐ **S12.** Consulenze 1:1
 ☐ **S13.** Prodotti digitali
 ☐ **S14.** Sistema di pagamento completo (Punto 10, Post-MVP). La parte minima per le Tips è dentro S9.
-☐ **S15.** Sicurezza account Google: verifica in due passaggi
+☑ **S15.** Sicurezza account Google: verifica in due passaggi (5 ott 2026: attiva sull'account team.zerojourneys@gmail.com, con telefono come metodo principale e codici di backup conservati su carta, file dal desktop cancellato)
 ☐ **S16.** Collegare zerojourneys.com a un sito
 ☐ **S17.** Punto 9: business plan e dossier investitori
 ☐ **S18.** Punto 10: infrastruttura tecnica
