@@ -19,6 +19,12 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le descrizioni dettagliate sono nel resto del documento. Le caselle ☐ del corpo sono solo descrizioni, non si spuntano.
 
+### Orizzonti (decisioni del 5 ott 2026)
+
+- **Prima del lancio:** S7, S9 (Tips, con la parte minima del sistema di pagamento che serve alle Tips), S17, S18, S19 (piano di lancio).
+- **Post-MVP:** S4, S5, S6, S8, S10, S11, S12, S13, S14, S21, il gruppo Community Premium (sfida "Fai il percorso con lui", stanza degli abbonati, Journey a staffetta, regalo di un mese), eventi a pagamento, consulenze 1:1, prodotti digitali, ricerca semantica, trailer automatico, Percorso su Misura.
+- **Da decidere:** S15, S16 (nessuna decisione presa, non spostate).
+
 ### Struttura del sito (chat "struttura")
 
 ☑ **S1.** Tag "contenuto sponsorizzato" obbligatoria (priorità alta, lavoro piccolo)
@@ -34,12 +40,12 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☐ **S11.** Eventi e workshop a pagamento
 ☐ **S12.** Consulenze 1:1
 ☐ **S13.** Prodotti digitali
-☐ **S14.** Stripe e pagamenti reali (Punto 10)
+☐ **S14.** Sistema di pagamento completo (Punto 10, Post-MVP). La parte minima per le Tips è dentro S9.
 ☐ **S15.** Sicurezza account Google: verifica in due passaggi
 ☐ **S16.** Collegare zerojourneys.com a un sito
 ☐ **S17.** Punto 9: business plan e dossier investitori
 ☐ **S18.** Punto 10: infrastruttura tecnica
-☐ **S19.** Lista paesi Stripe per i creator (non urgente, siamo prototipo). La sede legale di Zero non è ancora decisa. Con sede in Svizzera o a Cipro i pagamenti tra paesi diversi coprono i creator dei paesi Stripe supportati (lista ufficiale di 103 paesi verificata il 2026-10-05, Brasile, India e Indonesia esclusi). Altre sedi: da verificare. Quando la sede è scelta, chiedere a Stripe la lista esatta e cosa succede se un creator si trasferisce. Vedi `10_Monetization.md`, sezione costi di pagamento.
+☐ **S21.** Lista paesi del sistema di pagamento per i creator (Post-MVP, non urgente, siamo prototipo). La sede legale di Zero non è ancora decisa. Con sede in Svizzera o a Cipro i pagamenti tra paesi diversi coprono i creator dei paesi supportati (lista ufficiale di 103 paesi verificata il 2026-10-05, Brasile, India e Indonesia esclusi). Altre sedi: da verificare. Quando la sede è scelta, chiedere al fornitore la lista esatta e cosa succede se un creator si trasferisce. Vedi `10_Monetization.md`, sezione costi di pagamento.
 ☐ **S19.** Punto 11: piano di lancio
 ☑ **S20.** Portare il lavoro da "design-wow-experiment" a "master" (3 ott 2026: master spostato e caricato su GitHub, stessa punta ffd7338). Poi, sempre il 3 ott 2026, il ramo aperto nella cartella è passato su "master" e "design-wow-experiment" è stato cancellato (locale e GitHub) su ok esplicito di Manuel. Esiste solo "master".
 
@@ -151,11 +157,11 @@ Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programm
 
 Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator`, `/pricing`, `/settings/subscription`) esistono ma mostrano solo "Coming soon". Percentuali e ordine di attivazione decisi al Punto 3 dell'allineamento (`93_Project_Alignment_Recap.md`), dettagli in `10_Monetization.md` v4.0.
 
-☐ **Pubblicità contestuale** (prima fonte da costruire) — collegare una rete pubblicitaria contestuale (es. Media.net, Ezoic/Humix, Primis — alternative a Google AdSense adatte a piattaforme piccole/video), split 60% creator / 40% Zero, pagamento mensile con soglia minima ~100 nella valuta locale.
+☐ **Pubblicità contestuale** [POST-MVP] (era la prima fonte da costruire) — collegare una rete pubblicitaria contestuale (es. Media.net, Ezoic/Humix, Primis — alternative a Google AdSense adatte a piattaforme piccole/video), split 60% creator / 40% Zero, pagamento mensile con soglia minima ~100 nella valuta locale.
 
-☐ **Tips e donazioni** (Launch, seconda fonte) — meccanismo di pagamento diretto utente→creator, commissione Zero 0% (il creator riceve tutto, meno le commissioni Stripe, come per tutti i pagamenti ricevuti). Cambiato il 2026-10-04, vedi `10_Monetization.md` v4.1.
+☐ **Tips e donazioni** [LANCIO] (seconda fonte) — meccanismo di pagamento diretto utente→creator, commissione Zero 0% (il creator riceve tutto, meno le commissioni di pagamento, come per tutti i pagamenti ricevuti). Cambiato il 2026-10-04, vedi `10_Monetization.md` v4.1.
 
-☐ **Community Premium (Post-MVP)** — abbonamento mensile di un utente verso un singolo creator. Decisione S4 (5 ott 2026): un solo livello, prezzo scelto dal creator da 5 euro in su, senza tetto. Da costruire dopo Stripe (S14), con il design delle schermate da approvare prima del codice.
+☐ **Community Premium (Post-MVP)** — abbonamento mensile di un utente verso un singolo creator. Decisione S4 (5 ott 2026): un solo livello, prezzo scelto dal creator da 5 euro in su, senza tetto. Da costruire dopo il sistema di pagamento completo (S14), con il design delle schermate da approvare prima del codice.
 
 ☐ **Sfida "Fai il percorso con lui"** (Post-MVP, dentro l'abbonamento): il creator propone una sfida reale per alcune settimane, e ogni abbonato fa la sua versione dello stesso percorso e pubblica i suoi progressi nella stanza degli abbonati.
 
@@ -175,9 +181,9 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☐ **Tag "contenuto sponsorizzato" obbligatoria** — quando un creator promuove un prodotto per accordo diretto con un brand (fuori piattaforma), Zero non trattiene nulla ma richiede una dichiarazione visibile. Priorità più alta delle altre voci di questa sezione: costa poco costruire (solo una tag/etichetta) e riduce rischio legale. **Confermata da costruire da Manuel il 2026-09-29. Costruita il 2026-10-03 come interruttore on/off "Sponsored content" (spento di default) su ogni episodio, nel form completo, nella card "Add episode" e nel "+" rapido; se acceso compare l'etichetta nella pagina di visione, nella lista "Up next" e nella Dashboard. Non è una scelta forzata: l'obbligo resta nelle regole (Termini e Linee guida), il sito offre lo strumento. Solo sugli episodi, non sul Journey intero.**
 
-☐ [Idea, non prioritaria] **Marketplace sponsorizzazioni creator-brand** — Zero mette in contatto creator e aziende, trattiene una commissione del 10% solo dal brand (modello TikTok Creator Marketplace). Stesso concetto delle due idee già in questa lista (sezione sponsor, marketplace UGC) — quando si costruirà, unificare i tre in un solo lavoro.
+☐ [POST-MVP, idea non prioritaria] **Marketplace sponsorizzazioni creator-brand** — Zero mette in contatto creator e aziende, trattiene una commissione del 10% solo dal brand (modello TikTok Creator Marketplace). Stesso concetto delle due idee già in questa lista (sezione sponsor, marketplace UGC) — quando si costruirà, unificare i tre in un solo lavoro.
 
-☐ **Meccanismo tecnico dei pagamenti (Stripe Connect)** — scegliere tra account Standard/Express/Custom quando si arriva a costruire davvero (Punto 7 dell'allineamento). Non blocca le decisioni di percentuali/ordine già prese.
+☐ **Meccanismo tecnico dei pagamenti** [POST-MVP] — scegliere il tipo di conto del fornitore quando si arriva a costruire il sistema completo (Punto 7 dell'allineamento). La parte minima per le Tips è [LANCIO] e va decisa insieme alla voce S9. Non blocca le decisioni di percentuali/ordine già prese.
 
 ## Infrastruttura & costi
 
@@ -185,7 +191,7 @@ Nessuna di queste fonti è ancora costruita: le pagine reali (`/settings/creator
 
 ☑ Compressione automatica delle foto caricate, interamente nel browser prima dell'upload (nessun costo, nessuna nuova dipendenza): sopra 2MB la foto viene ridimensionata (lato più lungo max 2000px) e ricompressa come JPEG (qualità 0.82). Limite massimo assoluto alzato da 8MB a 20MB, ora che la compressione gestisce i file pesanti da sola. Nuovo `lib/compressImage.ts` usato dai flussi senza ritaglio (poster episodio in `EpisodeForm.tsx`, poster/foto Update in `QuickUploadButton.tsx`); `lib/cropImage.ts` (avatar, copertina profilo, copertina Journey) esteso con lo stesso limite di dimensione. Non riguarda i video, gestiti a parte (vedi `95_Video_Scaling_Future_Option.md`).
 
-☐ Verificare se esiste un limite di tempo per utenti/sessioni inattive (sessione di login vs account dormienti — da chiarire con Manuel quale dei due). Controllato 2026-09-15: `lib/auth.ts` non ha configurazione esplicita, usa i default di Better Auth. Manuel (2026-09-29): "valutiamolo", da discutere prima di decidere.
+☑ Verificare se esiste un limite di tempo per utenti/sessioni inattive (fatto con S3, 4 ott 2026) (sessione di login vs account dormienti — da chiarire con Manuel quale dei due). Controllato 2026-09-15: `lib/auth.ts` non ha configurazione esplicita, usa i default di Better Auth. Manuel (2026-09-29): "valutiamolo", da discutere prima di decidere.
 
 ☑ **Collegare il dominio zerojourneys.com a Resend** (comprato il 2026-09-23): dominio verificato su Resend (record DNS su Cloudflare), mittente in `lib/email.ts` aggiornato, testato con un invio reale arrivato su Yahoo (commit `5ac5476` + `7cb1dc6`).
 
