@@ -73,7 +73,7 @@ Nella sezione **Community** del proprio profilo, il creator può proporre:
 - **Prodotti digitali** scaricabili (e-book, guide, corsi, template),
 - **Consulenze individuali**.
 
-Per creare una di queste offerte può scrivere una semplice descrizione a un assistente AI, che prepara automaticamente la bozza da confermare, capendo anche foto e documenti allegati. È inoltre pronta (ma non ancora accesa, perché a pagamento) la generazione di immagini di copertina direttamente dall'AI.
+Per creare una di queste offerte può scrivere una semplice descrizione a un assistente AI, che prepara automaticamente la bozza da confermare, capendo anche foto e documenti allegati. La generazione di immagini di copertina direttamente dall'AI è prevista dopo il lancio (Post-MVP).
 
 Ogni episodio ha un interruttore "Sponsored content": se il creator lo accende (perché un brand l'ha pagato o gli ha regalato qualcosa per mostrarlo), l'episodio riporta in bella vista l'etichetta, in linea con le Linee guida. L'etichetta serve solo a informare chi guarda e non cambia in alcun modo la posizione del Journey nelle classifiche.
 
@@ -94,9 +94,8 @@ Un pulsante dedicato permette al creator di avvisare manualmente i propri follow
 Per onestà verso chi legge questo documento, ecco cosa oggi non è ancora reale, raggruppato per non confonderlo con le funzioni già attive:
 
 - **Nessun pagamento vero è ancora collegato.** Abbonamenti Community, vendita di eventi/prodotti/consulenze, pubblicità, donazioni: tutto ha già percentuali e meccanismo decisi, ma nessuna riga di codice si collega oggi a un pagamento reale. È una scelta di sequenza (prima il prodotto, poi i pagamenti), non una dimenticanza, e il collegamento a Stripe è predisposto per essere attivabile in pochi passaggi quando sarà il momento.
-- **La generazione di immagini AI** è pronta ma spenta, perché ha un costo reale per immagine e serve attivare la fatturazione sul nostro account Google.
+- **La generazione di immagini AI** è prevista dopo il lancio (Post-MVP): ha un costo reale per immagine e richiederà la fatturazione sul nostro account Google.
 - **La versione video a qualità adattiva per connessioni lente** (per far partire i video più in fretta su internet lento) è pronta ma spenta per lo stesso motivo: costa, e aspettiamo utenti reali prima di accenderla.
 - **La messaggistica resta volutamente semplice**: solo testo, solo conversazioni uno a uno, senza gruppi né allegati, per scelta della prima versione.
-- **Non esiste ancora moderazione automatica dei video** (solo testo e immagini sono filtrati oggi).
 - **Zero non è ancora un'azienda registrata**: è dichiarato apertamente anche nei Termini di Servizio del sito.
 - **Non è stato fatto nessun audit di sicurezza formale** e la piattaforma non è ancora online in produzione per il pubblico.

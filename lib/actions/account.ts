@@ -48,7 +48,7 @@ export async function updateAccount(
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
-  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  // Primo filtro automatico (lib/moderation.ts, Gemini): se il servizio non risponde, il contenuto viene pubblicato comunque.
   const bioModeration = await moderateText(parsed.data.bio);
   if (bioModeration.flagged) return { error: MODERATION_REJECTION_MESSAGE };
 

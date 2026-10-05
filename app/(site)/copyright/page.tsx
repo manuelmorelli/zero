@@ -27,13 +27,13 @@ const sections: Section[] = [
     title: "Reporting anything else",
     body: [
       "The same Report button works for any content that breaks our Community Guidelines, like spam, inappropriate content, harassment, or anything else that doesn't belong here. You'll find it on Journey pages and on profiles.",
-      "Reports go directly to our team, not to a public queue. We don't have an automated review system yet. **Every report is looked at by a person.**",
+      "Reports go directly to our team, not to a public queue. **Every report is looked at by a person.**",
     ],
   },
   {
     title: "Automatic screening",
     body: [
-      "Newly uploaded text and photos are also checked automatically for content that clearly breaks our guidelines, before they're published. This is a first layer, not a replacement for reporting. **It doesn't cover video yet**, and it can miss things, so please still report anything you come across.",
+      "Newly uploaded text and photos are also checked automatically for content that clearly breaks our guidelines, before they're published. This is a first layer, not a replacement for reporting. **It doesn't cover video**, and it can miss things, so please still report anything you come across.",
     ],
   },
 ];

@@ -204,7 +204,7 @@ async function insertEpisode(
   const sizeError = await assertVideoWithinLimit(data.videoKey || undefined);
   if (sizeError) return { error: sizeError };
 
-  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  // Primo filtro automatico (lib/moderation.ts, Gemini): se il servizio non risponde, il contenuto viene pubblicato comunque.
   const moderation = await moderateText(`${data.title}\n${data.caption ?? ""}`);
   if (moderation.flagged) return { error: MODERATION_REJECTION_MESSAGE };
 
@@ -419,7 +419,7 @@ export async function updateEpisode(
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
-  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  // Primo filtro automatico (lib/moderation.ts, Gemini): se il servizio non risponde, il contenuto viene pubblicato comunque.
   const moderation = await moderateText(`${parsed.data.title}\n${parsed.data.caption ?? ""}`);
   if (moderation.flagged) return { error: MODERATION_REJECTION_MESSAGE };
 

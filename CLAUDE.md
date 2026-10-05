@@ -19,6 +19,7 @@ Esempio concreto già incontrato: il componente `<Image>` in questa versione ha 
 - **Frontend**: Next.js (App Router), React, TypeScript, Tailwind CSS, shadcn/ui
 - **Backend**: Next.js API Routes, Prisma ORM, PostgreSQL, Better Auth
 - **Validazione**: Zod, React Hook Form
+- **AI**: Google Gemini (moderazione automatica di testi e immagini, chat AI della Community). OpenAI non è un provider AI attuale di Zero
 - **Storage**: Cloudflare R2
 - **Pagamenti**: Stripe
 - **Email**: Resend

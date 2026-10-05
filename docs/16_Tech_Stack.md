@@ -103,6 +103,10 @@ Ogni tecnologia viene adottata solo se contribuisce concretamente alla qualità 
 
 - Cloudflare Stream — versioni leggere dei video per connessioni lente, generate in background a partire dal file originale su R2 (mai sostituito)
 
+## AI
+
+- Google Gemini — moderazione automatica di testi e immagini, chat AI della Community
+
 ## Pagamenti
 
 - Stripe

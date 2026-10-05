@@ -125,7 +125,7 @@ export async function shareToUpdate(params: {
   if (!content) return { error: "Nothing to share." };
   if (content.length > UPDATE_TEXT_MAX_LENGTH) return { error: "Keep it under 500 characters." };
 
-  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  // Primo filtro automatico (lib/moderation.ts, Gemini): se il servizio non risponde, il contenuto viene pubblicato comunque.
   const shareModeration = await moderateText(content);
   if (shareModeration.flagged) return { error: MODERATION_REJECTION_MESSAGE };
 
@@ -197,7 +197,7 @@ export async function publishUpdate(
     return { error: "Keep it under 500 characters.", done: false };
   }
 
-  // Primo filtro automatico (lib/moderation.ts): niente finché OPENAI_API_KEY non è configurata.
+  // Primo filtro automatico (lib/moderation.ts, Gemini): se il servizio non risponde, il contenuto viene pubblicato comunque.
   const textModeration = await moderateText(content);
   if (textModeration.flagged) return { error: MODERATION_REJECTION_MESSAGE, done: false };
 
@@ -219,8 +219,7 @@ export async function publishUpdate(
         return { error: "Video is too large (max 100MB).", done: false };
       }
     }
-    // Il filtro automatico copre solo le foto per ora: un video richiederebbe un'analisi per
-    // fotogrammi, più complessa (vedi lib/moderation.ts) — primo filtro, non soluzione completa.
+    // Il filtro automatico (lib/moderation.ts) copre solo le immagini: i video non vengono controllati automaticamente.
     if (type === "IMAGE") {
       const mediaPlaybackUrl = await getImagePlaybackUrl(mediaKey);
       const mediaModeration = await moderateImageUrl(mediaPlaybackUrl);

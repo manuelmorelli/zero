@@ -25,9 +25,9 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☑ **S2.** Pannello per gestire le segnalazioni, visibile solo a Manuel (4 ott 2026: pagina `/admin/reports`, visibile solo agli indirizzi in `ADMIN_EMAILS`, con voce nel menu laterale; risolvere una segnalazione su un creator toglie 10 punti di Trust Score)
 ☑ **S3.** Limite di tempo per utenti inattivi (4 ott 2026): la modalità Creator è una scelta esplicita (registrazione e Impostazioni), con default Visitatore. Chi pubblica riceve avvisi a 6, 9 e 10 mesi dall'ultima pubblicazione; a 10 mesi la modalità si chiude, i Journey vengono nascosti e cancellati dopo 30 giorni salvo riattivazione. Pagina `/creator` informativa. Pausa creator fatta (primo avviso dopo 10 mesi di pausa). Resta da fare la monetizzazione, voce a parte
 ☑ **S4.** Decidere: abbonamento o acquisto singolo (decisa il 5 ott 2026, Post-MVP: l'abbonamento non è al lancio, le tips sì. Modello: abbonamento mensile per creator, un solo livello, prezzo scelto dal creator da 5 euro in su, nessun tetto. Chi si abbona riceve la sfida "Fai il percorso con lui" e la stanza degli abbonati. Se il creator non pubblica nulla nel mese, il mese è gratis per chi paga. Workshop, consulenze e prodotti digitali restano vendite a parte. Esclusi i video singoli a pagamento)
-☐ **S5.** Immagini AI (serve la fatturazione Google)
-☐ **S6.** Mappa dei Momenti: riattivare e testare
-☐ **S7.** Gemini al piano a pagamento (prima del lancio)
+☐ **S5.** Immagini AI (Post-MVP, serve la fatturazione Google)
+☐ **S6.** Mappa dei Momenti (Post-MVP, con ricerca semantica, trailer automatico e Percorso su Misura)
+☐ **S7.** Gemini al piano a pagamento (PRE-LAUNCH: prima del lancio pubblico)
 ☐ **S8.** Pubblicità contestuale
 ☐ **S9.** Tips e donazioni (Launch)
 ☐ **S10.** Community Premium
@@ -39,6 +39,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☐ **S16.** Collegare zerojourneys.com a un sito
 ☐ **S17.** Punto 9: business plan e dossier investitori
 ☐ **S18.** Punto 10: infrastruttura tecnica
+☐ **S19.** Lista paesi Stripe per i creator (non urgente, siamo prototipo). La sede legale di Zero non è ancora decisa. Con sede in Svizzera o a Cipro i pagamenti tra paesi diversi coprono i creator dei paesi Stripe supportati (lista ufficiale di 103 paesi verificata il 2026-10-05, Brasile, India e Indonesia esclusi). Altre sedi: da verificare. Quando la sede è scelta, chiedere a Stripe la lista esatta e cosa succede se un creator si trasferisce. Vedi `10_Monetization.md`, sezione costi di pagamento.
 ☐ **S19.** Punto 11: piano di lancio
 ☑ **S20.** Portare il lavoro da "design-wow-experiment" a "master" (3 ott 2026: master spostato e caricato su GitHub, stessa punta ffd7338). Poi, sempre il 3 ott 2026, il ramo aperto nella cartella è passato su "master" e "design-wow-experiment" è stato cancellato (locale e GitHub) su ok esplicito di Manuel. Esiste solo "master".
 
@@ -86,7 +87,7 @@ Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programm
 
 ☑ Privacy Policy aggiornata (2026-09-29): Google (Gemini) aggiunto tra i fornitori, con cosa riceve (testi/immagini da moderare, conversazioni e allegati della chat AI Community) e la dichiarazione che nel piano gratuito Google può usare quei dati per migliorare i suoi prodotti; impegno a passare al piano a pagamento prima del lancio. Aggiunti anche contenuti Community, iscrizioni "I'm going" e conversazioni con l'AI tra i dati raccolti.
 
-☐ **Passare Gemini al piano a pagamento prima del lancio pubblico**: promessa scritta nella Privacy Policy (nel piano gratuito Google può usare i dati inviati per migliorare i suoi prodotti). Da fare insieme all'attivazione delle immagini AI, che richiede comunque la fatturazione sullo stesso account.
+☐ **Passare Gemini al piano a pagamento prima del lancio pubblico**: promessa scritta nella Privacy Policy (nel piano gratuito Google può usare i dati inviati per migliorare i suoi prodotti). Da fare prima del lancio pubblico, indipendentemente dalle immagini AI (S5, Post-MVP).
 
 ## Registrazione & Sicurezza account
 
@@ -138,7 +139,7 @@ Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programm
 
 ## AI
 
-☐ **Attivare e testare sul serio la Mappa dei Momenti prima di chiudere tutti i lavori** (`MOMENTS_LIBRARY_ENABLED`, oggi spenta): costruita e verificata su pochi episodi di prova il 2026-10-02/03 (`lib/ai/episodeMoments.ts`, dettagli in `93_Project_Alignment_Recap.md` Punto 8), ma Manuel vuole rilanciarla su tutta la libreria solo quando ci saranno episodi più rappresentativi del prodotto reale (oggi quasi tutti clip di prova brevissime). **Promemoria esplicito di Manuel: non va dimenticata prima della chiusura finale del progetto.** Da lì seguono, in ordine: ricerca semantica, trailer automatico (sostituisce la foto statica nella Hero), e infine il "Percorso su Misura" (Journey composto dall'AI con momenti presi da creator diversi in base alla situazione di chi cerca).
+☐ **Mappa dei Momenti (Post-MVP, S6)**, oggi spenta (`MOMENTS_LIBRARY_ENABLED`): costruita e verificata su pochi episodi di prova il 2026-10-02/03 (`lib/ai/episodeMoments.ts`, dettagli in `93_Project_Alignment_Recap.md` Punto 8). Va rilanciata su tutta la libreria quando ci saranno episodi più rappresentativi del prodotto reale (oggi quasi tutti clip di prova brevissime). Sono Post-MVP anche, in ordine: ricerca semantica, trailer automatico (sostituisce la foto statica nella Hero), e il "Percorso su Misura" (Journey composto dall'AI con momenti presi da creator diversi in base alla situazione di chi cerca).
 
 ## Business futuro (idee, nessun piano richiesto ora)
 

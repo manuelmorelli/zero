@@ -97,15 +97,12 @@ Update), testo (bio, contenuti di testo negli Update, messaggi 1:1).
   Nessun pannello di gestione: le segnalazioni si vedono/chiudono da
   Prisma Studio.
 - **Primo filtro automatico**, costruito nello stesso punto
-  (`lib/moderation.ts`): controlla testo e immagini appena caricati
-  tramite l'endpoint di moderazione di OpenAI, prima ancora che
-  arrivi una segnalazione. Copre bio, titoli/descrizioni di Journey/
-  Episodi, testo delle Update, e le immagini caricate, non ancora i
-  video. Codice pronto ma inattivo: la chiamata in sé è gratuita, ma
-  creare la chiave OpenAI richiede comunque una carta di credito e un
-  primo acquisto minimo (circa 5 dollari), non un account gratuito come
-  Neon/R2/Resend. Manuel ha deciso (2026-09-21) di rimandare questa
-  spesa a quando ci saranno utenti reali: vedi `docs/94_Product_Backlog.md`.
+  (`lib/moderation.ts`): controlla testo e immagini appena caricati,
+  prima che vengano pubblicati. Copre bio, titoli/descrizioni di Journey/
+  Episodi, testo delle Update, contenuti Community e le immagini caricate.
+  Non copre i video, esclusi dalla moderazione automatica. Attivo su
+  Google Gemini dal 2026-09-25 (in precedenza OpenAI), fa parte del Launch:
+  vedi `docs/94_Product_Backlog.md`.
 
 ---
 
@@ -225,9 +222,9 @@ Da tracciare e aggiornare man mano che si decide/implementa:
       da un documento scritto da Manuel) integrata nelle Community
       Guidelines pubbliche, 2026-09-22, con evidenza grafica per le
       categorie a tolleranza zero (minori, incitamento alla violenza,
-      autolesionismo/suicidio). Stessa base testuale da usare per le
-      istruzioni del filtro automatico (`lib/moderation.ts`) quando verrà
-      riattivato.
+      autolesionismo/suicidio). Il filtro automatico (`lib/moderation.ts`) è
+      già attivo su Gemini; le sue istruzioni sono una sintesi di queste
+      regole e vanno riallineate se le regole cambiano.
 - [ ] Nessun canale di contatto reale oggi (`/contact` è ancora "Coming
       soon"): Privacy Policy e Termini rimandano al Report per richieste
       sui dati, da collegare a un indirizzo vero prima del lancio.
@@ -238,6 +235,8 @@ Da tracciare e aggiornare man mano che si decide/implementa:
       produzione, verificare se cambia il tipo di dato inviato ai
       fornitori (es. Stripe riceverebbe dati di pagamento) e aggiornare
       Privacy Policy di conseguenza.
+- [ ] Gemini al piano a pagamento (S7, PRE-LAUNCH): da fare prima del
+      lancio pubblico, come promesso nella Privacy Policy.
 - [x] Requisiti per diventare creator (profilo compilato, video di
       presentazione, Community Guidelines accettate) — implementato
       2026-09-22 (Punto 6), vedi sezione 7 sopra.
@@ -279,3 +278,10 @@ Da tracciare e aggiornare man mano che si decide/implementa:
   presentazione, Community Guidelines accettate, tutti obbligatori
   insieme prima di poter pubblicare, nessun grandfathering) — vedi
   sezione 7.
+
+- 2026-10-05 — Allineamento delle decisioni AI al perimetro di Launch.
+  Il primo filtro automatico su testo e immagini è su Google Gemini (non
+  più OpenAI) e fa parte del Launch; la chat AI della Community fa parte
+  del Launch; le immagini AI e la Mappa dei Momenti sono Post-MVP; il
+  passaggio di Gemini al piano a pagamento è da fare prima del lancio
+  pubblico. Video esclusi dalla moderazione automatica.

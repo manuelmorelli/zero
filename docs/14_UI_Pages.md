@@ -167,7 +167,8 @@ Permette di gestire:
 
 - iscritti;
 - livelli di accesso;
-- contenuti Premium.
+- contenuti Premium;
+- creazione delle offerte Community anche con l'assistente AI, che prepara una bozza da controllare e salvare.
 
 ---
 

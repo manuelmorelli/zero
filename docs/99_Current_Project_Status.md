@@ -164,7 +164,7 @@ Task precedente: **Punto 8 dell'allineamento: Community con creazione AI (2026-0
 - **"Subscribe" rinominata "Community"** (`app/(site)/profile/[username]/community/`): mostra tutto ciò che il creator organizza (eventi gratuiti in cima, poi Shop, Workshop & Events a pagamento, Consulenze) con dati veri e stato vuoto onesto; pagina di dettaglio pubblica e condivisibile `app/(site)/community/[type]/[id]/`.
 - **Chat "Create with AI"** (`components/creator/CommunityAiChat.tsx`, `lib/ai/communityDraft.ts`, Gemini `gemini-3.5-flash-lite`, gratis): conversazione libera come un'AI normale (Markdown, consigli, domande sui dettagli, descrizione completa); la bozza viene estratta dalla conversazione con una seconda chiamata e apre il modulo pre-compilato col pulsante "Fill the form with this", mai salvata da sola. Chat salvata nel browser per utente fino al logout (`lib/communityAiChatStorage.ts`); saluto per nome.
 - **"+" per allegati**: menu Photo / PDF document, max 3 file, caricati su R2 sotto `ai-images/{userId}/uploads/`, verificati lato server e letti davvero da Gemini (foto descritte, PDF trasformati in bozza). Le foto possono diventare copertina ("Use as cover").
-- **Creazione immagini AI ("Nano Banana") pronta ma SPENTA**: non inclusa nel piano gratuito Google (circa 0,034$ a immagine). Si accende con `GEMINI_IMAGE_GENERATION_ENABLED="true"` dopo aver attivato la fatturazione Google; tetto 5 immagini ogni 24 ore per creator (tabella `ai_image_generations`). La forma della risposta immagine non è ancora verificata dal vivo.
+- **Creazione immagini AI ("Nano Banana") pronta ma SPENTA, Post-MVP (S5)**: non inclusa nel piano gratuito Google (circa 0,034$ a immagine). Si accende con `GEMINI_IMAGE_GENERATION_ENABLED="true"` quando sarà attivata la fatturazione Google; tetto 5 immagini ogni 24 ore per creator (tabella `ai_image_generations`). La forma della risposta immagine non è ancora verificata dal vivo.
 - **Moderazione contenuti passata da OpenAI a Gemini** (`lib/moderation.ts`): attiva per la prima volta su tutta la piattaforma, testo e immagini (mai video).
 - **Correzioni collegate**: campo prezzo senza freccette, orario evento mostrato in ora locale (prima un'ora indietro), date passate spostate all'anno successivo nella bozza AI.
 
@@ -306,7 +306,7 @@ Iniziata al Punto 7 dell'iniziativa di allineamento (`93_Project_Alignment_Recap
 
 - 🟡 **Community Premium** — pagina rinominata da "Subscribe" a "Community" (`app/(site)/profile/[username]/community/`), un solo livello di abbonamento mensile per profilo, pulsante disattivato "Coming soon" in attesa di Stripe.
 - ✅ **Shop / Workshop & Events / 1:1 Consulting (senza pagamento)** — CRUD reale dalla Dashboard (`/dashboard/community`), dati veri dal database sulla pagina Community e su una pagina di dettaglio pubblica; Workshop/Event gratuiti con RSVP reale. Acquisti a pagamento ancora "Coming soon" in attesa di Stripe.
-- ✅ **Creazione con l'AI** — chat Gemini gratuita con allegati foto/PDF che prepara la bozza nel modulo; creazione immagini pronta ma spenta (a pagamento).
+- ✅ **Creazione con l'AI** — chat Gemini gratuita con allegati foto/PDF che prepara la bozza nel modulo; creazione immagini pronta ma spenta, Post-MVP (S5).
 - ⬜ **Stripe Integration** — non collegato (vedi `.env.example`).
 - 🟡 **Analytics** — pannello base reale fatto (Total views, tasso di completamento, Completions, Interactions, in `lib/dashboard/creatorStats.ts` e `PrivateStatsPanel.tsx`), corretto qui il 2026-09-20 (Punto 2 allineamento); resta da fare un cruscotto più approfondito (storico, suddivisione per fonte di ricavo) quando ci saranno ricavi reali da mostrare — per scelta di prodotto deve restare intuitivo per il creator e semplice da costruire, non rincorrere la complessità dei concorrenti (cohort analysis, previsione abbandono).
 - ⬜ **Creator Insights** — non iniziato.
@@ -315,6 +315,8 @@ Iniziata al Punto 7 dell'iniziativa di allineamento (`93_Project_Alignment_Recap
 ### Phase 5 — Launch Preparation
 
 Non ancora iniziata.
+
+- ⬜ **Gemini al piano a pagamento** (S7, PRE-LAUNCH) — da fare prima del lancio pubblico, come promesso nella Privacy Policy.
 
 - ⬜ **Performance Optimization** — non iniziato.
 - ⬜ **Security** — nessun audit dedicato; solo le pratiche già in uso (Better Auth, verifica email, protezione rotte in `proxy.ts`).
