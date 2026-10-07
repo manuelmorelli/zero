@@ -21,8 +21,11 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 
 ### Orizzonti (decisioni del 5 ott 2026)
 
-- **Prima del lancio:** S7, S9 (Tips, tramite link esterno), S17, S18, S19 (piano di lancio), S22 (controllo di sicurezza del sito).
-- **Post-MVP:** S4, S5, S6, S8, S10, S11, S12, S13, S14, S21, il gruppo Community Premium (sfida "Fai il percorso con lui", stanza degli abbonati, Journey a staffetta, regalo di un mese), eventi a pagamento, consulenze 1:1, prodotti digitali, ricerca semantica, trailer automatico, Percorso su Misura.
+- **Prima del lancio:** S17, S18, S19 (piano di lancio), S22 (controllo di sicurezza del sito).
+- **Ultimo passaggio (tutto ciò che è pagamento o soldi, da fare dopo il resto):** S4, S5, S7, S8, S10, S11, S12, S13, S14, S21, il gruppo Community Premium (sfida "Fai il percorso con lui", stanza degli abbonati, Journey a staffetta, regalo di un mese), eventi a pagamento, consulenze 1:1, prodotti digitali. Se serve struttura del database per questi, la costruiamo lì, dentro questo ultimo passaggio.
+- **Post-MVP (senza soldi):** S6 (Mappa dei Momenti), ricerca semantica, trailer automatico, Percorso su Misura.
+- **Già fatto per il lancio:** S9 (Tips, tramite link esterno).
+- **Nota aperta:** la Privacy Policy promette il passaggio a pagamento di Gemini prima del lancio pubblico. Con S7 in fondo, va deciso se cambiare quella frase o anticipare S7.
 - **Da decidere:** S16 (collegare il dominio al sito, nessuna decisione presa, non spostata).
 
 ### Struttura del sito (chat "struttura")
@@ -33,7 +36,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☑ **S4.** Decidere: abbonamento o acquisto singolo (decisa il 5 ott 2026, Post-MVP: l'abbonamento non è al lancio, le tips sì. Modello: abbonamento mensile per creator, un solo livello, prezzo scelto dal creator da 5 euro in su, nessun tetto. Chi si abbona riceve la sfida "Fai il percorso con lui" e la stanza degli abbonati. Se il creator non pubblica nulla nel mese, il mese è gratis per chi paga. Workshop, consulenze e prodotti digitali restano vendite a parte. Esclusi i video singoli a pagamento)
 ☐ **S5.** Immagini AI (Post-MVP, serve la fatturazione Google)
 ☐ **S6.** Mappa dei Momenti (Post-MVP, con ricerca semantica, trailer automatico e Percorso su Misura)
-☐ **S7.** Gemini al piano a pagamento (PRE-LAUNCH: prima del lancio pubblico)
+☐ **S7.** Gemini al piano a pagamento (ultimo passaggio, soldi; vedi nota sulla Privacy nella sezione Orizzonti)
 ☐ **S8.** Pubblicità contestuale
 ☑ **S9.** Tips e donazioni (Launch). Fatto il 5 ott 2026 con un link esterno: il creator inserisce nelle Impostazioni Creator la pagina dove ricevere le donazioni, e la card Community mostra una spiegazione con il pulsante "Support this Creator" solo se il link c'è. Il pagamento avviene fuori da Zero: Zero non raccoglie denaro, non trattiene nulla e non gestisce rimborsi o payout. Il campo è generico, non legato a nessun fornitore. La vecchia funzione finta sulla pagina Community è stata tolta
 ☐ **S10.** Community Premium
