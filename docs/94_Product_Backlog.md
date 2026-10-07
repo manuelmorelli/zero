@@ -19,10 +19,12 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le descrizioni dettagliate sono nel resto del documento. Le caselle ☐ del corpo sono solo descrizioni, non si spuntano.
 
-### Orizzonti (decisioni del 5 ott 2026)
+### Orizzonti (decisioni del 5 e 7 ott 2026)
 
-- **Prima del lancio:** S17, S18, S19 (piano di lancio), S22 (controllo di sicurezza del sito).
-- **Ultimo passaggio (tutto ciò che è pagamento o soldi, da fare dopo il resto):** S4, S5, S7, S8, S10, S11, S12, S13, S14, S21, il gruppo Community Premium (sfida "Fai il percorso con lui", stanza degli abbonati, Journey a staffetta, regalo di un mese), eventi a pagamento, consulenze 1:1, prodotti digitali. Se serve struttura del database per questi, la costruiamo lì, dentro questo ultimo passaggio.
+Decisione del 7 ottobre: Zero va online 100% funzionante ma senza nessuna funzione a pagamento per gli utenti. Le Tips ai creator (S9) restano, sono un link esterno scelto dal creator, non toccano i soldi di Zero. In più, per sostenere Zero stesso: un bottone di donazione alla piattaforma (S24), collegato a un incasso reale solo quando esisterà un fiscal hosting (S25), e la richiesta di crediti cloud gratuiti a Google, Microsoft e Amazon per stare online al minor costo possibile (S23).
+
+- **Prima del lancio:** S17, S18, S19 (piano di lancio), S22 (controllo di sicurezza del sito), S23 (crediti cloud gratuiti), S24 (bottone "sostieni Zero", senza incasso reale finché S25 non esiste).
+- **Ultimo passaggio (tutto ciò che è pagamento o soldi, da fare dopo il resto):** S4, S5, S7, S8, S10, S11, S12, S13, S14, S21, S25 (fiscal hosting, per incassare davvero le donazioni a Zero), il gruppo Community Premium (sfida "Fai il percorso con lui", stanza degli abbonati, Journey a staffetta, regalo di un mese), eventi a pagamento, consulenze 1:1, prodotti digitali. Se serve struttura del database per questi, la costruiamo lì, dentro questo ultimo passaggio.
 - **Post-MVP (senza soldi):** S6 (Mappa dei Momenti), ricerca semantica, trailer automatico, Percorso su Misura.
 - **Già fatto per il lancio:** S9 (Tips, tramite link esterno).
 - **Nota aperta:** la Privacy Policy promette il passaggio a pagamento di Gemini prima del lancio pubblico. Con S7 in fondo, va deciso se cambiare quella frase o anticipare S7.
@@ -51,6 +53,9 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 ☐ **S21.** Lista paesi del sistema di pagamento per i creator (Post-MVP, non urgente, siamo prototipo). La sede legale di Zero non è ancora decisa. Con sede in Svizzera o a Cipro i pagamenti tra paesi diversi coprono i creator dei paesi supportati (lista ufficiale di 103 paesi verificata il 2026-10-05, Brasile, India e Indonesia esclusi). Altre sedi: da verificare. Quando la sede è scelta, chiedere al fornitore la lista esatta e cosa succede se un creator si trasferisce. Vedi `10_Monetization.md`, sezione costi di pagamento.
 ☐ **S19.** Punto 11: piano di lancio
 ☐ **S22.** Controllo di sicurezza del sito prima del lancio (verifica delle vulnerabilità, limiti ai tentativi di accesso, controllo dei dati). Prima del lancio, non blocca la costruzione.
+☐ **S23.** Richiedere crediti cloud gratuiti (Google for Startups, Microsoft for Startups, AWS Activate) e ogni altra risorsa gratuita disponibile, per andare online al minor costo possibile. Collegata a S18. È una richiesta che fa Manuel, non un lavoro di codice.
+☐ **S24.** Bottone "sostieni Zero": donazioni alla piattaforma stessa, diverse dalle Tips ai creator (S9). Costruibile da subito, ma senza un vero incasso finché S25 non è pronta: finché manca, il bottone deve dirlo onestamente.
+☐ **S25.** Fiscal hosting: struttura legale terza che permette a Zero di incassare davvero le donazioni di S24, finché Zero non ha un'entità legale propria. Ultimo passaggio, soldi.
 ☑ **S20.** Portare il lavoro da "design-wow-experiment" a "master" (3 ott 2026: master spostato e caricato su GitHub, stessa punta ffd7338). Poi, sempre il 3 ott 2026, il ramo aperto nella cartella è passato su "master" e "design-wow-experiment" è stato cancellato (locale e GitHub) su ok esplicito di Manuel. Esiste solo "master".
 
 Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programmato: sponsor aziende, marketplace UGC. In pausa per scelta: video leggeri e compressione video.
