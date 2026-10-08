@@ -49,7 +49,7 @@ prima di questa regola, non applicata retroattivamente.
 | Neon (Postgres) | Tutti i dati sopra (è il database primario) | **Collegato con account reale**, usato nei test end-to-end (corretto 2026-09-17, la voce precedente "placeholder" era superata) |
 | Cloudflare R2 | File binari (foto profilo/copertina, video episodi, media degli Update) via `lib/r2.ts` | **Collegato con account reale** (corretto 2026-09-17) |
 | Resend | Email di reset password e verifica email (indirizzo email + nome utente), via `lib/email.ts` | **Collegato con account reale** (corretto 2026-09-17); resta da fare solo il passaggio "da test a produzione" (dominio email verificato) |
-| Google Gemini | Testi e immagini da moderare (`lib/moderation.ts`), conversazioni e allegati foto/PDF della chat AI Community (`lib/ai/`) | **Collegato, piano gratuito** (dal 2026-09-25): Google può usare i dati per migliorare i suoi prodotti. Dichiarato nella Privacy Policy il 2026-09-29, con l'impegno a passare al piano a pagamento prima del lancio |
+| Google Gemini | Testi e immagini da moderare (`lib/moderation.ts`), conversazioni e allegati foto/PDF della chat AI Community (`lib/ai/`) | **Collegato, piano gratuito** (dal 2026-09-25): Google può usare i dati per migliorare i suoi prodotti. Dichiarato nella Privacy Policy il 2026-09-29. L'impegno a passare al piano a pagamento prima del lancio è stato tolto dalla Privacy Policy il 9 ott 2026 (Manuel: nessuna spesa evitabile all'inizio); il passaggio resta comunque nel backlog (S7), senza scadenza legata al lancio |
 | Stripe | **Nessuno**: nessuna chiamata Stripe nel codice, solo campo `stripeId` nello schema (`Payment.stripeId`) mai popolato da codice reale | Non implementato, per scelta: collegato solo appena prima del lancio online (Punto 7) |
 
 **Nota sulla pagina `/how-it-works`**: contiene il testo "payments go through
@@ -235,8 +235,12 @@ Da tracciare e aggiornare man mano che si decide/implementa:
       produzione, verificare se cambia il tipo di dato inviato ai
       fornitori (es. Stripe riceverebbe dati di pagamento) e aggiornare
       Privacy Policy di conseguenza.
-- [ ] Gemini al piano a pagamento (S7, PRE-LAUNCH): da fare prima del
-      lancio pubblico, come promesso nella Privacy Policy.
+- [x] Gemini al piano a pagamento (S7): non è più legato al lancio.
+      Decisione di Manuel (9 ott 2026): nessuna spesa evitabile
+      all'inizio. La promessa "prima del lancio" è stata tolta dalla
+      Privacy Policy; il passaggio a pagamento resta nel backlog
+      (`94_Product_Backlog.md`), nell'ultimo passaggio insieme agli
+      altri lavori che costano soldi.
 - [x] Requisiti per diventare creator (profilo compilato, video di
       presentazione, Community Guidelines accettate) — implementato
       2026-09-22 (Punto 6), vedi sezione 7 sopra.
@@ -285,3 +289,8 @@ Da tracciare e aggiornare man mano che si decide/implementa:
   del Launch; le immagini AI e la Mappa dei Momenti sono Post-MVP; il
   passaggio di Gemini al piano a pagamento è da fare prima del lancio
   pubblico. Video esclusi dalla moderazione automatica.
+- 2026-10-09 — Tolta dalla Privacy Policy la promessa di passare Gemini
+  al piano a pagamento prima del lancio pubblico: decisione di Manuel,
+  che vuole spendere il meno possibile su tutti i fronti all'apertura
+  del sito. Il passaggio a pagamento resta nel backlog (S7), senza più
+  una scadenza legata al lancio.

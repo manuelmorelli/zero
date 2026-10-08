@@ -27,7 +27,7 @@ Decisione del 7 ottobre: Zero va online 100% funzionante ma senza nessuna funzio
 - **Ultimo passaggio (tutto ciò che è pagamento o soldi, da fare dopo il resto):** S4, S5, S7, S8, S10, S11, S12, S13, S14, S21, S25 (fiscal hosting, per incassare davvero le donazioni a Zero), il gruppo Community Premium (sfida "Fai il percorso con lui", stanza degli abbonati, Journey a staffetta, regalo di un mese), eventi a pagamento, consulenze 1:1, prodotti digitali. Se serve struttura del database per questi, la costruiamo lì, dentro questo ultimo passaggio.
 - **Post-MVP (senza soldi):** S6 (Mappa dei Momenti), ricerca semantica, trailer automatico, Percorso su Misura.
 - **Già fatto per il lancio:** S9 (Tips, tramite link esterno).
-- **Nota aperta:** la Privacy Policy promette il passaggio a pagamento di Gemini prima del lancio pubblico. Con S7 in fondo, va deciso se cambiare quella frase o anticipare S7.
+- **Risolto (9 ott 2026):** la Privacy Policy prometteva il passaggio a pagamento di Gemini prima del lancio pubblico. Decisione di Manuel: niente spese iniziali evitabili, quella frase è stata tolta dalla Privacy Policy. S7 resta semplicemente nell'ultimo passaggio (soldi), senza scadenza legata al lancio.
 - **Da decidere:** S16 (collegare il dominio al sito, nessuna decisione presa, non spostata).
 
 ### Struttura del sito (chat "struttura")
@@ -102,7 +102,7 @@ Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programm
 
 ☑ Privacy Policy aggiornata (2026-09-29): Google (Gemini) aggiunto tra i fornitori, con cosa riceve (testi/immagini da moderare, conversazioni e allegati della chat AI Community) e la dichiarazione che nel piano gratuito Google può usare quei dati per migliorare i suoi prodotti; impegno a passare al piano a pagamento prima del lancio. Aggiunti anche contenuti Community, iscrizioni "I'm going" e conversazioni con l'AI tra i dati raccolti.
 
-☐ **Passare Gemini al piano a pagamento prima del lancio pubblico**: promessa scritta nella Privacy Policy (nel piano gratuito Google può usare i dati inviati per migliorare i suoi prodotti). Da fare prima del lancio pubblico, indipendentemente dalle immagini AI (S5, Post-MVP).
+☑ **Rimossa la scadenza "prima del lancio" per il passaggio di Gemini al piano a pagamento** (9 ott 2026): la Privacy Policy prometteva questo passaggio prima dell'apertura al pubblico; Manuel ha deciso di non spendere nulla di evitabile all'inizio, quindi la frase è stata tolta dalla pagina Privacy. Il passaggio a pagamento resta comunque da fare in futuro (S7), ma nell'ultimo passaggio del backlog insieme agli altri lavori che costano soldi, senza scadenza legata al lancio.
 
 ## Registrazione & Sicurezza account
 

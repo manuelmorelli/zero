@@ -39,7 +39,7 @@ const sections: Section[] = [
     title: "Who we share it with",
     body: [
       "Zero runs on a small set of infrastructure providers who process data on our behalf, under their own security commitments: Neon (our database, which stores the information above), Cloudflare R2 (stores the photos and videos you upload), and Resend (sends the account emails described above).",
-      "Google (Gemini) powers two features: the automatic check that screens new text and images for content that breaks our Community Guidelines, and the AI assistant that helps creators prepare Community listings. For these, Google receives the text and images being checked, and your conversations with the assistant, including any attachments. **Zero currently uses Google's free tier, under which Google may use this data to improve its own products.** We'll move to Google's paid tier, where that doesn't happen, before public launch.",
+      "Google (Gemini) powers two features: the automatic check that screens new text and images for content that breaks our Community Guidelines, and the AI assistant that helps creators prepare Community listings. For these, Google receives the text and images being checked, and your conversations with the assistant, including any attachments. **Zero currently uses Google's free tier, under which Google may use this data to improve its own products.**",
       "**We don't sell personal data to anyone, and we don't use advertising or analytics trackers.** See the Cookie Policy for the full, short list of cookies we use.",
       "Zero doesn't process payments yet. When payments launch, Stripe will handle that data directly, and this policy will be updated to reflect it before that happens.",
     ],
