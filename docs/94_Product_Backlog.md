@@ -28,7 +28,7 @@ Decisione del 7 ottobre: Zero va online 100% funzionante ma senza nessuna funzio
 - **Post-MVP (senza soldi):** S6 (Mappa dei Momenti), ricerca semantica, trailer automatico, Percorso su Misura.
 - **Già fatto per il lancio:** S9 (Tips, tramite link esterno).
 - **Risolto (9 ott 2026):** la Privacy Policy prometteva il passaggio a pagamento di Gemini prima del lancio pubblico. Decisione di Manuel: niente spese iniziali evitabili, quella frase è stata tolta dalla Privacy Policy. S7 resta semplicemente nell'ultimo passaggio (soldi), senza scadenza legata al lancio.
-- **Da decidere:** S16 (collegare il dominio al sito, nessuna decisione presa, non spostata).
+- **Da decidere:** S16 (collegare il dominio al sito, nessuna decisione presa, non spostata); S26 (tradurre il sito in altre lingue, quali e quando, nessuna decisione presa).
 
 ### Struttura del sito (chat "struttura")
 
@@ -56,6 +56,7 @@ Decisione del 7 ottobre: Zero va online 100% funzionante ma senza nessuna funzio
 ☐ **S23.** Richiedere crediti cloud gratuiti (Google for Startups, Microsoft for Startups, AWS Activate) e ogni altra risorsa gratuita disponibile, per andare online al minor costo possibile. Collegata a S18. È una richiesta che fa Manuel, non un lavoro di codice.
 ☐ **S24.** Bottone "sostieni Zero": donazioni alla piattaforma stessa, diverse dalle Tips ai creator (S9). Costruibile da subito, ma senza un vero incasso finché S25 non è pronta: finché manca, il bottone deve dirlo onestamente.
 ☐ **S25.** Fiscal hosting: struttura legale terza che permette a Zero di incassare davvero le donazioni di S24, finché Zero non ha un'entità legale propria. Ultimo passaggio, soldi.
+☐ **S26.** Tradurre il sito in altre lingue (importante da non perdere, segnalato da Manuel il 9 ott 2026). Nessuna decisione presa: quali lingue, quando farlo, come gestirlo tecnicamente sono tutte domande aperte.
 ☑ **S20.** Portare il lavoro da "design-wow-experiment" a "master" (3 ott 2026: master spostato e caricato su GitHub, stessa punta ffd7338). Poi, sempre il 3 ott 2026, il ramo aperto nella cartella è passato su "master" e "design-wow-experiment" è stato cancellato (locale e GitHub) su ok esplicito di Manuel. Esiste solo "master".
 
 Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programmato: sponsor aziende, marketplace UGC. In pausa per scelta: video leggeri e compressione video.
