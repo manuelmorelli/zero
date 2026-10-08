@@ -1,4 +1,5 @@
 import { Header } from "@/components/layout/Header";
+import { SandBackground } from "@/components/common/SandBackground";
 
 // Header comune a tutte le pagine "principali" del sito (raggruppate qui via route group,
 // che non compare nell'URL): prima restava montato dentro ogni singola pagina e veniva
@@ -10,6 +11,8 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
   return (
     <>
       <Header />
+      {/* Sfondo di sabbia dorata: decide da solo su quali pagine comparire. */}
+      <SandBackground />
       {children}
     </>
   );

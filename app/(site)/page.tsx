@@ -32,6 +32,7 @@ import { getFollowedCreatorsStories, getOwnStory } from "@/lib/discovery/stories
 import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
 import { getHeroJourneys } from "@/lib/discovery/heroJourneys";
+import { getHeroVideos } from "@/lib/discovery/heroVideos";
 import { demoHeroSlidesWithKind, type HeroSlide } from "@/lib/demo/heroSlides";
 import { getDiscoveringNowJourneys, type DiscoveringNowItem } from "@/lib/discovery/discoveringNow";
 import { getContinueJourneys } from "@/lib/discovery/continueJourneys";
@@ -80,6 +81,7 @@ export default async function Home() {
     topJourneys,
     discoveringNow,
     heroJourneys,
+    heroVideos,
   ] = await Promise.all([
     getFollowedCreatorsStories({ userId }),
     getOwnStory({ userId }),
@@ -92,6 +94,7 @@ export default async function Home() {
     // chiunque, loggato o no, indipendentemente da interessi o creator seguiti (08_Algorithm.md).
     getDiscoveringNowJourneys(JOURNEYS_PER_ROW),
     getHeroJourneys(4),
+    getHeroVideos(),
   ]);
 
   // DEMO DATA - replace when real data available: placeholder realistici per le sezioni
@@ -123,7 +126,7 @@ export default async function Home() {
       {/* Bagliore ambra dietro la Hero: rimosso (esperimento "design più vivo", round colori) —
        * sporcava lo sfondo di arancio insieme a quello sitewide in globals.css. */}
       <div className="relative md:pt-[calc(3.85rem+1cm)]">
-        <Hero slides={heroSlides} stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
+        <Hero slides={heroSlides} videos={heroVideos} stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
       </div>
 
       {userId && continueJourneys.length > 0 && <ContinueWatching journeys={continueJourneys} />}

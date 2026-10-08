@@ -80,7 +80,7 @@ prompts/              Prompt riutilizzabili per lo sviluppo AI
 - Spaziatura coerente.
 - Usare i colori semantici già definiti in `app/globals.css` (tema `@theme`), non colori arbitrari:
   `bg`, `surface`, `surface-2`, `border`, `ink`, `ink-muted`, `ink-faint`, `ember` (unico arancione, sempre pieno, mai sfumato), `danger`, `scrim`, `on-photo` (es. `bg-surface`, `text-ink-muted`, `border-border`).
-- Font unico (`font-sans`, da variabile `--font-inter`), pesi diversi per gerarchia.
+- Font unico Satoshi (`font-sans`, da variabile `--font-satoshi`, file in `app/fonts/`), pesi diversi per gerarchia.
 - Approccio Mobile First.
 - **Non disegnare a mano bottoni, titoli, riquadri, campi o card: usare sempre i componenti di `components/ui/`** (`button.tsx`, `heading.tsx`, `panel.tsx`, `input.tsx`, `page-container.tsx`, `cover-card.tsx`, `avatar.tsx` — dettagli in `docs/15_Design_System.md`). Prima di scrivere un pezzo di interfaccia nuovo, controllare se esiste già lì. `npm run check:design` (o `node scripts/check-design.mjs`) lo verifica e blocca automaticamente il commit se trova uno scarto: se lo segnala, il pezzo va rifatto con i componenti ufficiali, non aggirato.
 

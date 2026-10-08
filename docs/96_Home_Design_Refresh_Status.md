@@ -48,11 +48,19 @@ Sessione dedicata a rivedere sfondo e accento dopo il round precedente. Diversi 
 
 **Stato: tutto il round sopra è solo in locale, nessun commit fatto.** Prima di committare serve un'approvazione visiva esplicita di Manuel su localhost:3000 (sfondo + accento), separata dalla decisione sulla "manovella".
 
+## Realizzato il 2026-10-07 (Regola di Movimento, `21_Motion_Guidelines.md`)
+
+- Video nella Hero da computer: due clip di 14 secondi da "the valley" e "Swiss Alps" (2-3MB, in `public/videos/`), mute, in dissolvenza tra loro, pulsante audio in alto a destra. Su telefono resta la foto.
+- La card a destra segue il video e mostra titolo e didascalia scritti dal creator per quell'episodio.
+- Frasi a rotazione nel titolo: frase di Zero più sette citazioni, ogni 11 secondi, ognuna con la parte finale in arancione, con una dissolvenza pulita in due tempi (righe di luce, puntini e sabbia 2D sulle frasi sono stati provati e scartati).
+- 2026-10-09: sfondo di sabbia dorata 3D (three.js) dietro alle card su Home, Journeys, Journeyers, profili e pagine vetrina; immagine ferma su telefono. Carattere Satoshi su tutto il sito.
+- Scroll scenico sulla Hero: il video si rimpicciolisce e il testo sale mentre la pagina scorre, senza bloccarla.
+
 ## Discusso con Manuel ma non ancora realizzato
 
-- Video al posto della foto statica nella Hero (stile Netflix, anteprima muta in loop) — confermato tecnicamente fattibile via R2, mai iniziato
-- Righe di luce animate con puntini che le percorrono (riferimento: esempi v0.app mostrati da Manuel) — solo discusso
-- Effetto "racconto con lo scroll" tipo template Evasion (parallasse, immagini che si muovono con lo scroll) su Hero e pagine vetrina (How it works, What is Zero) — mai iniziato
+- Effetto "racconto con lo scroll" sulle pagine vetrina (How it works, What is Zero): fatto il 2026-10-09 (`components/common/ScrollStory.tsx`)
+- Frase della Hero composta dalla sabbia 3D (prova "sabbia d'oro" piaciuta a Manuel): idea per un passo successivo
+- Effetto più scenico sulle card dei Journey nella Hero: idea di Manuel, da decidere
 - Estendere lo stesso trattamento (bagliori, colori più vivi) alle altre pagine oltre la Home (Journey, Profilo, Dashboard, Player) — messo in pausa per concentrarsi sulla Home
 - Effetto "luce al centro della pagina": Manuel ha detto di lasciar perdere per ora (2026-09-27), non più in cima alla lista
 

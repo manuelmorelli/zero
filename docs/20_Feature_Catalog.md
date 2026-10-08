@@ -47,6 +47,8 @@ Queste sono le caratteristiche che non si trovano insieme da nessun'altra parte,
 
 ## Cosa può fare oggi chi guarda i contenuti
 
+La Home si apre con un video di paesaggio che scorre in sottofondo (da computer, muto, con la possibilità di attivare l'audio) e con frasi che cambiano a rotazione sotto il logo. Dietro ai contenuti scorre un fiume di sabbia dorata in 3D che attraversa tutta la pagina e si apre al passaggio del mouse. Il movimento del sito segue una regola precisa: lento e discreto, leggero sul telefono, e completamente fermo per chi ha chiesto al proprio dispositivo meno animazioni.
+
 Uno spettatore può scoprire i Journey attraverso una Home personalizzata (contenuti nuovi, consigliati in base agli interessi, creator da seguire); la classifica dei Journey più completati si trova nella pagina Journeys, oppure cercarli per categoria o per testo con filtri simili a YouTube (categoria e data, non ordinati per popolarità: una scelta voluta per non premiare la viralità fine a sé stessa).
 
 Ogni Journey si guarda in un player dedicato che tiene il segno esatto di dove si è arrivati, episodio per episodio, con possibilità di saltare indietro di 15 secondi, vedere "cosa guardare dopo" e riprendere da dove si era interrotta la visione anche giorni dopo.

@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { Toaster } from "sonner";
 import { QuickUpload } from "@/components/creator/QuickUpload";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { MessagesWidget } from "@/components/messages/MessagesWidget";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["400", "500", "600", "700", "800", "900"],
+// Satoshi (Fontshare, licenza gratuita anche per uso commerciale), scelto da Manuel il
+// 2026-10-09 al posto di Inter. File variabile salvato nel progetto: pesi da 300 a 900.
+const satoshi = localFont({
+  src: "./fonts/Satoshi-Variable.woff2",
+  variable: "--font-satoshi",
+  weight: "300 900",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} font-sans bg-bg text-ink antialiased`}
+        className={`${satoshi.variable} font-sans bg-bg text-ink antialiased`}
       >
         <QuickUpload>
           {children}

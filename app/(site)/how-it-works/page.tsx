@@ -1,6 +1,6 @@
 import { FileVideo, Maximize, Sparkles, UploadCloud, type LucideIcon } from "lucide-react";
 import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
-import { Reveal } from "@/components/common/Reveal";
+import { ScrollStory } from "@/components/common/ScrollStory";
 import { CardTitle, DisplayTitle, ReadingTitle } from "@/components/ui/heading";
 import { PANEL_ACCENT } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
@@ -80,102 +80,82 @@ function BulletList({ items }: { items: Bullet[] }) {
 
 export default function HowItWorksPage() {
   return (
-    <div className="min-h-screen bg-bg text-ink">
+    <div className="min-h-screen text-ink">
       <main className={cn(PAGE_WIDTH.wide, "relative max-w-3xl pb-10 pt-16 md:pt-20")}>
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[28rem] w-[46rem] -translate-x-1/2 rounded-full bg-ember-soft blur-[120px]"
-        />
-        <Reveal>
-          <p className="inline-flex items-center gap-2 rounded-full border border-ember-line bg-ember-soft px-3 py-1 text-sm uppercase tracking-[0.32em] text-ember">
-            <Sparkles className="h-3 w-3" aria-hidden="true" />
-            How Zero really works
-          </p>
-          <DisplayTitle className="mt-2">
-            Know the Algorithm. Know{" "}
-            <span className="text-ember">
-              Zero
-            </span>
-            .
-          </DisplayTitle>
-          <p className="mt-2 text-ink">
-            Three steps to get started, the questions people ask most, and how everything really works.
-          </p>
-        </Reveal>
+        {/* Racconto con lo scroll: il titolo si allontana, le righe salgono una dopo l'altra, le
+         * due frasi arancioni entrano di lato, passi, domande e riquadri salgono uno alla volta. */}
+        <ScrollStory>
+          <div data-story="title">
+            <p className="inline-flex items-center gap-2 rounded-full border border-ember-line bg-ember-soft px-3 py-1 text-sm uppercase tracking-[0.32em] text-ember">
+              <Sparkles className="h-3 w-3" aria-hidden="true" />
+              How Zero really works
+            </p>
+            <DisplayTitle className="mt-2">
+              Know the Algorithm. Know <span className="text-ember">Zero</span>.
+            </DisplayTitle>
+            <p className="mt-2 text-ink">
+              Three steps to get started, the questions people ask most, and how everything really works.
+            </p>
+          </div>
 
-        <Reveal delayMs={100}>
-          <ReadingTitle id="algorithm" className="mb-3 mt-8 scroll-mt-24">
-            How the algorithm decides what to show
-          </ReadingTitle>
-        </Reveal>
-        <Reveal delayMs={140}>
+          <div data-story="lines">
+            <ReadingTitle id="algorithm" className="mb-3 mt-8 scroll-mt-24">
+              How the algorithm decides what to show
+            </ReadingTitle>
+          </div>
           <div className="space-y-3 text-ink">
-            <p>
+            <p data-story="lines">
               The algorithm doesn&apos;t care how many followers you have. It cares about one thing: do
               people actually stick around and come back?
             </p>
-            <p>
+            <p data-story="lines">
               If people finish your episodes and come back for the next one, more people get to see
               you. Followers help a little, but only up to a point. After that, having more
               doesn&apos;t push you higher.
             </p>
-            <p>
+            <p data-story="lines">
               The only way your score goes down is if people report you and we confirm something was
               actually wrong. Never because you&apos;re small.
             </p>
           </div>
-        </Reveal>
-        <Reveal delayMs={180}>
-          <p className={cn(PANEL_ACCENT, "mt-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
+          <p data-story="slide" className={cn(PANEL_ACCENT, "mt-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
             A creator with 5 followers, where everyone finishes every episode, is shown to more people
             than a creator with 600 followers that nobody finishes.
           </p>
-        </Reveal>
-        <Reveal delayMs={200}>
-          <p className={cn(PANEL_ACCENT, "mt-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
+          <p data-story="slide" className={cn(PANEL_ACCENT, "mt-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
             Paying doesn&apos;t get you seen more. On Zero, a Journey rises only because people
             actually watch and love it, never because someone paid for it.
           </p>
-        </Reveal>
 
-        <Reveal delayMs={100}>
-          <ReadingTitle className="mb-4 mt-10">
-            Three Steps to Get Started
-          </ReadingTitle>
-        </Reveal>
-        <div className="grid gap-6 md:grid-cols-3">
-          {steps.map((step, index) => (
-            <Reveal key={step.number} delayMs={index * 120}>
-              <span className="text-sm font-bold text-ink-faint">{step.number}</span>
-              <CardTitle as="h2" className="mt-2 text-ember">{step.title}</CardTitle>
-              <p className="mt-1.5 text-ink">{step.text}</p>
-            </Reveal>
-          ))}
-        </div>
+          <div data-story="lines">
+            <ReadingTitle className="mb-4 mt-10">Three Steps to Get Started</ReadingTitle>
+          </div>
+          <div data-story="rise" className="grid gap-6 md:grid-cols-3">
+            {steps.map((step) => (
+              <div key={step.number}>
+                <span className="text-sm font-bold text-ink-faint">{step.number}</span>
+                <CardTitle as="h2" className="mt-2 text-ember">{step.title}</CardTitle>
+                <p className="mt-1.5 text-ink">{step.text}</p>
+              </div>
+            ))}
+          </div>
 
-        <Reveal delayMs={100}>
-          <ReadingTitle className="mb-4 mt-10">
-            Frequently Asked Questions
-          </ReadingTitle>
-        </Reveal>
-        <div className="divide-y divide-border">
-          {questions.map((item, index) => (
-            <Reveal key={item.q} delayMs={index * 60}>
-              <details className="group py-3.5">
+          <div data-story="lines">
+            <ReadingTitle className="mb-4 mt-10">Frequently Asked Questions</ReadingTitle>
+          </div>
+          <div data-story="rise" className="divide-y divide-border">
+            {questions.map((item) => (
+              <details key={item.q} className="group py-3.5">
                 <summary className="flex cursor-pointer list-none items-center justify-between text-lg font-semibold text-ember">
                   {item.q}
-                  <span className="ml-4 text-ink transition-transform group-open:rotate-45">
-                    +
-                  </span>
+                  <span className="ml-4 text-ink transition-transform group-open:rotate-45">+</span>
                 </summary>
                 <p className="mt-2 text-ink">{item.a}</p>
               </details>
-            </Reveal>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          <Reveal>
+          <div data-story="rise" className="mt-10 grid gap-4 sm:grid-cols-2">
             <section className={cn(PANEL_ACCENT, "h-full")}>
               <CardTitle as="h2" className="text-ember">Publishing Isn&apos;t the End</CardTitle>
               <p className="mt-3 text-sm leading-relaxed text-ink">
@@ -185,14 +165,12 @@ export default function HowItWorksPage() {
                 views. Zero doesn&apos;t.
               </p>
             </section>
-          </Reveal>
-          <Reveal delayMs={80}>
             <section className={cn(PANEL_ACCENT, "h-full")}>
               <CardTitle as="h2" className="text-ember">Before You Upload</CardTitle>
               <BulletList items={uploadTips} />
             </section>
-          </Reveal>
-        </div>
+          </div>
+        </ScrollStory>
 
         <div className="mt-8 flex flex-wrap gap-3">
           <ButtonPrimary href="/">Explore Journeys</ButtonPrimary>

@@ -1,24 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Play, Quote } from "lucide-react";
+import { Play, Quote, Volume2, VolumeX } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
-import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
+import { ButtonPrimary, ButtonSecondary, IconButton } from "@/components/ui/button";
 import { StoryViewer } from "@/components/home/StoryViewer";
+import { HeroBackgroundVideo, useHeroVideoMode } from "@/components/landing/HeroBackgroundVideo";
+import { HeroPayoff } from "@/components/landing/HeroPayoff";
 import type { HeroSlide } from "@/lib/demo/heroSlides";
+import type { HeroVideo } from "@/lib/discovery/heroVideos";
 import type { CreatorStory } from "@/lib/discovery/stories";
+import { HERO_PAYOFF_MS, HERO_PAYOFFS } from "@/lib/landing/heroPayoffs";
+import { getGsapScrollTrigger, prefersLightMotion } from "@/lib/gsapClient";
 import { PANEL_GLASS } from "@/components/ui/panel";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { cn } from "@/lib/utils";
 
 const creators = ["Alex R.", "Sarah J.", "David L.", "Emma W.", "James T."];
 
+/** Su telefono (niente video) foto e card cambiano insieme, con un ritmo proprio e più lento
+ * delle frasi: la card non segue mai le frasi. */
+const HERO_SLIDE_MS = 10000;
+
 type HeroProps = {
   /** Foto a rotazione: Journey reali con più punteggio quando ce ne sono, altrimenti le 4 foto
    * demo (vedi lib/discovery/heroJourneys.ts e lib/demo/heroSlides.ts). */
   slides: HeroSlide[];
+  /** Clip della Hero da computer, ognuna legata al suo episodio (vedi lib/discovery/heroVideos.ts). */
+  videos: HeroVideo[];
   /** Updates dei creator seguiti: solo per chi ha fatto il sign in (vuoto per gli ospiti). */
   stories: CreatorStory[];
   /** Il proprio Update attivo, se si ha un profilo Creator: null per chi non ne ha uno (mai
@@ -27,28 +38,56 @@ type HeroProps = {
   ownStory: CreatorStory | null;
 };
 
-export function Hero({ slides, stories, ownStory }: HeroProps) {
+export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
   const [active, setActive] = useState(0);
   const [openStoryIndex, setOpenStoryIndex] = useState<number | null>(null);
   const [ownStoryOpen, setOwnStoryOpen] = useState(false);
+  const [payoffIndex, setPayoffIndex] = useState(0);
+  const [videoIndex, setVideoIndex] = useState(0);
+  const [muted, setMuted] = useState(true);
+  const videoMode = useHeroVideoMode();
+  const sectionRef = useRef<HTMLElement>(null);
+  const mediaRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
+  // Frasi e foto hanno due ritmi separati (docs/21_Motion_Guidelines.md). Chi ha chiesto meno
+  // movimento non ha cambi automatici: resta sulla frase di Zero e sulla prima card.
   useEffect(() => {
-    const id = window.setInterval(() => {
-      setActive((prev) => (prev + 1) % slides.length);
-    }, 5000);
-    return () => window.clearInterval(id);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const payoffTimer = window.setInterval(() => setPayoffIndex((prev) => (prev + 1) % HERO_PAYOFFS.length), HERO_PAYOFF_MS);
+    const slideTimer = window.setInterval(() => setActive((prev) => (prev + 1) % slides.length), HERO_SLIDE_MS);
+    return () => {
+      window.clearInterval(payoffTimer);
+      window.clearInterval(slideTimer);
+    };
   }, [slides.length]);
 
+  // Racconto con lo scroll, solo da computer: mentre la pagina scorre (senza bloccarla) la foto o
+  // il video si allontanano rimpicciolendosi e il testo sale più in fretta, sopra di loro.
+  useEffect(() => {
+    if (prefersLightMotion()) return;
+    const { gsap } = getGsapScrollTrigger();
+    const ctx = gsap.context(() => {
+      const scrollTrigger = { trigger: sectionRef.current, start: "top top", end: "bottom top", scrub: true };
+      gsap.to(mediaRef.current, { scale: 0.85, ease: "none", scrollTrigger });
+      gsap.to(contentRef.current, { yPercent: -25, ease: "none", scrollTrigger });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
   const slide = slides[active] ?? slides[0]!;
+  // Da computer la card segue il video: cambia quando cambia la clip, con le parole del creator.
+  const video = videoMode !== "none" ? (videos[videoIndex] ?? null) : null;
 
   return (
-    <section className="relative overflow-hidden">
+    <section ref={sectionRef} className="relative overflow-hidden">
       {/* Foto cinematografica: come oggi angoli vivi/piena larghezza su mobile, come una card
        * (angoli arrotondati + margine laterale) da desktop in su, stile Netflix — stessa altezza
        * di prima, cambia solo la forma del contenitore. Da desktop in su la sezione è spostata in
        * basso di md:mt-12 (~altezza dell'header) così la card inizia subito sotto l'header invece
-       * di iniziare dietro di lui: su mobile l'header resta sovrapposto come oggi. */}
-      <div className="absolute inset-0 md:inset-x-[4.43%] md:overflow-hidden md:rounded-2xl">
+       * di iniziare dietro di lui: su mobile l'header resta sovrapposto come oggi. Da computer la
+       * clip della Hero copre le foto (che restano sotto come riserva). */}
+      <div ref={mediaRef} className="absolute inset-0 md:inset-x-[4.43%] md:overflow-hidden md:rounded-2xl">
         {slides.map((item, index) => (
           <Image
             key={item.alt}
@@ -62,6 +101,15 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
             }`}
           />
         ))}
+        {video && videoMode !== "none" && (
+          <HeroBackgroundVideo
+            clips={videos}
+            index={videoIndex}
+            mode={videoMode}
+            muted={muted}
+            onEnded={() => setVideoIndex((prev) => (prev + 1) % videos.length)}
+          />
+        )}
         {/* Trattamento cinematografico: grana pellicola sulla foto e veli scuri per leggere il
          * testo a sinistra (classi hero-* in app/globals.css). */}
         <div className="hero-grain absolute inset-0" aria-hidden="true" />
@@ -69,13 +117,24 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
         <div className="hero-scrim absolute inset-0" />
         <div className="hero-side-fade absolute inset-0" />
         <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
+        {/* Audio della clip, in alto a destra: parte sempre muta, si attiva solo con un clic. */}
+        {video && videoMode === "play" && (
+          <IconButton
+            aria-label={muted ? "Turn sound on" : "Turn sound off"}
+            onClick={() => setMuted((prev) => !prev)}
+            className="absolute top-4 right-4"
+          >
+            {muted ? <VolumeX className="h-4 w-4" aria-hidden="true" /> : <Volume2 className="h-4 w-4" aria-hidden="true" />}
+          </IconButton>
+        )}
       </div>
 
       {/* Margine laterale allineato alla foto rientrata della Hero (md:inset-x-[4.43%]). */}
       <div
+        ref={contentRef}
         className={cn(
           PAGE_WIDTH.wideCover,
-          "relative grid gap-5 pt-16 pb-12 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto_auto] md:gap-x-8 md:gap-y-3 md:pt-6 md:pb-12"
+          "pointer-events-none relative grid gap-5 pt-16 pb-12 *:pointer-events-auto md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto_auto] md:gap-x-8 md:gap-y-3 md:pt-6 md:pb-12"
         )}
       >
         <div className="max-w-lg md:col-start-1 md:row-start-1">
@@ -90,10 +149,10 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
             unoptimized
             className="mt-1 w-72 origin-left scale-x-95 sm:w-80 lg:w-96"
           />
-          <p className="mt-[0.675rem] max-w-[19ch] text-hero-headline leading-tight font-semibold text-balance">
-            Because the destination is only part of{" "}
-            <span className="text-ember">the story.</span>
-          </p>
+          <HeroPayoff
+            index={payoffIndex}
+            className="mt-[0.675rem] max-w-[26ch] text-hero-headline leading-tight font-semibold text-balance"
+          />
           <p className="mt-2 max-w-sm text-hero-subhead leading-relaxed text-ink-muted">
             Every journey has a beginning, every step has a story, and every story can inspire
             someone to start their own.
@@ -202,19 +261,16 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
          * (cliccabile, porta alla sua pagina), altrimenti la citazione demo. */}
         <div className="relative flex md:col-start-2 md:row-start-3 md:justify-end md:self-start">
           <div className="w-full md:max-w-[22rem]">
-            <HeroSlideCard slide={slide} />
+            {video ? <HeroVideoCard video={video} /> : <HeroSlideCard slide={slide} />}
             <div className="mt-2.5 flex items-center gap-2 md:justify-end">
-              {slides.map((item, index) => (
-                <button
-                  key={item.alt}
-                  type="button"
-                  aria-label={`Show journey ${index + 1}`}
-                  onClick={() => setActive(index)}
-                  className={`h-1.5 rounded-full transition-all duration-500 ${
-                    index === active ? "w-7 bg-ember" : "w-1.5 bg-ink-faint hover:bg-ink-muted"
-                  }`}
-                />
-              ))}
+              {video
+                ? videos.length > 1 &&
+                  videos.map((item, index) => (
+                    <HeroDot key={item.src} label={`Show video ${index + 1}`} current={index === videoIndex} onClick={() => setVideoIndex(index)} />
+                  ))
+                : slides.map((item, index) => (
+                    <HeroDot key={item.alt} label={`Show journey ${index + 1}`} current={index === active} onClick={() => setActive(index)} />
+                  ))}
             </div>
           </div>
         </div>
@@ -238,6 +294,33 @@ export function Hero({ slides, stories, ownStory }: HeroProps) {
         />
       )}
     </section>
+  );
+}
+
+function HeroDot({ label, current, onClick }: { label: string; current: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className={`h-1.5 rounded-full transition-all duration-500 ${current ? "w-7 bg-ember" : "w-1.5 bg-ink-faint hover:bg-ink-muted"}`}
+    />
+  );
+}
+
+/** Card del video in corso: quello che il creator ha scritto sull'episodio da cui viene la clip
+ * (categoria del Journey, titolo e didascalia dell'episodio), cliccabile verso l'episodio. */
+function HeroVideoCard({ video }: { video: HeroVideo }) {
+  return (
+    <Link
+      href={`/journeys/${video.journeyId}/episodes/${video.episodeId}`}
+      className={cn(PANEL_GLASS, "block rounded-xl p-3.5 shadow-glow transition-colors duration-300 hover:border-ember")}
+    >
+      {video.category && <p className="text-hero-tag uppercase tracking-[0.2em] text-ember">{video.category}</p>}
+      <p className="mt-1.5 text-sm leading-snug font-semibold text-ink">{video.episodeTitle}</p>
+      {video.caption && <p className="mt-1 line-clamp-2 text-sm leading-snug text-ink-muted">{video.caption}</p>}
+      <p className="mt-1.5 text-hero-caption text-ink-muted">by {video.creatorName}</p>
+    </Link>
   );
 }
 

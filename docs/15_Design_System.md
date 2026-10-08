@@ -7,6 +7,7 @@ related_docs:
   - 00_PROJECT_CONTEXT
   - 06_User_Experience
   - 14_UI_Pages
+  - 21_Motion_Guidelines
 ---
 
 # Design System
@@ -87,6 +88,10 @@ Le animazioni devono essere essenziali e funzionali.
 Ogni transizione deve migliorare la comprensione dell'interfaccia senza rallentare l'esperienza.
 
 Il drag & drop deve risultare naturale, fluido e immediatamente comprensibile.
+
+Durate, tipi di movimento, divieti e comportamento su telefono sono fissati nella Regola di Movimento (`21_Motion_Guidelines.md`), approvata da Manuel il 2026-10-07 e aggiornata il 2026-10-09 (sfondo di sabbia dorata 3D).
+
+**Carattere tipografico**: Satoshi (Fontshare, licenza gratuita anche per uso commerciale), scelto da Manuel il 2026-10-09 al posto di Inter. Il file variabile è salvato nel progetto (`app/fonts/Satoshi-Variable.woff2`, pesi da 300 a 900) e caricato con `next/font/local` in `app/layout.tsx`. Il collegamento a `--font-sans` sta in un blocco `@theme inline` di `app/globals.css`: dentro un `@theme` normale la variabile del carattere non veniva trovata e il sito ricadeva sul carattere di sistema (era già successo con Inter, che non si è mai visto davvero).
 
 ## Identità visiva
 

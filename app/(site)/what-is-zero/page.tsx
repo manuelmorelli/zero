@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
-import { Reveal } from "@/components/common/Reveal";
+import { ScrollStory } from "@/components/common/ScrollStory";
 import { DisplayTitle, SectionTitle } from "@/components/ui/heading";
 import { PANEL_ACCENT } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
@@ -81,71 +81,63 @@ function BulletList({ items }: { items: Bullet[] }) {
 
 export default function WhatIsZeroPage() {
   return (
-    <div className="min-h-screen bg-bg text-ink">
+    <div className="min-h-screen text-ink">
       <main className={cn(PAGE_WIDTH.wide, "relative max-w-3xl pb-10 pt-16 md:pt-20")}>
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[28rem] w-[46rem] -translate-x-1/2 rounded-full bg-ember-soft blur-[120px]"
-        />
-        <Reveal>
-          <p className="inline-flex items-center gap-2 rounded-full border border-ember-line bg-ember-soft px-3 py-1 text-sm uppercase tracking-[0.32em] text-ember">
-            <Sparkles className="h-3 w-3" aria-hidden="true" />
-            Every journey starts from
-          </p>
-          <DisplayTitle className="mt-2">
-            What is{" "}
-            <span className="text-ember">
-              Zero
-            </span>
-          </DisplayTitle>
-        </Reveal>
+        <ScrollStory>
+          <div data-story="title">
+            <p className="inline-flex items-center gap-2 rounded-full border border-ember-line bg-ember-soft px-3 py-1 text-sm uppercase tracking-[0.32em] text-ember">
+              <Sparkles className="h-3 w-3" aria-hidden="true" />
+              Every journey starts from
+            </p>
+            <DisplayTitle className="mt-2">
+              What is <span className="text-ember">Zero</span>
+            </DisplayTitle>
+          </div>
 
-        <div className="mt-5 space-y-3">
-          {paragraphs.map((text) =>
-            highlighted.has(text) ? (
-              <p
-                key={text.slice(0, 40)}
-                className={cn(PANEL_ACCENT, "text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}
-              >
-                {text}
-              </p>
-            ) : (
-              <p key={text.slice(0, 40)} className="text-base leading-relaxed text-ink">
-                {text}
-              </p>
-            )
-          )}
-          <p className={cn(PANEL_ACCENT, "relative overflow-hidden text-2xl font-black tracking-tight text-ink sm:text-3xl")}>
-            Every Journey Starts From{" "}
-            <span className="text-ember">
-              Zero.
-            </span>
-          </p>
-        </div>
+          {/* Il manifesto si racconta mentre si scorre: le righe salgono una dopo l'altra, le frasi
+           * arancioni entrano di lato, l'ultima frase cresce fino a riempire lo spazio. */}
+          <div className="mt-5 space-y-3">
+            {paragraphs.map((text) =>
+              highlighted.has(text) ? (
+                <p
+                  key={text.slice(0, 40)}
+                  data-story="slide"
+                  className={cn(PANEL_ACCENT, "text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}
+                >
+                  {text}
+                </p>
+              ) : (
+                <p key={text.slice(0, 40)} data-story="lines" className="text-base leading-relaxed text-ink">
+                  {text}
+                </p>
+              )
+            )}
+            <p
+              data-story="finale"
+              className={cn(PANEL_ACCENT, "relative overflow-hidden text-2xl font-black tracking-tight text-ink sm:text-3xl")}
+            >
+              Every Journey Starts From <span className="text-ember">Zero.</span>
+            </p>
+          </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <Reveal>
+          <div data-story="rise" className="mt-6 grid gap-4 sm:grid-cols-2">
             <section className={cn(PANEL_ACCENT, "h-full")}>
               <SectionTitle>What Makes Zero Different</SectionTitle>
               <BulletList items={different} />
             </section>
-          </Reveal>
-          <Reveal delayMs={80}>
             <section className={cn(PANEL_ACCENT, "h-full")}>
               <SectionTitle>How It Works</SectionTitle>
               <BulletList items={howItWorks} />
             </section>
-          </Reveal>
-        </div>
+          </div>
 
-        <Reveal>
           <p className="mt-5 text-sm text-ink">
             Curious how the algorithm actually decides what to show?{" "}
             <Link href="/how-it-works#algorithm" className="font-semibold text-ember hover:underline">
               Know the Algorithm. Know Zero.
             </Link>
           </p>
-        </Reveal>
+        </ScrollStory>
 
         <div className="mt-5 flex flex-wrap gap-3">
           <ButtonPrimary href="/">Explore Journeys</ButtonPrimary>

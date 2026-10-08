@@ -51,8 +51,6 @@
   --shadow-glow-strong: 0 0 30px -6px oklch(76.9% 0.188 70.08 / 85%);
   --shadow-card: 0 20px 40px -22px oklch(0% 0 0 / 70%);
 
-  /* Un'unica famiglia di font, pesi diversi */
-  --font-sans: var(--font-inter);
 
   /* Manopola "tutto il resto" (spazi/layout): stesso valore usato sotto su html. */
   --layout-scale: 0.9;
@@ -86,6 +84,13 @@
   --text-hero-subhead: calc(0.96rem / var(--layout-scale) * var(--text-scale));
   --text-hero-caption: calc(0.65rem / var(--layout-scale) * var(--text-scale));
   --text-hero-tag: calc(0.6rem / var(--layout-scale) * var(--text-scale));
+}
+
+/* Un'unica famiglia di font (Satoshi), pesi diversi. In un blocco "inline" perché la variabile
+ * --font-satoshi la crea next/font sul <body>: dentro @theme normale verrebbe letta su :root, dove
+ * non esiste ancora, e il sito ricadrebbe sul carattere di sistema (era già successo con Inter). */
+@theme inline {
+  --font-sans: var(--font-satoshi);
 }
 
 html {
@@ -196,6 +201,12 @@ body {
   100% {
     transform: scale(1.14);
   }
+}
+
+/* Sabbia su telefono e tablet (components/common/SandBackground.tsx): un fotogramma fermo del
+ * fiume 3D, al posto dell'animazione che peserebbe sulla batteria. */
+.sand-still {
+  background: url("/images/sand-still.jpg") center / cover no-repeat;
 }
 
 /* Grana pellicola solo sulla foto/video della Hero (tocco cinematografico). La grana su tutto il
