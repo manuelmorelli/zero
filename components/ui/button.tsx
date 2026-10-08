@@ -20,6 +20,9 @@ export const BUTTON_VARIANTS = {
   danger: `${BASE} bg-danger px-5 py-2.5 text-bg hover:opacity-90`,
   /** Bottone tondo con sola icona (chiudi, scorri, menu). */
   icon: "grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border bg-surface text-ink-muted transition-colors hover:border-ember-line hover:text-ember disabled:pointer-events-none disabled:opacity-50",
+  /** Bottone tondo con bordo arancione acceso sempre, non solo all'hover (icon normale):
+   * per l'assistente AI nell'header, deve farsi notare anche da fermo. */
+  mascot: "grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-ember bg-surface shadow-glow transition-transform hover:scale-110 active:scale-95",
   /** Azione testuale senza forma di bottone (es. "Mark All as Read", "View all"). */
   text: "inline-flex items-center gap-1.5 text-sm font-semibold text-ink-muted transition-colors hover:text-ember disabled:pointer-events-none disabled:opacity-50",
 } as const;
