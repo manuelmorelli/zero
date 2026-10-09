@@ -183,6 +183,20 @@ body {
   background-image: linear-gradient(to bottom right, var(--color-surface-2), var(--color-surface-2), #000);
 }
 
+/* Sagoma di caricamento (skeleton): invisibile per i primi 250ms, poi compare con una
+ * dissolvenza di 0,4s (comparsa "media" di docs/21_Motion_Guidelines.md). Se la pagina è pronta
+ * prima dei 250ms (il caso più comune da locale/produzione veloce) non si vede alcun lampo
+ * grigio, identico a prima; solo i caricamenti davvero lenti mostrano la sagoma. */
+@keyframes skeleton-reveal {
+  to {
+    opacity: 1;
+  }
+}
+.skeleton-reveal {
+  opacity: 0;
+  animation: skeleton-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
+}
+
 /* Righe scorrevoli stile Netflix: scrollbar nascosta, lo scroll resta utilizzabile */
 .no-scrollbar {
   scrollbar-width: none;
