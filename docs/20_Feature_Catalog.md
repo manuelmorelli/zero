@@ -60,6 +60,7 @@ Intorno ai contenuti c'è un livello social completo:
 - **Messaggi privati**: una conversazione uno a uno si sblocca appena una delle due persone segue l'altra (non serve che sia reciproco).
 - **Notifiche**: nuovo follower, nuovo episodio o Journey di chi si segue, nuove offerte Community, risposte alle domande poste.
 - **Trusty**: la reazione "mi fido di questo contenuto", che si sblocca solo arrivando alla fine di un episodio, e che alimenta il punteggio di fiducia del creator.
+- **Ember**: l'assistente AI che spiega come funziona Zero, raggiungibile dal pulsante mascotte nell'header, visibile a chiunque anche senza login. Risponde solo sulla base dei contenuti veri del sito (pagine pubbliche, catalogo funzionalità, mappa delle pagine), senza accesso a internet e senza inventare: se non sa qualcosa lo dice onestamente. Spiega soltanto, non esegue mai azioni al posto di chi lo usa e non rivela le percentuali esatte dell'algoritmo o del Trust Score, che restano riservate. È un assistente diverso da quello della sezione Community, che aiuta invece i creator a scrivere le proprie offerte.
 
 ## Cosa può fare oggi un creator
 
