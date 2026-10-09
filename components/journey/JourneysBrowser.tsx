@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { SearchIcon } from "@/components/search/SearchForm";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
+import { Reveal } from "@/components/common/Reveal";
 import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
 import { JourneyCard } from "@/components/journey/JourneyCard";
 import { WildcardJourneyCard } from "@/components/journey/WildcardJourneyCard";
@@ -53,14 +54,16 @@ export function JourneysBrowser({ rows }: JourneysBrowserProps) {
       )}
 
       {filteredRows.map((row) => (
-        <HorizontalScrollRow key={row.category} id={row.slug} title={row.category}>
-          {row.wildcardJourneyId && (
-            <WildcardJourneyCard journeyId={row.wildcardJourneyId} className={CARD_ROW_ITEM.journey} />
-          )}
-          {row.journeys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} className={CARD_ROW_ITEM.journey} />
-          ))}
-        </HorizontalScrollRow>
+        <Reveal key={row.category}>
+          <HorizontalScrollRow id={row.slug} title={row.category} titleHref={`/categories/${row.slug}`}>
+            {row.wildcardJourneyId && (
+              <WildcardJourneyCard journeyId={row.wildcardJourneyId} className={CARD_ROW_ITEM.journey} />
+            )}
+            {row.journeys.map((journey) => (
+              <JourneyCard key={journey.id} journey={journey} className={CARD_ROW_ITEM.journey} />
+            ))}
+          </HorizontalScrollRow>
+        </Reveal>
       ))}
     </div>
   );

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
-import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
+import { JOURNEY_CATEGORIES, categoryToSlug, type JourneyCategory } from "@/lib/constants/categories";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { resolveAvatarUrl, withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { getStableWildcardPicks } from "@/lib/discovery/wildcard";
@@ -74,4 +74,39 @@ export async function getJourneysByCategory(): Promise<JourneyCategoryRow[]> {
     });
   }
   return rows;
+}
+
+/**
+ * Tutti i Journey live di una singola categoria, senza il limite di 12 della riga scorrevole di
+ * /journeys: per la pagina dedicata /categories/[slug] (titolo di categoria cliccabile).
+ */
+export async function getJourneysInCategory(category: JourneyCategory): Promise<JourneyCardData[]> {
+  const journeys = await prisma.journey.findMany({
+    where: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null, category },
+    orderBy: { publishedAt: "desc" },
+    include: { creator: { include: { user: { select: { avatarUrl: true } } } } },
+  });
+
+  const publishedIds = journeys.filter((journey) => journey.status === "PUBLISHED").map((journey) => journey.id);
+  await ensureFreshJourneyScores(publishedIds);
+  const freshScores = publishedIds.length > 0
+    ? await prisma.journey.findMany({ where: { id: { in: publishedIds } }, select: { id: true, journeyScore: true } })
+    : [];
+  const scoreById = new Map(freshScores.map((journey) => [journey.id, journey.journeyScore]));
+
+  const resolved = await withResolvedCoverUrls(journeys);
+
+  return Promise.all(
+    resolved.map(async (journey) => ({
+      id: journey.id,
+      title: journey.title,
+      coverUrl: journey.coverUrl,
+      category: journey.category,
+      journeyScore: scoreById.get(journey.id),
+      creator: {
+        displayName: journey.creator.displayName,
+        avatarUrl: await resolveAvatarUrl(journey.creator.user.avatarUrl),
+      },
+    }))
+  );
 }

@@ -12,7 +12,15 @@ import { DESKTOP_QUERY, REDUCED_MOTION_QUERY } from "@/hooks/useRichMotion";
  */
 
 /** Pagine con la sabbia: Home, liste, profili e pagine di presentazione. */
-const SAND_ROUTES = [/^\/$/, /^\/journeys$/, /^\/journeyers$/, /^\/profile\/[^/]+$/, /^\/what-is-zero$/, /^\/how-it-works$/];
+const SAND_ROUTES = [
+  /^\/$/,
+  /^\/journeys$/,
+  /^\/categories\/[^/]+$/,
+  /^\/journeyers$/,
+  /^\/profile\/[^/]+$/,
+  /^\/what-is-zero$/,
+  /^\/how-it-works$/,
+];
 
 type SandMode = "none" | "still-image" | "still-frame" | "live";
 

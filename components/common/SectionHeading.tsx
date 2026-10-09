@@ -7,12 +7,15 @@ import { BUTTON_VARIANTS } from "@/components/ui/button";
 export function SectionHeading({
   icon,
   title,
+  titleHref,
   subtitle,
   viewAllHref,
   page,
 }: {
   icon?: React.ReactNode;
   title: string;
+  /** Rende il titolo stesso un link (es. categoria -> pagina dedicata), al posto di "View All". */
+  titleHref?: string;
   subtitle?: string;
   viewAllHref?: string;
   page?: boolean;
@@ -23,7 +26,13 @@ export function SectionHeading({
       <div className="flex min-w-0 items-start gap-3">
         {icon && <span className="mt-0.5 shrink-0 text-ember">{icon}</span>}
         <div className="min-w-0">
-          <Title className="truncate">{title}</Title>
+          {titleHref ? (
+            <Link href={titleHref} className="group">
+              <Title className="truncate transition-all duration-300 group-hover:-translate-y-0.5 group-hover:text-ember">{title}</Title>
+            </Link>
+          ) : (
+            <Title className="truncate">{title}</Title>
+          )}
           {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}
         </div>
       </div>
