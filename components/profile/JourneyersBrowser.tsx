@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { SearchIcon } from "@/components/search/SearchForm";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
+import { Reveal } from "@/components/common/Reveal";
 import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
 import { JourneyerCard } from "@/components/profile/JourneyerCard";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
@@ -65,22 +66,26 @@ export function JourneyersBrowser({ newJourneyers, rows }: JourneyersBrowserProp
       )}
 
       {filteredNewJourneyers.length > 0 && (
-        <HorizontalScrollRow
-          title="New Journeyers"
-          subtitle="Journeyers whose Journey is in Discovery Phase right now."
-        >
-          {filteredNewJourneyers.map((journeyer) => (
-            <JourneyerCard key={journeyer.id} journeyer={journeyer} className={CARD_ROW_ITEM.person} />
-          ))}
-        </HorizontalScrollRow>
+        <Reveal>
+          <HorizontalScrollRow
+            title="New Journeyers"
+            subtitle="Journeyers whose Journey is in Discovery Phase right now."
+          >
+            {filteredNewJourneyers.map((journeyer) => (
+              <JourneyerCard key={journeyer.id} journeyer={journeyer} className={CARD_ROW_ITEM.person} />
+            ))}
+          </HorizontalScrollRow>
+        </Reveal>
       )}
 
       {filteredRows.map((row) => (
-        <HorizontalScrollRow key={row.category} id={row.slug} title={row.category}>
-          {row.journeyers.map((journeyer) => (
-            <JourneyerCard key={journeyer.id} journeyer={journeyer} className={CARD_ROW_ITEM.person} />
-          ))}
-        </HorizontalScrollRow>
+        <Reveal key={row.category}>
+          <HorizontalScrollRow id={row.slug} title={row.category}>
+            {row.journeyers.map((journeyer) => (
+              <JourneyerCard key={journeyer.id} journeyer={journeyer} className={CARD_ROW_ITEM.person} />
+            ))}
+          </HorizontalScrollRow>
+        </Reveal>
       ))}
     </div>
   );

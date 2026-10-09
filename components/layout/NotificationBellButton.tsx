@@ -67,7 +67,7 @@ export function NotificationBellButton({ unreadCount, notifications }: Notificat
             role="menu"
             aria-label="Notifications panel"
             style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 7.75rem)" }}
-            className="fixed right-5 z-40 flex max-h-[70vh] w-full max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xl"
+            className="fixed right-5 z-40 flex max-h-[70vh] w-full max-w-sm origin-bottom-right flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xl animate-[panel-in_300ms_cubic-bezier(0.16,1,0.3,1)]"
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <p className="text-sm font-semibold uppercase tracking-wider text-ink-faint">Notifications</p>

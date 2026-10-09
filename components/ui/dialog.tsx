@@ -10,7 +10,10 @@ const DialogTrigger = DialogPrimitive.Trigger;
 function DialogOverlay({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
   return (
     <DialogPrimitive.Overlay
-      className={cn("fixed inset-0 z-50 bg-black/70", className)}
+      className={cn(
+        "fixed inset-0 z-50 bg-black/70 data-[state=open]:animate-[overlay-in_250ms_cubic-bezier(0.16,1,0.3,1)] data-[state=closed]:animate-[overlay-out_200ms_cubic-bezier(0.16,1,0.3,1)]",
+        className
+      )}
       {...props}
     />
   );
@@ -26,7 +29,7 @@ function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Content
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid max-h-[85vh] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-border bg-surface shadow-2xl shadow-black/50",
+          "fixed left-1/2 top-1/2 z-50 grid max-h-[85vh] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-border bg-surface shadow-2xl shadow-black/50 data-[state=open]:animate-[dialog-in_300ms_cubic-bezier(0.16,1,0.3,1)] data-[state=closed]:animate-[dialog-out_200ms_cubic-bezier(0.16,1,0.3,1)]",
           className
         )}
         {...props}

@@ -203,6 +203,43 @@ body {
   }
 }
 
+/* Finestre, menu e pannelli che compaiono/scompaiono (modali, menu a tendina, notifiche, Ember):
+ * dissolvenza + leggera crescita, curva della Regola di Movimento (21_Motion_Guidelines.md). */
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes overlay-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+}
+@keyframes dialog-out {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes panel-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
 /* Sabbia su telefono e tablet (components/common/SandBackground.tsx): un fotogramma fermo del
  * fiume 3D, al posto dell'animazione che peserebbe sulla batteria. */
 .sand-still {

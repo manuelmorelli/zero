@@ -69,7 +69,7 @@ export function TrustyButton({
         }
         className={cn(
           isLiked ? "border-ember-line bg-ember-soft text-ember" : CHIP,
-          "disabled:cursor-not-allowed disabled:opacity-40"
+          "transition-all duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
         )}
       >
         <ShieldCheck className="h-3.5 w-3.5" fill={isLiked ? "currentColor" : "none"} aria-hidden="true" />

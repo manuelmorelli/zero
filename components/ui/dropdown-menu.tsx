@@ -22,7 +22,7 @@ function DropdownMenuContent({
       <DropdownMenuPrimitive.Content
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-40 overflow-hidden rounded-lg border border-border bg-surface p-1 shadow-2xl shadow-black/50",
+          "z-50 min-w-40 overflow-hidden rounded-lg border border-border bg-surface p-1 shadow-2xl shadow-black/50 origin-[var(--radix-dropdown-menu-content-transform-origin)] data-[state=open]:animate-[panel-in_250ms_cubic-bezier(0.16,1,0.3,1)] data-[state=closed]:animate-[panel-out_180ms_cubic-bezier(0.16,1,0.3,1)]",
           className
         )}
         {...props}

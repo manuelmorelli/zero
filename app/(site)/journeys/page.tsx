@@ -6,6 +6,7 @@ import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { PageTitle } from "@/components/ui/heading";
 import { NOTICE } from "@/components/ui/panel";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
+import { Reveal } from "@/components/common/Reveal";
 import { JourneyCard } from "@/components/journey/JourneyCard";
 import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
 
@@ -21,11 +22,13 @@ export default async function JourneysPage() {
 
         <div className="mt-8 space-y-10">
           {mostCompleted.length > 0 && (
-            <HorizontalScrollRow title="Most Completed" subtitle="Journeys viewers watch all the way through.">
-              {mostCompleted.map((journey) => (
-                <JourneyCard key={journey.id} journey={journey} className={CARD_ROW_ITEM.journey} />
-              ))}
-            </HorizontalScrollRow>
+            <Reveal>
+              <HorizontalScrollRow title="Most Completed" subtitle="Journeys viewers watch all the way through.">
+                {mostCompleted.map((journey) => (
+                  <JourneyCard key={journey.id} journey={journey} className={CARD_ROW_ITEM.journey} />
+                ))}
+              </HorizontalScrollRow>
+            </Reveal>
           )}
 
           {rows.length === 0 ? (
