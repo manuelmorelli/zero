@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 import { getFollowedCreatorIds, getOwnCreatorId, getFollowedCategories } from "@/lib/discovery/follows";
-import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
+import { computeFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { withResolvedJourneyCardUrls } from "@/lib/media/resolveCoverUrl";
 import { isAlgorithmicRankingUnlocked } from "@/lib/discovery/algorithmUnlock";
 
@@ -34,8 +34,13 @@ export async function getRecommendedJourneys({
   interests = [],
   limit = 5,
 }: GetRecommendedJourneysParams): Promise<JourneyCardData[]> {
-  const followedCreatorIds = userId ? await getFollowedCreatorIds(userId) : [];
-  const ownCreatorId = userId ? await getOwnCreatorId(userId) : null;
+  // Le tre domande qui sotto non dipendono l'una dall'altra: partono insieme invece che in fila,
+  // ognuna verso il database risparmia tempo (vedi 96_Home_Design_Refresh_Status.md).
+  const [followedCreatorIds, ownCreatorId, rankingUnlocked] = await Promise.all([
+    userId ? getFollowedCreatorIds(userId) : Promise.resolve<string[]>([]),
+    userId ? getOwnCreatorId(userId) : Promise.resolve<string | null>(null),
+    isAlgorithmicRankingUnlocked(),
+  ]);
 
   const excludedCreatorIds = ownCreatorId
     ? [...followedCreatorIds, ownCreatorId]
@@ -43,7 +48,6 @@ export async function getRecommendedJourneys({
 
   const selected: JourneyWithCreator[] = [];
   const selectedIds = new Set<string>();
-  const rankingUnlocked = await isAlgorithmicRankingUnlocked();
 
   const followedCategories = followedCreatorIds.length > 0
     ? await getFollowedCategories(followedCreatorIds)
@@ -90,13 +94,24 @@ async function findPublishedJourneys(filters: {
     ...(filters.categories ? { category: { in: filters.categories } } : {}),
   };
 
-  const candidateIds = await prisma.journey.findMany({ where, select: { id: true } });
-  await ensureFreshJourneyScores(candidateIds.map((journey) => journey.id));
-
-  return prisma.journey.findMany({
+  const journeys = await prisma.journey.findMany({
     where,
     include: { creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } } },
   });
+
+  // Punteggio calcolato subito in memoria per chi è scaduto (invece di salvarlo e rileggerlo dal
+  // database): stesso valore che si otterrebbe rileggendo, senza il giro a vuoto.
+  const freshScores = await computeFreshJourneyScores(
+    journeys.map((journey) => ({
+      id: journey.id,
+      publishedAt: journey.publishedAt,
+      journeyScore: journey.journeyScore,
+      journeyScoreUpdatedAt: journey.journeyScoreUpdatedAt,
+      followersCount: journey.creator.user._count.followers,
+    }))
+  );
+
+  return journeys.map((journey) => ({ ...journey, journeyScore: freshScores.get(journey.id) ?? journey.journeyScore }));
 }
 
 // "Spinta extra" del Journey Score (08_Algorithm.md): dentro il gruppo già selezionato per

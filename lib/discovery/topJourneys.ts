@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
+import { computeFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { isAlgorithmicRankingUnlocked } from "@/lib/discovery/algorithmUnlock";
 
@@ -29,31 +29,40 @@ export async function getTopJourneys({
   limit = 10,
   interests = [],
 }: { limit?: number; interests?: string[] } = {}): Promise<TopJourneyItem[]> {
-  const candidateIds = await prisma.journey.findMany({
-    where: { status: "PUBLISHED", deletedAt: null },
-    select: { id: true },
-    take: 50,
-    orderBy: { publishedAt: "desc" },
-  });
-  await ensureFreshJourneyScores(candidateIds.map((journey) => journey.id));
-  const rankingUnlocked = await isAlgorithmicRankingUnlocked();
-
-  const journeys = await prisma.journey.findMany({
-    where: { id: { in: candidateIds.map((journey) => journey.id) } },
-    include: {
-      creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } },
-      chapters: {
-        where: { deletedAt: null },
-        select: { _count: { select: { episodes: { where: { deletedAt: null, publishedAt: { not: null } } } } } },
+  // Le due domande qui sotto non dipendono l'una dall'altra: partono insieme invece che in fila.
+  const [journeys, rankingUnlocked] = await Promise.all([
+    prisma.journey.findMany({
+      where: { status: "PUBLISHED", deletedAt: null },
+      take: 50,
+      orderBy: { publishedAt: "desc" },
+      include: {
+        creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } },
+        chapters: {
+          where: { deletedAt: null },
+          select: { _count: { select: { episodes: { where: { deletedAt: null, publishedAt: { not: null } } } } } },
+        },
       },
-    },
-  });
+    }),
+    isAlgorithmicRankingUnlocked(),
+  ]);
+
+  // Punteggio calcolato subito in memoria per chi è scaduto, invece di salvarlo e rileggerlo dal
+  // database: stesso valore che si otterrebbe rileggendo, senza il giro a vuoto.
+  const freshScores = await computeFreshJourneyScores(
+    journeys.map((journey) => ({
+      id: journey.id,
+      publishedAt: journey.publishedAt,
+      journeyScore: journey.journeyScore,
+      journeyScoreUpdatedAt: journey.journeyScoreUpdatedAt,
+      followersCount: journey.creator.user._count.followers,
+    }))
+  );
 
   // Sotto ALGORITHMIC_RANKING_MIN_PUBLISHED_JOURNEYS il catalogo è troppo piccolo perché un
   // ranking per punteggio significhi qualcosa (vedi lib/discovery/algorithmUnlock.ts): si mostra
   // invece l'ordine cronologico, come "Discovering Now".
   const rankedJourneys = rankingUnlocked
-    ? [...journeys].sort((a, b) => b.journeyScore - a.journeyScore)
+    ? [...journeys].sort((a, b) => (freshScores.get(b.id) ?? 0) - (freshScores.get(a.id) ?? 0))
     : [...journeys].sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
 
   const sorted = rankedJourneys.map((journey) => ({
@@ -65,7 +74,7 @@ export async function getTopJourneys({
     creatorAvatarUrl: journey.creator.user.avatarUrl,
     followersCount: journey.creator.user._count.followers,
     episodesCount: journey.chapters.reduce((sum, chapter) => sum + chapter._count.episodes, 0),
-    journeyScore: journey.journeyScore,
+    journeyScore: freshScores.get(journey.id) ?? journey.journeyScore,
   }));
 
   if (interests.length === 0) return resolveTopJourneyUrls(sorted.slice(0, limit));

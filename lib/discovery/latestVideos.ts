@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
-import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
+import { computeFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 
 export type LatestVideoItem = {
@@ -41,7 +41,11 @@ export async function getLatestVideos({
     orderBy: { createdAt: "desc" },
     take: pool,
     include: {
-      journey: { include: { creator: { include: { user: { select: { avatarUrl: true } } } } } },
+      journey: {
+        include: {
+          creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } },
+        },
+      },
     },
   });
 
@@ -58,19 +62,19 @@ export async function getLatestVideos({
 
   // Il punteggio mostrato è quello del Journey (gli episodi non ne hanno uno proprio): solo per
   // i Journey già PUBLISHED, coerente con "Discovery Phase non partecipa a questo punteggio".
-  const publishedJourneyIds = [
-    ...new Set(
-      selected.filter((episode) => episode.journey.status === "PUBLISHED").map((episode) => episode.journey.id)
-    ),
-  ];
-  await ensureFreshJourneyScores(publishedJourneyIds);
-  const freshScores = publishedJourneyIds.length > 0
-    ? await prisma.journey.findMany({
-        where: { id: { in: publishedJourneyIds } },
-        select: { id: true, journeyScore: true },
-      })
-    : [];
-  const scoreByJourneyId = new Map(freshScores.map((journey) => [journey.id, journey.journeyScore]));
+  // Calcolato subito in memoria per chi è scaduto, invece di salvarlo e rileggerlo dal database.
+  const publishedJourneys = new Map(
+    selected.filter((episode) => episode.journey.status === "PUBLISHED").map((episode) => [episode.journey.id, episode.journey])
+  );
+  const scoreByJourneyId = await computeFreshJourneyScores(
+    [...publishedJourneys.values()].map((journey) => ({
+      id: journey.id,
+      publishedAt: journey.publishedAt,
+      journeyScore: journey.journeyScore,
+      journeyScoreUpdatedAt: journey.journeyScoreUpdatedAt,
+      followersCount: journey.creator.user._count.followers,
+    }))
+  );
 
   const items = selected.map((episode) => ({
     episodeId: episode.id,

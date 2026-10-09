@@ -80,6 +80,47 @@ export async function ensureFreshJourneyScores(journeyIds: string[]): Promise<vo
   );
 }
 
+export type JourneyScoreRow = {
+  id: string;
+  publishedAt: Date | null;
+  journeyScore: number;
+  journeyScoreUpdatedAt: Date | null;
+  followersCount: number;
+};
+
+/**
+ * Come ensureFreshJourneyScores, ma per chi ha già in mano le righe Journey (una query sola
+ * invece di due): restituisce subito la mappa dei punteggi, freschi per i Journey scaduti, invece
+ * di dover rileggere dal database dopo il salvataggio. Usata dalle sezioni della Home
+ * (Recommended, Top Journeys, Latest Videos) per non raddoppiare i viaggi verso il database;
+ * ensureFreshJourneyScores resta invariata per gli altri usi (ricerca, Trust Score, Continue
+ * Watching...). Il salvataggio dei punteggi ricalcolati avviene in background, senza far
+ * aspettare chi guarda la pagina: stessa tolleranza di 24 ore di sopra.
+ */
+export async function computeFreshJourneyScores(rows: JourneyScoreRow[]): Promise<Map<string, number>> {
+  const scores = new Map(rows.map((row) => [row.id, row.journeyScore]));
+
+  const staleThreshold = new Date(Date.now() - SCORE_STALE_AFTER_MS);
+  const stale = rows.filter((row) => !row.journeyScoreUpdatedAt || row.journeyScoreUpdatedAt < staleThreshold);
+  if (stale.length === 0) return scores;
+
+  const freshScores = await computeJourneyScores(
+    stale.map((row) => ({ journeyId: row.id, publishedAt: row.publishedAt, followersCount: row.followersCount }))
+  );
+  for (const [journeyId, score] of freshScores) scores.set(journeyId, score);
+
+  const now = new Date();
+  void Promise.all(
+    stale.map((row) =>
+      prisma.journey
+        .update({ where: { id: row.id }, data: { journeyScore: freshScores.get(row.id) ?? 0, journeyScoreUpdatedAt: now } })
+        .catch(() => {})
+    )
+  );
+
+  return scores;
+}
+
 export type ViewerStats = { started: number; completed: number };
 
 /**
