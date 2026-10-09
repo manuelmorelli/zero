@@ -1,5 +1,6 @@
 "use server";
 
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { notFound } from "next/navigation";
@@ -24,6 +25,7 @@ import { moderateImageUrl, moderateText, MODERATION_REJECTION_MESSAGE } from "@/
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewEpisode } from "@/lib/notifications";
 import { autoPublishDraftJourney, nextJourneyOrder } from "@/lib/actions/journey";
+import { extractEpisodeMoments, isMomentsLibraryEnabled } from "@/lib/ai/episodeMoments";
 
 const EpisodeSchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
@@ -180,6 +182,26 @@ async function maybeStartLightVideoEncoding(episodeId: string, videoKey: string)
   }
 }
 
+// Mappa dei Momenti (S6, Post-MVP, lib/ai/episodeMoments.ts): spenta di default dietro
+// MOMENTS_LIBRARY_ENABLED, quindi finché Manuel non la accende questa funzione non fa nulla.
+// Quando è accesa, usa after() per metterla in coda DOPO che la pubblicazione è già tornata al
+// creator: il lavoro pesante (upload su Gemini, attesa, analisi) non deve mai rallentare il
+// pulsante "Pubblica". Un fallimento (video non pronto, errore Gemini) resta solo loggato, non
+// deve rompere la pubblicazione né l'episodio.
+function scheduleMomentsExtraction(episodeId: string): void {
+  if (!isMomentsLibraryEnabled()) return;
+  after(async () => {
+    try {
+      const result = await extractEpisodeMoments(episodeId);
+      if ("error" in result) {
+        console.error(`[episodeMoments] episode ${episodeId}: ${result.error}`);
+      }
+    } catch (error) {
+      console.error(`[episodeMoments] episode ${episodeId} threw:`, error);
+    }
+  });
+}
+
 // Logica di creazione condivisa tra `createEpisode` (form della Dashboard, termina con un
 // redirect) e `quickCreateEpisode` (flusso rapido dal pulsante "+" globale, resta in un riquadro
 // sopra la pagina corrente e quindi non può fare un redirect): stessa validazione dimensione video
@@ -256,6 +278,7 @@ async function insertEpisode(
 
   if (published && episode.videoKey) {
     await maybeStartLightVideoEncoding(episode.id, episode.videoKey);
+    scheduleMomentsExtraction(episode.id);
   }
 
   revalidatePath(`/dashboard/journeys/${journey.id}`);
@@ -486,6 +509,13 @@ export async function updateEpisode(
   // passa da Bozza a Pubblicato senza mai aver avuto una versione leggera in corso.
   if (published && newVideoKeyValue && (replacesVideo || episode.lightVideoStatus === null)) {
     await maybeStartLightVideoEncoding(episode.id, newVideoKeyValue);
+  }
+  // Stesso trigger della pubblicazione in insertEpisode: la prima volta che l'episodio diventa
+  // Published, o quando il video viene sostituito su un episodio già pubblicato (i vecchi
+  // "momenti" punterebbero al video sbagliato). Non riparte invece a ogni semplice modifica di
+  // titolo/caption su un episodio già pubblicato con lo stesso video.
+  if (published && newVideoKeyValue && (replacesVideo || !episode.publishedAt)) {
+    scheduleMomentsExtraction(episode.id);
   }
 
   revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
