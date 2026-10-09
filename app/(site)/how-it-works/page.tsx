@@ -12,7 +12,22 @@ export const metadata = {
     "Three steps to get started, the questions people ask most, how Zero's algorithm actually decides what to show, and tips for uploading the best quality video.",
 };
 
-const steps = [
+// Esportati per Ember (lib/ai/siteAssistant.ts): stesso testo di questa pagina, nessuna copia a parte.
+export const algorithmParagraphs = [
+  "The algorithm doesn't care how many followers you have. It cares about one thing: do people actually stick around and come back?",
+  "If people finish your episodes and come back for the next one, more people get to see you. Followers help a little, but only up to a point. After that, having more doesn't push you higher.",
+  "The only way your score goes down is if people report you and we confirm something was actually wrong. Never because you're small.",
+];
+
+export const algorithmHighlights = [
+  "A creator with 5 followers, where everyone finishes every episode, is shown to more people than a creator with 600 followers that nobody finishes.",
+  "Paying doesn't get you seen more. On Zero, a Journey rises only because people actually watch and love it, never because someone paid for it.",
+];
+
+export const publishingNote =
+  "On Zero, publishing an episode isn't final. Found a mistake, or want to make it better? You can swap the video for a new one (it keeps its spot in your Journey, and all its likes and views). Other apps make you delete everything and start again with no views. Zero doesn't.";
+
+export const steps = [
   {
     number: "01",
     title: "Choose a Journey",
@@ -30,7 +45,7 @@ const steps = [
   },
 ];
 
-const questions = [
+export const questions = [
   {
     q: "What is a Journey?",
     a: "It's the complete path of a real transformation, told in chapters and episodes: not just the final outcome, but the whole process.",
@@ -51,7 +66,7 @@ const questions = [
 
 type Bullet = { icon: LucideIcon; text: string };
 
-const uploadTips: Bullet[] = [
+export const uploadTips: Bullet[] = [
   { icon: FileVideo, text: "Export as MP4, it works everywhere and keeps quality high." },
   {
     icon: UploadCloud,
@@ -104,28 +119,21 @@ export default function HowItWorksPage() {
             </ReadingTitle>
           </div>
           <div className="space-y-3 text-ink">
-            <p data-story="lines">
-              The algorithm doesn&apos;t care how many followers you have. It cares about one thing: do
-              people actually stick around and come back?
-            </p>
-            <p data-story="lines">
-              If people finish your episodes and come back for the next one, more people get to see
-              you. Followers help a little, but only up to a point. After that, having more
-              doesn&apos;t push you higher.
-            </p>
-            <p data-story="lines">
-              The only way your score goes down is if people report you and we confirm something was
-              actually wrong. Never because you&apos;re small.
-            </p>
+            {algorithmParagraphs.map((text) => (
+              <p key={text.slice(0, 30)} data-story="lines">
+                {text}
+              </p>
+            ))}
           </div>
-          <p data-story="slide" className={cn(PANEL_ACCENT, "mt-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
-            A creator with 5 followers, where everyone finishes every episode, is shown to more people
-            than a creator with 600 followers that nobody finishes.
-          </p>
-          <p data-story="slide" className={cn(PANEL_ACCENT, "mt-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
-            Paying doesn&apos;t get you seen more. On Zero, a Journey rises only because people
-            actually watch and love it, never because someone paid for it.
-          </p>
+          {algorithmHighlights.map((text) => (
+            <p
+              key={text.slice(0, 30)}
+              data-story="slide"
+              className={cn(PANEL_ACCENT, "mt-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}
+            >
+              {text}
+            </p>
+          ))}
 
           <div data-story="lines">
             <ReadingTitle className="mb-4 mt-10">Three Steps to Get Started</ReadingTitle>
@@ -158,12 +166,7 @@ export default function HowItWorksPage() {
           <div data-story="rise" className="mt-10 grid gap-4 sm:grid-cols-2">
             <section className={cn(PANEL_ACCENT, "h-full")}>
               <CardTitle as="h2" className="text-ember">Publishing Isn&apos;t the End</CardTitle>
-              <p className="mt-3 text-sm leading-relaxed text-ink">
-                On Zero, publishing an episode isn&apos;t final. Found a mistake, or want to make it
-                better? You can swap the video for a new one (it keeps its spot in your Journey, and
-                all its likes and views). Other apps make you delete everything and start again with no
-                views. Zero doesn&apos;t.
-              </p>
+              <p className="mt-3 text-sm leading-relaxed text-ink">{publishingNote}</p>
             </section>
             <section className={cn(PANEL_ACCENT, "h-full")}>
               <CardTitle as="h2" className="text-ember">Before You Upload</CardTitle>

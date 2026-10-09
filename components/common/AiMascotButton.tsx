@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Notice } from "@/components/ui/panel";
+import { EmberChatPanel } from "@/components/common/EmberChatPanel";
 import { cn } from "@/lib/utils";
 
 /**
  * L'assistente AI di Zero nell'header: la "O" del logo con una faccina (idea di Manuel,
- * 2026-10-09). Per ora è solo il pulsante, onesto su cosa fa davvero: l'assistente vero
- * (cosa sa rispondere, dove compare il resto della conversazione) non è ancora stato
- * costruito, vedi project_ai_roadmap_decisions in memoria.
+ * 2026-10-09), ora collegata a Ember (components/common/EmberChatPanel.tsx), l'assistente che
+ * spiega come funziona il sito. Visibile a tutti, loggati e no: Ember non vede dati personali e
+ * non esegue mai azioni al posto di chi lo usa.
  */
 export function AiMascotButton() {
   const [open, setOpen] = useState(false);
@@ -42,9 +42,9 @@ export function AiMascotButton() {
       </Button>
 
       {open && (
-        <Notice className="absolute right-0 top-11 z-50 w-56 text-left shadow-2xl">
-          Still learning, come back soon.
-        </Notice>
+        <div className="absolute right-0 top-11 z-50">
+          <EmberChatPanel />
+        </div>
       )}
     </div>
   );

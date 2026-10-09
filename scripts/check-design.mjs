@@ -33,6 +33,8 @@ const APPROVED_EXCEPTIONS = new Set([
   "components/creator/CommunityAiMessageActions.tsx",
   "components/creator/CommunityAiAttachMenu.tsx",
   "components/creator/NewCommunityListingClient.tsx",
+  // Pannello di Ember, stessa luce della chat Community (rgba dentro bg-[radial-gradient(...)]).
+  "components/common/EmberChatPanel.tsx",
 ]);
 
 /** bg-black qui è il nero vero del canvas video/foto (letterbox), non lo sfondo di pagina:

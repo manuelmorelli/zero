@@ -24,7 +24,8 @@ export const metadata = {
     "Zero is built around Journeys: real paths documented from the very first day. Reputation earned over time, ranked by Trust Score instead of likes.",
 };
 
-const paragraphs = [
+// Esportati per Ember (lib/ai/siteAssistant.ts): stesso testo di questa pagina, nessuna copia a parte.
+export const paragraphs = [
   "There are stories we only ever meet at the end. We see someone who made it. We see the result. We see the house, the project, the body, the business, the success. But we almost never see the moment it all began. The doubt. The fear of not making it. The first attempt that failed. The decision to start again. The day no one was watching.",
   "Zero begins exactly there.",
   "Zero is a platform built around Journeys: real paths, told as they happen. We don't want to show you only where someone ended up. We want to let you see how they got there.",
@@ -47,14 +48,14 @@ const highlighted = new Set([
 
 type Bullet = { icon: LucideIcon; text: string };
 
-const different: Bullet[] = [
+export const different: Bullet[] = [
   { icon: ListOrdered, text: "Episodes are watched in chronological order, from the very first one." },
   { icon: Layers, text: "Drag & drop reordering directly on your cards." },
   { icon: ShieldCheck, text: "Ranked by Trust Score, not likes." },
   { icon: Eye, text: "Every new Journey gets 15 days of guaranteed visibility to everyone." },
 ];
 
-const howItWorks: Bullet[] = [
+export const howItWorks: Bullet[] = [
   { icon: Compass, text: "A Presentation, optional Chapters, and Episodes." },
   { icon: Clock, text: "Resume any episode exactly where you left off." },
   { icon: MousePointerClick, text: "Publishing takes two clicks, maximum." },

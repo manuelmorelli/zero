@@ -9,7 +9,8 @@ export const metadata = {
 
 type Section = { title: string; body: string[] };
 
-const sections: Section[] = [
+// Esportato per Ember (lib/ai/siteAssistant.ts): stesso testo di questa pagina, nessuna copia a parte.
+export const sections: Section[] = [
   {
     title: "The short version",
     body: [

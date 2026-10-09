@@ -9,7 +9,9 @@ export const metadata = {
 
 type Section = { title: string; body: string[] };
 
-const sections: Section[] = [
+// Esportato così Ember (l'assistente del sito, lib/ai/siteAssistant.ts) legge lo stesso testo
+// mostrato qui, invece di una copia separata che rischierebbe di disallinearsi.
+export const sections: Section[] = [
   {
     title: "What this covers",
     body: [

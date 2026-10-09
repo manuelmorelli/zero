@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import ReactMarkdown, { type Components } from "react-markdown";
+import ReactMarkdown from "react-markdown";
 import { FileText, Sparkles, Upload } from "lucide-react";
 import { streamCommunityAiTurn } from "@/lib/communityAiChatStream";
+import { AI_MARKDOWN_COMPONENTS } from "@/components/common/aiMarkdownComponents";
 import { COMMUNITY_LISTING_LABELS } from "@/lib/constants/communityListing";
 import {
   loadCommunityAiChat,
@@ -25,20 +26,6 @@ function welcomeMessage(creatorFirstName: string | null): CommunityAiChatMessage
     text: `${greeting} What would you like to create today? A workshop, an event, a digital product or a 1:1 service. Describe it in your own words and I'll prepare a draft for you to check.`,
   };
 }
-
-// Le risposte dell'AI arrivano in Markdown (grassetti, elenchi) come su Gemini: qui solo la
-// spaziatura, i colori restano quelli del testo della chat.
-const MARKDOWN_COMPONENTS: Components = {
-  p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
-  ul: ({ children }) => <ul className="mb-3 list-disc space-y-1 pl-5 last:mb-0">{children}</ul>,
-  ol: ({ children }) => <ol className="mb-3 list-decimal space-y-1 pl-5 last:mb-0">{children}</ol>,
-  strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-  a: ({ children, href }) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="underline">
-      {children}
-    </a>
-  ),
-};
 
 function freshChat(creatorFirstName: string | null): StoredCommunityAiChat {
   return { messages: [welcomeMessage(creatorFirstName)], interactionId: null, readyDraft: null, draftStartIndex: 0 };
@@ -292,7 +279,7 @@ export function CommunityAiChat({
                         </div>
                       )}
                       <div className={message.failed ? "text-ink-muted" : "text-ink"}>
-                        <ReactMarkdown components={MARKDOWN_COMPONENTS}>{message.text}</ReactMarkdown>
+                        <ReactMarkdown components={AI_MARKDOWN_COMPONENTS}>{message.text}</ReactMarkdown>
                       </div>
                       <CommunityAiMessageActions
                         text={message.text}
@@ -307,7 +294,7 @@ export function CommunityAiChat({
                 <div className="flex gap-3">
                   <Sparkles className="mt-1 h-5 w-5 shrink-0 animate-pulse text-ember" aria-hidden="true" />
                   <div className="min-w-0 flex-1 text-base leading-relaxed text-ink">
-                    <ReactMarkdown components={MARKDOWN_COMPONENTS}>{streamingText}</ReactMarkdown>
+                    <ReactMarkdown components={AI_MARKDOWN_COMPONENTS}>{streamingText}</ReactMarkdown>
                   </div>
                 </div>
               ) : (
