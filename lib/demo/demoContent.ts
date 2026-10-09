@@ -131,6 +131,10 @@ export const DEMO_LATEST_VIDEOS: LatestVideoItem[] = [
   { episodeId: "demo-ep-2", journeyId: "demo-2", title: "The workout that changed my mind", coverUrl: null, category: "Fitness", creatorName: "Sara J.", creatorAvatarUrl: null, createdAt: hoursAgo(11), journeyScore: 88 },
   { episodeId: "demo-ep-3", journeyId: "demo-3", title: "First solo ride", coverUrl: null, category: "Sports", creatorName: "David L.", creatorAvatarUrl: null, createdAt: hoursAgo(26), journeyScore: 82 },
   { episodeId: "demo-ep-4", journeyId: "demo-4", title: "Finding a new perspective", coverUrl: null, category: "Creativity", creatorName: "Emma W.", creatorAvatarUrl: null, createdAt: hoursAgo(40), journeyScore: 90 },
+  { episodeId: "demo-ep-5", journeyId: "demo-7", title: "Day 180, no counting anymore", coverUrl: null, category: "Recovery & Sobriety", creatorName: "Chris P.", creatorAvatarUrl: null, createdAt: hoursAgo(55), journeyScore: 93 },
+  { episodeId: "demo-ep-6", journeyId: "demo-9", title: "Raising the roof beam", coverUrl: null, category: "Minimalism & Slow Living", creatorName: "Noah K.", creatorAvatarUrl: null, createdAt: hoursAgo(70), journeyScore: 88 },
+  { episodeId: "demo-ep-7", journeyId: "demo-6", title: "First tomatoes of the season", coverUrl: null, category: "Gardening & Plants", creatorName: "Giulia F.", creatorAvatarUrl: null, createdAt: hoursAgo(84), journeyScore: 81 },
+  { episodeId: "demo-ep-8", journeyId: "demo-10", title: "What my therapist actually said", coverUrl: null, category: "Mental Health", creatorName: "Priya R.", creatorAvatarUrl: null, createdAt: hoursAgo(96), journeyScore: 91 },
 ];
 
 export const DEMO_DISCOVERING_NOW: DiscoveringNowItem[] = [
@@ -139,6 +143,11 @@ export const DEMO_DISCOVERING_NOW: DiscoveringNowItem[] = [
   { id: "demo-discovery-3", title: "Teaching myself to paint", coverUrl: null, category: "Creativity", creatorName: "Ana M.", creatorAvatarUrl: null, followersCount: 95, daysLeft: 14 },
   { id: "demo-discovery-4", title: "Waking up at 5am for a month", coverUrl: null, category: "Habits", creatorName: "Tom B.", creatorAvatarUrl: null, followersCount: 60, daysLeft: 9 },
   { id: "demo-discovery-5", title: "My first vegetable garden", coverUrl: null, category: "Gardening & Plants", creatorName: "Giulia F.", creatorAvatarUrl: null, followersCount: 120, daysLeft: 3 },
+  { id: "demo-discovery-6", title: "Quitting my 9-to-5 to freelance", coverUrl: null, category: "Career", creatorName: "Omar H.", creatorAvatarUrl: null, followersCount: 45, daysLeft: 8 },
+  { id: "demo-discovery-7", title: "Learning the violin at 35", coverUrl: null, category: "Learning", creatorName: "Elena V.", creatorAvatarUrl: null, followersCount: 72, daysLeft: 12 },
+  { id: "demo-discovery-8", title: "My minimalist closet experiment", coverUrl: null, category: "Minimalism & Slow Living", creatorName: "Sofie L.", creatorAvatarUrl: null, followersCount: 28, daysLeft: 5 },
+  { id: "demo-discovery-9", title: "Walking every day this winter", coverUrl: null, category: "Health & Illness Recovery", creatorName: "Ben C.", creatorAvatarUrl: null, followersCount: 54, daysLeft: 10 },
+  { id: "demo-discovery-10", title: "Saving my first €10,000", coverUrl: null, category: "Finance", creatorName: "Rahul M.", creatorAvatarUrl: null, followersCount: 99, daysLeft: 7 },
 ];
 
 export const DEMO_TOP_JOURNEYS: TopJourneyItem[] = [
@@ -147,4 +156,9 @@ export const DEMO_TOP_JOURNEYS: TopJourneyItem[] = [
   { id: "demo-1", title: "From burnout to balance", coverUrl: null, category: "Mental Health", creatorName: "Marco R.", creatorAvatarUrl: null, followersCount: 24000, episodesCount: 9, journeyScore: 87 },
   { id: "demo-2", title: "Stronger every day", coverUrl: null, category: "Fitness", creatorName: "Sara J.", creatorAvatarUrl: null, followersCount: 18000, episodesCount: 17, journeyScore: 85 },
   { id: "demo-4", title: "See the world differently", coverUrl: null, category: "Creativity", creatorName: "Emma W.", creatorAvatarUrl: null, followersCount: 16000, episodesCount: 11, journeyScore: 84 },
+  { id: "demo-7", title: "Six months sober, still here", coverUrl: null, category: "Recovery & Sobriety", creatorName: "Chris P.", creatorAvatarUrl: null, followersCount: 41000, episodesCount: 30, journeyScore: 93 },
+  { id: "demo-10", title: "Three months of therapy, honestly", coverUrl: null, category: "Mental Health", creatorName: "Priya R.", creatorAvatarUrl: null, followersCount: 27000, episodesCount: 13, journeyScore: 91 },
+  { id: "demo-9", title: "Building a tiny house by hand", coverUrl: null, category: "Minimalism & Slow Living", creatorName: "Noah K.", creatorAvatarUrl: null, followersCount: 22000, episodesCount: 19, journeyScore: 88 },
+  { id: "demo-6", title: "My first vegetable garden, one season in", coverUrl: null, category: "Gardening & Plants", creatorName: "Giulia F.", creatorAvatarUrl: null, followersCount: 12000, episodesCount: 16, journeyScore: 81 },
+  { id: "demo-8", title: "Learning Mandarin from zero", coverUrl: null, category: "Learning", creatorName: "Yuki S.", creatorAvatarUrl: null, followersCount: 5400, episodesCount: 8, journeyScore: 77 },
 ];

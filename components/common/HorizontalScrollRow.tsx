@@ -2,13 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { SectionTitle } from "@/components/ui/heading";
+import { SectionHeading } from "@/components/common/SectionHeading";
 
 type HorizontalScrollRowProps = {
   /** Ancora per il collegamento diretto da un'altra pagina (es. Categories in Home). */
   id?: string;
   title: string;
   subtitle?: string;
+  /** Icona davanti al titolo (stesso trattamento di SectionHeading, es. le righe della Home). */
+  icon?: React.ReactNode;
+  /** Rende il titolo un link (es. categoria -> pagina dedicata con tutti i Journey). */
+  titleHref?: string;
   children: React.ReactNode;
 };
 
@@ -16,7 +20,7 @@ type HorizontalScrollRowProps = {
  * Riga di card che scorre solo lateralmente, con frecce cliccabili a sinistra/destra —
  * mai in automatico. Le frecce compaiono solo quando c'è altro da vedere in quella direzione.
  */
-export function HorizontalScrollRow({ id, title, subtitle, children }: HorizontalScrollRowProps) {
+export function HorizontalScrollRow({ id, title, subtitle, icon, titleHref, children }: HorizontalScrollRowProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -48,10 +52,7 @@ export function HorizontalScrollRow({ id, title, subtitle, children }: Horizonta
 
   return (
     <section id={id} className="scroll-mt-24">
-      <div>
-        <SectionTitle>{title}</SectionTitle>
-        {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}
-      </div>
+      <SectionHeading icon={icon} title={title} titleHref={titleHref} subtitle={subtitle} />
 
       <div className="relative mt-4">
         {/* Il contenitore scorrevole taglia tutto ciò che esce dai suoi bordi: il padding dà spazio

@@ -11,8 +11,9 @@ import { OnboardingBanner } from "@/components/layout/OnboardingBanner";
 import { Hero } from "@/components/landing/Hero";
 import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
+import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
 import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
-import { CARD_GRID, CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
+import { CARD_GRID, CARD_ROW_ITEM, CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
 import { CardTitle, PageTitle } from "@/components/ui/heading";
 import { CHIP, PANEL } from "@/components/ui/panel";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
@@ -41,8 +42,18 @@ import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 
-/** Una riga piena per formato di card (CARD_GRID): 5 Journey, 4 episodi, 8 persone. */
-const JOURNEYS_PER_ROW = 5;
+/** Quanti elementi caricare per le righe scorrevoli della Home (Recommended, Discovering Now,
+ * Top Journeys, Latest Videos): più di quelli che entrano in una schermata, altrimenti le
+ * freccine di HorizontalScrollRow non hanno mai altro da mostrare e restano invisibili. */
+const HOME_ROW_LIMIT = 10;
+
+/** I Journey/episodi veri restano sempre per primi; i demo riempiono solo il resto della riga
+ * fino a HOME_ROW_LIMIT, finché non ce ne sono abbastanza di reali. */
+function padWithDemo<T>(real: T[], demo: T[], limit: number): T[] {
+  if (real.length >= limit) return real.slice(0, limit);
+  return [...real, ...demo].slice(0, limit);
+}
+/** Riga piena della griglia a scomparsa delle persone (CARD_GRID.person, Wildcards to Follow). */
 const PEOPLE_PER_ROW = 8;
 const HOME_SECTION = `${PAGE_WIDTH.wide} py-4`;
 
@@ -85,26 +96,27 @@ export default async function Home() {
   ] = await Promise.all([
     getFollowedCreatorsStories({ userId }),
     getOwnStory({ userId }),
-    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: JOURNEYS_PER_ROW, interests: userInterests }),
+    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: HOME_ROW_LIMIT, interests: userInterests }),
     getWildcardsToFollow(PEOPLE_PER_ROW),
     getJourneyCountsByCategory(),
-    getLatestVideos({ limit: 4, interests: userInterests }),
-    getTopJourneys({ limit: JOURNEYS_PER_ROW, interests: userInterests }),
+    getLatestVideos({ limit: HOME_ROW_LIMIT, interests: userInterests }),
+    getTopJourneys({ limit: HOME_ROW_LIMIT, interests: userInterests }),
     // Nessuna personalizzazione: "Discovering Now" mostra tutti i Journey in Discovery Phase a
     // chiunque, loggato o no, indipendentemente da interessi o creator seguiti (08_Algorithm.md).
-    getDiscoveringNowJourneys(JOURNEYS_PER_ROW),
+    getDiscoveringNowJourneys(HOME_ROW_LIMIT),
     getHeroJourneys(4),
     getHeroVideos(),
   ]);
 
-  // DEMO DATA - replace when real data available: placeholder realistici per le sezioni
-  // ancora vuote (nessun dato reale sufficiente), per una demo visiva completa. Ogni sezione
-  // torna automaticamente ai dati reali non appena ce ne sono abbastanza, nessuna struttura da toccare.
-  const displayedLatestVideos = (latestVideos.length > 0 ? latestVideos : DEMO_LATEST_VIDEOS).slice(0, 4);
-  const displayedTopJourneys = (topJourneys.length > 0 ? topJourneys : DEMO_TOP_JOURNEYS).slice(0, JOURNEYS_PER_ROW);
-  const displayedDiscoveringNow = (discoveringNow.length > 0 ? discoveringNow : DEMO_DISCOVERING_NOW).slice(0, JOURNEYS_PER_ROW);
+  // DEMO DATA - replace when real data available: placeholder realistici per le sezioni ancora
+  // senza abbastanza dati reali, per una riga sempre piena (e le freccine di scorrimento sempre
+  // utili). I Journey veri restano sempre per primi, i demo riempiono solo il resto della riga:
+  // ogni sezione torna automaticamente ai soli dati reali non appena ce ne sono abbastanza.
+  const displayedLatestVideos = padWithDemo(latestVideos, DEMO_LATEST_VIDEOS, HOME_ROW_LIMIT);
+  const displayedTopJourneys = padWithDemo(topJourneys, DEMO_TOP_JOURNEYS, HOME_ROW_LIMIT);
+  const displayedDiscoveringNow = padWithDemo(discoveringNow, DEMO_DISCOVERING_NOW, HOME_ROW_LIMIT);
   const displayedStories = creatorStories.length > 0 ? creatorStories : DEMO_STORIES;
-  const displayedRecommendedJourneys = (recommendedJourneys.length > 0 ? recommendedJourneys : DEMO_JOURNEYS).slice(0, JOURNEYS_PER_ROW);
+  const displayedRecommendedJourneys = padWithDemo(recommendedJourneys, DEMO_JOURNEYS, HOME_ROW_LIMIT);
   const displayedWildcardsToFollow = wildcardsToFollow.length > 0 ? wildcardsToFollow : DEMO_CREATORS;
   const heroSlides: HeroSlide[] =
     heroJourneys.length > 0
@@ -210,18 +222,15 @@ function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
   return (
     <section className={HOME_SECTION}>
       <Reveal>
-        <SectionHeading
+        <HorizontalScrollRow
           icon={<Compass className="h-6 w-6" aria-hidden="true" />}
           title="Discovering Now"
           subtitle="Brand new Journeys, shown to everyone, not just people who already follow this topic."
-          viewAllHref="/discover/now"
-        />
-      </Reveal>
-
-      <ul className={`mt-4 ${CARD_GRID.journey}`}>
-        {journeys.map((journey, index) => (
-          <Reveal key={journey.id} as="li" delayMs={index * 70}>
+        >
+          {journeys.map((journey) => (
             <JourneyCard
+              key={journey.id}
+              className={CARD_ROW_ITEM.journey}
               journey={{
                 id: journey.id,
                 title: journey.title,
@@ -235,9 +244,9 @@ function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
                 </p>
               }
             />
-          </Reveal>
-        ))}
-      </ul>
+          ))}
+        </HorizontalScrollRow>
+      </Reveal>
     </section>
   );
 }
@@ -250,21 +259,16 @@ function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestV
   return (
     <section className={HOME_SECTION}>
       <Reveal>
-        <SectionHeading
+        <HorizontalScrollRow
           icon={<VideoIcon className="h-6 w-6" aria-hidden="true" />}
           title="Latest Videos"
           subtitle="New episodes just published across Zero."
-          viewAllHref="/discover/latest-videos"
-        />
+        >
+          {videos.map((video) => (
+            <VideoCard key={video.episodeId} video={video} className={CARD_ROW_ITEM.episode} />
+          ))}
+        </HorizontalScrollRow>
       </Reveal>
-
-      <ul className={`mt-4 ${CARD_GRID.episode}`}>
-        {videos.map((video, index) => (
-          <Reveal key={video.episodeId} as="li" delayMs={index * 70}>
-            <VideoCard video={video} />
-          </Reveal>
-        ))}
-      </ul>
     </section>
   );
 }
@@ -277,18 +281,15 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
   return (
     <section className={HOME_SECTION}>
       <Reveal>
-        <SectionHeading
+        <HorizontalScrollRow
           icon={<Star className="h-6 w-6 fill-current" aria-hidden="true" />}
           title="Top Journeys"
           subtitle="Timeless stories that continue to inspire."
-          viewAllHref="/discover/top"
-        />
-      </Reveal>
-
-      <ul className={`mt-4 ${CARD_GRID.journey}`}>
-        {journeys.map((journey, index) => (
-          <Reveal key={journey.id} as="li" delayMs={index * 70}>
+        >
+          {journeys.map((journey) => (
             <JourneyCard
+              key={journey.id}
+              className={CARD_ROW_ITEM.journey}
               journey={{
                 id: journey.id,
                 title: journey.title,
@@ -303,9 +304,9 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
                 </p>
               }
             />
-          </Reveal>
-        ))}
-      </ul>
+          ))}
+        </HorizontalScrollRow>
+      </Reveal>
     </section>
   );
 }
@@ -318,21 +319,16 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
   return (
     <section className={HOME_SECTION}>
       <Reveal>
-        <SectionHeading
+        <HorizontalScrollRow
           icon={<Sparkles className="h-6 w-6" aria-hidden="true" />}
           title="Recommended for You"
           subtitle="Picked based on who you follow."
-          viewAllHref="/discover/recommended"
-        />
+        >
+          {journeys.map((journey) => (
+            <JourneyCard key={journey.id} journey={journey} className={CARD_ROW_ITEM.journey} />
+          ))}
+        </HorizontalScrollRow>
       </Reveal>
-
-      <ul className={`mt-4 ${CARD_GRID.journey}`}>
-        {journeys.map((journey, index) => (
-          <Reveal key={journey.id} as="li" delayMs={index * 70}>
-            <JourneyCard journey={journey} />
-          </Reveal>
-        ))}
-      </ul>
     </section>
   );
 }
@@ -407,7 +403,7 @@ function HowItWorksCta() {
       <Reveal>
         <Link
           href="/how-it-works"
-          className={`group flex items-center justify-between gap-4 transition-colors hover:border-ink-muted ${PANEL}`}
+          className={`group flex items-center justify-between gap-4 shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow ${PANEL}`}
         >
           <div className="flex min-w-0 items-center gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-surface-2 text-ember">
