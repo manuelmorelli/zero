@@ -38,7 +38,7 @@ export function OnboardingForm() {
                 className={`inline-block cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                   active
                     ? "border-ink bg-ink text-bg"
-                    : "border-border bg-surface-2 text-ink hover:border-ink-muted"
+                    : "border-border bg-surface-2 text-ink hover:border-ember-line"
                 }`}
               >
                 {category}

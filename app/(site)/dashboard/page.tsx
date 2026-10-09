@@ -120,7 +120,7 @@ export default async function CreatorDashboardPage() {
                   <Link
                     key={journey.id}
                     href={`/dashboard/journeys/${journey.id}`}
-                    className={cn(PANEL, "flex items-center justify-between transition-colors hover:border-ink-muted")}
+                    className={cn(PANEL, "flex items-center justify-between shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
                   >
                     <span className="text-sm font-semibold text-ink">{journey.title}</span>
                     <span className="rounded-full border border-border px-3 py-1 text-sm font-semibold uppercase tracking-wider text-ink-muted">

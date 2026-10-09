@@ -184,7 +184,7 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
                 type="button"
                 onClick={togglePlay}
                 aria-label={isPlaying ? "Pause" : "Play"}
-                className="grid h-8 w-8 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
+                className="grid h-8 w-8 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
               >
                 {isPlaying ? (
                   <Pause className="h-4 w-4" fill="currentColor" aria-hidden="true" />
@@ -196,7 +196,7 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
                 type="button"
                 onClick={toggleMute}
                 aria-label={isMuted ? "Unmute" : "Mute"}
-                className="grid h-8 w-8 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
+                className="grid h-8 w-8 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
               >
                 {isMuted ? (
                   <VolumeX className="h-4 w-4" aria-hidden="true" />
@@ -208,7 +208,7 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
                 type="button"
                 onClick={() => setExpanded(true)}
                 aria-label="Watch fullscreen"
-                className="grid h-8 w-8 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
+                className="grid h-8 w-8 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
               >
                 <Maximize className="h-4 w-4" aria-hidden="true" />
               </button>

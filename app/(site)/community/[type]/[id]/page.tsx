@@ -99,7 +99,7 @@ export default async function CommunityListingDetailPage({
             path={`/community/${type}/${id}`}
             label={listing.title}
             updateCaption={`Check out ${listing.creator.displayName}'s ${COMMUNITY_LISTING_LABELS[type]}: ${listing.title}`}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
           />
         </div>
 

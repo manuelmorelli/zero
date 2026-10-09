@@ -101,7 +101,7 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeI
         type="button"
         onClick={() => setEditing(true)}
         aria-label={`Edit ${episode.title}`}
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-border text-ink-muted transition-colors hover:border-ink-muted hover:text-ember"
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
       >
         <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
       </button>

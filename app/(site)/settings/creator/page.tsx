@@ -46,7 +46,7 @@ export default async function SettingsCreatorPage() {
         <SectionTitle className="mt-8">Dashboard</SectionTitle>
         <Link
           href="/dashboard"
-          className={cn(PANEL, "mt-3 flex items-center justify-between gap-4 transition-colors hover:border-ink-muted")}
+          className={cn(PANEL, "mt-3 flex items-center justify-between gap-4 shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
         >
           <span>
             <span className="block text-sm font-semibold text-ink">Manage Your Journeys</span>

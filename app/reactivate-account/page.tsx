@@ -43,7 +43,7 @@ export default async function ReactivateAccountPage() {
             Reactivate My Account
           </Button>
         </form>
-        <SignOutButton className={cn(BUTTON_VARIANTS.secondary, "border-border bg-transparent shadow-none hover:border-ink-muted")} />
+        <SignOutButton className={cn(BUTTON_VARIANTS.secondary, "border-border bg-transparent shadow-none hover:border-ember-line")} />
       </div>
     </main>
   );

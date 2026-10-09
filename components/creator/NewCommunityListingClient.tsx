@@ -94,7 +94,7 @@ export function NewCommunityListingClient({
               key={option}
               type="button"
               onClick={() => goToStep({ step: STEP_WRITE, type: option })}
-              className="rounded-xl border border-border bg-surface px-4 py-3.5 text-sm font-semibold text-ink transition-colors hover:border-ink-muted"
+              className="rounded-xl border border-border bg-surface px-4 py-3.5 text-sm font-semibold text-ink shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow"
             >
               {COMMUNITY_LISTING_LABELS[option]}
             </button>
@@ -110,7 +110,7 @@ export function NewCommunityListingClient({
         <button
           type="button"
           onClick={() => goToStep({ step: STEP_WRITE })}
-          className="flex flex-col items-start gap-2 rounded-2xl border border-border bg-surface p-6 text-left transition-colors hover:border-ink-muted"
+          className="flex flex-col items-start gap-2 rounded-2xl border border-border bg-surface p-6 text-left shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow"
         >
           <Pencil className="h-5 w-5 text-ink-muted" aria-hidden="true" />
           <span className="text-sm font-semibold text-ink">Write it yourself</span>

@@ -40,7 +40,7 @@ export function JourneyHeaderMenu({ journeyId, status }: JourneyHeaderMenuProps)
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label="More actions"
-          className="grid h-9 w-9 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ink-muted hover:text-ink"
+          className="grid h-9 w-9 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
         >
           <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
         </DropdownMenuTrigger>

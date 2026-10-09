@@ -41,7 +41,7 @@ export function CommunityAiNewChatButton({ onConfirm, disabled }: { onConfirm: (
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ink-muted"
+                className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ember-line"
               >
                 Cancel
               </button>
