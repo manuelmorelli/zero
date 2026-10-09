@@ -12,7 +12,7 @@ import { Hero } from "@/components/landing/Hero";
 import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
-import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
+import { ButtonSecondary } from "@/components/ui/button";
 import { CARD_GRID, CARD_ROW_ITEM, CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
 import { CardTitle, PageTitle } from "@/components/ui/heading";
 import { CHIP, PANEL } from "@/components/ui/panel";
@@ -453,10 +453,10 @@ function FinalCta() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <ButtonPrimary href="/register">
+              <ButtonSecondary href="/register">
                 Start Your Journey
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </ButtonPrimary>
+              </ButtonSecondary>
               <ButtonSecondary href="/journeys">Journeys</ButtonSecondary>
             </div>
           </div>

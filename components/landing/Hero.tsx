@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Play, Quote, Volume2, VolumeX } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
-import { ButtonPrimary, ButtonSecondary, IconButton } from "@/components/ui/button";
+import { ButtonSecondary, IconButton } from "@/components/ui/button";
 import { StoryViewer } from "@/components/home/StoryViewer";
 import { HeroBackgroundVideo, useHeroVideoMode } from "@/components/landing/HeroBackgroundVideo";
 import { HeroPayoff } from "@/components/landing/HeroPayoff";
@@ -162,10 +162,10 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         {/* Bottoni: riga propria, sopra gli Update, non più condivisa con la card a destra. */}
         <div className="max-w-lg md:col-start-1 md:row-start-2">
           <div className="flex flex-wrap gap-3">
-            <ButtonPrimary href="#discover">
+            <ButtonSecondary href="#discover">
               <Play className="h-4 w-4 fill-current" aria-hidden="true" />
               Explore Journeys
-            </ButtonPrimary>
+            </ButtonSecondary>
             <ButtonSecondary href="/register">Create Your Journey</ButtonSecondary>
           </div>
         </div>

@@ -11,7 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
+import { ButtonSecondary } from "@/components/ui/button";
 import { ScrollStory } from "@/components/common/ScrollStory";
 import { DisplayTitle, SectionTitle } from "@/components/ui/heading";
 import { PANEL_ACCENT } from "@/components/ui/panel";
@@ -100,13 +100,11 @@ export default function WhatIsZeroPage() {
           <div className="mt-5 space-y-3">
             {paragraphs.map((text) =>
               highlighted.has(text) ? (
-                <p
-                  key={text.slice(0, 40)}
-                  data-story="slide"
-                  className={cn(PANEL_ACCENT, "text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}
-                >
-                  {text}
-                </p>
+                <div key={text.slice(0, 40)} data-story="rise">
+                  <p className={cn(PANEL_ACCENT, "text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
+                    {text}
+                  </p>
+                </div>
               ) : (
                 <p key={text.slice(0, 40)} data-story="lines" className="text-base leading-relaxed text-ink">
                   {text}
@@ -121,12 +119,12 @@ export default function WhatIsZeroPage() {
             </p>
           </div>
 
-          <div data-story="rise" className="mt-6 grid gap-4 sm:grid-cols-2">
-            <section className={cn(PANEL_ACCENT, "h-full")}>
+          <div data-story="rise" className="mt-6 grid items-start gap-4 sm:grid-cols-2">
+            <section className={PANEL_ACCENT}>
               <SectionTitle>What Makes Zero Different</SectionTitle>
               <BulletList items={different} />
             </section>
-            <section className={cn(PANEL_ACCENT, "h-full")}>
+            <section className={PANEL_ACCENT}>
               <SectionTitle>How It Works</SectionTitle>
               <BulletList items={howItWorks} />
             </section>
@@ -141,7 +139,7 @@ export default function WhatIsZeroPage() {
         </ScrollStory>
 
         <div className="mt-5 flex flex-wrap gap-3">
-          <ButtonPrimary href="/">Explore Journeys</ButtonPrimary>
+          <ButtonSecondary href="/">Explore Journeys</ButtonSecondary>
           <ButtonSecondary href="/dashboard">Create Your Journey</ButtonSecondary>
         </div>
       </main>

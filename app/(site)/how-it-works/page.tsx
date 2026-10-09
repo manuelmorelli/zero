@@ -1,8 +1,8 @@
 import { FileVideo, Maximize, Sparkles, UploadCloud, type LucideIcon } from "lucide-react";
-import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
+import { ButtonSecondary } from "@/components/ui/button";
 import { ScrollStory } from "@/components/common/ScrollStory";
 import { CardTitle, DisplayTitle, ReadingTitle } from "@/components/ui/heading";
-import { PANEL_ACCENT } from "@/components/ui/panel";
+import { PANEL, PANEL_ACCENT } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
@@ -126,13 +126,11 @@ export default function HowItWorksPage() {
             ))}
           </div>
           {algorithmHighlights.map((text) => (
-            <p
-              key={text.slice(0, 30)}
-              data-story="slide"
-              className={cn(PANEL_ACCENT, "mt-4 text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}
-            >
-              {text}
-            </p>
+            <div key={text.slice(0, 30)} data-story="rise" className="mt-4">
+              <p className={cn(PANEL_ACCENT, "text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
+                {text}
+              </p>
+            </div>
           ))}
 
           <div data-story="lines">
@@ -140,7 +138,7 @@ export default function HowItWorksPage() {
           </div>
           <div data-story="rise" className="grid gap-6 md:grid-cols-3">
             {steps.map((step) => (
-              <div key={step.number}>
+              <div key={step.number} className={PANEL}>
                 <span className="text-sm font-bold text-ink-faint">{step.number}</span>
                 <CardTitle as="h2" className="mt-2 text-ember">{step.title}</CardTitle>
                 <p className="mt-1.5 text-ink">{step.text}</p>
@@ -151,7 +149,7 @@ export default function HowItWorksPage() {
           <div data-story="lines">
             <ReadingTitle className="mb-4 mt-10">Frequently Asked Questions</ReadingTitle>
           </div>
-          <div data-story="rise" className="divide-y divide-border">
+          <div data-story="rise" className={cn(PANEL, "divide-y divide-border")}>
             {questions.map((item) => (
               <details key={item.q} className="group py-3.5">
                 <summary className="flex cursor-pointer list-none items-center justify-between text-lg font-semibold text-ember">
@@ -163,12 +161,12 @@ export default function HowItWorksPage() {
             ))}
           </div>
 
-          <div data-story="rise" className="mt-10 grid gap-4 sm:grid-cols-2">
-            <section className={cn(PANEL_ACCENT, "h-full")}>
+          <div data-story="rise" className="mt-10 grid items-start gap-4 sm:grid-cols-2">
+            <section className={PANEL_ACCENT}>
               <CardTitle as="h2" className="text-ember">Publishing Isn&apos;t the End</CardTitle>
               <p className="mt-3 text-sm leading-relaxed text-ink">{publishingNote}</p>
             </section>
-            <section className={cn(PANEL_ACCENT, "h-full")}>
+            <section className={PANEL_ACCENT}>
               <CardTitle as="h2" className="text-ember">Before You Upload</CardTitle>
               <BulletList items={uploadTips} />
             </section>
@@ -176,7 +174,7 @@ export default function HowItWorksPage() {
         </ScrollStory>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <ButtonPrimary href="/">Explore Journeys</ButtonPrimary>
+          <ButtonSecondary href="/">Explore Journeys</ButtonSecondary>
           <ButtonSecondary href="/dashboard">Create Your Journey</ButtonSecondary>
         </div>
       </main>
