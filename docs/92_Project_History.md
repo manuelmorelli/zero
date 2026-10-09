@@ -1,7 +1,7 @@
 ---
 title: Project History
 doc_id: 92-project-history
-version: "2.3"
+version: "2.4"
 status: living
 related_docs:
   - 01_Vision
@@ -407,3 +407,9 @@ Il pulsante mascotte nell'header esisteva da una chat precedente, ma diceva solo
 Il nome è nato in due passaggi: prima proposte in italiano, poi la richiesta di cambiare lingua perché il sito è in inglese, poi la scelta è caduta su "Ember", già il nome del colore arancione del brand, quindi niente di nuovo da spiegare. L'istruzione più netta è arrivata sulla base di conoscenza: "non facciamo figure demmerda, questo deve sapere zero in tutto e per tutto". La risposta non è stata un menu ridotto ma il contrario, il Catalogo Funzionalità e la mappa di ogni pagina del sito, oltre alle pagine pubbliche ufficiali, lette direttamente dal codice vero (le stesse costanti che le pagine mostrano, non una copia a parte) così un futuro cambiamento a una pagina raggiunge Ember da solo. Un'unica eccezione dichiarata: le percentuali esatte dell'algoritmo e del Trust Score restano fuori, su richiesta esplicita di Manuel ("quelle sono segrete"); Ember ne parla solo in generale e rifiuta di indovinare un numero.
 
 Il pannello riprende due pezzi già approvati altrove sul sito invece di inventarne di nuovi: la luce bianca soffusa della chat Community dietro ai messaggi, e il bordo con il bagliore arancione della sua barra di scrittura, lo stesso richiesto esplicitamente da Manuel dopo aver visto la prima versione troppo spoglia. Raggiungibile da chiunque, anche senza account: un dettaglio che ha richiesto un piccolo limite di messaggi per indirizzo (nessuna infrastruttura in più, solo un conteggio in memoria) per non lasciare che un uso eccessivo esaurisca la quota gratuita di Gemini condivisa con la chat Community.
+
+## Capitolo 38, Un tetto alla durata, e la copia leggera si accende
+
+Il 9 ottobre Manuel ha deciso un tetto massimo di 10 minuti per ogni episodio (gli Update restano a 60 secondi, pensati per contenuto che sparisce in 24 ore). Il limite si vede prima ancora di scegliere il file, nello stesso punto dove compare già il limite di dimensione, nei tre punti dove un creator carica un video episodio: il modulo di modifica, la card "aggiungi episodio" e il flusso rapido del pulsante "+". Se il video supera i 10 minuti il caricamento viene bloccato con un messaggio chiaro, con lo stesso meccanismo già usato per gli Update.
+
+La decisione ha riacceso un pezzo di codice costruito a settembre ma volutamente lasciato spento (Capitolo 18): la versione leggera via Cloudflare Stream, che genera automaticamente una copia più leggera di ogni episodio per chi ha connessione lenta, senza mai toccare l'originale. Restava in pausa perché Manuel voleva aspettare utenti reali sulla piattaforma; con un tetto di durata deciso, ha scelto di accenderla insieme.

@@ -1,7 +1,7 @@
 ---
 title: Current Project Status
 doc_id: 99-current-project-status
-version: "1.50"
+version: "1.51"
 status: living
 related_docs:
   - 12_MVP_Features
@@ -182,6 +182,8 @@ Task precedente: **Video ottimizzati per connessioni lente — Cloudflare Stream
 
 **Attivazione volutamente in pausa**: tutto il codice sopra resta inerte finché le variabili `CLOUDFLARE_ACCOUNT_ID`/`CLOUDFLARE_STREAM_API_TOKEN`/`CLOUDFLARE_STREAM_WEBHOOK_SECRET` restano vuote (vedi `.env.example`) — scelta deliberata di Manuel, non un blocco tecnico: si attiverà quando ci saranno utenti reali sulla piattaforma (0 Journey pubblicati reali al momento, vedi nota Hero più sotto), non prima. Verificato senza regressioni sul comportamento attuale: `npx tsc --noEmit` e `npm run build` puliti, un episodio pubblicato esistente testato con Playwright (video originale caricato e riprodotto correttamente, nessun errore console) dopo il refactoring del player da attributo `src` statico a scelta dinamica della sorgente.
 
+Task successivo: **Tetto di 10 minuti per episodio (2026-10-09)**. Decisione di Manuel: `MAX_EPISODE_DURATION_SEC` (`lib/constants/video.ts`) blocca il caricamento di un episodio sopra i 10 minuti, con lo stesso meccanismo già usato per gli Update (`readVideoDuration`), in tutti e tre i punti dove un creator carica il video di un episodio (`EpisodeForm.tsx`, `AddEpisodeCard.tsx`, `QuickUploadButton.tsx`). Il limite è visibile subito, prima ancora di scegliere il file, accanto al limite di dimensione già mostrato lì. Gli Update restano separati, a 60 secondi. Con il tetto deciso, Manuel ha scelto di accendere insieme la versione leggera di Stream descritta sopra: resta comunque in pausa finché le credenziali Cloudflare non sono state fornite e inserite in `.env`.
+
 Task precedente: **Gerarchia visiva della pagina di gestione Journey e delle card Dashboard (2026-08-30)**. Manuel ha notato che i 4 elementi in alto a destra sulla pagina di gestione Journey (stato, Publish/Unpublish, Archive, "View public page") pesavano tutti uguale visivamente, senza distinguere cosa fosse solo informativo da cosa fosse un'azione — risultato:
 
 - **Stato del Journey** (Draft/In Discovery/Published): non più una pillola bordata come i bottoni accanto, ma un puntino colorato + testo, per leggersi subito come pura informazione, non come qualcosa da cliccare.
@@ -295,7 +297,7 @@ Iniziata: upload reale e player interno fatti (vedi "Funzionalità implementate"
 
 - ✅ **Video Upload** — upload diretto del file dal dispositivo a Cloudflare R2 (URL firmati, nessun bucket pubblico), limite 1GB verificato lato server, sostituisce il vecchio link esterno temporaneo.
 - ✅ **Internal Video Player** — pagina Player dedicata (`/journeys/[id]/episodes/[episodeId]`, `components/journey/EpisodePlayer.tsx`) con controlli costruiti su misura (seek bar, play/pausa, volume, schermo intero) e sidebar "Up next"; sostituisce il precedente `<video controls>` nativo aperto in un overlay dentro la Pagina Journey.
-- 🟡 **Video Processing** — versioni leggere del video per connessioni lente (vedi "Ultimo task completato", 2026-09-07): codice completo e verificato, **attivazione volutamente in pausa** su decisione di Manuel finché non ci saranno utenti reali sulla piattaforma, non un blocco tecnico. Per attivarla: abilitare Cloudflare Stream sull'account Cloudflare esistente, generare l'API token e registrare il webhook (istruzioni in `.env.example`) — finché quelle variabili sono vuote l'app si comporta esattamente come oggi, nessun video processato.
+- 🟡 **Video Processing** — versioni leggere del video per connessioni lente (vedi "Ultimo task completato", 2026-09-07): codice completo e verificato. Il 9 ottobre Manuel ha deciso di accenderla insieme al nuovo tetto di 10 minuti per episodio (✅ fatto, vedi "Tetto di 10 minuti per episodio" sopra e `MAX_EPISODE_DURATION_SEC`); la versione leggera resta però **in pausa** finché le credenziali Cloudflare Stream non vengono fornite e inserite in `.env` — non più un'attesa di utenti reali, ma solo delle credenziali. Per attivarla: abilitare Cloudflare Stream sull'account Cloudflare esistente, generare l'API token e registrare il webhook (istruzioni in `.env.example`) — finché quelle variabili sono vuote l'app si comporta esattamente come oggi, nessun video processato.
 - ✅ **Progress Tracking** — posizione di riproduzione e completamento tracciati per singolo episodio (`EpisodeProgress`), non solo a livello di Journey; vedi "Ripresa esatta del video e completamento per episodio" più sopra.
 - ✅ **Most Completed Journeys** (2026-10-01) — classifica dei Journey per quota di spettatori che finiscono almeno il 90% degli episodi, solo nella pagina `/journeys` (mai in Home, per scelta di Manuel). `lib/discovery/mostCompletedJourneys.ts`.
 - ✅ **Advanced Continue Journey** — il player riprende dal secondo esatto in cui l'utente aveva interrotto la visione (non solo dall'ultimo episodio), tranne per un episodio già completato, che riparte sempre dall'inizio per scelta di prodotto.

@@ -9,7 +9,13 @@ import { uploadFileWithProgress } from "@/lib/upload";
 import { compressImageIfNeeded } from "@/lib/compressImage";
 import { readVideoDuration } from "@/lib/media/readVideoDuration";
 import { captureVideoFrame } from "@/lib/media/captureVideoFrame";
-import { ALLOWED_VIDEO_TYPES, MAX_UPDATE_VIDEO_DURATION_SEC, MAX_UPDATE_VIDEO_SIZE_BYTES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
+import {
+  ALLOWED_VIDEO_TYPES,
+  MAX_EPISODE_DURATION_SEC,
+  MAX_UPDATE_VIDEO_DURATION_SEC,
+  MAX_UPDATE_VIDEO_SIZE_BYTES,
+  MAX_VIDEO_SIZE_BYTES,
+} from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { POLL_MAX_OPTIONS, POLL_MIN_OPTIONS, POLL_OPTION_MAX_LENGTH, UPDATE_TEXT_MAX_LENGTH } from "@/lib/constants/updates";
 import { FIELD } from "@/components/ui/input";
@@ -224,7 +230,7 @@ function ChoiceStep({
     <div className="space-y-3">
       <Link
         href="/dashboard/journeys/new"
-        className={cn(PANEL, "block w-full text-left transition-colors hover:border-ink-muted")}
+        className={cn(PANEL, "block w-full text-left shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
       >
         <span className="block text-sm font-semibold text-ink">Start a New Journey</span>
         <span className="mt-1 block text-sm text-ink-muted">
@@ -234,7 +240,7 @@ function ChoiceStep({
       <button
         type="button"
         onClick={onPickJourney}
-        className={cn(PANEL, "w-full text-left transition-colors hover:border-ink-muted")}
+        className={cn(PANEL, "w-full text-left shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
       >
         <span className="block text-sm font-semibold text-ink">Add to Your Journey</span>
         <span className="mt-1 block text-sm text-ink-muted">Upload a new episode video.</span>
@@ -242,7 +248,7 @@ function ChoiceStep({
       <button
         type="button"
         onClick={onPickUpdate}
-        className={cn(PANEL, "w-full text-left transition-colors hover:border-ink-muted")}
+        className={cn(PANEL, "w-full text-left shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
       >
         <span className="block text-sm font-semibold text-ink">Post an Update</span>
         <span className="mt-1 block text-sm text-ink-muted">
@@ -329,6 +335,11 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
 
     if ("error" in result) {
       setVideoError(result.error);
+      setVideoProgress(null);
+      return;
+    }
+    if (duration !== null && duration > MAX_EPISODE_DURATION_SEC) {
+      setVideoError(`Video is too long (max ${MAX_EPISODE_DURATION_SEC / 60} min).`);
       setVideoProgress(null);
       return;
     }
@@ -476,7 +487,9 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
           >
             <VideoIcon className="h-9 w-9 text-ink-muted" />
             <span className="text-sm font-semibold text-ink">Select a Video from Your Device</span>
-            <span className="text-sm text-ink-faint">Max {formatMB(MAX_VIDEO_SIZE_BYTES)}</span>
+            <span className="text-sm text-ink-faint">
+              Max {MAX_EPISODE_DURATION_SEC / 60} min, {formatMB(MAX_VIDEO_SIZE_BYTES)}
+            </span>
           </button>
         ) : stillUploadingVideo ? (
           <div className={cn(PANEL, "flex w-full flex-col items-center gap-3 sm:h-full sm:justify-center sm:py-0")}>
@@ -701,7 +714,7 @@ function UpdateTypeStep({ onPick }: { onPick: (kind: UpdateKind) => void }) {
           key={kind.key}
           type="button"
           onClick={() => onPick(kind.key)}
-          className={cn(PANEL, "w-full text-left transition-colors hover:border-ink-muted")}
+          className={cn(PANEL, "w-full text-left shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
         >
           <span className="block text-sm font-semibold text-ink">{kind.label}</span>
           <span className="mt-0.5 block text-sm text-ink-muted">{kind.hint}</span>

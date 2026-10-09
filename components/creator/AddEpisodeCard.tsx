@@ -3,7 +3,7 @@
 import { useActionState, useId, useRef, useState } from "react";
 import { Video as VideoIcon, X as CloseIcon } from "lucide-react";
 import { createEpisode, createQuickPosterUploadUrl, createQuickVideoUploadUrl } from "@/lib/actions/episode";
-import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
+import { ALLOWED_VIDEO_TYPES, MAX_EPISODE_DURATION_SEC, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { readVideoDuration } from "@/lib/media/readVideoDuration";
 import { captureVideoFrame } from "@/lib/media/captureVideoFrame";
@@ -107,6 +107,11 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
       setVideoProgress(null);
       return;
     }
+    if (duration !== null && duration > MAX_EPISODE_DURATION_SEC) {
+      setVideoError(`Video is too long (max ${MAX_EPISODE_DURATION_SEC / 60} min).`);
+      setVideoProgress(null);
+      return;
+    }
 
     try {
       await uploadFileWithProgress(result.uploadUrl, file, setVideoProgress);
@@ -166,7 +171,9 @@ export function AddEpisodeCard({ journeyId, chapters, defaultChapterId }: AddEpi
           >
             <VideoIcon className="h-9 w-9 text-ink-muted" aria-hidden="true" />
             <span className="text-sm font-semibold text-ink">Select a Video from Your Device</span>
-            <span className="text-sm text-ink-faint">Max {formatMB(MAX_VIDEO_SIZE_BYTES)}</span>
+            <span className="text-sm text-ink-faint">
+              Max {MAX_EPISODE_DURATION_SEC / 60} min, {formatMB(MAX_VIDEO_SIZE_BYTES)}
+            </span>
           </button>
         ) : stillUploadingVideo ? (
           <div className={cn(PANEL, "flex w-full flex-col items-center gap-3 sm:h-full sm:justify-center sm:py-0")}>

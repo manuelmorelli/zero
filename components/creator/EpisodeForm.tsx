@@ -9,7 +9,7 @@ import {
   createEpisodeVideoUploadUrl,
   updateEpisode,
 } from "@/lib/actions/episode";
-import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
+import { ALLOWED_VIDEO_TYPES, MAX_EPISODE_DURATION_SEC, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { compressImageIfNeeded } from "@/lib/compressImage";
 import { uploadFileWithProgress } from "@/lib/upload";
@@ -135,6 +135,11 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
         setUploadProgress(null);
         return;
       }
+      if (duration !== null && duration > MAX_EPISODE_DURATION_SEC) {
+        setUploadError(`Video is too long (max ${MAX_EPISODE_DURATION_SEC / 60} min).`);
+        setUploadProgress(null);
+        return;
+      }
       await uploadFileWithProgress(result.uploadUrl, file, setUploadProgress);
       setVideoKey(result.key);
       setDurationSec(duration);
@@ -251,7 +256,10 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
 
       <div>
         <label htmlFor={`${uid}-video`} className="text-sm font-medium text-ink-muted">
-          Video <span className="text-ink-faint">(required to publish, max {formatMB(MAX_VIDEO_SIZE_BYTES)})</span>
+          Video{" "}
+          <span className="text-ink-faint">
+            (required to publish, max {MAX_EPISODE_DURATION_SEC / 60} min, {formatMB(MAX_VIDEO_SIZE_BYTES)})
+          </span>
         </label>
         <div className="mt-1 flex items-center gap-3">
           <Button variant="primary" onClick={() => videoInputRef.current?.click()} className="shrink-0">
