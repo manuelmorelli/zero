@@ -155,7 +155,7 @@ Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programm
 
 ## AI
 
-☐ **Mappa dei Momenti (Post-MVP, S6)**, oggi spenta (`MOMENTS_LIBRARY_ENABLED`): costruita e verificata su pochi episodi di prova il 2026-10-02/03 (`lib/ai/episodeMoments.ts`, dettagli in `93_Project_Alignment_Recap.md` Punto 8). Va rilanciata su tutta la libreria quando ci saranno episodi più rappresentativi del prodotto reale (oggi quasi tutti clip di prova brevissime). Sono Post-MVP anche, in ordine: ricerca semantica, trailer automatico (sostituisce la foto statica nella Hero), e il "Percorso su Misura" (Journey composto dall'AI con momenti presi da creator diversi in base alla situazione di chi cerca).
+☐ **Mappa dei Momenti (Post-MVP, S6)**, oggi spenta (`MOMENTS_LIBRARY_ENABLED`): costruita e verificata su pochi episodi di prova il 2026-10-02/03 (`lib/ai/episodeMoments.ts`, dettagli in `93_Project_Alignment_Recap.md` Punto 8). Va rilanciata su tutta la libreria quando ci saranno episodi più rappresentativi del prodotto reale (oggi quasi tutti clip di prova brevissime). Dei lavori collegati, fatti: ricerca per senso in `/search` (2026-10-10, `lib/search/searchEpisodeMoments.ts`) e Percorso su Misura (2026-10-10, pagina `/custom-path`, `lib/search/composeCustomPath.ts`). **Nessuno dei due è mai stato provato dal vivo** (interruttore spento, serve anche più di un episodio di prova per vedere un percorso con più passaggi): da fare prima di chiudere questo punto. Resta da costruire solo il trailer automatico (sostituisce la foto statica nella Hero).
 
 ## Business futuro (idee, nessun piano richiesto ora)
 
