@@ -282,6 +282,9 @@ model Creator {
   // Link esterno di supporto (S9, Tips): il creator incassa fuori da Zero, Zero mostra solo il pulsante "Support this Creator".
   // Il campo è generico, non legato a nessun fornitore di pagamento. Null = nessun pulsante.
   supportLinkUrl String?
+  // Consenso del creator a usare la sua voce per il doppiaggio futuro degli episodi in altre lingue (Post-MVP).
+  // Solo il permesso: la funzione di doppiaggio vera non esiste ancora. Spento di default.
+  allowsVoiceDubbing Boolean @default(false)
   // Data di accettazione delle Community Guidelines, richiesta (insieme a profilo compilato e
   // video di presentazione) prima di poter pubblicare per la prima volta, vedi lib/creator.ts
   // (getPublishReadiness). Null = non ancora accettate, nessun grandfathering per gli account

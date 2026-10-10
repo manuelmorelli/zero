@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { CreatorNotificationsForm } from "@/components/settings/CreatorNotificationsForm";
 import { CreatorModeSwitch } from "@/components/settings/CreatorModeSwitch";
 import { CreatorPauseSwitch } from "@/components/settings/CreatorPauseSwitch";
+import { VoiceDubbingSwitch } from "@/components/settings/VoiceDubbingSwitch";
 import { SupportLinkForm } from "@/components/settings/SupportLinkForm";
 import { countJourneysToHide } from "@/lib/account/creatorLifecycle";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
@@ -18,7 +19,7 @@ export default async function SettingsCreatorPage() {
     select: {
       notifyNewFollower: true,
       creatorMode: true,
-      creator: { select: { pausedAt: true, supportLinkUrl: true } },
+      creator: { select: { pausedAt: true, supportLinkUrl: true, allowsVoiceDubbing: true } },
     },
   });
   const journeyCount = await countJourneysToHide(user.id);
@@ -60,6 +61,11 @@ export default async function SettingsCreatorPage() {
             <SectionTitle className="mt-8">Support link</SectionTitle>
             <div className={`mt-3 ${PANEL}`}>
               <SupportLinkForm supportLinkUrl={preferences.creator?.supportLinkUrl ?? null} />
+            </div>
+
+            <SectionTitle className="mt-8">Voice dubbing</SectionTitle>
+            <div className="mt-3">
+              <VoiceDubbingSwitch allowed={preferences.creator?.allowsVoiceDubbing ?? false} />
             </div>
           </>
         )}

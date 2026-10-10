@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 import {
   endCreatorPause,
   startCreatorPause,
@@ -33,6 +34,19 @@ export async function setCreatorPause(paused: boolean): Promise<{ error: string 
   } else {
     await endCreatorPause(user.id);
   }
+
+  revalidatePath("/settings/creator");
+  return { error: null };
+}
+
+/** Consenso del creator al doppiaggio futuro della sua voce in altre lingue (solo il permesso, Post-MVP). */
+export async function setVoiceDubbingConsent(allowed: boolean): Promise<{ error: string | null }> {
+  const { user } = await requireSession();
+
+  await prisma.creator.update({
+    where: { userId: user.id },
+    data: { allowsVoiceDubbing: allowed },
+  });
 
   revalidatePath("/settings/creator");
   return { error: null };
