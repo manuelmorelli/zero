@@ -5,7 +5,6 @@ import { isMomentsLibraryEnabled } from "@/lib/ai/episodeMoments";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { NOTICE } from "@/components/ui/panel";
 import { PageTitle } from "@/components/ui/heading";
-import { formatDuration } from "@/lib/format/duration";
 
 export default async function CustomPathPage({
   searchParams,
@@ -54,11 +53,7 @@ export default async function CustomPathPage({
                 <VideoCard
                   video={step}
                   className="w-full max-w-sm"
-                  footer={
-                    <p className="mt-2 text-sm text-ink-muted">
-                      Around minute {formatDuration(step.timestampSec)}: {step.reason}
-                    </p>
-                  }
+                  footer={<p className="mt-2 text-sm text-ink-muted">{step.reason}</p>}
                 />
               </div>
             ))}
