@@ -13,7 +13,7 @@ export function isMomentsLibraryEnabled(): boolean {
   return process.env.MOMENTS_LIBRARY_ENABLED === "true";
 }
 
-const MOMENTS_INSTRUCTION = `You watch a video episode from Zero, a platform where people share real personal journeys (career changes, health, business, creative projects). List the distinct moments that matter to someone else going through something similar: turning points, obstacles, decisions, mistakes, results. For each one give the timestamp in whole seconds from the start of the video and a clear one or two sentence description of what happens and why it matters. Skip filler (greetings, silences, small talk). Write the description in the same language the creator speaks in the video.`;
+const MOMENTS_INSTRUCTION = `You watch a video episode from Zero, a platform where people share real personal journeys (career changes, health, business, creative projects). List the distinct moments that matter to someone else going through something similar: turning points, obstacles, decisions, mistakes, results. For each one give the timestamp in whole seconds from the start of the video and a clear one or two sentence description of what happens and why it matters. Skip filler (greetings, silences, small talk). Write the description in the same language the creator speaks in the video. Also mark which of these moments are the strongest candidates for a short automatic trailer, such as the starting point, the decisive turning point, or the final result: pick only the few moments that are genuinely the most compelling and representative of the whole episode, not simply the first ones you find.`;
 
 const MOMENTS_SCHEMA = {
   type: "object",
@@ -25,15 +25,16 @@ const MOMENTS_SCHEMA = {
         properties: {
           timestampSec: { type: "integer" },
           description: { type: "string" },
+          isHighlight: { type: "boolean" },
         },
-        required: ["timestampSec", "description"],
+        required: ["timestampSec", "description", "isHighlight"],
       },
     },
   },
   required: ["moments"],
 };
 
-type RawMoment = { timestampSec?: number; description?: string };
+type RawMoment = { timestampSec?: number; description?: string; isHighlight?: boolean };
 
 export type ExtractMomentsResult = { count: number } | { error: string };
 
@@ -76,11 +77,16 @@ export async function extractEpisodeMoments(episodeId: string): Promise<ExtractM
   );
   if (moments.length === 0) return { error: "The AI didn't find any usable moment." };
 
-  const rows: { timestampSec: number; description: string; embedding: number[] }[] = [];
+  const rows: { timestampSec: number; description: string; isHighlight: boolean; embedding: number[] }[] = [];
   for (const moment of moments) {
     const embedding = await embedGeminiText(moment.description);
     if (embedding) {
-      rows.push({ timestampSec: moment.timestampSec, description: moment.description.trim(), embedding });
+      rows.push({
+        timestampSec: moment.timestampSec,
+        description: moment.description.trim(),
+        isHighlight: moment.isHighlight === true,
+        embedding,
+      });
     }
   }
   if (rows.length === 0) return { error: "Couldn't create the moments' meaning signature." };
@@ -92,6 +98,7 @@ export async function extractEpisodeMoments(episodeId: string): Promise<ExtractM
         episodeId,
         timestampSec: row.timestampSec,
         description: row.description,
+        isHighlight: row.isHighlight,
         embedding: row.embedding,
       })),
     }),
