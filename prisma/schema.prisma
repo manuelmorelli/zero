@@ -440,6 +440,10 @@ model EpisodeMoment {
   episode      Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
   timestampSec Int
   description  String
+  // Vero per i momenti più adatti a un futuro trailer automatico (partenza, svolta, risultato
+  // finale), scelti dall'AI tra tutti quelli trovati. Spento di default: oggi serve solo a
+  // preparare il dato, il player del trailer arriva in un secondo momento.
+  isHighlight  Boolean  @default(false)
   // Embedding testuale (gemini-embedding-2): confrontato in codice applicativo quando servirà la
   // ricerca semantica, non con una query SQL vettoriale — alla scala attuale della libreria non
   // serve l'estensione pgvector, si può aggiungere in futuro se il volume crescerà molto.
