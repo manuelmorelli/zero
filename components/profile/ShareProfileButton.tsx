@@ -15,7 +15,7 @@ export function ShareProfileButton() {
   }
 
   return (
-    <Button variant="secondary" onClick={handleClick}>
+    <Button variant="secondary" className="profile-hero-glass text-on-photo" onClick={handleClick}>
       Share Profile
     </Button>
   );

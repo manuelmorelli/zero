@@ -218,14 +218,19 @@ export default async function PublicProfilePage({
                 avatarUrl={avatarUrl}
                 coverUrl={coverUrl}
               />
-              <Button variant="secondary" href="/dashboard">
+              <Button variant="secondary" className="profile-hero-glass text-on-photo" href="/dashboard">
                 Dashboard
               </Button>
               <ShareProfileButton />
             </>
           ) : (
             <>
-              <FollowButton userId={user.id} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} />
+              <FollowButton
+                userId={user.id}
+                initialIsFollowing={isFollowing}
+                isLoggedIn={isLoggedIn}
+                className="profile-hero-glass"
+              />
               {canMessageUser && <MessageButton userId={user.id} />}
               {isLoggedIn && <ProfileActionsMenu userId={user.id} name={user.name} />}
             </>
@@ -235,14 +240,13 @@ export default async function PublicProfilePage({
 
       <ProfileTabs
         basePath={`/profile/${username}`}
-        activeTab={activeTab}
         actions={
           isOwnProfile ? (
             <Link
               href="/dashboard/community"
               className={cn(
                 BUTTON_VARIANTS.secondary,
-                "text-on-photo shadow-glow backdrop-blur-md opacity-70 transition-all duration-300 hover:opacity-100"
+                "profile-hero-glass profile-tab-glass text-on-photo transition-all duration-300 hover:-translate-y-1"
               )}
             >
               Community

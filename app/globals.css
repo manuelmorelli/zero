@@ -27,11 +27,16 @@
   /* Unico arancione del sito: ambra piena (amber 500). Le scritte arancioni sono sempre piene,
    * mai sfumate né trasparenti. Le sole trasparenze ammesse sono le due qui sotto. */
   --color-ember: oklch(76.9% 0.188 70.08);
-  --color-ember-soft: oklch(76.9% 0.188 70.08 / 10%);
-  --color-ember-line: oklch(76.9% 0.188 70.08 / 40%);
+  /* Alzate dal 10%/40% originale (2026-10-11): sui bottoni/card trasparenti (bordo+sfondo
+   * arancioni) restavano troppo pallide. */
+  --color-ember-soft: oklch(76.9% 0.188 70.08 / 16%);
+  --color-ember-line: oklch(76.9% 0.188 70.08 / 55%);
 
-  /* Testo sopra le foto: sempre bianco pieno, in qualunque tema (scelta C6A) */
+  /* Testo sopra le foto: sempre bianco pieno, in qualunque tema (scelta C6A). Versione attenuata
+   * per il testo secondario sopra foto (es. sottotitoli della Hero): stesso bianco, mai un
+   * colore che dipenda dal tema, altrimenti nel chiaro diventerebbe illeggibile sulla foto. */
   --color-on-photo: oklch(1 0 0);
+  --color-on-photo-muted: oklch(1 0 0 / 78%);
 
   /* Velo scuro sopra foto e video (testo leggibile, sfondo delle finestre) */
   --color-scrim: oklch(0% 0 0 / 60%);
@@ -91,6 +96,137 @@
  * non esiste ancora, e il sito ricadrebbe sul carattere di sistema (era già successo con Inter). */
 @theme inline {
   --font-sans: var(--font-satoshi);
+}
+
+/* Tema chiaro (Settings > Appearance, D4): scuro di default per tutti, il chiaro è una scelta
+ * esplicita salvata nell'account (vedi lib/theme.ts). Stessi nomi di colore di sopra, stessi
+ * valori collaudati (scala Tailwind neutral/amber/red), semplicemente ribaltati verso il chiaro:
+ * le pagine non cambiano, cambia solo cosa questi nomi rappresentano. L'attributo sta su <html>
+ * (impostato dal layout dal cookie del tema, zero lampo al caricamento), la specificità
+ * dell'attributo batte :root senza bisogno di !important. */
+html[data-theme="light"] {
+  /* Sfondo grigio deciso (neutral 300, non un grigio chiarissimo: un bianco pieno a schermo
+   * intero abbaglia), card quasi bianche per staccarsi bene dallo sfondo (neutral 50), superficie
+   * secondaria/hover più grigia ancora (neutral 400, sotto il livello dello sfondo): l'opposto
+   * non è possibile oltre il bianco, quindi qui "il livello sopra" è più marcato invece che più
+   * chiaro (corretto 2026-10-11: il primo tentativo, neutral 200, restava troppo vicino al
+   * bianco). */
+  --color-bg: oklch(87% 0 0);
+  --color-surface: oklch(98.5% 0 0);
+  --color-surface-2: oklch(70.8% 0 0);
+  --color-border: oklch(0% 0 0 / 14%);
+
+  /* Testo: quasi nero (neutral 900, non nero puro: meno duro da leggere), secondario e terziario
+   * sulla stessa scala di grigi (neutral 600 / 500). */
+  --color-ink: oklch(20.5% 0 0);
+  --color-ink-muted: oklch(43.9% 0 0);
+  --color-ink-faint: oklch(55.6% 0 0);
+
+  /* Rosso ambra (red 600): sullo sfondo chiaro il rosso 400 usato nello scuro è troppo tenue da
+   * leggere, serve una tonalità più carica della stessa famiglia. */
+  --color-danger: oklch(57.7% 0.245 27.325);
+  --color-danger-soft: oklch(57.7% 0.245 27.325 / 10%);
+  --color-danger-line: oklch(57.7% 0.245 27.325 / 40%);
+
+  /* Stesso arancione del sito, tonalità più carica (amber 600 invece di 500): sullo sfondo
+   * chiaro l'ambra chiara usata nello scuro si legge troppo poco come scritta. */
+  --color-ember: oklch(66.6% 0.179 58.318);
+  --color-ember-soft: oklch(66.6% 0.179 58.318 / 10%);
+  --color-ember-line: oklch(66.6% 0.179 58.318 / 40%);
+
+  /* Vetro della barra in alto: sullo sfondo chiaro un velo bianco è quasi invisibile, qui serve
+   * un velo scuro per avere lo stesso effetto "appena visibile, più marcato scorrendo". */
+  --color-glass: oklch(0% 0 0 / 6%);
+  --color-glass-strong: oklch(0% 0 0 / 12%);
+
+  /* Ombra delle card: sullo sfondo chiaro crea un alone grigio dietro le righe di card, e al
+   * passaggio del mouse viene sostituita dal bagliore arancione (--shadow-glow) con un effetto di
+   * "ombra che sparisce" (scelta di Manuel, 2026-10-10: niente ombre sulle card nel chiaro). Il
+   * bordo che si colora d'arancione al passaggio del mouse resta l'unico segnale. Il bagliore
+   * forte di Subscribe/Gift/Tip (--shadow-glow-strong) non cambia: resta l'unica eccezione.
+   * Ridefinire solo --shadow-card/--shadow-glow qui non basta: Tailwind scrive il valore
+   * dell'ombra direttamente nella classe generata invece di leggerlo da questa variabile a ogni
+   * utilizzo, quindi la ridefinizione sopra non arriva mai alle card. Bisogna spegnere l'ombra
+   * sulla classe stessa (verificato leggendo l'ombra calcolata dal browser sulle card). */
+  --shadow-card: none;
+  --shadow-glow: none;
+
+  /* --color-on-photo, --color-scrim, --color-overlay e --color-overlay-soft restano uguali in
+   * entrambi i temi: coprono foto/video, non lo sfondo della pagina (il testo sopra una foto
+   * resta sempre bianco, scelta già presa a prescindere dal tema del sito). */
+}
+
+html[data-theme="light"] .shadow-card,
+html[data-theme="light"] [class*="shadow-glow"] {
+  box-shadow: none !important;
+}
+
+/* Bottoni/schede del Profilo personale che galleggiano sulla copertina (Edit Profile, Dashboard,
+ * Share Profile, Message, Follow, il menu "...", Overview/Journeys/Community): nel tema scuro
+ * restano come prima (vetro arancione di BUTTON_VARIANTS.secondary, invariato). Solo nel chiaro
+ * diventano un vetro grigio (richiesta di Manuel, 2026-10-11): l'arancione sullo sfondo chiaro
+ * si confondeva troppo con lo sfondo vero e proprio. */
+html[data-theme="light"] .profile-hero-glass {
+  border-color: var(--color-border);
+  background-color: var(--color-glass);
+  backdrop-filter: blur(12px);
+  box-shadow: none;
+}
+html[data-theme="light"] .profile-hero-glass:hover {
+  border-color: var(--color-ember);
+}
+
+/* Overview/Journeys/Community (Profilo personale): vetro arancione invece del grigio generico
+ * sopra, richiesta di Manuel 2026-10-11. Doppia classe per vincere sulla regola grigia a parità
+ * di specificità del tema chiaro. */
+html[data-theme="light"] .profile-hero-glass.profile-tab-glass {
+  /* Stesso arancione di --color-ember-line/-soft nel chiaro, ma più carico: a parità di
+   * trasparenza (40%/10%) restava troppo pallido (richiesta di Manuel, 2026-10-11). */
+  border-color: oklch(66.6% 0.179 58.318 / 90%);
+  background-color: oklch(66.6% 0.179 58.318 / 55%);
+}
+html[data-theme="light"] .profile-hero-glass.profile-tab-glass:hover {
+  border-color: var(--color-ember);
+}
+
+/* Card Bio/Presentazione del Profilo: bg-surface nel chiaro è quasi bianco puro, troppo
+ * "lavato". Riprende lo stesso grigio scuro + scritte bianche già usati per questa card nel
+ * tema scuro (richiesta di Manuel, 2026-10-11), invece del solito testo scuro su sfondo chiaro. */
+html[data-theme="light"] .bio-card {
+  background-image: linear-gradient(to bottom, oklch(87% 0 0), oklch(14.5% 0 0));
+}
+html[data-theme="light"] .bio-card .text-ink,
+html[data-theme="light"] .bio-card .text-ink-muted,
+html[data-theme="light"] .bio-card .text-ink-faint {
+  color: var(--color-on-photo);
+}
+
+/* .cover-fade (sopra) sfuma verso il nero fisso: giusto nel buio, ma sulla copertina del Profilo
+ * e della Hero nel chiaro crea una fascia scura posticcia sotto nome/statistiche. Stessi valori,
+ * stesse percentuali, colore grigio chiaro (--color-bg del tema chiaro) invece del nero: scritti
+ * per esteso come sopra, non con var()/color-mix (stesso problema di build). */
+html[data-theme="light"] .cover-fade {
+  background-image: linear-gradient(
+    to top,
+    rgba(212, 212, 212, 100%) 0%,
+    rgba(212, 212, 212, 74%) 19%,
+    rgba(212, 212, 212, 54%) 34%,
+    rgba(212, 212, 212, 38%) 47%,
+    rgba(212, 212, 212, 28%) 56.5%,
+    rgba(212, 212, 212, 19%) 65%,
+    rgba(212, 212, 212, 13%) 73%,
+    rgba(212, 212, 212, 8%) 80.6%,
+    rgba(212, 212, 212, 4%) 87.6%,
+    rgba(212, 212, 212, 2%) 94.1%,
+    rgba(212, 212, 212, 0%) 100%
+  );
+}
+
+/* Il logo "ZERO" in alto (components/layout/Logo.tsx) è un'immagine bianca fissa, pensata per lo
+ * sfondo scuro: sullo sfondo chiaro sarebbe invisibile. Niente seconda immagine da caricare,
+ * basta invertire i colori del PNG (bianco diventa nero) solo nel tema chiaro. */
+html[data-theme="light"] .logo-wordmark {
+  filter: invert(1);
 }
 
 html {
@@ -178,9 +314,11 @@ body {
   background-image: linear-gradient(to right, rgba(10, 10, 10, 100%), rgba(10, 10, 10, 85%), rgba(10, 10, 10, 60%));
 }
 
-/* Copertina senza foto: grigio che sfuma nel nero. */
+/* Copertina senza foto: sfuma verso lo sfondo della pagina (var(--color-bg), non più un nero
+ * fisso): nel tema chiaro creava un angolo nero posticcio sulle card senza copertina, lo stesso
+ * effetto di un'ombra indesiderata (corretto 2026-10-10). */
 .cover-placeholder {
-  background-image: linear-gradient(to bottom right, var(--color-surface-2), var(--color-surface-2), #000);
+  background-image: linear-gradient(to bottom right, var(--color-surface-2), var(--color-surface-2), var(--color-bg));
 }
 
 /* Sagoma di caricamento (skeleton): invisibile per i primi 250ms, poi compare con una

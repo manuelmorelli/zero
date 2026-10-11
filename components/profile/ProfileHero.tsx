@@ -6,7 +6,7 @@ import { ProfileTrustStat } from "@/components/profile/ProfileTrustStat";
 import { Stat } from "@/components/profile/ProfileStat";
 import type { CreatorStory } from "@/lib/discovery/stories";
 import { PageTitle } from "@/components/ui/heading";
-import { PANEL_ACCENT } from "@/components/ui/panel";
+import { PANEL_GLASS } from "@/components/ui/panel";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 
 type ProfileHeroProps = {
@@ -62,11 +62,6 @@ export function ProfileHero({
         ) : (
           <div className="absolute inset-0 cover-placeholder" />
         )}
-        {/* Sfumatura ampia con curva "ad S" (vedi .cover-fade in globals.css): copre la parte
-         * bassa della foto, dove poggiano anche le statistiche e i bottoni, così quegli elementi
-         * si trovano su uno sfondo già naturalmente scurito invece che sulla foto a piena luce —
-         * meno contrasto netto, transizione morbida verso la barra Overview/Journeys sotto. */}
-        <div className="cover-fade absolute inset-x-0 bottom-0 h-32 sm:h-40 md:h-48" />
       </div>
 
       <div className={cn("relative z-10", PAGE_WIDTH.wideCover)}>
@@ -80,11 +75,11 @@ export function ProfileHero({
             />
 
             <div className="min-w-0 pb-1">
-              <PageTitle className="truncate">
+              <PageTitle className="truncate text-on-photo">
                 {name}
               </PageTitle>
-              {username && <p className="text-sm text-ink-muted drop-shadow-sm">@{username}</p>}
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted drop-shadow-sm">
+              {username && <p className="text-sm text-on-photo-muted drop-shadow-sm">@{username}</p>}
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-on-photo-muted drop-shadow-sm">
                 {location && (
                   <span className="inline-flex items-center gap-1.5">
                     <LocationIcon className="h-3.5 w-3.5" />
@@ -101,7 +96,7 @@ export function ProfileHero({
         </div>
 
         <div className="mt-1.5 flex flex-wrap items-center justify-between gap-3 pb-4">
-          <ul className={cn(PANEL_ACCENT, "grid shrink-0 grid-cols-4 gap-2 px-3 py-2")}>
+          <ul className={cn(PANEL_GLASS, "profile-hero-glass grid shrink-0 grid-cols-4 gap-2 px-3 py-2")}>
             <ProfileTrustStat score={trustScore} />
             <Stat label="Journeys" value={formatCompactNumber(journeysCount)} />
             <ProfileFollowStats

@@ -12,7 +12,7 @@ export function Logo({ className }: LogoProps) {
       width={3924}
       height={1040}
       unoptimized
-      className={`w-auto ${className ?? ""}`}
+      className={`logo-wordmark w-auto ${className ?? ""}`}
     />
   );
 }

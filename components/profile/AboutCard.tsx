@@ -1,6 +1,7 @@
 import { PenLine } from "lucide-react";
 import { CardTitle } from "@/components/ui/heading";
 import { PANEL_ACCENT } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
 
 type AboutCardProps = {
   name: string;
@@ -13,7 +14,7 @@ type AboutCardProps = {
 // piattaforma, decisione di prodotto esplicita per questa card.
 export function AboutCard({ name, bio, interests }: AboutCardProps) {
   return (
-    <div className={PANEL_ACCENT}>
+    <div className={cn(PANEL_ACCENT, "bio-card")}>
       <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
         <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
         Bio

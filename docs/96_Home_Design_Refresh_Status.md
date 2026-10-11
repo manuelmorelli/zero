@@ -59,21 +59,16 @@ Sessione dedicata a rivedere sfondo e accento dopo il round precedente. Diversi 
 ## Discusso con Manuel ma non ancora realizzato
 
 - Effetto "racconto con lo scroll" sulle pagine vetrina (How it works, What is Zero): fatto il 2026-10-09 (`components/common/ScrollStory.tsx`)
-- Frase della Hero composta dalla sabbia 3D (prova "sabbia d'oro" piaciuta a Manuel): idea per un passo successivo
-- Effetto più scenico sulle card dei Journey nella Hero: idea di Manuel, da decidere
-- Estendere lo stesso trattamento (bagliori, colori più vivi) alle altre pagine oltre la Home (Journey, Profilo, Dashboard, Player) — messo in pausa per concentrarsi sulla Home
-- Effetto "luce al centro della pagina": Manuel ha detto di lasciar perdere per ora (2026-09-27), non più in cima alla lista
+- Effetto "luce al centro della pagina": abbandonato, confermato da Manuel (2026-10-09)
 
 ## Bug segnalati, ancora aperti
 
 - Copertine dei video sgranate: causa diagnosticata (doppia compressione lato client + `quality` non impostato su `next/image` nelle card), correzione mai applicata su richiesta esplicita di Manuel ("poi sistemiamo il bug")
-- Header percepito "più lungo del dovuto" se non si scrolla: investigato, non riprodotto (altezza identica misurata prima/dopo scroll), serve uno screenshot di Manuel nel momento esatto in cui lo nota
 - Foto dell'ultima card in una riga della Home che non cambia mai: segnalato, non ancora controllato
 
 ## Prossimi passi aperti (in discussione)
 
 - Decidere se costruire la "manovella" colori (vedi sopra) prima di procedere con altre modifiche di stile
-- Effetto vetro della card Hero (`bg-white/5 backdrop-blur-md border-white/10`, vedi `HeroSlideCard` in `components/landing/Hero.tsx`) da riportare sulle card Profilo (`AboutCard.tsx`, `PresentationVideoCard.tsx`, oggi con sfumatura ambra) — risolverebbe anche le card di altezza diversa nella riga in alto del Profilo
+- Card Profilo (`AboutCard.tsx`, `PresentationVideoCard.tsx`): Manuel le ha già sistemate così come sono e ne è soddisfatto (2026-10-09) — non si porta più l'effetto vetro della Hero, chiuso
 - Rimuovere la freccia "← [Nome creator]'s Community" in `app/(site)/community/[type]/[id]/page.tsx`
 - Logo "ZERO" nella Hero (`public/images/zero-wordmark.png`, immagine PNG non testo) più corposo — trucco CSS o rifare l'asset
-- Pagine `/dashboard/community/new` e `/dashboard/community`: font, freccia/e back, colori, dimensioni card, immagini di copertina mancanti (vedi memoria di sessione, dettagli non ripetuti qui)

@@ -34,7 +34,12 @@ export function MessageButton({ userId }: MessageButtonProps) {
 
   return (
     <div className="flex flex-col items-end gap-1">
-      <Button variant="secondary" onClick={handleClick} disabled={isPending}>
+      <Button
+        variant="secondary"
+        className="profile-hero-glass text-on-photo"
+        onClick={handleClick}
+        disabled={isPending}
+      >
         {isPending ? "Opening…" : "Message"}
       </Button>
       {error && <p className="text-sm text-danger">{error}</p>}

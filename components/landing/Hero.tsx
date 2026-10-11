@@ -138,7 +138,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         )}
       >
         <div className="max-w-lg md:col-start-1 md:row-start-1">
-          <p className="text-hero-eyebrow uppercase tracking-[0.42em] text-ink-muted">
+          <p className="text-hero-eyebrow uppercase tracking-[0.42em] text-on-photo-muted">
             Every <span className="text-ember">journey</span> starts from
           </p>
           <Image
@@ -151,9 +151,9 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
           />
           <HeroPayoff
             index={payoffIndex}
-            className="mt-[0.675rem] max-w-[26ch] text-hero-headline leading-tight font-semibold text-balance"
+            className="mt-[0.675rem] max-w-[26ch] text-hero-headline leading-tight font-semibold text-balance text-on-photo"
           />
-          <p className="mt-2 max-w-sm text-hero-subhead leading-relaxed text-ink-muted">
+          <p className="mt-2 max-w-sm text-hero-subhead leading-relaxed text-on-photo-muted">
             Every journey has a beginning, every step has a story, and every story can inspire
             someone to start their own.
           </p>
@@ -162,11 +162,11 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         {/* Bottoni: riga propria, sopra gli Update, non più condivisa con la card a destra. */}
         <div className="max-w-lg md:col-start-1 md:row-start-2">
           <div className="flex flex-wrap gap-3">
-            <ButtonSecondary href="#discover">
+            <ButtonSecondary href="#discover" className="!text-on-photo">
               <Play className="h-4 w-4 fill-current" aria-hidden="true" />
               Explore Journeys
             </ButtonSecondary>
-            <ButtonSecondary href="/register">Create Your Journey</ButtonSecondary>
+            <ButtonSecondary href="/register" className="!text-on-photo">Create Your Journey</ButtonSecondary>
           </div>
         </div>
 
@@ -194,7 +194,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
                       )}
                     </span>
                   </span>
-                  <span className="max-w-11 truncate text-hero-caption text-ink-muted">You</span>
+                  <span className="max-w-11 truncate text-hero-caption text-on-photo-muted">You</span>
                 </button>
               )}
               {stories.slice(0, 6).map((story, index) => (
@@ -218,7 +218,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
                       )}
                     </span>
                   </span>
-                  <span className="max-w-11 truncate text-hero-caption text-ink-muted">
+                  <span className="max-w-11 truncate text-hero-caption text-on-photo-muted">
                     {story.creatorName}
                   </span>
                 </button>
@@ -232,7 +232,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
                   <span className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-2 text-ink-muted transition-colors hover:text-ember">
                     &rarr;
                   </span>
-                  <span className="text-hero-caption text-ink-muted">View All</span>
+                  <span className="text-hero-caption text-on-photo-muted">View All</span>
                 </button>
               )}
             </div>
@@ -248,7 +248,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
                   />
                 ))}
               </div>
-              <p className="text-sm leading-relaxed text-ink-muted">
+              <p className="text-sm leading-relaxed text-on-photo-muted">
                 No account needed to watch.
                 <br />
                 Join when you&apos;re ready to be part of it.
@@ -303,7 +303,7 @@ function HeroDot({ label, current, onClick }: { label: string; current: boolean;
       type="button"
       aria-label={label}
       onClick={onClick}
-      className={`h-1.5 rounded-full transition-all duration-500 ${current ? "w-7 bg-ember" : "w-1.5 bg-ink-faint hover:bg-ink-muted"}`}
+      className={`h-1.5 rounded-full transition-all duration-500 ${current ? "w-7 bg-ember" : "w-1.5 bg-overlay hover:bg-on-photo-muted"}`}
     />
   );
 }
@@ -317,9 +317,9 @@ function HeroVideoCard({ video }: { video: HeroVideo }) {
       className={cn(PANEL_GLASS, "block rounded-xl p-3.5 shadow-glow transition-colors duration-300 hover:border-ember")}
     >
       {video.category && <p className="text-hero-tag uppercase tracking-[0.2em] text-ember">{video.category}</p>}
-      <p className="mt-1.5 text-sm leading-snug font-semibold text-ink">{video.episodeTitle}</p>
-      {video.caption && <p className="mt-1 line-clamp-2 text-sm leading-snug text-ink-muted">{video.caption}</p>}
-      <p className="mt-1.5 text-hero-caption text-ink-muted">by {video.creatorName}</p>
+      <p className="mt-1.5 text-sm leading-snug font-semibold text-on-photo">{video.episodeTitle}</p>
+      {video.caption && <p className="mt-1 line-clamp-2 text-sm leading-snug text-on-photo-muted">{video.caption}</p>}
+      <p className="mt-1.5 text-hero-caption text-on-photo-muted">by {video.creatorName}</p>
     </Link>
   );
 }
@@ -331,8 +331,8 @@ function HeroSlideCard({ slide }: { slide: HeroSlide }) {
     return (
       <div className={cn(PANEL_GLASS, "rounded-xl p-3.5 shadow-glow")}>
         <Quote className="h-3.5 w-3.5 text-ember" aria-hidden="true" />
-        <p className="mt-2 text-sm leading-relaxed text-ink">{slide.quote}</p>
-        <p className="mt-2 text-hero-caption text-ink-muted">{slide.author}</p>
+        <p className="mt-2 text-sm leading-relaxed text-on-photo">{slide.quote}</p>
+        <p className="mt-2 text-hero-caption text-on-photo-muted">{slide.author}</p>
       </div>
     );
   }
@@ -345,8 +345,8 @@ function HeroSlideCard({ slide }: { slide: HeroSlide }) {
       {slide.category && (
         <p className="text-hero-tag uppercase tracking-[0.2em] text-ember">{slide.category}</p>
       )}
-      <p className="mt-1.5 text-sm leading-snug font-semibold text-ink">{slide.title}</p>
-      <p className="mt-1.5 text-hero-caption text-ink-muted">by {slide.creatorName}</p>
+      <p className="mt-1.5 text-sm leading-snug font-semibold text-on-photo">{slide.title}</p>
+      <p className="mt-1.5 text-hero-caption text-on-photo-muted">by {slide.creatorName}</p>
     </Link>
   );
 }

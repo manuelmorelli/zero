@@ -2,10 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma, Theme } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
+import { setThemeCookie } from "@/lib/theme";
 
 const AccountDetailsSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters long.").max(100),
@@ -168,4 +169,17 @@ export async function updateCreatorNotificationPreferences(
 
   revalidatePath("/settings/creator");
   return { error: null };
+}
+
+/** Settings > Appearance: tema scuro (default) o chiaro, scelta esplicita dell'utente. Chiamata
+ * direttamente dall'interruttore (non un form con "Save"): il cambio è immediato sullo schermo,
+ * questa funzione salva la scelta nel database e nel cookie usato per evitare il lampo del tema
+ * sbagliato al prossimo caricamento di una pagina (vedi lib/theme.ts). */
+export async function updateThemePreference(theme: Theme) {
+  const { user } = await requireSession();
+
+  await prisma.user.update({ where: { id: user.id }, data: { theme } });
+  await setThemeCookie(theme);
+
+  revalidatePath("/", "layout");
 }

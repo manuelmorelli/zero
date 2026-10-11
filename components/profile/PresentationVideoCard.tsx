@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/heading";
 import { CoverTitle } from "@/components/ui/cover-card";
 import { PANEL_ACCENT } from "@/components/ui/panel";
+import { cn } from "@/lib/utils";
 
 type PresentationVideoCardProps = {
   /** Link temporaneo già risolto (chiave R2 -> URL), o null se non è mai stato caricato nulla. */
@@ -94,7 +95,7 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
   if (!videoUrl && !isOwnProfile) return null;
 
   return (
-    <div className={PANEL_ACCENT}>
+    <div className={cn(PANEL_ACCENT, "bio-card")}>
       {/* Card orizzontale (richiesto da Manuel, 2026-09-22): Bio a sinistra, video di
           presentazione a destra, divise da un bordo verticale. In colonna solo su mobile, dove
           affiancarle non c'entra. Su schermi larghi NON usa una propria proporzione fissa (le due

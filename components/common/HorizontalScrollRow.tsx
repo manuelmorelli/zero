@@ -67,7 +67,7 @@ export function HorizontalScrollRow({ id, title, subtitle, icon, titleHref, chil
             type="button"
             onClick={() => scrollByPage(-1)}
             aria-label="Scroll left"
-            className="absolute left-0 top-1/2 hidden h-9 w-9 -translate-x-2 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-scrim text-ink-muted shadow-lg backdrop-blur transition-colors hover:border-ember hover:text-ember sm:flex"
+            className="absolute left-0 top-1/2 hidden h-9 w-9 -translate-x-2 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-scrim text-ink-muted shadow-card backdrop-blur transition-colors hover:border-ember hover:text-ember sm:flex"
           >
             <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           </button>
@@ -78,7 +78,7 @@ export function HorizontalScrollRow({ id, title, subtitle, icon, titleHref, chil
             type="button"
             onClick={() => scrollByPage(1)}
             aria-label="Scroll right"
-            className="absolute right-0 top-1/2 hidden h-9 w-9 -translate-y-1/2 translate-x-2 items-center justify-center rounded-full border border-border bg-scrim text-ink-muted shadow-lg backdrop-blur transition-colors hover:border-ember hover:text-ember sm:flex"
+            className="absolute right-0 top-1/2 hidden h-9 w-9 -translate-y-1/2 translate-x-2 items-center justify-center rounded-full border border-border bg-scrim text-ink-muted shadow-card backdrop-blur transition-colors hover:border-ember hover:text-ember sm:flex"
           >
             <ChevronRight className="h-4 w-4" aria-hidden="true" />
           </button>

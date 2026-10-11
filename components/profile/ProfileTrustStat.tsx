@@ -48,7 +48,7 @@ export function ProfileTrustStat({ score }: { score: number | null }) {
             {score ?? "—"}
           </span>
         </span>
-        <p className="mt-0.5 text-sm font-medium uppercase tracking-wider text-ink-muted">Trust Score</p>
+        <p className="mt-0.5 text-sm font-medium uppercase tracking-wider text-on-photo-muted">Trust Score</p>
       </button>
       {open &&
         coords &&

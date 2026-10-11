@@ -1,3 +1,5 @@
+import { Theme } from "@/generated/prisma/client";
+import { getThemeFromCookie } from "@/lib/theme";
 import { Header } from "@/components/layout/Header";
 import { SandBackground } from "@/components/common/SandBackground";
 
@@ -7,12 +9,15 @@ import { SandBackground } from "@/components/common/SandBackground";
 // Qui invece resta in vita per tutta la navigazione tra queste pagine, solo il contenuto sotto
 // cambia. Le pagine di autenticazione (login, registrazione, onboarding) restano fuori da
 // questo gruppo: hanno un header diverso (AuthHeader), non questo.
-export default function SiteLayout({ children }: { children: React.ReactNode }) {
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const theme = await getThemeFromCookie();
+
   return (
     <>
       <Header />
-      {/* Sfondo di sabbia dorata: decide da solo su quali pagine comparire. */}
-      <SandBackground />
+      {/* Sfondo di sabbia dorata: decide da solo su quali pagine comparire. Pensato per lo sfondo
+       * scuro, quindi spento nel tema chiaro (quelle pagine mostrano il semplice sfondo chiaro). */}
+      {theme !== Theme.LIGHT && <SandBackground />}
       {children}
     </>
   );

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
+import { Theme } from "@/generated/prisma/client";
+import { getThemeFromCookie } from "@/lib/theme";
 import { QuickUpload } from "@/components/creator/QuickUpload";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { MessagesWidget } from "@/components/messages/MessagesWidget";
@@ -21,13 +23,16 @@ export const metadata: Metadata = {
     "Zero is the platform where people's real transformations become Journeys to follow, chapter by chapter.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const theme = await getThemeFromCookie();
+  const isLight = theme === Theme.LIGHT;
+
   return (
-    <html lang="en">
+    <html lang="en" data-theme={isLight ? "light" : "dark"}>
       <body
         className={`${satoshi.variable} font-sans bg-bg text-ink antialiased`}
       >
@@ -37,7 +42,7 @@ export default function RootLayout({
           <MessagesWidget />
         </QuickUpload>
         <Toaster
-          theme="dark"
+          theme={isLight ? "light" : "dark"}
           position="bottom-right"
           toastOptions={{
             classNames: {

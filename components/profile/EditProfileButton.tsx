@@ -38,7 +38,7 @@ export function EditProfileButton({ user, avatarUrl, coverUrl }: EditProfileButt
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button variant="secondary" onClick={() => setOpen(true)}>
+      <Button variant="secondary" className="profile-hero-glass text-on-photo" onClick={() => setOpen(true)}>
         Edit Profile
       </Button>
 

@@ -32,6 +32,13 @@ enum AccountStatus {
   BANNED
 }
 
+// Tema di aspetto del sito (Settings, D4 della lista design): scuro di default per tutti, il
+// chiaro è una scelta esplicita. Vedi lib/theme.ts per dove viene letto/scritto.
+enum Theme {
+  DARK
+  LIGHT
+}
+
 enum CreatorStatus {
   ACTIVE
   SUSPENDED
@@ -168,6 +175,11 @@ model User {
   // delicate come Recovery & Sobriety/Mental Health), non per i creator: un Journey pubblicato
   // resta comunque scopribile in Discovery/Ricerca, vedi lib/profile/profileVisibility.ts.
   isPrivate Boolean @default(false)
+
+  // Tema di aspetto scelto in Settings > Appearance (D4, 2026-10-10): scuro di default, il chiaro
+  // è una scelta esplicita. Sincronizzato anche in un cookie (lib/theme.ts) per evitare il lampo
+  // del tema sbagliato al primo caricamento di ogni pagina.
+  theme Theme @default(DARK)
 
   // Preferenze notifiche (Settings > Notifications): quali eventi generano una notifica per
   // questo utente. Regola opt-out (default true) per non silenziare tutti al lancio della

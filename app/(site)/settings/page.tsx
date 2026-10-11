@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { requireSession } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { PageTitle } from "@/components/ui/heading";
+import { ThemeToggle } from "@/components/settings/ThemeToggle";
 
 const SETTINGS_SECTIONS = [
   { href: "/settings/account", label: "Account", description: "Name, username, bio, location" },
@@ -14,7 +16,11 @@ const SETTINGS_SECTIONS = [
 ];
 
 export default async function SettingsPage() {
-  await requireSession();
+  const { user } = await requireSession();
+  const { theme } = await prisma.user.findUniqueOrThrow({
+    where: { id: user.id },
+    select: { theme: true },
+  });
 
   return (
     <main>
@@ -22,7 +28,11 @@ export default async function SettingsPage() {
         <PageTitle>Settings</PageTitle>
         <p className="mt-2 text-sm text-ink-muted">Manage your account, notifications and preferences.</p>
 
-        <div className="mt-8 divide-y divide-border rounded-xl border border-border bg-surface">
+        <div className="mt-6">
+          <ThemeToggle theme={theme} />
+        </div>
+
+        <div className="mt-6 divide-y divide-border rounded-xl border border-border bg-surface">
           {SETTINGS_SECTIONS.map((section) => (
             <Link
               key={section.href}

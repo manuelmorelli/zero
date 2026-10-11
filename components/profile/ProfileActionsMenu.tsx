@@ -79,7 +79,7 @@ export function ProfileActionsMenu({ userId, name }: { userId: string; name: str
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label="More options"
-          className="grid h-9 w-9 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember hover:text-ember"
+          className="profile-hero-glass grid h-9 w-9 place-items-center rounded-full border border-border text-on-photo-muted transition-colors hover:text-ember"
         >
           <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
         </DropdownMenuTrigger>
