@@ -321,6 +321,24 @@ body {
   background-image: linear-gradient(to bottom right, var(--color-surface-2), var(--color-surface-2), var(--color-bg));
 }
 
+/* Luce dietro le chat AI (Community, Ember): bianca e neutra, niente arancione (scelta di
+ * Manuel), sempre la stessa indipendentemente dal tema. Forte al centro a chat vuota
+ * (-idle, -idle-compact per il pannello piccolo di Ember), scende dietro la barra di scrittura
+ * una volta iniziata la conversazione (-active). */
+.chat-ambient-light-idle {
+  background-image:
+    radial-gradient(ellipse 55% 40% at 50% 48%, rgba(255, 255, 255, 16%), transparent 70%),
+    radial-gradient(ellipse 95% 75% at 50% 50%, rgba(255, 255, 255, 6%), transparent 80%);
+}
+.chat-ambient-light-idle-compact {
+  background-image:
+    radial-gradient(ellipse 55% 40% at 50% 40%, rgba(255, 255, 255, 16%), transparent 70%),
+    radial-gradient(ellipse 95% 75% at 50% 50%, rgba(255, 255, 255, 6%), transparent 80%);
+}
+.chat-ambient-light-active {
+  background-image: radial-gradient(ellipse 65% 35% at 50% 100%, rgba(255, 255, 255, 12%), transparent 75%);
+}
+
 /* Sagoma di caricamento (skeleton): invisibile per i primi 250ms, poi compare con una
  * dissolvenza di 0,4s (comparsa "media" di docs/21_Motion_Guidelines.md). Se la pagina è pronta
  * prima dei 250ms (il caso più comune da locale/produzione veloce) non si vede alcun lampo

@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button, ButtonSecondary } from "@/components/ui/button";
 
 /** "New chat" della chat AI Community, con la matita come su Gemini. Chiede conferma perché non
  * esiste uno storico: la conversazione cancellata non si recupera (quello già creato resta). */
@@ -18,15 +19,10 @@ export function CommunityAiNewChatButton({ onConfirm, disabled }: { onConfirm: (
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        disabled={disabled}
-        className="inline-flex items-center gap-2 rounded-full border border-ember/35 bg-surface px-4 py-2 text-sm font-semibold text-ink shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] transition-all duration-300 hover:border-ember/70 hover:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)] disabled:cursor-not-allowed disabled:opacity-50"
-      >
+      <ButtonSecondary onClick={() => setOpen(true)} disabled={disabled} className="py-2">
         <SquarePen className="h-4 w-4" aria-hidden="true" />
         New chat
-      </button>
+      </ButtonSecondary>
 
       {open && (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -38,23 +34,18 @@ export function CommunityAiNewChatButton({ onConfirm, disabled }: { onConfirm: (
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="rounded-full border border-border px-4 py-2 text-[0.8rem] font-semibold text-ink-muted transition-colors hover:border-ember-line"
-              >
+              <Button variant="secondary" onClick={() => setOpen(false)}>
                 Cancel
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="danger"
                 onClick={() => {
                   setOpen(false);
                   onConfirm();
                 }}
-                className="rounded-full bg-danger px-4 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-danger/90"
               >
                 New chat
-              </button>
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

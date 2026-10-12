@@ -160,5 +160,5 @@ export const DEMO_TOP_JOURNEYS: TopJourneyItem[] = [
   { id: "demo-10", title: "Three months of therapy, honestly", coverUrl: null, category: "Mental Health", creatorName: "Priya R.", creatorAvatarUrl: null, followersCount: 27000, episodesCount: 13, journeyScore: 91 },
   { id: "demo-9", title: "Building a tiny house by hand", coverUrl: null, category: "Minimalism & Slow Living", creatorName: "Noah K.", creatorAvatarUrl: null, followersCount: 22000, episodesCount: 19, journeyScore: 88 },
   { id: "demo-6", title: "My first vegetable garden, one season in", coverUrl: null, category: "Gardening & Plants", creatorName: "Giulia F.", creatorAvatarUrl: null, followersCount: 12000, episodesCount: 16, journeyScore: 81 },
-  { id: "demo-8", title: "Learning Mandarin from zero", coverUrl: null, category: "Learning", creatorName: "Yuki S.", creatorAvatarUrl: null, followersCount: 5400, episodesCount: 8, journeyScore: 77 },
+  { id: "demo-8", title: "Learning Mandarin from scratch", coverUrl: null, category: "Learning", creatorName: "Yuki S.", creatorAvatarUrl: null, followersCount: 5400, episodesCount: 8, journeyScore: 77 },
 ];

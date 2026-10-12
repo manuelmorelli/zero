@@ -25,7 +25,7 @@ export const auth = betterAuth({
     sendResetPassword: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
-        subject: "Reset your password — Zero",
+        subject: "Reset your Zero password",
         html: `<p>Hi ${user.name},</p><p>You asked to reset the password for your Zero account. Click the link below to choose a new one:</p><p><a href="${url}">${url}</a></p><p>If this wasn't you, just ignore this email: your password will stay the same.</p>`,
       });
     },
@@ -34,7 +34,7 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
-        subject: "Confirm your email — Zero",
+        subject: "Confirm your Zero email",
         html: `<p>Hi ${user.name},</p><p>Confirm your email address to activate your Zero account:</p><p><a href="${url}">${url}</a></p>`,
       });
     },

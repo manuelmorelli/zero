@@ -14,6 +14,10 @@ export const PAGE_WIDTH = {
    * (stesso md:inset-x-[4.43%] della foto): usato solo dove il testo deve iniziare
    * esattamente sotto quel bordo, non come contenitore di pagina generico. */
   wideCover: "mx-auto w-full max-w-[1400px] px-5 md:px-[calc(4.43%+2rem)]",
+  /** Colonna delle chat AI a schermo intero (Community, Ember): più stretta di "narrow" e senza
+   * la distanza standard dalla barra in alto, perché qui lo spazio verticale lo gestisce la chat
+   * stessa (barra di scrittura fissa in fondo), non PAGE_SPACING. */
+  chat: "mx-auto w-full max-w-3xl px-4",
 } as const;
 
 /** Distanza dalla barra in alto e dal fondo pagina. */

@@ -1,7 +1,7 @@
 ---
 title: Regola di Movimento
 doc_id: 21-motion-guidelines
-version: "2.0"
+version: "2.1"
 status: approved
 related_docs:
   - 15_Design_System
@@ -10,7 +10,7 @@ related_docs:
 
 # Regola di Movimento
 
-Approvata da Manuel il 2026-10-07, aggiornata il 2026-10-09 dopo le prove (sabbia 3D, carattere Satoshi). Il controllo automatico (`scripts/check-design.mjs`) verifica forme e colori ma non il movimento: questa regola si rispetta a mano, a ogni modifica che fa muovere qualcosa.
+Approvata da Manuel il 2026-10-07, aggiornata il 2026-10-09 dopo le prove (sabbia 3D, carattere Satoshi) e il 2026-10-12 (quarta fascia di durata, controllo automatico su curva/durate/rimbalzi, eccezione del rimbalzo di Ember). Il controllo automatico (`scripts/check-design.mjs`) ora verifica anche curva, durate e rimbalzi vietati, oltre a forme e colori; i casi che non può giudicare da solo restano da rispettare a mano.
 
 ## Scopo
 
@@ -21,6 +21,10 @@ Il sito deve avere vita, ma il movimento non deve mai togliere attenzione al con
 - **Lenta**, da 8 a 14 secondi: sfondo, sabbia, video.
 - **Media**, da 0,3 a 0,9 secondi: comparse, cambi di frase, righe che salgono.
 - **Rapida**, da 0,15 a 0,25 secondi: risposte ai clic e al passaggio del mouse.
+- **Dissolvenza tra due video che si alternano**, circa 1 secondo (0,8-1,2): il passaggio da una
+  clip alla successiva nel video di sfondo della Hero (approvato da Manuel il 2026-10-12). Caso a
+  parte perché non è né una risposta a un clic né una comparsa: è il collegamento tra due clip
+  dello stesso sfondo lento.
 
 ## Stile
 
@@ -46,7 +50,9 @@ Lo sfondo vivo del sito è un fiume di sabbia dorata in 3D (three.js, `lib/sand/
 
 ## Vietato
 
-- Rimbalzi, elastico, lettere che compaiono una per una.
+- Rimbalzi, elastico, lettere che compaiono una per una. **Un'unica eccezione ammessa** (Manuel,
+  2026-10-12): la faccina di Ember nell'header rimbalza una volta sola, al primo caricamento della
+  pagina, per farsi notare. Nessun altro elemento del sito può rimbalzare.
 - Testi che lampeggiano o scorrono in continuo.
 - Spostare di pochi pixel un testo grande durante una dissolvenza: le lettere saltano da un pixel all'altro e sembra uno scatto.
 - Sfocature animate su testi grandi o `mix-blend-mode` su livelli a tutto schermo: con video e sabbia sotto costano troppo e fanno scattare il resto.

@@ -6,6 +6,12 @@ import { FileText, Sparkles, Upload } from "lucide-react";
 import { streamCommunityAiTurn } from "@/lib/communityAiChatStream";
 import { AI_MARKDOWN_COMPONENTS } from "@/components/common/aiMarkdownComponents";
 import { COMMUNITY_LISTING_LABELS } from "@/lib/constants/communityListing";
+import { ButtonPrimary } from "@/components/ui/button";
+import { ChatBubbleAssistant, ChatBubbleUser } from "@/components/ui/chat";
+import { ChatWelcomeTitle } from "@/components/ui/heading";
+import { NOTICE } from "@/components/ui/panel";
+import { PageContainer } from "@/components/ui/page-container";
+import { cn } from "@/lib/utils";
 import {
   loadCommunityAiChat,
   saveCommunityAiChat,
@@ -206,37 +212,37 @@ export function CommunityAiChat({
           scrittura. Bianca e neutra, niente arancione (richiesta di Manuel del 2026-09-29). */}
       <div
         aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_55%_40%_at_50%_48%,rgba(255,255,255,0.16),transparent_70%),radial-gradient(ellipse_95%_75%_at_50%_50%,rgba(255,255,255,0.06),transparent_80%)] transition-opacity duration-700 ${
+        className={`chat-ambient-light-idle pointer-events-none absolute inset-0 -z-10 transition-opacity duration-700 ${
           hasConversation ? "opacity-0" : "opacity-100"
         }`}
       />
       <div
         aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_65%_35%_at_50%_100%,rgba(255,255,255,0.12),transparent_75%)] transition-opacity duration-700 ${
+        className={`chat-ambient-light-active pointer-events-none absolute inset-0 -z-10 transition-opacity duration-700 ${
           hasConversation ? "opacity-100" : "opacity-0"
         }`}
       />
 
       {!hasConversation ? (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-4 pb-[8vh]">
-          <h1 className="text-center text-3xl font-light tracking-tight text-ink sm:text-5xl">
+          <ChatWelcomeTitle>
             {creatorFirstName ? `What shall we create today, ${creatorFirstName}?` : "What shall we create today?"}
-          </h1>
+          </ChatWelcomeTitle>
           <div className="mt-10 w-full max-w-3xl">{composer}</div>
-          <p className="mt-4 text-center text-xs text-ink-faint">
+          <p className="mt-4 text-center text-sm text-ink-faint">
             A workshop, an event, a digital product or a 1:1 service. Describe it and I&apos;ll prepare a draft.
           </p>
         </div>
       ) : (
         <>
-          <div className="mx-auto flex w-full max-w-3xl justify-end px-4 pt-4">
+          <PageContainer width="chat" spacing={false} className="flex justify-end pt-4">
             <CommunityAiNewChatButton onConfirm={handleNewChat} disabled={pending} />
-          </div>
+          </PageContainer>
           <div
             ref={scrollRef}
             className="min-h-0 flex-1 overflow-y-auto [scrollbar-color:var(--color-surface-2)_transparent] [scrollbar-width:thin]"
           >
-            <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
+            <PageContainer width="chat" spacing={false} className="flex flex-col gap-6 py-8">
               {chat.messages.map((message, index) =>
                 index === 0 ? null : message.role === "user" ? (
                   <div key={index} className="ml-auto flex max-w-[85%] flex-col items-end gap-2">
@@ -250,53 +256,40 @@ export function CommunityAiChat({
                           />
                         </div>
                       ) : (
-                        <div
-                          key={attachment.key}
-                          className="flex max-w-full items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-ink"
-                        >
+                        <div key={attachment.key} className={cn(NOTICE, "flex max-w-full items-center gap-2 text-ink")}>
                           <FileText className="h-4 w-4 shrink-0 text-ink-muted" aria-hidden="true" />
-                          <span className="truncate text-xs">{attachment.name}</span>
+                          <span className="truncate text-sm">{attachment.name}</span>
                         </div>
                       )
                     )}
-                    {message.text && (
-                      <div className="whitespace-pre-wrap rounded-3xl rounded-tr-md bg-surface-2 px-4 py-2.5 text-base leading-relaxed text-ink">
-                        {message.text}
-                      </div>
-                    )}
+                    {message.text && <ChatBubbleUser>{message.text}</ChatBubbleUser>}
                   </div>
                 ) : (
-                  <div key={index} className="flex gap-3">
-                    <Sparkles className="mt-1 h-5 w-5 shrink-0 text-ember" aria-hidden="true" />
-                    <div className="min-w-0 flex-1 text-base leading-relaxed">
-                      {message.imageKey && (
-                        <div className="max-w-sm">
-                          <CommunityAiChatImage
-                            imageKey={message.imageKey}
-                            selected={coverKey === message.imageKey}
-                            onSelect={() => setChat((current) => ({ ...current, coverKey: message.imageKey }))}
-                          />
-                        </div>
-                      )}
-                      <div className={message.failed ? "text-ink-muted" : "text-ink"}>
-                        <ReactMarkdown components={AI_MARKDOWN_COMPONENTS}>{message.text}</ReactMarkdown>
+                  <ChatBubbleAssistant key={index}>
+                    {message.imageKey && (
+                      <div className="max-w-sm">
+                        <CommunityAiChatImage
+                          imageKey={message.imageKey}
+                          selected={coverKey === message.imageKey}
+                          onSelect={() => setChat((current) => ({ ...current, coverKey: message.imageKey }))}
+                        />
                       </div>
-                      <CommunityAiMessageActions
-                        text={message.text}
-                        onRegenerate={index === lastIndex && canRegenerateLast ? () => handleRegenerate(index) : undefined}
-                        disabled={pending}
-                      />
+                    )}
+                    <div className={message.failed ? "text-ink-muted" : "text-ink"}>
+                      <ReactMarkdown components={AI_MARKDOWN_COMPONENTS}>{message.text}</ReactMarkdown>
                     </div>
-                  </div>
+                    <CommunityAiMessageActions
+                      text={message.text}
+                      onRegenerate={index === lastIndex && canRegenerateLast ? () => handleRegenerate(index) : undefined}
+                      disabled={pending}
+                    />
+                  </ChatBubbleAssistant>
                 )
               )}
               {streamingText !== null ? (
-                <div className="flex gap-3">
-                  <Sparkles className="mt-1 h-5 w-5 shrink-0 animate-pulse text-ember" aria-hidden="true" />
-                  <div className="min-w-0 flex-1 text-base leading-relaxed text-ink">
-                    <ReactMarkdown components={AI_MARKDOWN_COMPONENTS}>{streamingText}</ReactMarkdown>
-                  </div>
-                </div>
+                <ChatBubbleAssistant pulseIcon className="text-ink">
+                  <ReactMarkdown components={AI_MARKDOWN_COMPONENTS}>{streamingText}</ReactMarkdown>
+                </ChatBubbleAssistant>
               ) : (
                 pending &&
                 lastMessage?.role === "user" && (
@@ -306,28 +299,27 @@ export function CommunityAiChat({
                   </div>
                 )
               )}
-            </div>
+            </PageContainer>
           </div>
 
           {/* In basso la barra resta fissa; sotto lg lascia spazio a destra ai pulsanti rotondi
               globali (messaggi, notifiche, "+") che altrimenti la coprirebbero. */}
-          <div className="mx-auto w-full max-w-3xl px-4 pb-4 max-lg:pr-[5.5rem]">
+          <PageContainer width="chat" spacing={false} className="pb-4 max-lg:pr-[5.5rem]">
             {readyDraft && (
-              <button
-                type="button"
+              <ButtonPrimary
                 onClick={() => onDraftReady({ ...readyDraft, draft: { ...readyDraft.draft, coverKey: coverKey ?? null } })}
-                className="mb-3 w-full rounded-full bg-ember px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-ember/90"
+                className="mb-3 w-full"
               >
                 Fill the {COMMUNITY_LISTING_LABELS[readyDraft.type]} form with this
-              </button>
+              </ButtonPrimary>
             )}
             {composer}
-          </div>
+          </PageContainer>
         </>
       )}
 
       {dragging && (
-        <div className="pointer-events-none absolute inset-x-4 bottom-4 top-[calc(3.85rem+1rem)] flex flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-ink-muted bg-bg/85 text-sm font-semibold text-ink">
+        <div className="pointer-events-none absolute inset-x-4 bottom-4 top-[calc(3.85rem+1rem)] flex flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-ink-muted bg-scrim text-sm font-semibold text-ink">
           <Upload className="h-6 w-6 text-ink" aria-hidden="true" />
           Drop your photos or PDFs here
         </div>

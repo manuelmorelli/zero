@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Check, Copy, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const COPIED_FEEDBACK_MS = 2000;
-
-const ACTION_CLASS =
-  "flex h-8 w-8 items-center justify-center rounded-full text-ink-faint transition-colors hover:bg-surface-2 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40";
 
 /** I tasti sotto una risposta dell'AI, come su Gemini: "Copy" sempre, "Regenerate" solo
  * sull'ultima risposta (chiede all'AI un'altra versione dello stesso turno). */
@@ -38,20 +36,13 @@ export function CommunityAiMessageActions({
 
   return (
     <div className="mt-1 flex items-center gap-0.5">
-      <button type="button" onClick={handleCopy} aria-label={copied ? "Copied" : "Copy"} title="Copy" className={ACTION_CLASS}>
+      <Button variant="ghostIconSmall" onClick={handleCopy} aria-label={copied ? "Copied" : "Copy"} title="Copy">
         {copied ? <Check className="h-4 w-4 text-ember" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
-      </button>
+      </Button>
       {onRegenerate && (
-        <button
-          type="button"
-          onClick={onRegenerate}
-          disabled={disabled}
-          aria-label="Regenerate"
-          title="Regenerate"
-          className={ACTION_CLASS}
-        >
+        <Button variant="ghostIconSmall" onClick={onRegenerate} disabled={disabled} aria-label="Regenerate" title="Regenerate">
           <RotateCcw className="h-4 w-4" aria-hidden="true" />
-        </button>
+        </Button>
       )}
     </div>
   );

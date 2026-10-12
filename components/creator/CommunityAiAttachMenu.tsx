@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { BUTTON_VARIANTS } from "@/components/ui/button";
 import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
 import { MAX_AI_ATTACHMENTS_PER_MESSAGE, PDF_CONTENT_TYPE } from "@/lib/constants/communityAiAttachment";
 
@@ -57,10 +58,7 @@ export function CommunityAiAttachMenu({ onFiles }: { onFiles: (files: FileList |
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger
-          aria-label="Attach photos or PDFs"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
-        >
+        <DropdownMenuTrigger aria-label="Attach photos or PDFs" className={BUTTON_VARIANTS.ghostIcon}>
           <Plus className="h-5 w-5" aria-hidden="true" />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" align="start" className="w-60">
@@ -69,7 +67,7 @@ export function CommunityAiAttachMenu({ onFiles }: { onFiles: (files: FileList |
               <Camera className="h-4 w-4 text-ink-muted" aria-hidden="true" />
               <span className="flex flex-col">
                 Camera
-                <span className="text-xs text-ink-faint">Take a photo now</span>
+                <span className="text-sm text-ink-faint">Take a photo now</span>
               </span>
             </DropdownMenuItem>
           )}
@@ -77,18 +75,18 @@ export function CommunityAiAttachMenu({ onFiles }: { onFiles: (files: FileList |
             <ImageIcon className="h-4 w-4 text-ink-muted" aria-hidden="true" />
             <span className="flex flex-col">
               Photo
-              <span className="text-xs text-ink-faint">JPG, PNG or WebP</span>
+              <span className="text-sm text-ink-faint">JPG, PNG or WebP</span>
             </span>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => pdfInputRef.current?.click()}>
             <FileText className="h-4 w-4 text-ink-muted" aria-hidden="true" />
             <span className="flex flex-col">
               PDF document
-              <span className="text-xs text-ink-faint">A program, a guide, notes…</span>
+              <span className="text-sm text-ink-faint">A program, a guide, notes…</span>
             </span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <p className="px-2.5 py-1.5 text-xs text-ink-faint">
+          <p className="px-2.5 py-1.5 text-sm text-ink-faint">
             Up to {MAX_AI_ATTACHMENTS_PER_MESSAGE} files. The AI reads them to help you.
           </p>
         </DropdownMenuContent>

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { NOTICE } from "@/components/ui/panel";
 import { archiveUpdate, markUpdateViewed, reactToUpdate, submitAnswer, voteOnPoll } from "@/lib/actions/update";
@@ -310,12 +309,9 @@ function StorySlide({
         )}
 
         {update.link && (
-          <Link
-            href={update.link.href}
-            className="inline-flex w-fit items-center gap-1.5 rounded-full bg-on-photo px-4 py-2 text-sm font-semibold text-bg"
-          >
+          <Button href={update.link.href} variant="onPhoto" className="w-fit">
             {update.link.label} →
-          </Link>
+          </Button>
         )}
 
         {/* Il proprietario legge subito le risposte ricevute, stile Instagram (swipe-up sulla

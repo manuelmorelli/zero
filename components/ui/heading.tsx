@@ -40,3 +40,7 @@ export const ReadingTitle = make("h2", "text-reading font-bold tracking-tight te
 
 /** Titolo dentro le card e i riquadri. */
 export const CardTitle = make("h3", "text-lg font-bold leading-tight text-ink");
+
+/** Titolo leggero e grande di apertura, per le chat AI a schermo intero ("What shall we create
+ * today?"): apposta più sottile dei titoli normali, non un errore di peso del font. */
+export const ChatWelcomeTitle = make("h1", "text-center text-3xl font-light tracking-tight text-ink sm:text-5xl");

@@ -240,13 +240,14 @@ export default async function PublicProfilePage({
 
       <ProfileTabs
         basePath={`/profile/${username}`}
+        activeTab={activeTab}
         actions={
           isOwnProfile ? (
             <Link
               href="/dashboard/community"
               className={cn(
                 BUTTON_VARIANTS.secondary,
-                "profile-hero-glass profile-tab-glass text-on-photo transition-all duration-300 hover:-translate-y-1"
+                "profile-hero-glass profile-tab-glass text-on-photo opacity-70 transition-all duration-300 hover:-translate-y-1 hover:opacity-100"
               )}
             >
               Community

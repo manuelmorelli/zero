@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUp, Sparkles } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { IconButton } from "@/components/ui/button";
+import { ChatBubbleAssistant, ChatBubbleUser, ChatComposerShell } from "@/components/ui/chat";
 import { AI_MARKDOWN_COMPONENTS } from "@/components/common/aiMarkdownComponents";
 import { streamSiteAssistantTurn } from "@/lib/ai/siteAssistantChatStream";
 import {
@@ -91,13 +92,13 @@ export function EmberChatPanel() {
           scende dietro la barra di scrittura una volta iniziata la conversazione. */}
       <div
         aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_55%_40%_at_50%_40%,rgba(255,255,255,0.16),transparent_70%),radial-gradient(ellipse_95%_75%_at_50%_50%,rgba(255,255,255,0.06),transparent_80%)] transition-opacity duration-700 ${
+        className={`chat-ambient-light-idle-compact pointer-events-none absolute inset-0 -z-10 transition-opacity duration-700 ${
           hasConversation ? "opacity-0" : "opacity-100"
         }`}
       />
       <div
         aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_65%_35%_at_50%_100%,rgba(255,255,255,0.12),transparent_75%)] transition-opacity duration-700 ${
+        className={`chat-ambient-light-active pointer-events-none absolute inset-0 -z-10 transition-opacity duration-700 ${
           hasConversation ? "opacity-100" : "opacity-0"
         }`}
       />
@@ -114,25 +115,19 @@ export function EmberChatPanel() {
         <div className="flex flex-col gap-4">
           {chat.messages.map((message, index) =>
             message.role === "user" ? (
-              <div key={index} className="ml-auto max-w-[85%] whitespace-pre-wrap rounded-3xl bg-surface-2 px-3.5 py-2 text-sm text-ink">
+              <ChatBubbleUser key={index} compact>
                 {message.text}
-              </div>
+              </ChatBubbleUser>
             ) : (
-              <div key={index} className="flex gap-2">
-                <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-ember" aria-hidden="true" />
-                <div className={`min-w-0 flex-1 text-sm leading-relaxed ${message.failed ? "text-ink-muted" : "text-ink"}`}>
-                  <ReactMarkdown components={AI_MARKDOWN_COMPONENTS}>{message.text}</ReactMarkdown>
-                </div>
-              </div>
+              <ChatBubbleAssistant key={index} compact className={message.failed ? "text-ink-muted" : "text-ink"}>
+                <ReactMarkdown components={AI_MARKDOWN_COMPONENTS}>{message.text}</ReactMarkdown>
+              </ChatBubbleAssistant>
             )
           )}
           {streamingText !== null ? (
-            <div className="flex gap-2">
-              <Sparkles className="mt-0.5 h-4 w-4 shrink-0 animate-pulse text-ember" aria-hidden="true" />
-              <div className="min-w-0 flex-1 text-sm leading-relaxed text-ink">
-                <ReactMarkdown components={AI_MARKDOWN_COMPONENTS}>{streamingText}</ReactMarkdown>
-              </div>
-            </div>
+            <ChatBubbleAssistant compact pulseIcon className="text-ink">
+              <ReactMarkdown components={AI_MARKDOWN_COMPONENTS}>{streamingText}</ReactMarkdown>
+            </ChatBubbleAssistant>
           ) : (
             pending && (
               <div className="flex items-center gap-2 text-sm text-ink-faint">
@@ -145,8 +140,7 @@ export function EmberChatPanel() {
       </div>
 
       <div className="border-t border-border p-3">
-        {/* Stesso bordo e bagliore arancioni della barra della chat Community (CommunityAiComposer.tsx). */}
-        <div className="flex items-end gap-2 rounded-[2rem] border border-ember/35 bg-surface px-1.5 py-1.5 shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] transition-all duration-300 hover:border-ember/70 hover:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)] focus-within:border-ember/70 focus-within:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)]">
+        <ChatComposerShell className="flex items-end gap-2 px-1.5 py-1.5">
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
@@ -164,7 +158,7 @@ export function EmberChatPanel() {
           <IconButton onClick={handleSend} disabled={!input.trim() || pending} aria-label="Send">
             <ArrowUp className="h-4 w-4" aria-hidden="true" />
           </IconButton>
-        </div>
+        </ChatComposerShell>
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ import type { PendingAttachment } from "@/hooks/useCommunityAiAttachments";
 import { useSpeechDictation } from "@/hooks/useSpeechDictation";
 import { CommunityAiAttachmentPreview } from "@/components/creator/CommunityAiAttachmentPreview";
 import { CommunityAiAttachMenu } from "@/components/creator/CommunityAiAttachMenu";
+import { Button } from "@/components/ui/button";
+import { ChatComposerShell } from "@/components/ui/chat";
 
 const MAX_MESSAGE_LENGTH = 2000;
 // Solo con mouse/trackpad: sul telefono mettere il cursore da solo aprirebbe la tastiera.
@@ -54,11 +56,9 @@ export function CommunityAiComposer({
   const error = attachmentError ?? dictation.error;
 
   return (
-    // Bordo e alone arancioni identici a ButtonSecondary ("Create Your Journey" nella Home), più
-    // accesi al passaggio del mouse (come quel bottone) e mentre si scrive.
-    <div className="rounded-[2rem] border border-ember/35 bg-surface shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] transition-all duration-300 hover:border-ember/70 hover:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)] focus-within:border-ember/70 focus-within:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)]">
+    <ChatComposerShell>
       <CommunityAiAttachmentPreview attachments={attachments} onRemove={onRemoveAttachment} />
-      {error && <p className="px-5 pt-2 text-xs text-danger">{error}</p>}
+      {error && <p className="px-5 pt-2 text-sm text-danger">{error}</p>}
       <div className="flex items-end gap-1 p-2">
         <CommunityAiAttachMenu onFiles={onFiles} />
         <textarea
@@ -82,35 +82,19 @@ export function CommunityAiComposer({
           className="max-h-48 min-h-10 flex-1 resize-none self-center bg-transparent px-2 py-2 text-base leading-relaxed text-ink outline-none [field-sizing:content] placeholder:text-ink-faint"
         />
         {dictation.listening ? (
-          <button
-            type="button"
-            onClick={dictation.stop}
-            aria-label="Stop dictation"
-            className="flex h-10 w-10 shrink-0 animate-pulse items-center justify-center rounded-full bg-ember text-white"
-          >
+          <Button variant="activeRound" onClick={dictation.stop} aria-label="Stop dictation">
             <Square className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
-          </button>
+          </Button>
         ) : showMic ? (
-          <button
-            type="button"
-            onClick={dictation.start}
-            aria-label="Dictate with the microphone"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
-          >
+          <Button variant="ghostIcon" onClick={dictation.start} aria-label="Dictate with the microphone">
             <Mic className="h-5 w-5" aria-hidden="true" />
-          </button>
+          </Button>
         ) : (
-          <button
-            type="button"
-            onClick={send}
-            disabled={!canSend}
-            aria-label="Send"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-bg transition-colors hover:bg-ink-muted disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-ink-faint"
-          >
+          <Button variant="sendRound" onClick={send} disabled={!canSend} aria-label="Send">
             <ArrowUp className="h-4 w-4" aria-hidden="true" />
-          </button>
+          </Button>
         )}
       </div>
-    </div>
+    </ChatComposerShell>
   );
 }

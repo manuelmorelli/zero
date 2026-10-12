@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { MessageBubble } from "@/components/ui/chat";
 import type { ChatMessage } from "./useChatSession";
 
 type ChatMessageListProps = {
@@ -24,16 +25,9 @@ export function ChatMessageList({ messages, currentUserId, otherUserName }: Chat
         </p>
       ) : (
         messages.map((message) => (
-          <div
-            key={message.id}
-            className={
-              message.senderId === currentUserId
-                ? "ml-auto max-w-[80%] rounded-2xl rounded-tr-sm bg-ink px-3.5 py-2.5 text-sm text-bg"
-                : "max-w-[80%] rounded-2xl rounded-tl-sm bg-surface-2 px-3.5 py-2.5 text-sm text-ink"
-            }
-          >
+          <MessageBubble key={message.id} mine={message.senderId === currentUserId}>
             {message.content}
-          </div>
+          </MessageBubble>
         ))
       )}
     </div>

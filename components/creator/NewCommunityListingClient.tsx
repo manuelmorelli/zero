@@ -7,6 +7,10 @@ import { CommunityAiChat } from "@/components/creator/CommunityAiChat";
 import { CommunityListingForm, type CommunityListingDraft } from "@/components/creator/CommunityListingForm";
 import { COMMUNITY_LISTING_LABELS, COMMUNITY_LISTING_TYPES, type CommunityListingType } from "@/lib/constants/communityListing";
 import { markCommunityAiDraftUsed } from "@/lib/communityAiChatStorage";
+import { NOTICE, PANEL } from "@/components/ui/panel";
+import { PageContainer } from "@/components/ui/page-container";
+import { PageTitle, SectionTitle } from "@/components/ui/heading";
+import { cn } from "@/lib/utils";
 
 // Il passaggio della pagina sta nell'indirizzo (?step=...), non solo in memoria: così la freccia
 // arancione "Back" dell'header (che fa come il tasto indietro del browser) torna al passaggio
@@ -62,10 +66,10 @@ export function NewCommunityListingClient({
   if (step === STEP_AI_FORM && aiDraft) {
     return (
       <PageShell>
-        <p className="mb-4 rounded-lg border border-ember/20 bg-ember/5 px-3.5 py-2.5 text-xs text-ink-muted">
+        <p className={cn(NOTICE, "mb-4")}>
           Review what the AI drafted below, change anything you like, then create it. Nothing is saved yet.
         </p>
-        <h2 className="mb-4 text-base font-semibold text-ink">New {COMMUNITY_LISTING_LABELS[aiDraft.type]}</h2>
+        <SectionTitle className="mb-4">New {COMMUNITY_LISTING_LABELS[aiDraft.type]}</SectionTitle>
         <CommunityListingForm
           type={aiDraft.type}
           initialDraft={aiDraft.draft}
@@ -78,7 +82,7 @@ export function NewCommunityListingClient({
   if (step === STEP_WRITE && isListingType(typeParam)) {
     return (
       <PageShell>
-        <h2 className="mb-4 text-base font-semibold text-ink">New {COMMUNITY_LISTING_LABELS[typeParam]}</h2>
+        <SectionTitle className="mb-4">New {COMMUNITY_LISTING_LABELS[typeParam]}</SectionTitle>
         <CommunityListingForm type={typeParam} />
       </PageShell>
     );
@@ -94,7 +98,7 @@ export function NewCommunityListingClient({
               key={option}
               type="button"
               onClick={() => goToStep({ step: STEP_WRITE, type: option })}
-              className="rounded-xl border border-border bg-surface px-4 py-3.5 text-sm font-semibold text-ink shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow"
+              className={cn(PANEL, "text-left text-sm font-semibold text-ink shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
             >
               {COMMUNITY_LISTING_LABELS[option]}
             </button>
@@ -110,20 +114,20 @@ export function NewCommunityListingClient({
         <button
           type="button"
           onClick={() => goToStep({ step: STEP_WRITE })}
-          className="flex flex-col items-start gap-2 rounded-2xl border border-border bg-surface p-6 text-left shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow"
+          className={cn(PANEL, "flex flex-col items-start gap-2 text-left shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
         >
           <Pencil className="h-5 w-5 text-ink-muted" aria-hidden="true" />
           <span className="text-sm font-semibold text-ink">Write it yourself</span>
-          <span className="text-xs text-ink-muted">Fill in a simple empty form.</span>
+          <span className="text-sm text-ink-muted">Fill in a simple empty form.</span>
         </button>
         <button
           type="button"
           onClick={() => goToStep({ step: STEP_AI })}
-          className="flex flex-col items-start gap-2 rounded-2xl border border-ember/35 bg-ember/[0.08] p-6 text-left shadow-[0_0_20px_-10px_rgba(226,145,77,45%)] transition-all duration-300 hover:border-ember/70 hover:bg-ember/[0.15] hover:shadow-[0_0_28px_-8px_rgba(226,145,77,70%)]"
+          className={cn(PANEL, "flex flex-col items-start gap-2 text-left shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
         >
           <Sparkles className="h-5 w-5 text-ember" aria-hidden="true" />
           <span className="text-sm font-semibold text-ink">Describe it to the AI</span>
-          <span className="text-xs text-ink-muted">Chat in your own words, then review the draft.</span>
+          <span className="text-sm text-ink-muted">Chat in your own words, then review the draft.</span>
         </button>
       </div>
     </PageShell>
@@ -133,12 +137,12 @@ export function NewCommunityListingClient({
 /** Impaginazione dei passaggi "normali" (scelta, moduli): la chat AI invece occupa tutto lo schermo. */
 function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto w-full max-w-xl px-6 pb-16 pt-24">
-      <h1 className="text-xl font-bold tracking-tight">Add to your Community</h1>
+    <PageContainer>
+      <PageTitle>Add to your Community</PageTitle>
       <p className="mt-2 text-sm text-ink-muted">
         Create a Workshop, Event, Digital Product or 1:1 Service. It starts as a Draft that only you can see.
       </p>
       <div className="mt-8">{children}</div>
-    </div>
+    </PageContainer>
   );
 }
