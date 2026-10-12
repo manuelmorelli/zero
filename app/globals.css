@@ -6,6 +6,11 @@
  * docs/15_Design_System.md). Colori presi da palette collaudate (Tailwind neutral/amber/red),
  * mai derivati a mano. Il controllo automatico (scripts/check-design.mjs) blocca qualunque
  * colore o grandezza fuori da questa lista: per cambiare l'aspetto del sito si cambia QUI.
+ *
+ * I valori colore scritti qui sotto sono quelli del tema scuro, ma servono solo come richiesta
+ * tecnica di Tailwind (deve vederli qui per generare le classi bg-bg, text-ink, ecc.): la fonte
+ * vera per cambiare un colore di un solo tema sono i blocchi html[data-theme="dark"] e
+ * html[data-theme="light"] più sotto in questo file, non questo blocco @theme.
  */
 @theme {
   /* Sfondo e riquadri: grigio neutro, un gradino più scuro (neutral 950 / 900 / 800) */
@@ -98,12 +103,45 @@
   --font-sans: var(--font-satoshi);
 }
 
-/* Tema chiaro (Settings > Appearance, D4): scuro di default per tutti, il chiaro è una scelta
- * esplicita salvata nell'account (vedi lib/theme.ts). Stessi nomi di colore di sopra, stessi
- * valori collaudati (scala Tailwind neutral/amber/red), semplicemente ribaltati verso il chiaro:
- * le pagine non cambiano, cambia solo cosa questi nomi rappresentano. L'attributo sta su <html>
- * (impostato dal layout dal cookie del tema, zero lampo al caricamento), la specificità
- * dell'attributo batte :root senza bisogno di !important. */
+/* Tema scuro: blocco a sé, completo, separato dal tema chiaro qui sotto. Stessi valori che
+ * c'erano già dentro @theme qui sopra (copiati identici, non è cambiato nessun numero): prima
+ * lo scuro viveva solo come "il default per tutti" dentro @theme, e il chiaro si appoggiava in
+ * modo invisibile a quel blocco per tutto ciò che non sovrascriveva. Questo creava il rischio
+ * che una modifica pensata solo per lo scuro, fatta dentro @theme, finisse per cambiare anche il
+ * chiaro. Ora lo scuro ha il suo blocco esplicito, come il chiaro: per cambiare un colore di UN
+ * SOLO tema si modifica SOLO il blocco di quel tema, qui sotto o nel blocco "light" subito dopo.
+ * I valori dentro @theme restano lì solo perché Tailwind li richiede per generare le classi
+ * (bg-bg, text-ink, ecc.): da oggi non sono più "la fonte vera" per lo scuro, lo sono questi. */
+html[data-theme="dark"] {
+  --color-bg: oklch(14.5% 0 0);
+  --color-surface: oklch(20.5% 0 0);
+  --color-surface-2: oklch(26.9% 0 0);
+  --color-border: oklch(1 0 0 / 14%);
+
+  --color-ink: oklch(1 0 0);
+  --color-ink-muted: oklch(87% 0 0);
+  --color-ink-faint: oklch(70.8% 0 0);
+
+  --color-danger: oklch(70.4% 0.191 22.216);
+  --color-danger-soft: oklch(70.4% 0.191 22.216 / 10%);
+  --color-danger-line: oklch(70.4% 0.191 22.216 / 40%);
+
+  --color-ember: oklch(76.9% 0.188 70.08);
+  --color-ember-soft: oklch(76.9% 0.188 70.08 / 16%);
+  --color-ember-line: oklch(76.9% 0.188 70.08 / 55%);
+
+  --color-glass: oklch(1 0 0 / 8%);
+  --color-glass-strong: oklch(1 0 0 / 15%);
+
+  --shadow-glow: 0 0 22px -8px oklch(76.9% 0.188 70.08 / 55%);
+  --shadow-card: 0 20px 40px -22px oklch(0% 0 0 / 70%);
+}
+
+/* Tema chiaro (Settings > Appearance, D4): blocco a sé, completo, separato da quello scuro sopra.
+ * Stessi nomi di colore di @theme, stessi valori collaudati (scala Tailwind neutral/amber/red),
+ * semplicemente ribaltati verso il chiaro: le pagine non cambiano, cambia solo cosa questi nomi
+ * rappresentano. L'attributo sta su <html> (impostato dal layout dal cookie del tema, zero lampo
+ * al caricamento), la specificità dell'attributo batte :root senza bisogno di !important. */
 html[data-theme="light"] {
   /* Sfondo grigio deciso (neutral 300, non un grigio chiarissimo: un bianco pieno a schermo
    * intero abbaglia), card quasi bianche per staccarsi bene dallo sfondo (neutral 50), superficie
