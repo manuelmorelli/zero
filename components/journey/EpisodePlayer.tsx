@@ -7,10 +7,13 @@ import { saveEpisodeProgress } from "@/lib/actions/progress";
 import { Avatar } from "@/components/ui/avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
 import { TrustyButton } from "@/components/journey/TrustyButton";
+import { HighlightMarkButton } from "@/components/journey/HighlightMarkButton";
+import { HighlightList } from "@/components/journey/HighlightList";
 import { ShareButton } from "@/components/common/ShareButton";
 import { VideoPlayer, type VideoPlayerHandle } from "@/components/common/VideoPlayer";
 import { PageTitle } from "@/components/ui/heading";
 import { SponsoredLabel } from "@/components/common/SponsoredLabel";
+import { useHighlightMarker } from "@/hooks/useHighlightMarker";
 
 // Sotto questa quota non vale la pena riprendere da dove si era arrivati (praticamente l'inizio).
 const RESUME_THRESHOLD_SEC = 5;
@@ -46,6 +49,8 @@ type EpisodePlayerProps = {
   initialIsLiked: boolean;
   isLoggedIn: boolean;
   isOwnContent: boolean;
+  /** Punti già segnati a mano dal creator (stellina), vuoto per chi non è il creator. */
+  manualHighlights: { id: string; timestampSec: number }[];
 };
 
 export function EpisodePlayer({
@@ -61,6 +66,7 @@ export function EpisodePlayer({
   initialIsLiked,
   isLoggedIn,
   isOwnContent,
+  manualHighlights,
 }: EpisodePlayerProps) {
   const playerRef = useRef<VideoPlayerHandle>(null);
   const completedRef = useRef(initialCompleted);
@@ -70,6 +76,7 @@ export function EpisodePlayer({
   // COMPLETION_FRACTION), non da subito come il vecchio like — resta sbloccato anche se poi si
   // torna indietro nel video.
   const [trustyUnlocked, setTrustyUnlocked] = useState(initialCompleted);
+  const { highlights, isPending: isMarkingPending, mark, remove, full } = useHighlightMarker(episode.id, manualHighlights);
 
   const save = () => {
     const video = playerRef.current?.video;
@@ -137,6 +144,16 @@ export function EpisodePlayer({
               posterUrl={episode.posterUrl}
               thresholdFraction={COMPLETION_FRACTION}
               onThreshold={() => setTrustyUnlocked(true)}
+              extraControl={
+                isOwnContent ? (
+                  <HighlightMarkButton
+                    count={highlights.length}
+                    full={full}
+                    disabled={isMarkingPending}
+                    onMark={() => mark(playerRef.current?.video?.currentTime ?? 0)}
+                  />
+                ) : undefined
+              }
               onLoadedMetadata={(video) => {
                 if (
                   !completedRef.current &&
@@ -191,10 +208,13 @@ export function EpisodePlayer({
                 className="text-ember transition-opacity hover:opacity-80"
               />
             </div>
-            <p className="pr-24 text-sm leading-none tracking-[0.22em] text-ember uppercase">
-              Episode {episode.number}
-              {journeyCategory ? ` · ${journeyCategory}` : ""}
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-2 pr-24">
+              <p className="text-sm leading-none tracking-[0.22em] text-ember uppercase">
+                Episode {episode.number}
+                {journeyCategory ? ` · ${journeyCategory}` : ""}
+              </p>
+              {isOwnContent && <HighlightList highlights={highlights} onRemove={remove} />}
+            </div>
             <PageTitle className="mt-1">
               {episode.title}
             </PageTitle>

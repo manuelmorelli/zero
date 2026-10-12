@@ -21,12 +21,14 @@ type ProfileTabsProps = {
 
 export function ProfileTabs({ basePath, activeTab, actions }: ProfileTabsProps) {
   return (
-    <div className="-mt-3 py-1">
+    <div className="-mt-5 py-1">
       {/* overflow-x-auto trasforma anche lo scroll verticale in "auto" (regola CSS), tagliando il
-       * bagliore del bottone al passaggio del mouse se non c'è spazio sopra: pt-3 lo riserva,
-       * -mt-3 sul contenitore esterno lo compensa così l'impaginazione non si sposta (stessa
-       * tecnica di HorizontalScrollRow). */}
-      <div className={cn("no-scrollbar flex items-center gap-2.5 overflow-x-auto pt-3", PAGE_WIDTH.wideCover)}>
+       * bagliore del bottone (sempre acceso su questi, non solo all'hover) se non c'è spazio
+       * sopra: su Overview attivo (sempre a piena opacità) si vedeva tagliato in alto, mentre su
+       * Journeys/Community (opacità ridotta) il taglio si notava meno. pt-5 riserva spazio
+       * sufficiente al bagliore, -mt-5 sul contenitore esterno lo compensa così l'impaginazione
+       * non si sposta (stessa tecnica di HorizontalScrollRow, qui con margine maggiore). */}
+      <div className={cn("no-scrollbar flex items-center gap-2.5 overflow-x-auto pt-5", PAGE_WIDTH.wideCover)}>
         {TABS.map((tab) => {
           const isActive = tab.key === activeTab;
           const href = tab.key === "overview" ? basePath : `${basePath}?tab=${tab.key}`;

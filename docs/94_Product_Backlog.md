@@ -23,7 +23,7 @@ Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le de
 
 Decisione del 7 ottobre: Zero va online 100% funzionante ma senza nessuna funzione a pagamento per gli utenti. Le Tips ai creator (S9) restano, sono un link esterno scelto dal creator, non toccano i soldi di Zero. In più, per sostenere Zero stesso: un bottone di donazione alla piattaforma (S24), collegato a un incasso reale solo quando esisterà un fiscal hosting (S25), e la richiesta di crediti cloud gratuiti a Google, Microsoft e Amazon per stare online al minor costo possibile (S23).
 
-- **Prima del lancio:** S17, S18, S19 (piano di lancio), S22 (controllo di sicurezza del sito), S23 (crediti cloud gratuiti), S24 (bottone "sostieni Zero", senza incasso reale finché S25 non esiste).
+- **Prima del lancio:** S17, S18, S19 (piano di lancio), S22 (controllo di sicurezza del sito), S23 (crediti cloud gratuiti), S24 (bottone "sostieni Zero", senza incasso reale finché S25 non esiste), S27 (video della Hero non più fissi a mano).
 - **Ultimo passaggio (tutto ciò che è pagamento o soldi, da fare dopo il resto):** S4, S5, S7, S8, S10, S11, S12, S13, S14, S21, S25 (fiscal hosting, per incassare davvero le donazioni a Zero), il gruppo Community Premium (sfida "Fai il percorso con lui", stanza degli abbonati, Journey a staffetta, regalo di un mese), eventi a pagamento, consulenze 1:1, prodotti digitali. Se serve struttura del database per questi, la costruiamo lì, dentro questo ultimo passaggio.
 - **Post-MVP (senza soldi):** S6 (Mappa dei Momenti), ricerca semantica, trailer automatico, Percorso su Misura.
 - **Già fatto per il lancio:** S9 (Tips, tramite link esterno).
@@ -58,6 +58,7 @@ Decisione del 7 ottobre: Zero va online 100% funzionante ma senza nessuna funzio
 ☐ **S25.** Fiscal hosting: struttura legale terza che permette a Zero di incassare davvero le donazioni di S24, finché Zero non ha un'entità legale propria. Ultimo passaggio, soldi.
 ☐ **S26.** Tradurre il sito in altre lingue (importante da non perdere, segnalato da Manuel il 9 ott 2026). Nessuna decisione presa: quali lingue, quando farlo, come gestirlo tecnicamente sono tutte domande aperte.
 ☑ **S20.** Portare il lavoro da "design-wow-experiment" a "master" (3 ott 2026: master spostato e caricato su GitHub, stessa punta ffd7338). Poi, sempre il 3 ott 2026, il ramo aperto nella cartella è passato su "master" e "design-wow-experiment" è stato cancellato (locale e GitHub) su ok esplicito di Manuel. Esiste solo "master".
+☐ **S27.** I due video di sfondo della Hero (`lib/discovery/heroVideos.ts`) sono oggi due ID fissi scritti a mano ("the valley", "Swiss Alps"), non una scelta automatica — Manuel l'ha chiesto il 2026-10-12 pensando fossero già dinamici. Da cambiare prima del lancio: scegliere con un criterio automatico (es. i Journey con punteggio più alto, o i più recenti) quali episodi mostrare, invece dei due fissi di oggi. Collegato al trailer automatico (S6, Post-MVP): quando entrambi saranno pronti, ogni video della Hero potrà anche saltare tra i suoi momenti migliori invece di scorrere lineare.
 
 Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programmato: sponsor aziende, marketplace UGC. In pausa per scelta: video leggeri e compressione video.
 

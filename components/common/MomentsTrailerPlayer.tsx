@@ -37,8 +37,7 @@ export function MomentsTrailerPlayer({ videoSrc, posterUrl, moments }: MomentsTr
       {currentMoment && (
         <p className="text-sm text-ink-muted">
           <span className="tabular-nums text-ember">{formatDuration(currentMoment.timestampSec)}</span>
-          {": "}
-          {currentMoment.description}
+          {currentMoment.description && <>{": "}{currentMoment.description}</>}
         </p>
       )}
     </div>

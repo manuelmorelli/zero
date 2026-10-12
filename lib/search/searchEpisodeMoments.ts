@@ -34,6 +34,10 @@ export const MIN_SIMILARITY = 0.6;
 export async function fetchEligibleMoments() {
   return prisma.episodeMoment.findMany({
     where: {
+      // Solo i momenti scritti dall'AI hanno una frase e un embedding (vedi EpisodeMoment in
+      // prisma/schema.prisma): quelli segnati a mano dal creator (stellina sul player) servono solo
+      // al trailer automatico, non alla ricerca per senso o al Percorso su Misura.
+      source: "AI",
       episode: {
         videoKey: { not: null },
         deletedAt: null,
@@ -97,7 +101,7 @@ export async function enrichMoments(moments: EligibleMoment[]): Promise<EpisodeM
     creatorAvatarUrl: moment.episode.journey.creator.user.avatarUrl,
     journeyScore: scoreByJourneyId.get(moment.episode.journey.id),
     timestampSec: moment.timestampSec,
-    reason: moment.description,
+    reason: moment.description ?? "",
   }));
 
   return Promise.all(

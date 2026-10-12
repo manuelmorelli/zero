@@ -27,6 +27,9 @@ type VideoPlayerProps = {
   /** Nasconde il tasto "indietro 15s" quando non ha senso (clip molto brevi). Presente per default,
    * stesso comportamento già in uso per gli episodi. */
   showSkipBack?: boolean;
+  /** Comando in più nella barra di controllo, a fianco dei minuti (es. la stellina per segnare i
+   * momenti migliori in EpisodePlayer): facoltativo, il player resta generico senza di esso. */
+  extraControl?: React.ReactNode;
   className?: string;
 };
 
@@ -50,6 +53,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
     onPause,
     onEnded,
     showSkipBack = true,
+    extraControl,
     className,
   },
   forwardedRef
@@ -185,6 +189,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
           <span className="tabular-nums">
             {formatTime(time)} / {formatTime(duration)}
           </span>
+          {extraControl}
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"

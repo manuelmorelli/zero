@@ -97,7 +97,10 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             sizes="100vw"
             preload={index === 0}
             className={`animate-[kenburns_14s_ease-in-out_infinite_alternate] object-cover transition-opacity duration-1000 ${
-              index === active ? "opacity-100" : "opacity-0"
+              // Spente del tutto quando c'è un video (non solo "sotto" di lui): se il video avesse
+              // mai un vuoto momentaneo durante il cambio clip, sotto non deve comparire la foto di
+              // un altro Journey che non c'entra, meglio restasse nero.
+              video ? "opacity-0" : index === active ? "opacity-100" : "opacity-0"
             }`}
           />
         ))}

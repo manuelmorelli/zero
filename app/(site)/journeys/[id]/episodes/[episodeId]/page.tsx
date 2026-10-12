@@ -32,8 +32,9 @@ export default async function EpisodePlayerPage({
 
   const session = await getViewerSession();
   const userId = session?.user.id;
+  const isOwnContent = userId === journey.creator.userId;
 
-  const [{ flatEpisodes }, progress, likeCount, viewerLike, followersCount] = await Promise.all([
+  const [{ flatEpisodes }, progress, likeCount, viewerLike, followersCount, manualHighlights] = await Promise.all([
     getEpisodeTimeline(journey.id, { userId }),
     userId ? prisma.episodeProgress.findUnique({ where: { userId_episodeId: { userId, episodeId } } }) : null,
     prisma.like.count({ where: { targetType: "EPISODE", targetId: episodeId } }),
@@ -41,6 +42,14 @@ export default async function EpisodePlayerPage({
       ? prisma.like.findUnique({ where: { userId_targetType_targetId: { userId, targetType: "EPISODE", targetId: episodeId } } })
       : null,
     prisma.follow.count({ where: { followingId: journey.creator.userId } }),
+    // Solo il creator vede/gestisce i propri punti segnati a mano (stellina sul player).
+    isOwnContent
+      ? prisma.episodeMoment.findMany({
+          where: { episodeId, source: "CREATOR" },
+          orderBy: { timestampSec: "asc" },
+          select: { id: true, timestampSec: true },
+        })
+      : Promise.resolve([]),
   ]);
 
   const trustScore = computeTrustScore(await getCreatorTrustInputs(journey.creator.id, followersCount));
@@ -80,7 +89,8 @@ export default async function EpisodePlayerPage({
           initialLikeCount={likeCount}
           initialIsLiked={Boolean(viewerLike)}
           isLoggedIn={Boolean(session)}
-          isOwnContent={session?.user.id === journey.creator.userId}
+          isOwnContent={isOwnContent}
+          manualHighlights={manualHighlights}
         />
 
         <UpNextList

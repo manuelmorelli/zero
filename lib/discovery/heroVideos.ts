@@ -1,5 +1,18 @@
+import { statSync } from "fs";
+import path from "path";
 import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+
+/** Data dell'ultima modifica del file, come numero: aggiunta come "?v=" all'indirizzo del video e
+ * della copertina così il browser scarica di nuovo il file quando viene rifatto (scripts/make-hero-clip.ts),
+ * invece di mischiare per sbaglio pezzi vecchi e nuovi già in cache sotto lo stesso indirizzo. */
+function fileVersion(publicPath: string): number {
+  try {
+    return statSync(path.join(process.cwd(), "public", publicPath)).mtimeMs;
+  } catch {
+    return 0;
+  }
+}
 
 /**
  * Clip della Hero (solo da computer, vedi docs/21_Motion_Guidelines.md): 14 secondi ricavati una
@@ -55,8 +68,8 @@ export async function getHeroVideos(): Promise<HeroVideo[]> {
     if (!episode) return [];
     return [
       {
-        src: clip.src,
-        poster: clip.poster,
+        src: `${clip.src}?v=${fileVersion(clip.src)}`,
+        poster: `${clip.poster}?v=${fileVersion(clip.poster)}`,
         journeyId: episode.journey.id,
         episodeId: episode.id,
         episodeTitle: episode.title,
