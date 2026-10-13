@@ -134,16 +134,28 @@ export function EpisodePlayer({
   // Se l'episodio precedente ha lasciato il segnale "parti da solo" (conto alla rovescia finito o
   // "Play now"), lo consuma e avvia il video. Il browser può rifiutare l'avvio automatico: in quel
   // caso resta il pulsante play grande, senza errori.
+  // Il segnale si cancella solo quando il video parte davvero (onPlay): in sviluppo React esegue
+  // gli effetti due volte e ricarica la sorgente, il che interromperebbe un play() lanciato troppo
+  // presto. Si aspetta quindi che il video sia pronto (canplay) prima di avviarlo.
   useEffect(() => {
+    const video = playerRef.current?.video;
+    if (!video) return;
     let shouldAutoplay = false;
     try {
       shouldAutoplay = sessionStorage.getItem(AUTOPLAY_STORAGE_KEY) === episode.id;
-      if (shouldAutoplay) sessionStorage.removeItem(AUTOPLAY_STORAGE_KEY);
     } catch {
       return;
     }
-    if (shouldAutoplay) playerRef.current?.video?.play().catch(() => {});
-  }, [episode.id]);
+    if (!shouldAutoplay) return;
+
+    const start = () => video.play().catch(() => {});
+    if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+      start();
+      return;
+    }
+    video.addEventListener("canplay", start, { once: true });
+    return () => video.removeEventListener("canplay", start);
+  }, [episode.id, episode.videoSrc, episode.lightVideoSrc]);
 
   useEffect(() => {
     // Salvataggio "best-effort" quando l'utente cambia pagina o chiude la scheda: può perdere gli
@@ -197,6 +209,11 @@ export function EpisodePlayer({
               }}
               onPlay={() => {
                 setEnded(false);
+                try {
+                  sessionStorage.removeItem(AUTOPLAY_STORAGE_KEY);
+                } catch {
+                  // Nessun problema: il segnale serve solo per l'avvio automatico.
+                }
                 if (intervalRef.current) clearInterval(intervalRef.current);
                 intervalRef.current = setInterval(save, SAVE_INTERVAL_MS);
               }}
