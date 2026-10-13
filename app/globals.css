@@ -440,11 +440,6 @@ body {
   }
 }
 
-/* Velo sopra una foto larga con testo a sinistra (banner finale della Home). */
-.banner-scrim {
-  background-image: linear-gradient(to right, rgb(var(--rgb-night) / 100%), rgb(var(--rgb-night) / 85%), rgb(var(--rgb-night) / 60%));
-}
-
 /* Copertina senza foto: sfuma verso lo sfondo della pagina (var(--color-bg), non più un nero
  * fisso): nel tema chiaro creava un angolo nero posticcio sulle card senza copertina, lo stesso
  * effetto di un'ombra indesiderata (corretto 2026-10-10). */
@@ -566,6 +561,160 @@ body {
   /* SVG di rumore volutamente diverso da qualunque altro nel CSS: il bundler di questo progetto
    * elimina in silenzio una regola con background-image a stringa identica a un'altra. */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='hn'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23hn)'/%3E%3C/svg%3E");
+}
+
+/* Barca a vela della card "Error 404" in fondo alla Home (components/ui/sailing-scene.tsx).
+ * Ferma per default: barca al centro. Si muove solo da computer e solo per chi non ha chiesto
+ * meno movimento (stessa regola della sabbia, 21_Motion_Guidelines.md). Tutte le durate stanno
+ * nella fascia lenta (8-14s); il dondolio e il luccichio fanno più oscillazioni dentro un solo
+ * ciclo, così restano lenti senza uscire dalla fascia. */
+.sail-boat {
+  transform: translate(430px, 600px);
+}
+.sail-bob {
+  transform-origin: 0 0;
+}
+.sail-glint,
+.sail-gull {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes sail-cross {
+  from {
+    transform: translate(-140px, 600px);
+  }
+  to {
+    transform: translate(940px, 600px);
+  }
+}
+@keyframes sail-bob {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0) rotate(-1.6deg);
+  }
+  25%,
+  75% {
+    transform: translateY(-3px) rotate(1.4deg);
+  }
+}
+@keyframes sail-wave {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-800px);
+  }
+}
+@keyframes sail-glint {
+  0%,
+  50%,
+  100% {
+    opacity: 0.3;
+    transform: scaleX(0.7);
+  }
+  25%,
+  75% {
+    opacity: 1;
+    transform: scaleX(1.15);
+  }
+}
+@keyframes sail-wake {
+  0%,
+  33%,
+  66%,
+  100% {
+    opacity: 0.2;
+  }
+  16%,
+  50%,
+  83% {
+    opacity: 0.85;
+  }
+}
+@keyframes sail-breath {
+  from {
+    opacity: 0.85;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sail-drift {
+  from {
+    transform: translateX(30px);
+  }
+  to {
+    transform: translateX(-50px);
+  }
+}
+@keyframes sail-gulls {
+  from {
+    transform: translate(40px, 6px);
+  }
+  to {
+    transform: translate(-70px, -10px);
+  }
+}
+@keyframes sail-flap {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0.3);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .sail-boat {
+    animation: sail-cross 14s linear infinite;
+  }
+  .sail-bob {
+    animation: sail-bob 8s ease-in-out infinite;
+  }
+  .sail-wake {
+    animation: sail-wake 8s ease-in-out infinite;
+  }
+  .sail-wake-late {
+    animation-delay: -1.3s;
+  }
+  .sail-wave-far {
+    animation: sail-wave 14s linear infinite;
+  }
+  .sail-wave-mid {
+    animation: sail-wave 12s linear infinite;
+  }
+  .sail-wave-near {
+    animation: sail-wave 9s linear infinite;
+  }
+  .sail-glint {
+    animation: sail-glint 8s ease-in-out infinite;
+  }
+  .sail-glint:nth-child(2n) {
+    animation-delay: -2.4s;
+  }
+  .sail-glint:nth-child(3n) {
+    animation-delay: -5.1s;
+  }
+  .sail-sun-glow {
+    animation: sail-breath 10s ease-in-out infinite alternate;
+  }
+  .sail-cloud {
+    animation: sail-drift 14s ease-in-out infinite alternate;
+  }
+  .sail-cloud-slow {
+    animation-direction: alternate-reverse;
+  }
+  .sail-gulls {
+    animation: sail-gulls 14s ease-in-out infinite alternate;
+  }
+  .sail-gull {
+    animation: sail-flap 0.8s ease-in-out infinite alternate;
+  }
+  .sail-gull-late {
+    animation-delay: -0.4s;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

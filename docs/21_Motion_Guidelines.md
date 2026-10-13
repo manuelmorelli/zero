@@ -44,7 +44,7 @@ Lo sfondo vivo del sito è un fiume di sabbia dorata in 3D (three.js, `lib/sand/
 ## Quando si muove il resto
 
 - **Alla comparsa**: una volta sola, quando l'elemento entra nello schermo, poi resta fermo.
-- **In loop**: solo la sabbia e il video della Hero.
+- **In loop**: solo la sabbia, il video della Hero e la barca a vela della card "Error 404" in fondo alla Home (scelta di Manuel, 2026-10-13).
 - **Cambio di frase nella Hero**: dissolvenza in due tempi, senza movimento: la frase vecchia svanisce (0,3 secondi), poi compare la nuova (0,5 secondi).
 - **Legato allo scroll**: solo nella Hero e nelle pagine vetrina, solo da computer, al massimo il 30% di spostamento o riduzione. La pagina non si blocca mai.
 
@@ -79,3 +79,4 @@ Quando il telefono o il computer chiedono meno movimento: la sabbia resta ferma,
 - **Hero, frasi**: la frase di Zero apre sempre, poi sette citazioni senza autore e senza trattini (`lib/landing/heroPayoffs.ts`), ognuna con la parte finale in arancione pieno. Cambiano ogni 11 secondi.
 - **Hero, scroll**: mentre si scorre, il video si allontana rimpicciolendosi fino all'85% e il testo sale più in fretta.
 - **What is Zero e Algorithm** (`components/common/ScrollStory.tsx`): il titolo si allontana scorrendo, i paragrafi entrano riga per riga da sotto una maschera, i riquadri arancioni salgono da sotto come il resto, passi e riquadri salgono uno dopo l'altro, la frase finale cresce arrivando al centro.
+- **Home, card "Error 404"** (`components/ui/sailing-scene.tsx`, classi `sail-*` in `app/globals.css`): una barca a vela illustrata attraversa la card da sinistra a destra in 14 secondi, dondola sull'onda, le onde scorrono in senso opposto su tre piani, il riflesso del sole luccica. Durate tutte nella fascia lenta: il dondolio e il luccichio fanno più oscillazioni dentro un ciclo da 8 secondi. Solo da computer; su telefono e per chi chiede meno movimento la barca resta ferma al centro.

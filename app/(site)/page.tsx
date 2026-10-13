@@ -1,6 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
-import { Compass, Video as VideoIcon, Star, ArrowRight, Sparkles, Shuffle, HelpCircle, History, Play, ShieldCheck } from "lucide-react";
+import { Compass, Video as VideoIcon, Star, Sparkles, Shuffle, History, Play, ShieldCheck } from "lucide-react";
 import type { ContinueJourneyItem } from "@/lib/discovery/continueJourneys";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { VideoCard } from "@/components/journey/VideoCard";
@@ -9,13 +8,12 @@ import { JourneyerCard } from "@/components/profile/JourneyerCard";
 import { Logo } from "@/components/layout/Logo";
 import { OnboardingBanner } from "@/components/layout/OnboardingBanner";
 import { Hero } from "@/components/landing/Hero";
+import { HomeClosingCards } from "@/components/landing/HomeClosingCards";
 import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
-import { ButtonSecondary } from "@/components/ui/button";
 import { CARD_GRID, CARD_ROW_ITEM, CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
-import { CardTitle, PageTitle } from "@/components/ui/heading";
-import { CHIP, PANEL } from "@/components/ui/panel";
+import { CHIP } from "@/components/ui/panel";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { getViewerSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
@@ -152,8 +150,7 @@ export default async function Home() {
       </div>
 
       <Categories countByCategory={categoryCounts} />
-      <HowItWorksCta />
-      <FinalCta />
+      <ClosingCards signedIn={Boolean(userId)} />
       <SiteFooter />
     </main>
   );
@@ -394,73 +391,14 @@ function Categories({ countByCategory }: { countByCategory: Map<string, number> 
 }
 
 /* ------------------------------------------------------------------ */
-/* HOW IT WORKS — card compatta, contenuto completo su /how-it-works   */
+/* CARD FINALI — finta 404 con la barca a vela + card ancora vuota      */
 /* ------------------------------------------------------------------ */
 
-function HowItWorksCta() {
-  return (
-    <section className={HOME_SECTION}>
-      <Reveal>
-        <Link
-          href="/how-it-works"
-          className={`group flex items-center justify-between gap-4 shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow ${PANEL}`}
-        >
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-surface-2 text-ember">
-              <HelpCircle className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div className="min-w-0">
-              <CardTitle as="h2">How Zero Works</CardTitle>
-              <p className="truncate text-sm text-ink-muted">
-                Three steps to get started, plus answers to common questions.
-              </p>
-            </div>
-          </div>
-          <ArrowRight
-            className="h-4 w-4 shrink-0 text-ink-muted transition-transform group-hover:translate-x-1"
-            aria-hidden="true"
-          />
-        </Link>
-      </Reveal>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* FINAL CTA                                                            */
-/* ------------------------------------------------------------------ */
-
-function FinalCta() {
+function ClosingCards({ signedIn }: { signedIn: boolean }) {
   return (
     <section className={`${HOME_SECTION} pb-10`}>
       <Reveal>
-        <div className="relative overflow-hidden rounded-2xl border border-border">
-          <Image
-            src="/images/hero-2.jpg"
-            alt=""
-            fill
-            sizes="(min-width: 1400px) 1400px, 100vw"
-            className="object-cover"
-          />
-          <div className="banner-scrim absolute inset-0" />
-          <div className="relative grid items-center gap-6 p-7 md:grid-cols-[minmax(0,1fr)_auto] md:p-10">
-            <div className="min-w-0">
-              <PageTitle as="h2">
-                Every journey starts from <span className="text-ember">Zero</span>.
-              </PageTitle>
-              <p className="mt-2 max-w-md text-sm text-ink-muted">
-                Start documenting your story today, one honest episode at a time.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <ButtonSecondary href="/register">
-                Start Your Journey
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </ButtonSecondary>
-              <ButtonSecondary href="/journeys">Journeys</ButtonSecondary>
-            </div>
-          </div>
-        </div>
+        <HomeClosingCards signedIn={signedIn} />
       </Reveal>
     </section>
   );
