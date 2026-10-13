@@ -1,10 +1,13 @@
-import { ErrorState } from "@/components/ui/error-state";
+import { Header } from "@/components/layout/Header";
+import { NotFoundState } from "@/components/ui/not-found-state";
 
+// Gli indirizzi che non esistono in nessuna parte del sito cadono qui, fuori dal gruppo (site):
+// l'header va quindi messo a mano, altrimenti la pagina resterebbe senza menu.
 export default function RootNotFound() {
   return (
-    <ErrorState
-      title="Page not found"
-      message="This page doesn't exist, or it's been moved."
-    />
+    <>
+      <Header />
+      <NotFoundState />
+    </>
   );
 }
