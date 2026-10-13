@@ -31,7 +31,7 @@ export const steps = [
   {
     number: "01",
     title: "Choose a Journey",
-    text: "Browse real transformations from other people and choose the one that inspires you most.",
+    text: "Browse real Journeys documented by other people and choose the one closest to what you're looking for.",
   },
   {
     number: "02",
@@ -41,14 +41,14 @@ export const steps = [
   {
     number: "03",
     title: "Build your own",
-    text: "Become a creator and document your transformation, mistakes included.",
+    text: "Become a creator and document your Journey, mistakes included.",
   },
 ];
 
 export const questions = [
   {
     q: "What is a Journey?",
-    a: "It's the complete path of a real transformation, told in chapters and episodes: not just the final outcome, but the whole process.",
+    a: "It's a real path, told in chapters and episodes: not just the final outcome, but the whole process.",
   },
   {
     q: "Is Zero free?",

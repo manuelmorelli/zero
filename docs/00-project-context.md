@@ -26,7 +26,7 @@ Le decisioni contenute in questo documento hanno priorità su qualsiasi assunzio
 
 ## Dichiarazione
 
-Zero è una piattaforma dedicata ai Journey: percorsi di trasformazione reali, documentati nel tempo.
+Zero è una piattaforma dedicata ai Journey: storie reali, documentate nel tempo.
 
 La direzione strategica del progetto è definita in Vision; la sua traduzione operativa in Mission. Questo documento non ripete quei contenuti, li presuppone: ogni decisione di prodotto, design, sviluppo e monetizzazione deve essere coerente con i principi definiti in quei due documenti.
 

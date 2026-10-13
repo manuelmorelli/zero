@@ -77,11 +77,11 @@ const notAllowedGroups: Group[] = [
   },
   {
     title: "Misleading advice and empty status",
-    body: "Pseudo-experts presenting potentially dangerous advice as real expertise, especially about health, finance, or psychology, don't belong here. Neither do unrealistic promises like guaranteed transformations or get-rich-quick claims, or the ostentation of luxury and status with no other value beyond social comparison.",
+    body: "Pseudo-experts presenting potentially dangerous advice as real expertise, especially about health, finance, or psychology, don't belong here. Neither do unrealistic promises like guaranteed results or get-rich-quick claims, or the ostentation of luxury and status with no other value beyond social comparison.",
   },
   {
     title: "Authenticity",
-    body: "Zero is built around real people, real identities, and real accountability. Anonymous accounts or fake identities as a creator's whole model, an AI pretending to be a real person or telling experiences it never lived, reposting someone else's content without adding your own transformation or experience, and spam or automated, duplicated content aren't allowed. A single video without a face isn't automatically against the rules if it belongs to an authentic, valuable project.",
+    body: "Zero is built around real people, real identities, and real accountability. Anonymous accounts or fake identities as a creator's whole model, an AI pretending to be a real person or telling experiences it never lived, reposting someone else's content without adding your own experience, and spam or automated, duplicated content aren't allowed. A single video without a face isn't automatically against the rules if it belongs to an authentic, valuable project.",
   },
 ];
 

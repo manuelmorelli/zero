@@ -16,7 +16,7 @@ related_docs:
 
 ## Capitolo 1 — Le fondamenta
 
-Tutto parte da un'idea semplice, scritta nel documento di Vision del progetto: *"Ogni persona parte da Zero."* Ogni grande risultato nasce da un punto di partenza, e la maggior parte dei contenuti online mostra solo il traguardo, mai il percorso. Zero nasce per invertire questa logica: una piattaforma dove le persone documentano il proprio percorso di trasformazione — non solo il risultato finale, ma tutto il processo, errori compresi — e lo rendono utile anche a chi sta affrontando lo stesso cammino.
+Tutto parte da un'idea semplice, scritta nel documento di Vision del progetto: *"Ogni persona parte da Zero."* Ogni grande risultato nasce da un punto di partenza, e la maggior parte dei contenuti online mostra solo il traguardo, mai il percorso. Zero nasce per invertire questa logica: una piattaforma dove le persone documentano il proprio cammino — non solo il risultato finale, ma tutto il processo, errori compresi — e lo rendono utile anche a chi sta affrontando lo stesso cammino.
 
 Le prime scelte sono state infrastrutturali, non visive: prima di disegnare una sola pagina, il progetto si è dato delle regole. È nato il documento delle regole di sviluppo AI, poi lo schema del database — la mappa di tutti i dati che la piattaforma avrebbe dovuto gestire: utenti, Journey, Capitoli, Episodi.
 
@@ -38,7 +38,7 @@ In questa fase nasce anche la documentazione ufficiale completa del progetto: Vi
 
 ## Capitolo 3 — Il cuore del prodotto: il Journey
 
-Qui nasce il concetto centrale della piattaforma: il **Journey**, un percorso di trasformazione diviso in Capitoli e Episodi. Prima il profilo creator e la creazione di un Journey, poi il CRUD completo di Capitoli ed Episodi al suo interno.
+Qui nasce il concetto centrale della piattaforma: il **Journey**, una storia vera divisa in Capitoli e Episodi. Prima il profilo creator e la creazione di un Journey, poi il CRUD completo di Capitoli ed Episodi al suo interno.
 
 Una decisione importante presa in questa fase, poi ribadita più volte nel tempo: **"Creator" non è una categoria di utente separata, ma uno stato.** Chiunque si registri su Zero può diventare creator pubblicando il proprio primo Journey, senza una schermata dedicata da attraversare prima. È probabilmente la scelta più "umana" di tutto il progetto: rifiutare di dividere le persone in due caste (chi crea e chi guarda) fin dal disegno del prodotto, non come ripensamento. Il principio è stato scritto nella documentazione e — come racconta il Capitolo 9 — mesi dopo è stato reso ancora più automatico, eliminando anche l'ultimo residuo tecnico di quella separazione.
 

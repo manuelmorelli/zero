@@ -20,7 +20,7 @@ La Mission descrive ciò che Zero realizza ogni giorno attraverso il prodotto, t
 
 ## Dichiarazione
 
-Zero aiuta le persone a documentare, condividere e seguire percorsi di trasformazione autentici.
+Zero aiuta le persone a documentare, condividere e seguire percorsi autentici.
 
 La piattaforma mette al centro il processo di crescita, rendendolo semplice da raccontare, facile da seguire e significativo da vivere.
 

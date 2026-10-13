@@ -20,7 +20,7 @@ const satoshi = localFont({
 export const metadata: Metadata = {
   title: "Zero | Every journey starts from Zero",
   description:
-    "Zero is the platform where people's real transformations become Journeys to follow, chapter by chapter.",
+    "Zero is the platform where real people document their Journey, as episodes to follow chapter by chapter.",
 };
 
 export default async function RootLayout({

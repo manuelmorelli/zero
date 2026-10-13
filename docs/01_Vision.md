@@ -28,11 +28,11 @@ Ogni persona parte da Zero.
 
 Ogni grande risultato nasce da un punto di partenza.
 
-Zero permette alle persone di documentare il proprio percorso di trasformazione e di renderlo utile anche agli altri.
+Zero permette alle persone di documentare il proprio cammino e di renderlo utile anche agli altri.
 
 L'obiettivo non è mostrare soltanto il risultato finale, ma preservare e condividere l'intero processo che ha portato a quel risultato.
 
-Zero vuole costruire la più grande raccolta di trasformazioni umane mai realizzata.
+Zero vuole costruire la più grande raccolta di esperienze reali mai realizzata.
 
 Ogni Journey rappresenta una storia autentica di crescita, cambiamento e apprendimento.
 
@@ -44,9 +44,9 @@ Nel tempo, Zero dovrà diventare il luogo in cui le persone imparano osservando 
 
 La Vision di Zero si fonda sui seguenti principi.
 
-### Ogni trasformazione ha valore
+### Ogni Journey ha valore
 
-Non esistono trasformazioni troppo piccole per essere raccontate.
+Non esistono storie troppo piccole per essere raccontate.
 
 Ogni percorso può aiutare qualcun altro.
 
@@ -62,7 +62,7 @@ Errori, difficoltà e cambiamenti sono parte integrante dell'esperienza.
 
 ### Le esperienze reali generano fiducia
 
-I contenuti devono rappresentare trasformazioni autentiche.
+I contenuti devono raccontare esperienze autentiche.
 
 La fiducia è uno degli elementi fondamentali della piattaforma.
 
@@ -91,7 +91,7 @@ Ogni scelta progettuale dovrà essere coerente con questa Vision.
 In particolare:
 
 * il Journey rappresenta il contenuto principale della piattaforma;
-* la trasformazione prevale sull'intrattenimento;
+* il processo prevale sull'intrattenimento;
 * la qualità prevale sulla quantità;
 * la fiducia prevale sulla viralità;
 * la community prevale sull'audience.

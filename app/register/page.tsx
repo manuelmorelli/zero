@@ -20,7 +20,7 @@ export default function RegisterPage() {
           Create Your Account
         </PageTitle>
         <p className="mt-2 text-sm text-ink-muted">
-          Start following or sharing your transformation.
+          Start following Journeys or sharing your own.
         </p>
 
         <RegisterForm />

@@ -22,7 +22,7 @@ Ogni funzionalità della piattaforma deve rispondere ad almeno uno dei problemi 
 
 Le piattaforme social tradizionali sono progettate per massimizzare attenzione, coinvolgimento e consumo di contenuti.
 
-Questo modello privilegia la visibilità immediata rispetto al valore nel lungo periodo, rendendo difficile documentare e seguire un reale percorso di trasformazione.
+Questo modello privilegia la visibilità immediata rispetto al valore nel lungo periodo, rendendo difficile documentare e seguire un'esperienza reale dall'inizio alla fine.
 
 Zero nasce per risolvere questo problema, mettendo al centro il Journey invece del singolo contenuto.
 
@@ -30,7 +30,7 @@ Zero nasce per risolvere questo problema, mettendo al centro il Journey invece d
 
 ### 1. I percorsi vengono frammentati
 
-Le trasformazioni personali sono raccontate attraverso contenuti isolati e scollegati.
+Le esperienze personali sono raccontate attraverso contenuti isolati e scollegati.
 
 Seguire l'intera evoluzione di una persona diventa difficile.
 

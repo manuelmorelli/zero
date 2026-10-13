@@ -98,7 +98,7 @@ Durate, tipi di movimento, divieti e comportamento su telefono sono fissati nell
 L'identità grafica deve trasmettere:
 
 - autenticità;
-- trasformazione;
+- continuità;
 - chiarezza;
 - affidabilità;
 - modernità.

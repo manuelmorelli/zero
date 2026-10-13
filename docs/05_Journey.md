@@ -21,7 +21,7 @@ Tutte le funzionalità del prodotto devono essere progettate attorno a questo mo
 
 ## Dichiarazione
 
-Un Journey è un percorso di trasformazione documentato nel tempo.
+Un Journey è un percorso reale, documentato nel tempo.
 
 Rappresenta l'evoluzione di una persona verso un obiettivo attraverso esperienze reali, progressi, difficoltà, errori e risultati.
 
@@ -99,7 +99,7 @@ L'ordine narrativo e la sequenza temporale vengono gestiti come informazioni dis
 
 ## Esperienza utente
 
-Seguire un Journey significa seguire una trasformazione, non una sequenza di contenuti indipendenti.
+Seguire un Journey significa seguire una storia dall'inizio, non una sequenza di contenuti indipendenti.
 
 La lettura di un Journey è naturale e lineare: dal primo all'ultimo Episodio, nell'ordine scelto dal creator. Quando il Journey è organizzato in Capitoli, questi aiutano a orientarsi tra le fasi del racconto, ma non cambiano la natura sequenziale della lettura.
 
