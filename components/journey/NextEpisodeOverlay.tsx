@@ -63,11 +63,11 @@ export function NextEpisodeOverlay({ journeyId, next, onWatchAgain }: NextEpisod
   }, [secondsLeft]);
 
   return (
-    <div className="fade-in-soft absolute inset-0 grid place-items-center bg-scrim p-3 leading-normal">
+    <div className="fade-in-soft @container absolute inset-0 grid place-items-center overflow-y-auto bg-scrim p-3 leading-normal">
       {next ? (
-        <div className={cn(PANEL, "flex w-full max-w-md items-center gap-4 p-4")}>
+        <div className={cn(PANEL, "flex w-full max-w-md flex-col gap-3 p-4 @md:flex-row @md:items-center @md:gap-4")}>
           {next.posterUrl && (
-            <span className="relative hidden aspect-4/3 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:block">
+            <span className="relative hidden aspect-4/3 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 @md:block">
               <Image src={next.posterUrl} alt="" fill sizes="112px" className="object-cover" />
             </span>
           )}
