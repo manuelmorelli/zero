@@ -16,8 +16,8 @@ export default async function SettingsInterestsPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle>Interests</PageTitle>
-        <p className="mt-2 text-sm text-ink-muted">
+        <PageTitle className="text-ember">Interests</PageTitle>
+        <p className="mt-2 text-sm text-ink">
           The categories you picked during onboarding, used to personalize what you see.
         </p>
 

@@ -15,8 +15,8 @@ export default async function SettingsAccountPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle>Account</PageTitle>
-        <p className="mt-2 text-sm text-ink-muted">Update your name, username, bio and location.</p>
+        <PageTitle className="text-ember">Account</PageTitle>
+        <p className="mt-2 text-sm text-ink">Update your name, username, bio and location.</p>
 
         <div className="mt-8 overflow-hidden rounded-xl border border-border bg-surface">
           <div className="p-5">

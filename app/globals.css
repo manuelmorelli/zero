@@ -240,6 +240,8 @@ html[data-theme="dark"] .profile-tabs-bar {
  * tema scuro (richiesta di Manuel, 2026-10-11), invece del solito testo scuro su sfondo chiaro. */
 html[data-theme="light"] .bio-card {
   background-image: linear-gradient(to bottom, oklch(87% 0 0), oklch(14.5% 0 0));
+  /* Il bordo traslucido (ember-line) lascia passare il gradiente scuro e sembra nero: pieno. */
+  border-color: oklch(66.6% 0.179 58.318);
 }
 html[data-theme="light"] .bio-card .text-ink,
 html[data-theme="light"] .bio-card .text-ink-muted,

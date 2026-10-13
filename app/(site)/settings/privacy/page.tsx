@@ -17,8 +17,8 @@ export default async function SettingsPrivacyPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle>Privacy</PageTitle>
-        <p className="mt-2 text-sm text-ink-muted">Control who can see your profile and reach you.</p>
+        <PageTitle className="text-ember">Privacy</PageTitle>
+        <p className="mt-2 text-sm text-ink">Control who can see your profile and reach you.</p>
 
         <div className={`mt-8 ${PANEL}`}>
           <PrivacyForm isPrivate={isPrivate} />

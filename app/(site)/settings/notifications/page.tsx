@@ -20,8 +20,8 @@ export default async function SettingsNotificationsPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle>Notifications</PageTitle>
-        <p className="mt-2 text-sm text-ink-muted">Choose which notifications you want to receive.</p>
+        <PageTitle className="text-ember">Notifications</PageTitle>
+        <p className="mt-2 text-sm text-ink">Choose which notifications you want to receive.</p>
 
         <div className={`mt-8 ${PANEL}`}>
           <NotificationsForm

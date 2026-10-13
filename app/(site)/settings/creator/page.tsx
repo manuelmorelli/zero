@@ -27,8 +27,8 @@ export default async function SettingsCreatorPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle>Creator</PageTitle>
-        <p className="mt-2 text-sm text-ink-muted">Notifications and tools for what you publish on Zero.</p>
+        <PageTitle className="text-ember">Creator</PageTitle>
+        <p className="mt-2 text-sm text-ink">Notifications and tools for what you publish on Zero.</p>
 
         <SectionTitle className="mt-8">Account type</SectionTitle>
         <div className="mt-3 space-y-3">

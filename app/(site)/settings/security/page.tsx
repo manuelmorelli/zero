@@ -11,8 +11,8 @@ export default async function SettingsSecurityPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle>Password & Security</PageTitle>
-        <p className="mt-2 text-sm text-ink-muted">Change your password or update your email address.</p>
+        <PageTitle className="text-ember">Password & Security</PageTitle>
+        <p className="mt-2 text-sm text-ink">Change your password or update your email address.</p>
 
         <div className={`mt-8 ${PANEL}`}>
           <SectionTitle>Password</SectionTitle>

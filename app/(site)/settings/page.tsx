@@ -25,8 +25,8 @@ export default async function SettingsPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle>Settings</PageTitle>
-        <p className="mt-2 text-sm text-ink-muted">Manage your account, notifications and preferences.</p>
+        <PageTitle className="text-ember">Settings</PageTitle>
+        <p className="mt-2 text-sm text-ink">Manage your account, notifications and preferences.</p>
 
         <div className="mt-6">
           <ThemeToggle theme={theme} />

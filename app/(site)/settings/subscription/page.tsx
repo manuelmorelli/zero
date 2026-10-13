@@ -19,8 +19,8 @@ export default async function SettingsSubscriptionPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle>Subscription</PageTitle>
-        <p className="mt-2 text-sm text-ink-muted">
+        <PageTitle className="text-ember">Subscription</PageTitle>
+        <p className="mt-2 text-sm text-ink">
           Billing and real payments will be available once payments are connected. This is a preview of how your
           memberships will look and how you&apos;ll be able to cancel them.
         </p>

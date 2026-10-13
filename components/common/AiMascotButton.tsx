@@ -72,9 +72,9 @@ export function AiMascotButton() {
         >
           <div
             aria-hidden="true"
-            className="absolute -top-1.5 right-3 h-3 w-3 rotate-45 border-l border-t border-ember-line bg-ember-soft"
+            className="absolute -top-1.5 right-3 h-3 w-3 rotate-45 border-l border-t border-ember-line bg-scrim backdrop-blur-md"
           />
-          <p className={cn(PANEL_GLASS, "p-3 text-sm leading-snug text-ink shadow-xl")}>
+          <p className={cn(PANEL_GLASS, "bg-scrim p-3 text-sm leading-snug text-on-photo shadow-xl backdrop-blur-md")}>
             Hi, I&apos;m Ember, the assistant that explains how Zero works. Click here anytime you need a hand.
           </p>
         </div>

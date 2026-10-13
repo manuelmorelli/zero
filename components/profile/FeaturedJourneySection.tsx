@@ -25,7 +25,7 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
       href={`/journeys/${journey.id}`}
       className="group block self-start transition-transform duration-300 hover:-translate-y-1"
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-300 group-hover:border-ember-line group-hover:shadow-glow">
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-ember-line transition-[border-color,box-shadow] duration-300 group-hover:border-ember group-hover:shadow-glow">
         {journey.coverUrl ? (
           <Image
             src={journey.coverUrl}
