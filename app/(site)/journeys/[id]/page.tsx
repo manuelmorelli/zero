@@ -5,6 +5,7 @@ import { ListVideo, Play } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getViewerSession } from "@/lib/session";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
+import { getWatchAction } from "@/lib/journey/watchAction";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
 import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
@@ -49,7 +50,7 @@ export default async function PublicJourneyPage({
 
   const session = await getViewerSession();
   const { groups, flatEpisodes } = await getEpisodeTimeline(journey.id, { userId: session?.user.id });
-  const firstEpisode = flatEpisodes.at(0) ?? null;
+  const watchAction = getWatchAction(flatEpisodes);
 
   const isOwnJourney = session?.user.id === journey.creator.userId;
   // Follow è persona-segue-persona (vedi 00-project-context.md, sezione "Modello utente
@@ -138,13 +139,13 @@ export default async function PublicJourneyPage({
                     isLoggedIn={Boolean(session)}
                   />
                 )}
-                {firstEpisode && (
+                {watchAction && (
                   <ButtonSecondary
-                    href={`/journeys/${journey.id}/episodes/${firstEpisode.id}`}
+                    href={`/journeys/${journey.id}/episodes/${watchAction.episodeId}`}
                     className="px-4 py-2 text-sm"
                   >
                     <Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
-                    Episode 1
+                    {watchAction.label}
                   </ButtonSecondary>
                 )}
                 <ShareButton
@@ -235,8 +236,10 @@ function EpisodeRow({
             <span className="block text-sm tracking-[0.18em] text-ink-muted uppercase">
               Episode {episode.number}
             </span>
-            {episode.progress?.completedAt && (
-              <span className="text-sm font-semibold text-ember">· Completed</span>
+            {episode.progress && (
+              <span className="text-sm font-semibold text-ember">
+                · {episode.progress.completedAt ? "Finished" : "Resume"}
+              </span>
             )}
           </span>
           <span className="mt-0.5 block truncate text-sm font-semibold transition-colors group-hover:text-ember">

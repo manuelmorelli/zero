@@ -50,8 +50,10 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                     {episode.title}
                   </span>
                   {episode.isSponsored && <SponsoredLabel className="mt-1" />}
-                  {episode.progress?.completedAt && (
-                    <span className="mt-0.5 block text-sm text-ink-muted">Completed</span>
+                  {episode.progress && (
+                    <span className="mt-0.5 block text-sm font-semibold text-ember">
+                      {episode.progress.completedAt ? "Finished" : "Resume"}
+                    </span>
                   )}
                 </span>
               </Link>
