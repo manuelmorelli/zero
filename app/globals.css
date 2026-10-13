@@ -227,6 +227,13 @@ html[data-theme="light"] .profile-hero-glass.profile-tab-glass:hover {
   border-color: var(--color-ember);
 }
 
+/* Barra Overview/Journeys/Community: solo nel tema scuro sta sopra la copertina (il -mt-5 la
+ * sovrappone alla hero). Il tema chiaro non è toccato. */
+html[data-theme="dark"] .profile-tabs-bar {
+  position: relative;
+  z-index: 10;
+}
+
 /* Card Bio/Presentazione del Profilo: bg-surface nel chiaro è quasi bianco puro, troppo
  * "lavato". Riprende lo stesso grigio scuro + scritte bianche già usati per questa card nel
  * tema scuro (richiesta di Manuel, 2026-10-11), invece del solito testo scuro su sfondo chiaro. */
