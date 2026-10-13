@@ -326,6 +326,18 @@ html[data-theme="light"] .logo-wordmark {
   filter: invert(1);
 }
 
+/* Barra dei comandi e pulsante play del VideoPlayer: stanno sempre sopra il riquadro nero del
+ * video, quindi nel tema chiaro (dove ink diventa scuro) devono restare bianchi e col bordo chiaro
+ * come nel tema scuro. Solo tema chiaro: lo scuro non è toccato. */
+html[data-theme="light"] .video-controls,
+html[data-theme="light"] .video-controls .text-ink,
+html[data-theme="light"] .video-controls .text-ink-muted {
+  color: var(--color-on-photo);
+}
+html[data-theme="light"] .video-play-circle {
+  border-color: oklch(1 0 0 / 14%);
+}
+
 html {
   /* Manopola "tutto il resto" (spazi/layout): tutte le unità rem di Tailwind si restringono di
    * conseguenza. Il testo non ne risente: vedi --text-scale sopra. */
@@ -506,6 +518,16 @@ body {
     opacity: 0;
     transform: scale(0.96);
   }
+}
+
+/* Comparsa del riquadro "Up next" sopra il player: sola dissolvenza di 0,3s, niente movimento. */
+@keyframes fade-in-soft {
+  from {
+    opacity: 0;
+  }
+}
+.fade-in-soft {
+  animation: fade-in-soft 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Sabbia su telefono e tablet (components/common/SandBackground.tsx): un fotogramma fermo del

@@ -30,6 +30,8 @@ type VideoPlayerProps = {
   /** Comando in più nella barra di controllo, a fianco dei minuti (es. la stellina per segnare i
    * momenti migliori in EpisodePlayer): facoltativo, il player resta generico senza di esso. */
   extraControl?: React.ReactNode;
+  /** Contenuto che galleggia sopra il video (es. il riquadro "Up next" a fine episodio). */
+  overlay?: React.ReactNode;
   className?: string;
 };
 
@@ -54,6 +56,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
     onEnded,
     showSkipBack = true,
     extraControl,
+    overlay,
     className,
   },
   forwardedRef
@@ -135,14 +138,14 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
         }}
       />
 
-      {!playing && (
+      {!playing && !overlay && (
         <button
           type="button"
           aria-label="Play video"
           onClick={toggle}
           className="absolute inset-0 grid place-items-center bg-scrim transition-opacity"
         >
-          <span className="grid h-16 w-16 place-items-center rounded-full border border-border bg-scrim backdrop-blur-md transition-transform duration-300 hover:scale-105">
+          <span className="video-play-circle grid h-16 w-16 place-items-center rounded-full border border-border bg-scrim backdrop-blur-md transition-transform duration-300 hover:scale-105">
             <Play className="h-6 w-6 fill-current text-ember" aria-hidden="true" />
           </span>
         </button>
@@ -163,7 +166,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
           }}
           className="h-1 w-full cursor-pointer accent-ember"
         />
-        <div className="mt-2 flex items-center gap-3 text-sm text-ink-muted">
+        <div className="video-controls mt-2 flex items-center gap-3 text-sm text-ink-muted">
           <button type="button" onClick={toggle} aria-label={playing ? "Pause" : "Play"} className="text-ink">
             {playing ? (
               <Pause className="h-5 w-5 fill-current" aria-hidden="true" />
@@ -237,6 +240,8 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
           </div>
         </div>
       </div>
+
+      {overlay}
     </div>
   );
 });
