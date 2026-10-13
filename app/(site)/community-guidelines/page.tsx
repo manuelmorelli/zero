@@ -14,16 +14,16 @@ export const metadata = {
 
 type Group = { title: string; body: string };
 
-const noEngagementBaitNote =
+export const noEngagementBaitNote =
   "Zero has no comments and no ordinary like button (Trusty unlocks only at the end of an episode), and **the algorithm isn't built to reward engagement bait**, so rules built around gaming those mechanics don't apply here.";
 
-const zeroTolerance: string[] = [
+export const zeroTolerance: string[] = [
   "Sexual content involving minors, in any form, including content generated or manipulated with AI.",
   "Incitement to violence: calls to kill, assault, torture, or hurt someone, credible threats, recruitment to violence, instructions for committing violence, or glorification of attacks and violent groups.",
   "Promotion, glorification, or instructions for self-harm or suicide.",
 ];
 
-const simpleSections: Group[] = [
+export const simpleSections: Group[] = [
   {
     title: "Real People. Real Journeys. Real Experience.",
     body: "Don't fabricate a story, misrepresent who you are, or pass off someone else's Journey as your own. A video doesn't need to show a face every time, but **the author must be a real person or project**, tied to an actual experience, skill, or creation.",
@@ -50,7 +50,7 @@ const simpleSections: Group[] = [
   },
 ];
 
-const notAllowedGroups: Group[] = [
+export const notAllowedGroups: Group[] = [
   {
     title: "Sexual content and nudity",
     body: "Pornography and sexually explicit content, nudity used to sexualize the body (lingerie, topless, deliberately sexualized poses or framing, fetish content), and thirst traps built mainly to generate sexual attention aren't allowed. **Sexual deepfakes and non-consensual intimate images are never allowed.**",

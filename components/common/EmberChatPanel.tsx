@@ -7,12 +7,13 @@ import { IconButton } from "@/components/ui/button";
 import { ChatBubbleAssistant, ChatBubbleUser, ChatComposerShell } from "@/components/ui/chat";
 import { AI_MARKDOWN_COMPONENTS } from "@/components/common/aiMarkdownComponents";
 import { streamSiteAssistantTurn } from "@/lib/ai/siteAssistantChatStream";
-import {
-  loadSiteAssistantChat,
-  saveSiteAssistantChat,
-  type SiteAssistantChatMessage,
-  type StoredSiteAssistantChat,
-} from "@/lib/ai/siteAssistantChatStorage";
+
+type SiteAssistantChatMessage = { role: "user" | "assistant"; text: string; failed?: boolean };
+
+type StoredSiteAssistantChat = {
+  messages: SiteAssistantChatMessage[];
+  interactionId: string | null;
+};
 
 const MAX_MESSAGE_LENGTH = 1000;
 
@@ -30,18 +31,14 @@ function freshChat(): StoredSiteAssistantChat {
  * non esegue mai azioni al posto di chi lo usa. Stesso motore della chat Community
  * (lib/ai/gemini.ts) ma nel modo più semplice possibile, niente bozze, immagini o allegati: solo
  * domanda e risposta ancorata ai contenuti veri del sito (lib/ai/siteAssistant.ts). Funziona anche
- * senza login: la conversazione resta nel browser (zero:ember-chat), non è legata a un account.
+ * senza login. La conversazione non viene salvata: ogni apertura del pannello riparte da zero.
  */
 export function EmberChatPanel() {
-  const [chat, setChat] = useState<StoredSiteAssistantChat>(() => loadSiteAssistantChat() ?? freshChat());
+  const [chat, setChat] = useState<StoredSiteAssistantChat>(freshChat);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const [streamingText, setStreamingText] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    saveSiteAssistantChat(chat);
-  }, [chat]);
 
   useEffect(() => {
     const container = scrollRef.current;

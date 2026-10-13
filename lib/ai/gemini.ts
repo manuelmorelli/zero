@@ -12,6 +12,11 @@ const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/intera
 // vedi Punto 8 dell'allineamento ("nessuna attivazione di servizi a pagamento").
 const GEMINI_MODEL = "gemini-3.5-flash-lite";
 
+// Piano B: se il modello principale risponde "troppo richiesto" (503) o "quota esaurita" (429),
+// si riprova subito con questo, sempre nel piano gratuito (verificato dal vivo il 2026-10-13).
+const GEMINI_FALLBACK_MODEL = "gemini-3.1-flash-lite";
+const RETRYABLE_STATUSES = [429, 503];
+
 export type GeminiInputPart =
   | { type: "text"; text: string }
   | { type: "image"; data: string; mime_type: string }
@@ -40,34 +45,38 @@ async function postInteraction(params: GeminiCallParams, stream: boolean): Promi
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return { error: "AI assistant is not configured." };
 
-  const body: Record<string, unknown> = {
-    model: GEMINI_MODEL,
-    input: params.input,
+  const send = async (model: string): Promise<Response | { error: string; retryable?: boolean }> => {
+    const body: Record<string, unknown> = { model, input: params.input };
+    if (params.systemInstruction) body.system_instruction = params.systemInstruction;
+    if (params.previousInteractionId) body.previous_interaction_id = params.previousInteractionId;
+    if (params.responseSchema) {
+      body.response_format = { type: "text", mime_type: "application/json", schema: params.responseSchema };
+    }
+    if (stream) body.stream = true;
+
+    let response: Response;
+    try {
+      response = await fetch(stream ? `${GEMINI_ENDPOINT}?alt=sse` : GEMINI_ENDPOINT, {
+        method: "POST",
+        headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch (error) {
+      console.error("[gemini] request failed", error);
+      return { error: UNAVAILABLE };
+    }
+
+    if (!response.ok) {
+      console.error(`[gemini] request failed (${model}): ${response.status} ${await response.text().catch(() => "")}`);
+      return { error: UNAVAILABLE, retryable: RETRYABLE_STATUSES.includes(response.status) };
+    }
+    return response;
   };
-  if (params.systemInstruction) body.system_instruction = params.systemInstruction;
-  if (params.previousInteractionId) body.previous_interaction_id = params.previousInteractionId;
-  if (params.responseSchema) {
-    body.response_format = { type: "text", mime_type: "application/json", schema: params.responseSchema };
-  }
-  if (stream) body.stream = true;
 
-  let response: Response;
-  try {
-    response = await fetch(stream ? `${GEMINI_ENDPOINT}?alt=sse` : GEMINI_ENDPOINT, {
-      method: "POST",
-      headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-  } catch (error) {
-    console.error("[gemini] request failed", error);
-    return { error: UNAVAILABLE };
-  }
-
-  if (!response.ok) {
-    console.error(`[gemini] request failed: ${response.status} ${await response.text().catch(() => "")}`);
-    return { error: UNAVAILABLE };
-  }
-  return response;
+  const first = await send(GEMINI_MODEL);
+  if (!("retryable" in first) || !first.retryable) return first;
+  const second = await send(GEMINI_FALLBACK_MODEL);
+  return "error" in second ? { error: UNAVAILABLE } : second;
 }
 
 /**

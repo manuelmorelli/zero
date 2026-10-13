@@ -27,6 +27,14 @@ import {
 
 export type SiteAssistantMessage = { role: "user" | "assistant"; text: string };
 
+import {
+  zeroTolerance,
+  notAllowedGroups,
+  simpleSections as guidelinesSections,
+  noEngagementBaitNote,
+} from "@/app/(site)/community-guidelines/page";
+import { sections as copyrightSections } from "@/app/(site)/copyright/page";
+
 // Percorsi reali delle sezioni di Impostazioni (docs/14_UI_Pages.md descrive cosa fanno, non dove
 // sono): un piccolo elenco a parte, giusto i link, per rispondere a "dove trovo X" con un percorso
 // vero invece di una descrizione generica.
@@ -91,6 +99,13 @@ function buildKnowledgeBase(): string {
     section("Privacy Policy", privacySections.flatMap((item) => [`#### ${item.title}`, ...item.body])),
     section("Terms of Service", termsSections.flatMap((item) => [`#### ${item.title}`, ...item.body])),
     section("Cookie Policy", cookiesSections.flatMap((item) => [`#### ${item.title}`, ...item.body])),
+    section("Community Guidelines: never allowed, zero tolerance (immediate removal and ban)", zeroTolerance),
+    section(
+      "Community Guidelines: not allowed on Zero",
+      notAllowedGroups.map((group) => `${group.title}: ${group.body}`).concat(noEngagementBaitNote)
+    ),
+    section("Community Guidelines: other rules", guidelinesSections.map((item) => `${item.title}: ${item.body}`)),
+    section("Copyright and reporting content", copyrightSections.flatMap((item) => [`#### ${item.title}`, ...item.body])),
     section("Every feature of Zero, in detail", [readDoc("20_Feature_Catalog.md")]),
     section("Every page of the site and what it's for", [readDoc("14_UI_Pages.md")]),
     section("Where to find each Settings section", [SETTINGS_PATHS]),

@@ -9,7 +9,7 @@ export const metadata = {
 
 type Section = { title: string; body: string[] };
 
-const sections: Section[] = [
+export const sections: Section[] = [
   {
     title: "Your content, your rights",
     body: [
