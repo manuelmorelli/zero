@@ -6,7 +6,7 @@ export const metadata = {
   description: "Get in touch with the Zero team.",
 };
 
-const CONTACT_EMAIL = "manuel_morelli81@yahoo.com";
+const CONTACT_EMAIL = "team.zero@gmail.com";
 
 export default function ContactPage() {
   return (

@@ -55,7 +55,7 @@ export const sections: Section[] = [
   {
     title: "Your rights",
     body: [
-      "You can access and correct most of your information directly in Settings. You can request a copy of your data or ask us to delete it by using the Report feature to reach our team (a dedicated contact channel is coming before public launch).",
+      "You can access and correct most of your information directly in Settings. You can request a copy of your data or ask us to delete it by writing to team.zero@gmail.com.",
       "If you're in the EU or UK, this includes the rights guaranteed by the **GDPR**: access, correction, deletion, and data portability. If you're a California resident, this includes the rights guaranteed by the **CCPA**: the right to know what we collect and to have it deleted. **We don't sell personal information, so there's nothing to opt out of.**",
     ],
   },

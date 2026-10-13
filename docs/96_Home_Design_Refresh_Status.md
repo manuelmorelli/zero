@@ -63,12 +63,12 @@ Sessione dedicata a rivedere sfondo e accento dopo il round precedente. Diversi 
 
 ## Bug segnalati, ancora aperti
 
-- Copertine dei video sgranate: causa diagnosticata (doppia compressione lato client + `quality` non impostato su `next/image` nelle card), correzione mai applicata su richiesta esplicita di Manuel ("poi sistemiamo il bug")
-- Foto dell'ultima card in una riga della Home che non cambia mai: segnalato, non ancora controllato
+- Copertine dei video sgranate: risolto (`quality` impostato a 85 su `next/image`, qualità di upload a 0.92), commit `c793d18`
+- Foto dell'ultima card in una riga della Home che non cambia mai: da confermare con Manuel se ancora presente
 
-## Prossimi passi aperti (in discussione)
+## Risolto (2026-10-13)
 
-- Decidere se costruire la "manovella" colori (vedi sopra) prima di procedere con altre modifiche di stile
-- Card Profilo (`AboutCard.tsx`, `PresentationVideoCard.tsx`): Manuel le ha già sistemate così come sono e ne è soddisfatto (2026-10-09) — non si porta più l'effetto vetro della Hero, chiuso
-- Rimuovere la freccia "← [Nome creator]'s Community" in `app/(site)/community/[type]/[id]/page.tsx`
-- Logo "ZERO" nella Hero (`public/images/zero-wordmark.png`, immagine PNG non testo) più corposo — trucco CSS o rifare l'asset
+- "Manovella" colori: costruita, `--ember-l`/`--ember-c`/`--ember-h` in `app/globals.css` regolano il tono dell'arancione in un solo punto
+- Card Profilo: Manuel le ha già sistemate così come sono e ne è soddisfatto — non si porta più l'effetto vetro della Hero, chiuso
+- Freccia "← [Nome creator]'s Community": rimossa
+- Logo "ZERO" nella Hero: sistemato (commit `6dbd7d3`)

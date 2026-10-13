@@ -33,7 +33,7 @@ export const sections: Section[] = [
   {
     title: "How Zero ranks content",
     body: [
-      "**Paying doesn't get you seen more on Zero.** Visibility is driven by the Journey Score, based on real signals like completion and engagement, never by payment. See the Algorithm section of How It Works for the full explanation.",
+      "**Paying doesn't get you seen more on Zero.** Visibility is driven by the Trust Score, based on real signals like completion and engagement, never by payment. See the Algorithm section of How It Works for the full explanation.",
     ],
   },
   {
