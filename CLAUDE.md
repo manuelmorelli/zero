@@ -125,6 +125,21 @@ architettura, decisioni di prodotto, struttura cartelle, design system, regole d
 Manuel non ha competenze tecniche di programmazione. Quando serve fargli una domanda o spiegargli qualcosa:
 - Usare linguaggio semplice, senza gergo tecnico.
 - Se bisogna far scegliere tra opzioni tecniche, spiegare prima in parole semplici cosa cambia **nella pratica** tra le opzioni, prima di chiedere di scegliere.
-## Regola di conferma obbligatoria
 
-Prima di modificare, creare o cancellare qualsiasi file, presentare sempre il piano completo e fermarsi. Aspettare che l'utente scriva esplicitamente "vai" in chat. Non procedere automaticamente dopo aver ricevuto risposte a domande di chiarimento — le risposte informano il piano, non autorizzano a scrivere codice.
+## Piano e conferme
+
+Non presentare piani e non aspettare un "vai" prima di agire: Manuel chiede il piano quando gli serve. Le azioni difficili da annullare (cancellare file o dati, push, operazioni distruttive su git) vanno comunque confermate prima.
+
+---
+
+# Regole di Context Engineering e Ottimizzazione dei Token
+
+## Vincoli comportamentali
+- Non spiegare mai cosa stai per fare prima di farlo.
+- Non ripetere o riassumere i prompt dell'utente.
+- Evita commenti descrittivi o discorsivi nell'output. Fornisci solo il ragionamento strettamente necessario e le soluzioni dirette.
+
+## Gestione del contesto
+- Usa target di file specifici (es. @nomefile) invece di fare ricerche generiche nel repository.
+- Non leggere file interi se hai bisogno solo di una funzione specifica; usa grep o letture mirate.
+- Esegui i comandi del terminale con i flag per renderli silenziosi (es. `npm test -- --silent`) per evitare di intasare la finestra di contesto con log inutili.

@@ -201,11 +201,12 @@ html[data-theme="light"] [class*="shadow-glow"] {
 
 /* Bottoni/schede del Profilo personale che galleggiano sulla copertina (Edit Profile, Dashboard,
  * Share Profile, Message, Follow, il menu "...", Overview/Journeys/Community): nel tema scuro
- * restano come prima (vetro arancione di BUTTON_VARIANTS.secondary, invariato). Solo nel chiaro
- * diventano un vetro grigio (richiesta di Manuel, 2026-10-11): l'arancione sullo sfondo chiaro
- * si confondeva troppo con lo sfondo vero e proprio. */
+ * restano come prima (vetro arancione di BUTTON_VARIANTS.secondary, invariato). Nel chiaro il
+ * riempimento resta un vetro grigio (richiesta di Manuel, 2026-10-11: l'arancione sullo sfondo
+ * chiaro si confondeva troppo con lo sfondo vero e proprio), ma dal 2026-10-13 il bordo è
+ * arancione come su Overview/Journeys/Community qui sotto (richiesta di Manuel). */
 html[data-theme="light"] .profile-hero-glass {
-  border-color: var(--color-border);
+  border-color: oklch(66.6% 0.179 58.318 / 90%);
   background-color: var(--color-glass);
   backdrop-filter: blur(12px);
   box-shadow: none;
