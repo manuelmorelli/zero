@@ -53,7 +53,9 @@ export default async function EpisodePlayerPage({
   ]);
 
   const trustScore = computeTrustScore(await getCreatorTrustInputs(journey.creator.id, followersCount));
-  const currentNumber = flatEpisodes.find((item) => item.id === episodeId)?.number ?? 1;
+  const currentIndex = flatEpisodes.findIndex((item) => item.id === episodeId);
+  const currentNumber = currentIndex >= 0 ? flatEpisodes[currentIndex].number : 1;
+  const nextTimelineEpisode = currentIndex >= 0 ? (flatEpisodes[currentIndex + 1] ?? null) : null;
   const videoSrc = episode.videoKey ? await getVideoPlaybackUrl(episode.videoKey) : null;
   // Versione leggera per connessioni lente (Cloudflare Stream): usata solo quando pronta, il
   // player ricade sull'originale (videoSrc) finché non lo è — vedi components/journey/EpisodePlayer.
@@ -69,6 +71,7 @@ export default async function EpisodePlayerPage({
 
       <div className={cn(PAGE_WIDTH.wide, "grid gap-5 pb-10 pt-24 lg:grid-cols-[minmax(0,1fr)_340px]")}>
         <EpisodePlayer
+          key={episode.id}
           journeyId={journey.id}
           journeyTitle={journey.title}
           journeyCategory={journey.category}
@@ -91,6 +94,16 @@ export default async function EpisodePlayerPage({
           isLoggedIn={Boolean(session)}
           isOwnContent={isOwnContent}
           manualHighlights={manualHighlights}
+          nextEpisode={
+            nextTimelineEpisode
+              ? {
+                  id: nextTimelineEpisode.id,
+                  number: nextTimelineEpisode.number,
+                  title: nextTimelineEpisode.title,
+                  posterUrl: nextTimelineEpisode.posterUrl ?? journeyCoverUrl,
+                }
+              : null
+          }
         />
 
         <UpNextList

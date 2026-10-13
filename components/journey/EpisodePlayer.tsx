@@ -14,6 +14,11 @@ import { VideoPlayer, type VideoPlayerHandle } from "@/components/common/VideoPl
 import { PageTitle } from "@/components/ui/heading";
 import { SponsoredLabel } from "@/components/common/SponsoredLabel";
 import { useHighlightMarker } from "@/hooks/useHighlightMarker";
+import {
+  AUTOPLAY_STORAGE_KEY,
+  NextEpisodeOverlay,
+  type NextEpisodeInfo,
+} from "@/components/journey/NextEpisodeOverlay";
 
 // Sotto questa quota non vale la pena riprendere da dove si era arrivati (praticamente l'inizio).
 const RESUME_THRESHOLD_SEC = 5;
@@ -51,6 +56,8 @@ type EpisodePlayerProps = {
   isOwnContent: boolean;
   /** Punti già segnati a mano dal creator (stellina), vuoto per chi non è il creator. */
   manualHighlights: { id: string; timestampSec: number }[];
+  /** Episodio che segue questo nel Journey; null se questo è l'ultimo. */
+  nextEpisode: NextEpisodeInfo | null;
 };
 
 export function EpisodePlayer({
@@ -67,6 +74,7 @@ export function EpisodePlayer({
   isLoggedIn,
   isOwnContent,
   manualHighlights,
+  nextEpisode,
 }: EpisodePlayerProps) {
   const playerRef = useRef<VideoPlayerHandle>(null);
   const completedRef = useRef(initialCompleted);
@@ -76,6 +84,7 @@ export function EpisodePlayer({
   // COMPLETION_FRACTION), non da subito come il vecchio like — resta sbloccato anche se poi si
   // torna indietro nel video.
   const [trustyUnlocked, setTrustyUnlocked] = useState(initialCompleted);
+  const [ended, setEnded] = useState(false);
   const { highlights, isPending: isMarkingPending, mark, remove, full } = useHighlightMarker(episode.id, manualHighlights);
 
   const save = () => {
@@ -122,6 +131,20 @@ export function EpisodePlayer({
     };
   }, [episode.id, episode.videoSrc, episode.lightVideoSrc]);
 
+  // Se l'episodio precedente ha lasciato il segnale "parti da solo" (conto alla rovescia finito o
+  // "Play now"), lo consuma e avvia il video. Il browser può rifiutare l'avvio automatico: in quel
+  // caso resta il pulsante play grande, senza errori.
+  useEffect(() => {
+    let shouldAutoplay = false;
+    try {
+      shouldAutoplay = sessionStorage.getItem(AUTOPLAY_STORAGE_KEY) === episode.id;
+      if (shouldAutoplay) sessionStorage.removeItem(AUTOPLAY_STORAGE_KEY);
+    } catch {
+      return;
+    }
+    if (shouldAutoplay) playerRef.current?.video?.play().catch(() => {});
+  }, [episode.id]);
+
   useEffect(() => {
     // Salvataggio "best-effort" quando l'utente cambia pagina o chiude la scheda: può perdere gli
     // ultimissimi secondi (accettabile), ma copre il caso non coperto dal salvataggio periodico.
@@ -144,6 +167,20 @@ export function EpisodePlayer({
               posterUrl={episode.posterUrl}
               thresholdFraction={COMPLETION_FRACTION}
               onThreshold={() => setTrustyUnlocked(true)}
+              overlay={
+                ended ? (
+                  <NextEpisodeOverlay
+                    journeyId={journeyId}
+                    next={nextEpisode}
+                    onWatchAgain={() => {
+                      const video = playerRef.current?.video;
+                      if (!video) return;
+                      video.currentTime = 0;
+                      video.play().catch(() => {});
+                    }}
+                  />
+                ) : undefined
+              }
               extraControl={
                 isOwnContent ? (
                   <HighlightMarkButton
@@ -164,6 +201,7 @@ export function EpisodePlayer({
                 }
               }}
               onPlay={() => {
+                setEnded(false);
                 if (intervalRef.current) clearInterval(intervalRef.current);
                 intervalRef.current = setInterval(save, SAVE_INTERVAL_MS);
               }}
@@ -178,6 +216,7 @@ export function EpisodePlayer({
                 completedRef.current = true;
                 setTrustyUnlocked(true);
                 save();
+                setEnded(true);
               }}
             />
           ) : (
