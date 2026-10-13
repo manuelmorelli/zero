@@ -172,12 +172,7 @@ export function EpisodePlayer({
                   <NextEpisodeOverlay
                     journeyId={journeyId}
                     next={nextEpisode}
-                    onWatchAgain={() => {
-                      const video = playerRef.current?.video;
-                      if (!video) return;
-                      video.currentTime = 0;
-                      video.play().catch(() => {});
-                    }}
+                    onWatchAgain={() => playerRef.current?.restart()}
                   />
                 ) : undefined
               }

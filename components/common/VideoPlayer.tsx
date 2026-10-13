@@ -8,6 +8,8 @@ const SKIP_BACK_SEC = 15;
 
 export type VideoPlayerHandle = {
   video: HTMLVideoElement | null;
+  /** Riparte dall'inizio. */
+  restart: () => void;
 };
 
 type VideoPlayerProps = {
@@ -72,7 +74,19 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  useImperativeHandle(forwardedRef, () => ({ video: videoRef.current }), []);
+  useImperativeHandle(
+    forwardedRef,
+    () => ({
+      video: videoRef.current,
+      restart: () => {
+        const video = videoRef.current;
+        if (!video) return;
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      },
+    }),
+    []
+  );
 
   useEffect(() => {
     function handleFullscreenChange() {
