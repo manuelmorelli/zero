@@ -14,6 +14,7 @@ import { ShareButton } from "@/components/common/ShareButton";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { PageTitle } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
+import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
 function isListingType(value: string): value is CommunityListingType {
   return (COMMUNITY_LISTING_TYPES as readonly string[]).includes(value);
@@ -77,7 +78,7 @@ export default async function CommunityListingDetailPage({
 
         <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-2xl border border-border bg-surface-2">
           {coverUrl ? (
-            <Image src={coverUrl} alt={listing.title} fill sizes="(min-width: 768px) 672px, 100vw" className="object-cover" priority />
+            <Image src={coverUrl} alt={listing.title} fill sizes="(min-width: 768px) 672px, 100vw" quality={COVER_IMAGE_QUALITY} className="object-cover" priority />
           ) : (
             <div className="absolute inset-0 cover-placeholder" />
           )}

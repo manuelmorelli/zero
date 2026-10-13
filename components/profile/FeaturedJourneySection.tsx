@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { CoverTitle } from "@/components/ui/cover-card";
+import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
 type FeaturedJourneySectionProps = {
   journey: {
@@ -31,6 +32,7 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
             alt={journey.title}
             fill
             sizes="(min-width: 1024px) 34vw, 100vw"
+            quality={COVER_IMAGE_QUALITY}
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         ) : (

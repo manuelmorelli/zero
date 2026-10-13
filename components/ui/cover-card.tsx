@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FadeImage } from "@/components/common/FadeImage";
 import { cn } from "@/lib/utils";
+import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
 /*
  * Card con foto di copertina: formati ufficiali per tipo di contenuto (scelte di Manuel
@@ -99,6 +100,7 @@ export function CoverFrame({
               alt={imageAlt}
               fill
               sizes={SIZES[format]}
+              quality={COVER_IMAGE_QUALITY}
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (

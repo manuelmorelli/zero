@@ -9,7 +9,12 @@ export const IMAGE_COMPRESSION_THRESHOLD_BYTES = 2 * 1024 * 1024;
 // risoluzione originale (avatar, copertine, poster), quindi non serve conservare di più.
 export const MAX_IMAGE_DIMENSION_PX = 2000;
 
-export const IMAGE_COMPRESSION_QUALITY = 0.82;
+// Alta di proposito: next/image ricomprime di nuovo in visualizzazione (COVER_IMAGE_QUALITY), quindi
+// la copia salvata deve restare quasi senza perdite per non sommare due compressioni pesanti.
+export const IMAGE_COMPRESSION_QUALITY = 0.92;
+
+// Qualità con cui next/image serve le copertine (deve essere elencata in next.config.ts > qualities).
+export const COVER_IMAGE_QUALITY = 85;
 
 export const IMAGE_EXTENSIONS: Record<string, string> = {
   "image/jpeg": "jpg",

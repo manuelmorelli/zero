@@ -17,6 +17,7 @@ import { getGsapScrollTrigger, prefersLightMotion } from "@/lib/gsapClient";
 import { PANEL_GLASS } from "@/components/ui/panel";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { cn } from "@/lib/utils";
+import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
 const creators = ["Alex R.", "Sarah J.", "David L.", "Emma W.", "James T."];
 
@@ -95,6 +96,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             alt={item.alt}
             fill
             sizes="100vw"
+            quality={COVER_IMAGE_QUALITY}
             preload={index === 0}
             className={`animate-[kenburns_14s_ease-in-out_infinite_alternate] object-cover transition-opacity duration-1000 ${
               // Spente del tutto quando c'è un video (non solo "sotto" di lui): se il video avesse

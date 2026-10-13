@@ -3,6 +3,7 @@ import Link from "next/link";
 import { JourneyCardMenu } from "@/components/profile/JourneyCardMenu";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
 import { PUBLICLY_REACHABLE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: "Draft",
@@ -61,6 +62,7 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
                     alt={journey.title}
                     fill
                     sizes="(min-width: 1024px) 20vw, 33vw"
+                    quality={COVER_IMAGE_QUALITY}
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (

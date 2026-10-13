@@ -21,6 +21,7 @@ import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { NOTICE, PANEL, ROW } from "@/components/ui/panel";
 import { PageTitle, SectionTitle } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
+import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
 export default async function PublicJourneyPage({
   params,
@@ -80,6 +81,7 @@ export default async function PublicJourneyPage({
                   alt={journey.title}
                   fill
                   sizes="(min-width: 768px) 660px, 100vw"
+                  quality={COVER_IMAGE_QUALITY}
                   className="object-cover"
                   preload
                 />
@@ -215,6 +217,7 @@ function EpisodeRow({
               alt=""
               fill
               sizes="176px"
+              quality={COVER_IMAGE_QUALITY}
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
