@@ -16,7 +16,7 @@ export const metadata = {
 export const algorithmParagraphs = [
   "The algorithm doesn't care how many followers you have. It cares about one thing: do people actually stick around and come back?",
   "If people finish your episodes and come back for the next one, more people get to see you. Followers help a little, but only up to a point. After that, having more doesn't push you higher.",
-  "The only way your score goes down is if people report you and we confirm something was actually wrong. Never because you're small.",
+  "Your score never goes down because you're small. It goes down only if you leave a Journey unfinished and stop publishing, or if people report you and we confirm something was actually wrong. Finished telling a Journey? Mark it as completed and it keeps its score.",
 ];
 
 export const algorithmHighlights = [

@@ -110,29 +110,35 @@ Combina, con pesi diversi:
   | 90%+ | Super Hero Level (massimo) |
 
   Queste fasce non sono mai visibili al creator: nessuna barra di progresso "sei al 40%, ti manca il 10%" — è un meccanismo silenzioso, per evitare la pressione da metriche tipica di altri social;
-- **continuità di pubblicazione** (25%) — quanto di recente e con che regolarità il creator pubblica nuovi episodi;
+- **continuità di pubblicazione** (25%) — quanto di recente e con che regolarità il creator pubblica nuovi episodi. Un Journey **segnato come finito** dal creator ("Mark as completed", riquadro sotto la lista episodi in Dashboard, `Journey.completedAt`) non perde più punti col tempo: la recenza non conta più e la frequenza si misura solo sul periodo in cui è stato pubblicato. Un Journey lasciato a metà continua invece a perderli. Si può riaprire a mano, e si riapre da solo pubblicando un episodio nuovo;
 - **tempo di fruizione reale** (15%) — quanto in profondità gli spettatori procedono nel Journey, calcolato sui dati reali di visione (`EpisodeProgress`);
 - **follower** (10%) — cappati a una soglia fissa: oltre quella soglia, averne di più non alza ulteriormente il punteggio, per non ricreare la stessa dinamica "vince chi ha più follower" di altri social.
 
 Il reagire "Trusty" su un episodio (vedi sotto) non entra più in questo punteggio: non misura la qualità del singolo episodio, alimenta invece il Trust Level del creator.
 
+**Top Journeys** sceglie i candidati tra i Journey con il Journey Score più alto (o i più recenti, sotto la soglia dei 100 Journey pubblicati), non più tra i 50 pubblicati più di recente: un Journey vecchio ma ottimo, anche finito, resta in gara. Se l'utente ha dichiarato interessi, si prendono a parte anche i migliori di quelle categorie.
+
 Il Journey Score si ricalcola **al massimo una volta al giorno** per Journey, non ad ogni richiesta: nessun servizio in background dedicato, il ricalcolo avviene come effetto collaterale della normale lettura di Discovery quando il valore salvato ha più di 24 ore.
 
 ## Trust Level
 
-Punteggio 0-100 del creator (mostrato come "Trust Score" sul Profilo pubblico). **Si attiva solo dopo aver caricato il video/card di presentazione** per diventare creator: prima di quel momento non esiste alcun punteggio (nessun badge mostrato, non uno zero). Non c'è più nessuna base automatica gratuita.
+Punteggio 0-100 del creator (mostrato come "Trust Score" sul Profilo pubblico, sulla pagina del Journey e nel player). **Non entra in nessuna classifica**: è solo un'informazione mostrata. **Si attiva solo dopo aver caricato il video/card di presentazione** per diventare creator: prima di quel momento non esiste alcun punteggio (nessun badge mostrato, non uno zero). Non c'è più nessuna base automatica gratuita.
 
 Una volta attivato, combina:
 
 - **presentazione** (5%) — fissa, ottenuta caricando il video/card di presentazione;
-- **qualità** (50%) — media del Journey Score dei Journey pubblicati del creator;
+- **qualità** (50%) — media del Journey Score dei Journey pubblicati del creator, pesata dalla regola delle 100 persone (sotto);
 - **follower** (15%) — cappati con lo stesso principio del Journey Score;
-- **Journey pubblicato** (5%) — bonus fisso se il creator ha almeno un Journey pubblicato o in Discovery Phase;
-- **Trusty** (25%) — per ogni episodio con almeno 5 completamenti distinti (`EpisodeProgress.completedAt` valorizzato), quota di quei completatori che hanno anche cliccato "Trusty"; la media di questa quota sugli episodi con abbastanza dati, cappata al 25%. Un episodio senza almeno 5 completamenti reali non conta né in positivo né in negativo — evita che pochi amici bastino a portare il Trusty al massimo. Il click è verificato anche lato server: non si può dare Trusty su un episodio che non si è davvero completato, a prescindere dal bottone in interfaccia.
+- **attivo** (5%) — il creator ha almeno un Journey pubblicato o in Discovery Phase **e** non ha ancora ricevuto il primo avviso di inattività (6 mesi senza pubblicare, 10 se in pausa, vedi `lib/account/creatorLifecycle.ts`);
+- **Trusty** (25%) — per ogni episodio con almeno 5 completamenti distinti (`EpisodeProgress.completedAt` valorizzato), quota di quei completatori che hanno anche cliccato "Trusty"; la media di questa quota sugli episodi con abbastanza dati, cappata al 25%. Un episodio senza almeno 5 completamenti reali non conta né in positivo né in negativo — evita che pochi amici bastino a portare il Trusty al massimo. Il click è verificato anche lato server: non si può dare Trusty su un episodio che non si è davvero completato, a prescindere dal bottone in interfaccia. Il creator non può darsi Trusty sui propri episodi (bloccato lato server) e non conta mai né tra i completatori né tra chi ha dato Trusty.
+
+**Regola delle 100 persone**: Trusty e qualità crescono col numero di persone diverse (creator escluso) che hanno finito almeno un episodio del creator, e sono pieni solo da 100 persone in su (es. 20 persone = 20% del loro peso). L'algoritmo non riconosce chi è amico: dà poco peso a **qualunque** pubblico piccolo, così pochi account compiacenti non bastano. Esempi verificati sul codice: 5 amici che guardano tutto e danno sempre Trusty portano a circa 14% (prima circa 80%), 20 amici a circa 25%, un creator nuovo onesto resta all'11%. Il riconoscimento di account sospetti (stessa connessione, account creati insieme) è rimandato a quando ci saranno utenti reali: sbaglia facilmente e ha implicazioni privacy.
+
+**Conteggio Trusty**: accanto al punteggio si mostra il numero di persone diverse che hanno dato Trusty ad almeno un episodio del creator ("1,240 Trusty", sotto il @nickname sul Profilo e nel pannello del badge), creator escluso, anche sui Journey archiviati. Nascosto quando è zero.
 
 **Tetto per esperienza**: sotto i 10 episodi pubblicati (published + discovery, su tutti i Journey del creator), il punteggio finale viene scalato in proporzione al numero di episodi pubblicati (es. con 2 episodi, il massimo raggiungibile è il 20% del punteggio pieno) — anche se tutte le altre metriche fossero perfette. Impedisce che un creator nuovo arrivi al 100% con pochissimo contenuto pubblicato.
 
-Scende **solo** per segnalazioni confermate manualmente (modello `Report`, già presente nello schema, −10 punti per segnalazione confermata, applicati dopo lo scaling per esperienza): nessun rilevamento automatico di bot, crescita follower artificiale o manipolazione delle metriche — esplicitamente fuori scope per questa fase del prodotto.
+Oltre alla perdita dei 5 punti "attivo" per inattività, scende per segnalazioni confermate manualmente (modello `Report`, già presente nello schema, −10 punti per segnalazione confermata, applicati dopo lo scaling per esperienza): nessun rilevamento automatico di bot, crescita follower artificiale o manipolazione delle metriche — esplicitamente fuori scope per questa fase del prodotto.
 
 ## Feed Updates
 

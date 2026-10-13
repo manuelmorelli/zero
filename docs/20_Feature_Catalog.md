@@ -31,7 +31,9 @@ Queste sono le caratteristiche che non si trovano insieme da nessun'altra parte,
 
 **Il ranking non si può comprare.** Nessuna funzione a pagamento di Zero, oggi o in futuro, tocca l'ordine con cui i contenuti vengono mostrati. Non è solo una promessa scritta: è verificato nel codice e dichiarato pubblicamente nella pagina "How it works" del sito.
 
-**Un punteggio di fiducia per ogni creator (Trust Score), non solo un conteggio di follower.** Si attiva quando il creator carica un video di presentazione di sé stesso, e combina qualità reale dei contenuti, continuità, follower e segnalazioni confermate. Un creator con pochi follower ma contenuti seguiti fino alla fine può valere più di uno con tanti follower e poco coinvolgimento.
+**Un punteggio di fiducia per ogni creator (Trust Score), non solo un conteggio di follower.** Si attiva quando il creator carica un video di presentazione di sé stesso, e combina qualità reale dei contenuti, continuità, follower e segnalazioni confermate. Un creator con pochi follower ma contenuti seguiti fino alla fine può valere più di uno con tanti follower e poco coinvolgimento. Accanto al punteggio si vede quante persone diverse hanno dato **Trusty** a quel creator (es. "1,240 Trusty"), un numero concreto che chiunque capisce. Il punteggio è costruito per non farsi gonfiare da pochi amici: la parte che viene dagli spettatori raggiunge il peso pieno solo quando 100 persone diverse hanno finito i suoi episodi, e il creator non può darsi Trusty da solo. Con 5 amici compiacenti si arriva intorno al 14%, non all'80%.
+
+**Un Journey finito non viene punito.** Il creator può segnare un Journey come finito ("Mark as completed"): resta nelle classifiche e non perde più punti col passare del tempo, a differenza di un Journey lasciato a metà. Se riprende a pubblicare, il Journey si riapre da solo.
 
 **L'algoritmo resta onesto finché la piattaforma è piccola.** Finché Zero non raggiunge 100 Journey pubblicati in totale, le classifiche "in evidenza" mostrano i contenuti in ordine cronologico invece che per punteggio, proprio per evitare che con pochi dati un ranking artificiale favorisca il primo arrivato. È una soglia scelta dopo aver studiato come YouTube e Patreon hanno gestito (e in parte sbagliato) lo stesso problema nei loro primi anni.
 
@@ -59,7 +61,7 @@ Intorno ai contenuti c'è un livello social completo:
 - **Stories (Updates)**: contenuti che durano 24 ore in cinque formati (testo, foto, video, sondaggio, domanda), con una reazione rapida visibile solo a chi li ha pubblicati.
 - **Messaggi privati**: una conversazione uno a uno si sblocca appena una delle due persone segue l'altra (non serve che sia reciproco).
 - **Notifiche**: nuovo follower, nuovo episodio o Journey di chi si segue, nuove offerte Community, risposte alle domande poste.
-- **Trusty**: la reazione "mi fido di questo contenuto", che si sblocca solo arrivando alla fine di un episodio, e che alimenta il punteggio di fiducia del creator.
+- **Trusty**: la reazione "mi fido di questo contenuto", che si sblocca solo arrivando alla fine di un episodio, e che alimenta il punteggio di fiducia del creator. Il numero di persone che hanno dato Trusty a un creator è visibile sul suo profilo, sotto il nome.
 - **Ember**: l'assistente AI che spiega come funziona Zero, raggiungibile dal pulsante mascotte nell'header, visibile a chiunque anche senza login. Risponde solo sulla base dei contenuti veri del sito (pagine pubbliche, catalogo funzionalità, mappa delle pagine), senza accesso a internet e senza inventare: se non sa qualcosa lo dice onestamente. Spiega soltanto, non esegue mai azioni al posto di chi lo usa e non rivela le percentuali esatte dell'algoritmo o del Trust Score, che restano riservate. È un assistente diverso da quello della sezione Community, che aiuta invece i creator a scrivere le proprie offerte.
 
 ## Cosa può fare oggi un creator
@@ -68,7 +70,7 @@ Ogni account nasce **Visitatore**: può guardare, seguire, mettere like e scrive
 
 Un creator costruisce un Journey organizzandolo in capitoli (facoltativi) ed episodi, carica i video, scrive la presentazione, sceglie la categoria, e decide quando pubblicare. Ogni Journey appena pubblicato ottiene 15 giorni di visibilità garantita a tutti, indipendentemente dagli interessi di ciascuno, per dargli una possibilità reale di farsi notare.
 
-Dalla propria Dashboard il creator gestisce tutti i suoi Journey (bozza, pubblicato, archiviato), gli Update, e ha accesso a statistiche reali: visualizzazioni totali, tasso medio di completamento, quante persone hanno finito l'intero percorso, quante interazioni ha ricevuto.
+Dalla propria Dashboard il creator gestisce tutti i suoi Journey (bozza, pubblicato, finito, archiviato), gli Update, e ha accesso a statistiche reali: visualizzazioni totali, tasso medio di completamento, quante persone hanno finito l'intero percorso, quante interazioni ha ricevuto.
 
 Nella sezione **Community** del proprio profilo, il creator può proporre:
 
