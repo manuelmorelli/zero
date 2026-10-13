@@ -19,6 +19,8 @@ type ContentCardProps = {
    * Journey ancora in Discovery Phase. L'icona compare sempre, il numero solo se maggiore di zero
    * (un Journey appena pubblicato può avere davvero 0, mostrarlo sembrerebbe un errore). */
   trust?: number;
+  /** Episodi pubblicati del Journey: se presente, "N episodes" compare sotto il titolo. */
+  episodeCount?: number;
   /** Menu/azioni del proprietario in alto a destra, fuori dal link. */
   menu?: React.ReactNode;
   /** Testo al centro al posto della foto quando `imageUrl` è null (placeholder del feed demo). */
@@ -38,6 +40,7 @@ export function ContentCard({
   className,
   status,
   trust,
+  episodeCount,
   menu,
   emptyMessage,
   isVideo,
@@ -73,6 +76,11 @@ export function ContentCard({
               </span>
             )}
           </div>
+          {episodeCount !== undefined && (
+            <p className="mt-1 text-sm">
+              {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
+            </p>
+          )}
         </>
       }
     />

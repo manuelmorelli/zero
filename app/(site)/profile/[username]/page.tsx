@@ -19,6 +19,7 @@ import { PresentationVideoCard } from "@/components/profile/PresentationVideoCar
 import { MessageButton } from "@/components/profile/MessageButton";
 import { EditProfileButton } from "@/components/profile/EditProfileButton";
 import { ShareProfileButton } from "@/components/profile/ShareProfileButton";
+import { getPublishedEpisodeCounts } from "@/lib/journey/episodeCounts";
 import { getCreatorFeed } from "@/lib/profile/creatorFeed";
 import { getCreatorActiveStory } from "@/lib/discovery/stories";
 import { canMessage } from "@/lib/messaging";
@@ -118,6 +119,7 @@ export default async function PublicProfilePage({
         })
       )
     : [];
+  const episodeCounts = await getPublishedEpisodeCounts(journeys.map((journey) => journey.id));
   // Un creator può avere più Journey live in parallelo (vedi 00-project-context.md, sezione
   // "Archiviazione del Journey"): quello "in evidenza" è quello con l'episodio più recente.
   const liveJourneys = journeys.filter((journey) => journey.status === "PUBLISHED" || journey.status === "DISCOVERY");
@@ -310,6 +312,7 @@ export default async function PublicProfilePage({
                             category={journey.category}
                             status={journey.status === "DISCOVERY" ? "Discovery" : undefined}
                             trust={Math.round(journey.journeyScore)}
+                            episodeCount={episodeCounts.get(journey.id) ?? 0}
                             menu={
                               isOwnProfile ? (
                                 <JourneyCardMenu
@@ -424,6 +427,7 @@ export default async function PublicProfilePage({
                               : undefined
                       }
                       trust={Math.round(journey.journeyScore)}
+                      episodeCount={episodeCounts.get(journey.id) ?? 0}
                       menu={
                         isOwnProfile ? (
                           <JourneyCardMenu
