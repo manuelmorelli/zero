@@ -64,10 +64,10 @@ Fuori lista: Punto 8 (AI), in corso in un'altra chat. Idee senza lavoro programm
 
 ### Design (chat "design", dedicata)
 
-☐ **D1.** Pagina Dashboard Community/nuova: controllare font, frecce, colori
-☐ **D2.** Schermate di caricamento: sagome grigie al posto della pagina bianca
-☐ **D3.** Pagine di errore con "riprova" in parole semplici
-☐ **D4.** Tema chiaro: interruttore in Impostazioni, default scuro
+☑ **D1.** Pagina Dashboard Community/nuova: controllare font, frecce, colori (13 ott 2026: Manuel la tiene così com’è)
+☑ **D2.** Schermate di caricamento: sagome grigie al posto della pagina bianca (già nel codice, `app/(site)/loading.tsx`)
+☑ **D3.** Pagine di errore con "riprova" in parole semplici (già nel codice, `components/ui/error-state.tsx`, bottone "Try again")
+☑ **D4.** Tema chiaro: interruttore in Impostazioni, default scuro (già nel codice, `components/settings/ThemeToggle.tsx`)
 ☐ **D5.** Mobile, pagina per pagina (dopo che il desktop è finito)
 
 ## Ricerca & Discovery

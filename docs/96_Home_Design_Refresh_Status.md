@@ -64,7 +64,7 @@ Sessione dedicata a rivedere sfondo e accento dopo il round precedente. Diversi 
 ## Bug segnalati, ancora aperti
 
 - Copertine dei video sgranate: risolto (`quality` impostato a 85 su `next/image`, qualità di upload a 0.92), commit `c793d18`
-- Foto dell'ultima card in una riga della Home che non cambia mai: da confermare con Manuel se ancora presente
+- Foto dell'ultima card in una riga della Home che non cambia mai: risolto il 2026-10-13, il banner con la foto è stato sostituito dalle due card quadrate (barca a vela e How Zero works)
 
 ## Risolto (2026-10-13)
 
