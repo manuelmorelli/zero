@@ -1,12 +1,19 @@
 import { ArrowRight, CircleAlert } from "lucide-react";
-import { ButtonPrimary } from "@/components/ui/button";
-import { PageTitle } from "@/components/ui/heading";
+import { ButtonPrimary, TextButton } from "@/components/ui/button";
+import { CardTitle, PageTitle } from "@/components/ui/heading";
 import { Badge, PANEL_ACCENT } from "@/components/ui/panel";
 import { SailingScene } from "@/components/ui/sailing-scene";
 import { cn } from "@/lib/utils";
 
 /** Card quadrata con bordo arancione: stessa base per le due card in fondo alla Home. */
 const SQUARE_CARD = cn(PANEL_ACCENT, "relative aspect-square overflow-hidden shadow-glow");
+
+/** I tre passi di Zero in breve (versione completa in app/(site)/how-it-works/page.tsx). */
+const STEPS = [
+  { number: "01", title: "Choose a Journey", text: "real stories, episode by episode, chapter by chapter." },
+  { number: "02", title: "Follow it", text: "pick up exactly where you left off." },
+  { number: "03", title: "Build your own", text: "document your Journey, mistakes included." },
+];
 
 /**
  * Le due card quadrate in fondo alla Home (al posto di "How Zero Works" e del banner con la
@@ -36,7 +43,28 @@ export function HomeClosingCards({ signedIn }: { signedIn: boolean }) {
         </div>
       </div>
 
-      <div className={SQUARE_CARD} />
+      <div className={cn(SQUARE_CARD, "flex flex-col justify-between gap-4")}>
+        <div>
+          <CardTitle as="h2">How Zero works</CardTitle>
+          <ol className="mt-4 space-y-3">
+            {STEPS.map((step) => (
+              <li key={step.number} className="flex gap-3 text-sm leading-snug text-ink-muted">
+                <span className="font-bold text-ember">{step.number}</span>
+                <span>
+                  <span className="font-semibold text-ink">{step.title}:</span> {step.text}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-ember">Paying never gets you seen more.</p>
+          <TextButton href="/how-it-works" className="mt-2">
+            Learn how it works
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </TextButton>
+        </div>
+      </div>
     </div>
   );
 }
