@@ -108,7 +108,7 @@ Contiene:
 - Presentazione;
 - Episodi, in sequenza lineare;
 - Capitoli, quando il creator li ha usati per organizzare gli Episodi;
-- avanzamento dell'utente;
+- avanzamento dell'utente: il pulsante principale dice "Start" (mai guardato niente), "Continue watching · Episode N" (porta all'episodio iniziato o al primo non finito) oppure "Watch again" (tutto finito); negli elenchi episodi compaiono "Resume" e "Finished";
 - strumenti di condivisione.
 
 ---
@@ -118,6 +118,8 @@ Contiene:
 Visualizza un singolo Episodio mantenendo il contesto del Journey (il Player, `/journeys/[id]/episodes/[episodeId]`).
 
 L'utente può passare facilmente a un altro episodio tramite la lista "Up next" a fianco del video, con l'episodio in riproduzione sempre evidenziato.
+
+A fine episodio, dopo aver salvato progresso e Trusty, sopra il video compare il riquadro "Up next" con conto alla rovescia di 5 secondi, "Play now" e "Cancel": allo zero parte da solo l'episodio successivo (se il browser blocca l'avvio automatico resta il play grande). Con "meno movimento" attivo non c'è avvio automatico. All'ultimo episodio il riquadro dice "You finished this Journey", con "Watch again" e "Back to Journey". Il riquadro è largo quanto serve e, sui video verticali stretti, esce dai bordi del player.
 
 ---
 
