@@ -246,6 +246,7 @@ export function EpisodePlayer({
                 initialIsLiked={initialIsLiked}
                 isLoggedIn={isLoggedIn}
                 unlocked={trustyUnlocked}
+                isOwnContent={isOwnContent}
               />
               <ShareButton
                 path={`/journeys/${journeyId}/episodes/${episode.id}`}

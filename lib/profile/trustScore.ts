@@ -76,7 +76,7 @@ export function computeTrustScore({
  * Score. Un episodio senza abbastanza completamenti reali non conta né in positivo né in negativo:
  * evita che pochi amici bastino a portare il Trusty al massimo.
  */
-async function getTrustyContribution(episodeIds: string[]): Promise<number> {
+async function getTrustyContribution(episodeIds: string[], creatorUserId: string | undefined): Promise<number> {
   if (episodeIds.length === 0) return 0;
 
   const [completions, trustyClicks] = await Promise.all([
@@ -87,7 +87,8 @@ async function getTrustyContribution(episodeIds: string[]): Promise<number> {
     }),
     prisma.like.groupBy({
       by: ["targetId"],
-      where: { targetType: "EPISODE", targetId: { in: episodeIds } },
+      // Esclusi gli eventuali Trusty che il creator si era dato da solo prima del blocco in lib/actions/like.ts.
+      where: { targetType: "EPISODE", targetId: { in: episodeIds }, userId: { not: creatorUserId } },
       _count: { _all: true },
     }),
   ]);
@@ -114,7 +115,7 @@ export async function getCreatorTrustInputs(
   followersCount: number
 ): Promise<TrustScoreInput> {
   const [creator, publishedJourneys, liveEpisodes, confirmedReportsCount] = await Promise.all([
-    prisma.creator.findUnique({ where: { id: creatorId }, select: { presentationVideoUrl: true } }),
+    prisma.creator.findUnique({ where: { id: creatorId }, select: { presentationVideoUrl: true, userId: true } }),
     prisma.journey.findMany({
       where: { creatorId, status: "PUBLISHED", deletedAt: null },
       select: { id: true, journeyScore: true },
@@ -132,7 +133,10 @@ export async function getCreatorTrustInputs(
     }),
   ]);
 
-  const trustyContribution = await getTrustyContribution(liveEpisodes.map((episode) => episode.id));
+  const trustyContribution = await getTrustyContribution(
+    liveEpisodes.map((episode) => episode.id),
+    creator?.userId
+  );
 
   let averageJourneyScore = 0;
   if (publishedJourneys.length > 0) {

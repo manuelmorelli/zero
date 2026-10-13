@@ -19,10 +19,20 @@ export async function toggleLike(
     await prisma.like.delete({ where: { id: existing.id } });
   } else {
     if (targetType === "EPISODE") {
-      const progress = await prisma.episodeProgress.findUnique({
-        where: { userId_episodeId: { userId: session.user.id, episodeId: targetId } },
-        select: { completedAt: true },
-      });
+      const [episode, progress] = await Promise.all([
+        prisma.episode.findUnique({
+          where: { id: targetId },
+          select: { journey: { select: { creator: { select: { userId: true } } } } },
+        }),
+        prisma.episodeProgress.findUnique({
+          where: { userId_episodeId: { userId: session.user.id, episodeId: targetId } },
+          select: { completedAt: true },
+        }),
+      ]);
+      // Il Trusty alimenta il Trust Score del creator: darselo da soli lo gonfierebbe.
+      if (episode?.journey.creator.userId === session.user.id) {
+        return { error: "You can't give Trusty to your own episode." };
+      }
       if (!progress?.completedAt) {
         return { error: "Devi finire l'episodio prima di poterlo dare come Trusty." };
       }

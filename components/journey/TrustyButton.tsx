@@ -20,6 +20,8 @@ type TrustyButtonProps = {
   isLoggedIn: boolean;
   /** Sbloccato solo quando l'episodio è stato guardato fino alla fine (vedi EpisodePlayer). */
   unlocked: boolean;
+  /** Il creator vede il conteggio sui propri episodi ma non può darsi il Trusty (vedi lib/actions/like.ts). */
+  isOwnContent?: boolean;
 };
 
 export function TrustyButton({
@@ -29,6 +31,7 @@ export function TrustyButton({
   initialIsLiked,
   isLoggedIn,
   unlocked,
+  isOwnContent = false,
 }: TrustyButtonProps) {
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
@@ -62,10 +65,14 @@ export function TrustyButton({
       <button
         type="button"
         onClick={handleClick}
-        disabled={isPending || !unlocked}
+        disabled={isPending || !unlocked || isOwnContent}
         aria-pressed={isLiked}
         aria-label={
-          unlocked ? (isLiked ? "Remove Trusty" : "Give Trusty") : "Watch to the end to unlock Trusty"
+          isOwnContent
+            ? "Trusty on your own episode"
+            : unlocked
+              ? (isLiked ? "Remove Trusty" : "Give Trusty")
+              : "Watch to the end to unlock Trusty"
         }
         className={cn(
           isLiked ? "border-ember-line bg-ember-soft text-ember" : CHIP,
@@ -75,17 +82,19 @@ export function TrustyButton({
         <ShieldCheck className="h-3.5 w-3.5" fill={isLiked ? "currentColor" : "none"} aria-hidden="true" />
         {formatCompactNumber(likeCount)}
       </button>
-      <TrustyTooltip locked={!unlocked} />
+      <TrustyTooltip locked={!unlocked} isOwnContent={isOwnContent} />
     </span>
   );
 }
 
-function TrustyTooltip({ locked }: { locked: boolean }) {
+function TrustyTooltip({ locked, isOwnContent }: { locked: boolean; isOwnContent: boolean }) {
   return (
     <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-48 -translate-x-1/2 rounded-lg border border-border bg-surface px-3 py-2 text-center text-sm leading-snug text-ink-muted opacity-0 shadow-lg transition-opacity md:group-hover:block md:group-hover:opacity-100">
-      {locked
-        ? "Watch the episode to the end to unlock Trusty."
-        : "Give a Trusty once you've finished watching, it helps build the creator's Trust Score."}
+      {isOwnContent
+        ? "Trusty comes from your viewers, you can't give it to your own episode."
+        : locked
+          ? "Watch the episode to the end to unlock Trusty."
+          : "Give a Trusty once you've finished watching, it helps build the creator's Trust Score."}
     </span>
   );
 }
