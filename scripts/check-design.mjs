@@ -50,7 +50,7 @@ const BOUNCE_FILES = new Set(["components/common/AiMascotButton.tsx"]);
 
 const COLOR_TOKENS = new Set([
   "bg", "surface", "surface-2", "border", "ink", "ink-muted", "ink-faint", "danger",
-  "ember", "ember-soft", "ember-line", "danger-soft", "danger-line", "scrim", "on-photo", "on-photo-muted", "glass", "glass-strong", "overlay", "overlay-soft", "transparent", "current", "inherit",
+  "ember", "ember-soft", "ember-line", "danger-soft", "danger-line", "scrim", "scrim-soft", "scrim-strong", "on-photo", "on-photo-muted", "glass", "glass-strong", "overlay", "overlay-soft", "transparent", "current", "inherit",
 ]);
 const COLOR_UTILS = "bg|text|border|border-[trblxy]|ring|ring-offset|outline|from|via|to|fill|stroke|divide|placeholder|decoration|accent|caret|shadow";
 const TEXT_SIZES = new Set(["sm", "base", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "reading", "reading-lg"]);

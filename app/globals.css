@@ -14,28 +14,30 @@
  */
 @theme {
   /* Sfondo e riquadri: grigio neutro, un gradino più scuro (neutral 950 / 900 / 800) */
-  --color-bg: oklch(14.5% 0 0);
-  --color-surface: oklch(20.5% 0 0);
-  --color-surface-2: oklch(26.9% 0 0);
+  --color-bg: var(--neutral-950);
+  --color-surface: var(--neutral-900);
+  --color-surface-2: var(--neutral-800);
   --color-border: oklch(1 0 0 / 14%);
 
   /* Testo: bianco puro, secondario neutral 300, terziario neutral 400 */
   --color-ink: oklch(1 0 0);
-  --color-ink-muted: oklch(87% 0 0);
-  --color-ink-faint: oklch(70.8% 0 0);
+  --color-ink-muted: var(--neutral-300);
+  --color-ink-faint: var(--neutral-400);
 
-  /* Rosso chiaro (red 400): il più leggibile sullo sfondo scuro */
-  --color-danger: oklch(70.4% 0.191 22.216);
-  --color-danger-soft: oklch(70.4% 0.191 22.216 / 10%);
-  --color-danger-line: oklch(70.4% 0.191 22.216 / 40%);
+  /* Rosso chiaro (red 400): il più leggibile sullo sfondo scuro. Le tre manopole
+   * (--danger-l/-c/-h) e le trasparenze sono nel blocco "Manopole" qui sotto. */
+  --color-danger: oklch(var(--danger-l) var(--danger-c) var(--danger-h));
+  --color-danger-soft: oklch(var(--danger-l) var(--danger-c) var(--danger-h) / var(--danger-soft-alpha));
+  --color-danger-line: oklch(var(--danger-l) var(--danger-c) var(--danger-h) / var(--danger-line-alpha));
 
   /* Unico arancione del sito: ambra piena (amber 500). Le scritte arancioni sono sempre piene,
-   * mai sfumate né trasparenti. Le sole trasparenze ammesse sono le due qui sotto. */
-  --color-ember: oklch(76.9% 0.188 70.08);
+   * mai sfumate né trasparenti. Le sole trasparenze ammesse sono le due qui sotto. Per cambiare
+   * il tono dell'arancione si toccano solo le manopole --ember-l/-c/-h (blocco "Manopole"). */
+  --color-ember: oklch(var(--ember-l) var(--ember-c) var(--ember-h));
   /* Alzate dal 10%/40% originale (2026-10-11): sui bottoni/card trasparenti (bordo+sfondo
    * arancioni) restavano troppo pallide. */
-  --color-ember-soft: oklch(76.9% 0.188 70.08 / 16%);
-  --color-ember-line: oklch(76.9% 0.188 70.08 / 55%);
+  --color-ember-soft: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-soft-alpha));
+  --color-ember-line: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-line-alpha));
 
   /* Testo sopra le foto: sempre bianco pieno, in qualunque tema (scelta C6A). Versione attenuata
    * per il testo secondario sopra foto (es. sottotitoli della Hero): stesso bianco, mai un
@@ -45,6 +47,10 @@
 
   /* Velo scuro sopra foto e video (testo leggibile, sfondo delle finestre) */
   --color-scrim: oklch(0% 0 0 / 60%);
+  /* Varianti più leggera (40%) e più forte (70%) dello stesso velo: pulsante di chiusura e sfondo
+   * delle finestre (dialog), prima scritte a mano come bg-black/40 e bg-black/70. */
+  --color-scrim-soft: oklch(0% 0 0 / 40%);
+  --color-scrim-strong: oklch(0% 0 0 / 70%);
 
   /* Vetro traslucido usato sopra le foto/video nel visore delle storie (barra di avanzamento,
    * pillole, bolle di risposta): due soli livelli, mai un bianco scritto a mano. */
@@ -57,10 +63,9 @@
 
   /* Un solo bagliore arancione e una sola ombra per le card. Il bagliore forte compare solo
    * al passaggio del mouse sui bottoni dell'abbonamento Community (Subscribe, Gift, Tip). */
-  --shadow-glow: 0 0 22px -8px oklch(76.9% 0.188 70.08 / 55%);
-  --shadow-glow-strong: 0 0 30px -6px oklch(76.9% 0.188 70.08 / 85%);
+  --shadow-glow: 0 0 22px -8px oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-glow-alpha));
+  --shadow-glow-strong: 0 0 30px -6px oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-glow-strong-alpha));
   --shadow-card: 0 20px 40px -22px oklch(0% 0 0 / 70%);
-
 
   /* Manopola "tutto il resto" (spazi/layout): stesso valore usato sotto su html. */
   --layout-scale: 0.9;
@@ -90,10 +95,60 @@
   /* Taglie su misura della Hero (components/landing/Hero.tsx): eccezione approvata, le
    * didascalie piccole sotto i cerchietti restano piccole. */
   --text-hero-eyebrow: calc(0.77rem / var(--layout-scale) * var(--text-scale));
-  --text-hero-headline: calc(1.65rem / var(--layout-scale) * var(--text-scale));
+  --text-hero-headline: calc(1.38rem / var(--layout-scale) * var(--text-scale));
   --text-hero-subhead: calc(0.96rem / var(--layout-scale) * var(--text-scale));
   --text-hero-caption: calc(0.65rem / var(--layout-scale) * var(--text-scale));
   --text-hero-tag: calc(0.6rem / var(--layout-scale) * var(--text-scale));
+}
+
+/* Manopole: i numeri dietro i colori sono scritti UNA volta sola qui, tutto il resto del file (e dei
+ * blocchi tema sotto) li richiama per nome. Il colore finale a schermo non cambia: sono gli stessi
+ * valori di prima, solo raccolti in un posto. Per cambiare il TONO di un colore si toccano le sue tre
+ * manopole: -l = luminosità, -c = quanto è carico il colore, -h = tono (angolo sul cerchio dei
+ * colori: 0 rosso, 70 ambra, 140 verde). Le manopole sono scritte per esteso dentro oklch()
+ * (non dentro color-mix): è la forma che la build mantiene intatta (verificato sul CSS prodotto). */
+:root {
+  /* Scala dei grigi (stessi valori di neutral 50 ... 950 di Tailwind) */
+  --neutral-50: oklch(98.5% 0 0);
+  --neutral-300: oklch(87% 0 0);
+  --neutral-400: oklch(70.8% 0 0);
+  --neutral-500: oklch(55.6% 0 0);
+  --neutral-600: oklch(43.9% 0 0);
+  --neutral-800: oklch(26.9% 0 0);
+  --neutral-900: oklch(20.5% 0 0);
+  --neutral-950: oklch(14.5% 0 0);
+
+  /* Trasparenze dei colori d'accento uguali nei due temi (le altre sono nei blocchi tema) */
+  --danger-soft-alpha: 10%;
+  --danger-line-alpha: 40%;
+  --ember-glow-alpha: 55%;
+  --ember-glow-strong-alpha: 85%;
+
+  /* Colori fissi in forma "R G B" per le sfumature e i veli (nelle sfumature non si può usare
+   * var() dentro color-mix). Night = lo sfondo scuro (neutral 950 = rgb 10,10,10) usato sopra
+   * foto e video in qualunque tema. */
+  --rgb-black: 0 0 0;
+  --rgb-white: 255 255 255;
+  --rgb-night: 10 10 10;
+}
+
+/* Manopole del tema scuro (è anche il valore di partenza prima che il tema sia applicato). */
+:root,
+html[data-theme="dark"] {
+  /* Rosso chiaro (red 400) */
+  --danger-l: 70.4%;
+  --danger-c: 0.191;
+  --danger-h: 22.216;
+
+  /* Arancione del sito (amber 500) */
+  --ember-l: 76.9%;
+  --ember-c: 0.188;
+  --ember-h: 70.08;
+  --ember-soft-alpha: 16%;
+  --ember-line-alpha: 55%;
+
+  /* Colore dello sfondo della pagina in forma "R G B", per la sfumatura delle copertine */
+  --rgb-page: 10 10 10;
 }
 
 /* Un'unica famiglia di font (Satoshi), pesi diversi. In un blocco "inline" perché la variabile
@@ -113,27 +168,27 @@
  * I valori dentro @theme restano lì solo perché Tailwind li richiede per generare le classi
  * (bg-bg, text-ink, ecc.): da oggi non sono più "la fonte vera" per lo scuro, lo sono questi. */
 html[data-theme="dark"] {
-  --color-bg: oklch(14.5% 0 0);
-  --color-surface: oklch(20.5% 0 0);
-  --color-surface-2: oklch(26.9% 0 0);
+  --color-bg: var(--neutral-950);
+  --color-surface: var(--neutral-900);
+  --color-surface-2: var(--neutral-800);
   --color-border: oklch(1 0 0 / 14%);
 
   --color-ink: oklch(1 0 0);
-  --color-ink-muted: oklch(87% 0 0);
-  --color-ink-faint: oklch(70.8% 0 0);
+  --color-ink-muted: var(--neutral-300);
+  --color-ink-faint: var(--neutral-400);
 
-  --color-danger: oklch(70.4% 0.191 22.216);
-  --color-danger-soft: oklch(70.4% 0.191 22.216 / 10%);
-  --color-danger-line: oklch(70.4% 0.191 22.216 / 40%);
+  --color-danger: oklch(var(--danger-l) var(--danger-c) var(--danger-h));
+  --color-danger-soft: oklch(var(--danger-l) var(--danger-c) var(--danger-h) / var(--danger-soft-alpha));
+  --color-danger-line: oklch(var(--danger-l) var(--danger-c) var(--danger-h) / var(--danger-line-alpha));
 
-  --color-ember: oklch(76.9% 0.188 70.08);
-  --color-ember-soft: oklch(76.9% 0.188 70.08 / 16%);
-  --color-ember-line: oklch(76.9% 0.188 70.08 / 55%);
+  --color-ember: oklch(var(--ember-l) var(--ember-c) var(--ember-h));
+  --color-ember-soft: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-soft-alpha));
+  --color-ember-line: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-line-alpha));
 
   --color-glass: oklch(1 0 0 / 8%);
   --color-glass-strong: oklch(1 0 0 / 15%);
 
-  --shadow-glow: 0 0 22px -8px oklch(76.9% 0.188 70.08 / 55%);
+  --shadow-glow: 0 0 22px -8px oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-glow-alpha));
   --shadow-card: 0 20px 40px -22px oklch(0% 0 0 / 70%);
 }
 
@@ -149,28 +204,43 @@ html[data-theme="light"] {
    * non è possibile oltre il bianco, quindi qui "il livello sopra" è più marcato invece che più
    * chiaro (corretto 2026-10-11: il primo tentativo, neutral 200, restava troppo vicino al
    * bianco). */
-  --color-bg: oklch(87% 0 0);
-  --color-surface: oklch(98.5% 0 0);
-  --color-surface-2: oklch(70.8% 0 0);
+  --color-bg: var(--neutral-300);
+  --color-surface: var(--neutral-50);
+  --color-surface-2: var(--neutral-400);
   --color-border: oklch(0% 0 0 / 14%);
 
   /* Testo: quasi nero (neutral 900, non nero puro: meno duro da leggere), secondario e terziario
    * sulla stessa scala di grigi (neutral 600 / 500). */
-  --color-ink: oklch(20.5% 0 0);
-  --color-ink-muted: oklch(43.9% 0 0);
-  --color-ink-faint: oklch(55.6% 0 0);
+  --color-ink: var(--neutral-900);
+  --color-ink-muted: var(--neutral-600);
+  --color-ink-faint: var(--neutral-500);
 
   /* Rosso ambra (red 600): sullo sfondo chiaro il rosso 400 usato nello scuro è troppo tenue da
    * leggere, serve una tonalità più carica della stessa famiglia. */
-  --color-danger: oklch(57.7% 0.245 27.325);
-  --color-danger-soft: oklch(57.7% 0.245 27.325 / 10%);
-  --color-danger-line: oklch(57.7% 0.245 27.325 / 40%);
+  --danger-l: 57.7%;
+  --danger-c: 0.245;
+  --danger-h: 27.325;
+  --color-danger: oklch(var(--danger-l) var(--danger-c) var(--danger-h));
+  --color-danger-soft: oklch(var(--danger-l) var(--danger-c) var(--danger-h) / var(--danger-soft-alpha));
+  --color-danger-line: oklch(var(--danger-l) var(--danger-c) var(--danger-h) / var(--danger-line-alpha));
 
   /* Stesso arancione del sito, tonalità più carica (amber 600 invece di 500): sullo sfondo
    * chiaro l'ambra chiara usata nello scuro si legge troppo poco come scritta. */
-  --color-ember: oklch(66.6% 0.179 58.318);
-  --color-ember-soft: oklch(66.6% 0.179 58.318 / 10%);
-  --color-ember-line: oklch(66.6% 0.179 58.318 / 40%);
+  --ember-l: 66.6%;
+  --ember-c: 0.179;
+  --ember-h: 58.318;
+  --ember-soft-alpha: 10%;
+  --ember-line-alpha: 40%;
+  /* Bordo e riempimento più carichi del Profilo (bottoni sulla copertina, tab) */
+  --ember-strong-alpha: 90%;
+  --ember-fill-alpha: 55%;
+  --color-ember: oklch(var(--ember-l) var(--ember-c) var(--ember-h));
+  --color-ember-soft: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-soft-alpha));
+  --color-ember-line: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-line-alpha));
+
+  /* Colore dello sfondo della pagina in forma "R G B" (neutral 300 = rgb 212,212,212), per la
+   * sfumatura delle copertine */
+  --rgb-page: 212 212 212;
 
   /* Vetro della barra in alto: sullo sfondo chiaro un velo bianco è quasi invisibile, qui serve
    * un velo scuro per avere lo stesso effetto "appena visibile, più marcato scorrendo". */
@@ -206,7 +276,7 @@ html[data-theme="light"] [class*="shadow-glow"] {
  * chiaro si confondeva troppo con lo sfondo vero e proprio), ma dal 2026-10-13 il bordo è
  * arancione come su Overview/Journeys/Community qui sotto (richiesta di Manuel). */
 html[data-theme="light"] .profile-hero-glass {
-  border-color: oklch(66.6% 0.179 58.318 / 90%);
+  border-color: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-strong-alpha));
   background-color: var(--color-glass);
   backdrop-filter: blur(12px);
   box-shadow: none;
@@ -221,8 +291,8 @@ html[data-theme="light"] .profile-hero-glass:hover {
 html[data-theme="light"] .profile-hero-glass.profile-tab-glass {
   /* Stesso arancione di --color-ember-line/-soft nel chiaro, ma più carico: a parità di
    * trasparenza (40%/10%) restava troppo pallido (richiesta di Manuel, 2026-10-11). */
-  border-color: oklch(66.6% 0.179 58.318 / 90%);
-  background-color: oklch(66.6% 0.179 58.318 / 55%);
+  border-color: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-strong-alpha));
+  background-color: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-fill-alpha));
 }
 html[data-theme="light"] .profile-hero-glass.profile-tab-glass:hover {
   border-color: var(--color-ember);
@@ -241,33 +311,12 @@ html[data-theme="dark"] .profile-tabs-bar {
 html[data-theme="light"] .bio-card {
   background-image: linear-gradient(to bottom, oklch(87% 0 0), oklch(14.5% 0 0));
   /* Il bordo traslucido (ember-line) lascia passare il gradiente scuro e sembra nero: pieno. */
-  border-color: oklch(66.6% 0.179 58.318);
+  border-color: var(--color-ember);
 }
 html[data-theme="light"] .bio-card .text-ink,
 html[data-theme="light"] .bio-card .text-ink-muted,
 html[data-theme="light"] .bio-card .text-ink-faint {
   color: var(--color-on-photo);
-}
-
-/* .cover-fade (sopra) sfuma verso il nero fisso: giusto nel buio, ma sulla copertina del Profilo
- * e della Hero nel chiaro crea una fascia scura posticcia sotto nome/statistiche. Stessi valori,
- * stesse percentuali, colore grigio chiaro (--color-bg del tema chiaro) invece del nero: scritti
- * per esteso come sopra, non con var()/color-mix (stesso problema di build). */
-html[data-theme="light"] .cover-fade {
-  background-image: linear-gradient(
-    to top,
-    rgba(212, 212, 212, 100%) 0%,
-    rgba(212, 212, 212, 74%) 19%,
-    rgba(212, 212, 212, 54%) 34%,
-    rgba(212, 212, 212, 38%) 47%,
-    rgba(212, 212, 212, 28%) 56.5%,
-    rgba(212, 212, 212, 19%) 65%,
-    rgba(212, 212, 212, 13%) 73%,
-    rgba(212, 212, 212, 8%) 80.6%,
-    rgba(212, 212, 212, 4%) 87.6%,
-    rgba(212, 212, 212, 2%) 94.1%,
-    rgba(212, 212, 212, 0%) 100%
-  );
 }
 
 /* Il logo "ZERO" in alto (components/layout/Logo.tsx) è un'immagine bianca fissa, pensata per lo
@@ -315,51 +364,52 @@ body {
 
 /* Sfumatura verso lo sfondo con curva "ad S" (non lineare): l'oscuramento parte quasi
  * impercettibile e accelera solo vicino al fondo, così non si vede una riga netta dove comincia.
- * Usata sul bordo inferiore della copertina Profilo e della Hero. Valori ripetuti letteralmente
- * (non var() + color-mix): quella combinazione viene scartata in silenzio in fase di build. Il
- * colore è lo stesso di --color-bg (neutral 950 = rgb 10,10,10). */
+ * Usata sul bordo inferiore della copertina Profilo e della Hero. Il colore è lo stesso di
+ * --color-bg del tema in uso, in forma "R G B" (--rgb-page, definita nei blocchi tema): scuro nel
+ * tema scuro (rgb 10,10,10), grigio chiaro nel tema chiaro (rgb 212,212,212). Non si usa
+ * var() + color-mix: quella combinazione viene scartata in silenzio in fase di build. */
 .cover-fade {
   background-image: linear-gradient(
     to top,
-    rgba(10, 10, 10, 100%) 0%,
-    rgba(10, 10, 10, 74%) 19%,
-    rgba(10, 10, 10, 54%) 34%,
-    rgba(10, 10, 10, 38%) 47%,
-    rgba(10, 10, 10, 28%) 56.5%,
-    rgba(10, 10, 10, 19%) 65%,
-    rgba(10, 10, 10, 13%) 73%,
-    rgba(10, 10, 10, 8%) 80.6%,
-    rgba(10, 10, 10, 4%) 87.6%,
-    rgba(10, 10, 10, 2%) 94.1%,
-    rgba(10, 10, 10, 0%) 100%
+    rgb(var(--rgb-page) / 100%) 0%,
+    rgb(var(--rgb-page) / 74%) 19%,
+    rgb(var(--rgb-page) / 54%) 34%,
+    rgb(var(--rgb-page) / 38%) 47%,
+    rgb(var(--rgb-page) / 28%) 56.5%,
+    rgb(var(--rgb-page) / 19%) 65%,
+    rgb(var(--rgb-page) / 13%) 73%,
+    rgb(var(--rgb-page) / 8%) 80.6%,
+    rgb(var(--rgb-page) / 4%) 87.6%,
+    rgb(var(--rgb-page) / 2%) 94.1%,
+    rgb(var(--rgb-page) / 0%) 100%
   );
 }
 
 /* Sfumatura scura sulle copertine delle card, per leggere il testo bianco sopra la foto.
  * Una sola, uguale per tutte le card. */
 .card-scrim {
-  background-image: linear-gradient(to top, rgba(0, 0, 0, 85%) 0%, rgba(0, 0, 0, 40%) 45%, rgba(0, 0, 0, 0%) 75%);
+  background-image: linear-gradient(to top, rgb(var(--rgb-black) / 85%) 0%, rgb(var(--rgb-black) / 40%) 45%, rgb(var(--rgb-black) / 0%) 75%);
 }
 
 /* Veli scuri della Hero: su telefono il testo sta sopra la foto intera, da computer solo a sinistra. */
 .hero-scrim {
-  background-color: rgba(10, 10, 10, 65%);
+  background-color: rgb(var(--rgb-night) / 65%);
 }
 .hero-side-fade {
-  background-image: linear-gradient(to right, rgba(10, 10, 10, 100%) 5%, rgba(10, 10, 10, 70%), rgba(10, 10, 10, 0%));
+  background-image: linear-gradient(to right, rgb(var(--rgb-night) / 100%) 5%, rgb(var(--rgb-night) / 70%), rgb(var(--rgb-night) / 0%));
 }
 @media (min-width: 768px) {
   .hero-scrim {
-    background-color: rgba(10, 10, 10, 10%);
+    background-color: rgb(var(--rgb-night) / 10%);
   }
   .hero-side-fade {
-    background-image: linear-gradient(to right, rgba(10, 10, 10, 55%) 10%, rgba(10, 10, 10, 20%) 45%, rgba(10, 10, 10, 0%));
+    background-image: linear-gradient(to right, rgb(var(--rgb-night) / 55%) 10%, rgb(var(--rgb-night) / 20%) 45%, rgb(var(--rgb-night) / 0%));
   }
 }
 
 /* Velo sopra una foto larga con testo a sinistra (banner finale della Home). */
 .banner-scrim {
-  background-image: linear-gradient(to right, rgba(10, 10, 10, 100%), rgba(10, 10, 10, 85%), rgba(10, 10, 10, 60%));
+  background-image: linear-gradient(to right, rgb(var(--rgb-night) / 100%), rgb(var(--rgb-night) / 85%), rgb(var(--rgb-night) / 60%));
 }
 
 /* Copertina senza foto: sfuma verso lo sfondo della pagina (var(--color-bg), non più un nero
@@ -375,16 +425,16 @@ body {
  * una volta iniziata la conversazione (-active). */
 .chat-ambient-light-idle {
   background-image:
-    radial-gradient(ellipse 55% 40% at 50% 48%, rgba(255, 255, 255, 16%), transparent 70%),
-    radial-gradient(ellipse 95% 75% at 50% 50%, rgba(255, 255, 255, 6%), transparent 80%);
+    radial-gradient(ellipse 55% 40% at 50% 48%, rgb(var(--rgb-white) / 16%), transparent 70%),
+    radial-gradient(ellipse 95% 75% at 50% 50%, rgb(var(--rgb-white) / 6%), transparent 80%);
 }
 .chat-ambient-light-idle-compact {
   background-image:
-    radial-gradient(ellipse 55% 40% at 50% 40%, rgba(255, 255, 255, 16%), transparent 70%),
-    radial-gradient(ellipse 95% 75% at 50% 50%, rgba(255, 255, 255, 6%), transparent 80%);
+    radial-gradient(ellipse 55% 40% at 50% 40%, rgb(var(--rgb-white) / 16%), transparent 70%),
+    radial-gradient(ellipse 95% 75% at 50% 50%, rgb(var(--rgb-white) / 6%), transparent 80%);
 }
 .chat-ambient-light-active {
-  background-image: radial-gradient(ellipse 65% 35% at 50% 100%, rgba(255, 255, 255, 12%), transparent 75%);
+  background-image: radial-gradient(ellipse 65% 35% at 50% 100%, rgb(var(--rgb-white) / 12%), transparent 75%);
 }
 
 /* Sagoma di caricamento (skeleton): invisibile per i primi 250ms, poi compare con una

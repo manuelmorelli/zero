@@ -17,8 +17,10 @@ const INACTIVE = "opacity-0 transition-opacity duration-300 ease-out will-change
 /** Titolo della Hero: le frasi stanno una sopra l'altra nella stessa cella, così il riquadro
  * prende l'altezza della più lunga e il cambio non sposta i bottoni sotto. */
 export function HeroPayoff({ index, className }: HeroPayoffProps) {
+  // Niente cn() sul contenitore: tailwind-merge non conosce le taglie su misura della Hero e
+  // scartava text-hero-headline, scambiandola per un colore in conflitto con text-on-photo.
   return (
-    <div className={cn("relative grid", className)}>
+    <div className={`relative grid ${className}`}>
       {HERO_PAYOFFS.map((payoff, phraseIndex) => (
         <p
           key={payoff.text}

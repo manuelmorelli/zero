@@ -11,7 +11,7 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
   return (
     <DialogPrimitive.Overlay
       className={cn(
-        "fixed inset-0 z-50 bg-black/70 data-[state=open]:animate-[overlay-in_250ms_cubic-bezier(0.16,1,0.3,1)] data-[state=closed]:animate-[overlay-out_200ms_cubic-bezier(0.16,1,0.3,1)]",
+        "fixed inset-0 z-50 bg-scrim-strong data-[state=open]:animate-[overlay-in_250ms_cubic-bezier(0.16,1,0.3,1)] data-[state=closed]:animate-[overlay-out_200ms_cubic-bezier(0.16,1,0.3,1)]",
         className
       )}
       {...props}
@@ -35,7 +35,7 @@ function DialogContent({
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-full bg-black/40 text-white backdrop-blur-md transition-colors hover:bg-black/60 focus:outline-none">
+        <DialogPrimitive.Close className="absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-full bg-scrim-soft text-on-photo backdrop-blur-md transition-colors hover:bg-scrim focus:outline-none">
           <X className="h-4 w-4" aria-hidden="true" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
