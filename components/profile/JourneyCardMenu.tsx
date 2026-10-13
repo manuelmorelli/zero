@@ -83,7 +83,7 @@ export function JourneyCardMenu({
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={`Manage ${title}`}
-          className="grid h-7 w-7 place-items-center rounded-full border border-border bg-scrim text-ink backdrop-blur-md transition-colors hover:bg-scrim"
+          className="card-menu-trigger grid h-7 w-7 place-items-center rounded-full border border-border bg-scrim text-ink backdrop-blur-md transition-colors hover:bg-scrim"
         >
           <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
         </DropdownMenuTrigger>

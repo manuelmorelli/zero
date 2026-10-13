@@ -16,7 +16,7 @@ export default async function AdminReportsPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle>Segnalazioni</PageTitle>
+        <PageTitle>Reports</PageTitle>
         <p className="mt-2 text-sm text-ink-muted">Pannello visibile solo agli amministratori.</p>
 
         <div className="mt-8">

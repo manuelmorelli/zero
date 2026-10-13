@@ -134,7 +134,7 @@ export function SideMenu() {
                   </MenuLink>
                   {isAdmin && (
                     <MenuLink href="/admin/reports" onClick={close}>
-                      Segnalazioni
+                      Reports
                     </MenuLink>
                   )}
                   <SignOutButton className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink">
