@@ -5,6 +5,8 @@ import { Maximize, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react
 import { formatDuration as formatTime } from "@/lib/format/duration";
 
 const SKIP_BACK_SEC = 15;
+// Sotto questa larghezza del riquadro la sbarra del volume sparisce dalla barra dei comandi.
+const COMPACT_WIDTH_PX = 420;
 
 export type VideoPlayerHandle = {
   video: HTMLVideoElement | null;
@@ -73,6 +75,8 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // Video stretto (es. verticale): la barra non ha spazio per la sbarra del volume, resta solo il tasto.
+  const [compact, setCompact] = useState(false);
 
   useImperativeHandle(
     forwardedRef,
@@ -87,6 +91,14 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
     }),
     []
   );
+
+  useEffect(() => {
+    const shell = shellRef.current;
+    if (!shell) return;
+    const observer = new ResizeObserver(([entry]) => setCompact(entry.contentRect.width < COMPACT_WIDTH_PX));
+    observer.observe(shell);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     function handleFullscreenChange() {
@@ -109,7 +121,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
       className={`group relative overflow-hidden rounded-2xl border border-border bg-black leading-[0] ${
         isFullscreen
           ? "flex h-full w-full items-center justify-center border-0"
-          : "mx-auto block w-fit min-w-[min(100%,28rem)]"
+          : "mx-auto block w-fit"
       } ${className ?? ""}`}
     >
       <video
@@ -222,6 +234,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
             >
               {muted ? <VolumeX className="h-5 w-5" aria-hidden="true" /> : <Volume2 className="h-5 w-5" aria-hidden="true" />}
             </button>
+            {!compact && (
             <input
               type="range"
               aria-label="Volume"
@@ -240,6 +253,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
               }}
               className="h-1 w-16 cursor-pointer accent-ember"
             />
+            )}
             <button
               type="button"
               aria-label="Fullscreen"
