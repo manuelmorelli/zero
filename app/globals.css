@@ -334,6 +334,10 @@ html[data-theme="light"] .video-controls .text-ink,
 html[data-theme="light"] .video-controls .text-ink-muted {
   color: var(--color-on-photo);
 }
+/* I fumetti dentro la barra (es. stellina dei momenti) hanno sfondo surface: restano col testo normale. */
+html[data-theme="light"] .video-controls .video-tooltip.text-ink-muted {
+  color: var(--color-ink-muted);
+}
 html[data-theme="light"] .video-play-circle {
   border-color: oklch(1 0 0 / 14%);
 }

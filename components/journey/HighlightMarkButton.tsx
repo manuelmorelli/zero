@@ -30,12 +30,12 @@ export function HighlightMarkButton({ count, full, disabled, onMark }: Highlight
         <Star className="h-5 w-5" fill={count > 0 ? "currentColor" : "none"} aria-hidden="true" />
         <span className="tabular-nums">{count}/{MAX_MANUAL_HIGHLIGHTS}</span>
       </button>
-      <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-56 -translate-x-1/2 rounded-lg border border-border bg-surface px-3 py-2 text-center text-sm leading-snug text-ink-muted opacity-0 shadow-lg transition-opacity md:group-hover/star:block md:group-hover/star:opacity-100">
+      <span className="video-tooltip pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-56 -translate-x-1/2 rounded-lg border border-border bg-surface px-3 py-2 text-center text-sm leading-snug text-ink-muted opacity-0 shadow-lg transition-opacity md:group-hover/star:block md:group-hover/star:opacity-100">
         {full
-          ? `You've marked the maximum of ${MAX_MANUAL_HIGHLIGHTS} moments.`
+          ? `You've starred ${MAX_MANUAL_HIGHLIGHTS} moments, the maximum. Your trailer will use these.`
           : trailerReady
-            ? `Mark this moment as one of the episode's best (${count}/${MAX_MANUAL_HIGHLIGHTS}). You have enough for a trailer. Keep moments at least ${MIN_HIGHLIGHT_GAP_SECONDS}s apart.`
-            : `Mark this moment as one of the episode's best. ${MIN_MANUAL_HIGHLIGHTS - count} more needed before the trailer can start. Keep moments at least ${MIN_HIGHLIGHT_GAP_SECONDS}s apart.`}
+            ? `Your trailer will use these moments. You can star up to ${MAX_MANUAL_HIGHLIGHTS}, at least ${MIN_HIGHLIGHT_GAP_SECONDS}s apart.`
+            : `Star the best moments of this episode to build its trailer. Star ${MIN_MANUAL_HIGHLIGHTS - count} more, at least ${MIN_HIGHLIGHT_GAP_SECONDS}s apart.`}
       </span>
     </span>
   );
