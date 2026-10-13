@@ -116,6 +116,9 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
   }
 
   return (
+    // Contenitore esterno senza ritaglio: il riquadro "Up next" può uscire dai bordi del video.
+    // A schermo intero il riquadro sta dentro il player (solo quello va in fullscreen).
+    <div className="relative mx-auto block w-fit max-w-full">
     <div
       ref={shellRef}
       className={`group relative overflow-hidden rounded-2xl border border-border bg-black leading-[0] ${
@@ -271,7 +274,9 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
         </div>
       </div>
 
-      {overlay}
+      {isFullscreen && overlay}
+    </div>
+    {!isFullscreen && overlay}
     </div>
   );
 });

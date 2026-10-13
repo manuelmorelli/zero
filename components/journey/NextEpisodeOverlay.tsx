@@ -8,6 +8,8 @@ import { PANEL } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
 
 const COUNTDOWN_SEC = 5;
+// Larghezza fissa del riquadro: se il video è più stretto (verticale) esce dai bordi del player.
+const CARD_WIDTH = "w-[28rem] max-w-[calc(100vw-2rem)]";
 /** Chiave con cui l'episodio di partenza dice al successivo "parti da solo": letta da EpisodePlayer. */
 export const AUTOPLAY_STORAGE_KEY = "zero:autoplay-episode";
 
@@ -63,11 +65,12 @@ export function NextEpisodeOverlay({ journeyId, next, onWatchAgain }: NextEpisod
   }, [secondsLeft]);
 
   return (
-    <div className="fade-in-soft @container absolute inset-0 grid place-items-center overflow-y-auto bg-scrim p-3 leading-normal">
+    <div className="fade-in-soft absolute inset-0 grid place-items-center leading-normal">
+      <div className="absolute inset-0 rounded-2xl bg-scrim" aria-hidden="true" />
       {next ? (
-        <div className={cn(PANEL, "flex w-full max-w-md flex-col gap-3 p-4 @md:flex-row @md:items-center @md:gap-4")}>
+        <div className={cn(PANEL, CARD_WIDTH, "relative flex items-center gap-4 p-4")}>
           {next.posterUrl && (
-            <span className="relative hidden aspect-4/3 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 @md:block">
+            <span className="relative hidden aspect-4/3 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:block">
               <Image src={next.posterUrl} alt="" fill sizes="112px" className="object-cover" />
             </span>
           )}
@@ -90,7 +93,7 @@ export function NextEpisodeOverlay({ journeyId, next, onWatchAgain }: NextEpisod
           </div>
         </div>
       ) : (
-        <div className={cn(PANEL, "w-full max-w-md p-4 text-center")}>
+        <div className={cn(PANEL, CARD_WIDTH, "relative p-4 text-center")}>
           <p className="text-base font-semibold text-ink">You finished this Journey</p>
           <div className="mt-3 flex flex-wrap items-center justify-center gap-2.5">
             <ButtonPrimary onClick={onWatchAgain} className="px-4 py-2">
