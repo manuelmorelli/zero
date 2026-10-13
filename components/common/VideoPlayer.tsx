@@ -107,7 +107,9 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
     <div
       ref={shellRef}
       className={`group relative overflow-hidden rounded-2xl border border-border bg-black leading-[0] ${
-        isFullscreen ? "flex h-full w-full items-center justify-center border-0" : "inline-block"
+        isFullscreen
+          ? "flex h-full w-full items-center justify-center border-0"
+          : "mx-auto block w-fit min-w-[min(100%,28rem)]"
       } ${className ?? ""}`}
     >
       <video
@@ -116,7 +118,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
         playsInline
         preload="metadata"
         className={
-          isFullscreen ? "block h-full w-full object-contain" : "block h-auto max-h-[70vh] w-auto max-w-full"
+          isFullscreen ? "block h-full w-full object-contain" : "mx-auto block h-auto max-h-[70vh] w-auto max-w-full"
         }
         onClick={toggle}
         onTimeUpdate={(event) => {
@@ -203,7 +205,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
               <RotateCcw className="h-5 w-5" aria-hidden="true" />
             </button>
           )}
-          <span className="tabular-nums">
+          <span className="whitespace-nowrap tabular-nums">
             {formatTime(time)} / {formatTime(duration)}
           </span>
           {extraControl}
@@ -236,7 +238,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
                   videoRef.current.muted = next === 0;
                 }
               }}
-              className="h-1 w-20 cursor-pointer accent-ember"
+              className="h-1 w-16 cursor-pointer accent-ember"
             />
             <button
               type="button"
