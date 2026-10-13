@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getPublishedEpisodeCounts } from "@/lib/journey/episodeCounts";
 import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 
 export type DiscoveringNowItem = {
@@ -9,6 +10,7 @@ export type DiscoveringNowItem = {
   creatorName: string;
   creatorAvatarUrl: string | null;
   followersCount: number;
+  episodesCount: number;
   /** Giorni rimanenti prima che il Journey esca dalla Discovery Phase (minimo 1). */
   daysLeft: number;
 };
@@ -28,6 +30,7 @@ export async function getDiscoveringNowJourneys(limit = 10): Promise<Discovering
     include: { creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } } },
   });
 
+  const episodeCounts = await getPublishedEpisodeCounts(journeys.map((journey) => journey.id));
   const now = Date.now();
   const items = journeys.map((journey) => ({
     id: journey.id,
@@ -37,6 +40,7 @@ export async function getDiscoveringNowJourneys(limit = 10): Promise<Discovering
     creatorName: journey.creator.displayName,
     creatorAvatarUrl: journey.creator.user.avatarUrl,
     followersCount: journey.creator.user._count.followers,
+    episodesCount: episodeCounts.get(journey.id) ?? 0,
     daysLeft: journey.discoveryEndsAt
       ? Math.max(1, Math.ceil((journey.discoveryEndsAt.getTime() - now) / (24 * 60 * 60 * 1000)))
       : 1,

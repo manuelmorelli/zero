@@ -233,6 +233,7 @@ function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
                 title: journey.title,
                 coverUrl: journey.coverUrl,
                 category: journey.category,
+                episodeCount: journey.episodesCount,
                 creator: { displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
               }}
               footer={
@@ -293,13 +294,9 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
                 coverUrl: journey.coverUrl,
                 category: journey.category,
                 journeyScore: journey.journeyScore,
+                episodeCount: journey.episodesCount,
                 creator: { displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
               }}
-              footer={
-                <p className="mt-2 text-sm text-ink-muted">
-                  {journey.episodesCount} {journey.episodesCount === 1 ? "episode" : "episodes"}
-                </p>
-              }
             />
           ))}
         </HorizontalScrollRow>

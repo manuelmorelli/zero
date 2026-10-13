@@ -138,16 +138,16 @@ export const DEMO_LATEST_VIDEOS: LatestVideoItem[] = [
 ];
 
 export const DEMO_DISCOVERING_NOW: DiscoveringNowItem[] = [
-  { id: "demo-discovery-1", title: "Learning to sail at 40", coverUrl: null, category: "Sports", creatorName: "Nora K.", creatorAvatarUrl: null, followersCount: 340, daysLeft: 11 },
-  { id: "demo-discovery-2", title: "Quitting sugar, day by day", coverUrl: null, category: "Nutrition", creatorName: "Leo P.", creatorAvatarUrl: null, followersCount: 180, daysLeft: 6 },
-  { id: "demo-discovery-3", title: "Teaching myself to paint", coverUrl: null, category: "Creativity", creatorName: "Ana M.", creatorAvatarUrl: null, followersCount: 95, daysLeft: 14 },
-  { id: "demo-discovery-4", title: "Waking up at 5am for a month", coverUrl: null, category: "Habits", creatorName: "Tom B.", creatorAvatarUrl: null, followersCount: 60, daysLeft: 9 },
-  { id: "demo-discovery-5", title: "My first vegetable garden", coverUrl: null, category: "Gardening & Plants", creatorName: "Giulia F.", creatorAvatarUrl: null, followersCount: 120, daysLeft: 3 },
-  { id: "demo-discovery-6", title: "Quitting my 9-to-5 to freelance", coverUrl: null, category: "Career", creatorName: "Omar H.", creatorAvatarUrl: null, followersCount: 45, daysLeft: 8 },
-  { id: "demo-discovery-7", title: "Learning the violin at 35", coverUrl: null, category: "Learning", creatorName: "Elena V.", creatorAvatarUrl: null, followersCount: 72, daysLeft: 12 },
-  { id: "demo-discovery-8", title: "My minimalist closet experiment", coverUrl: null, category: "Minimalism & Slow Living", creatorName: "Sofie L.", creatorAvatarUrl: null, followersCount: 28, daysLeft: 5 },
-  { id: "demo-discovery-9", title: "Walking every day this winter", coverUrl: null, category: "Health & Illness Recovery", creatorName: "Ben C.", creatorAvatarUrl: null, followersCount: 54, daysLeft: 10 },
-  { id: "demo-discovery-10", title: "Saving my first €10,000", coverUrl: null, category: "Finance", creatorName: "Rahul M.", creatorAvatarUrl: null, followersCount: 99, daysLeft: 7 },
+  { id: "demo-discovery-1", title: "Learning to sail at 40", coverUrl: null, category: "Sports", creatorName: "Nora K.", creatorAvatarUrl: null, followersCount: 340, episodesCount: 4, daysLeft: 11 },
+  { id: "demo-discovery-2", title: "Quitting sugar, day by day", coverUrl: null, category: "Nutrition", creatorName: "Leo P.", creatorAvatarUrl: null, followersCount: 180, episodesCount: 3, daysLeft: 6 },
+  { id: "demo-discovery-3", title: "Teaching myself to paint", coverUrl: null, category: "Creativity", creatorName: "Ana M.", creatorAvatarUrl: null, followersCount: 95, episodesCount: 2, daysLeft: 14 },
+  { id: "demo-discovery-4", title: "Waking up at 5am for a month", coverUrl: null, category: "Habits", creatorName: "Tom B.", creatorAvatarUrl: null, followersCount: 60, episodesCount: 5, daysLeft: 9 },
+  { id: "demo-discovery-5", title: "My first vegetable garden", coverUrl: null, category: "Gardening & Plants", creatorName: "Giulia F.", creatorAvatarUrl: null, followersCount: 120, episodesCount: 1, daysLeft: 3 },
+  { id: "demo-discovery-6", title: "Quitting my 9-to-5 to freelance", coverUrl: null, category: "Career", creatorName: "Omar H.", creatorAvatarUrl: null, followersCount: 45, episodesCount: 3, daysLeft: 8 },
+  { id: "demo-discovery-7", title: "Learning the violin at 35", coverUrl: null, category: "Learning", creatorName: "Elena V.", creatorAvatarUrl: null, followersCount: 72, episodesCount: 4, daysLeft: 12 },
+  { id: "demo-discovery-8", title: "My minimalist closet experiment", coverUrl: null, category: "Minimalism & Slow Living", creatorName: "Sofie L.", creatorAvatarUrl: null, followersCount: 28, episodesCount: 2, daysLeft: 5 },
+  { id: "demo-discovery-9", title: "Walking every day this winter", coverUrl: null, category: "Health & Illness Recovery", creatorName: "Ben C.", creatorAvatarUrl: null, followersCount: 54, episodesCount: 6, daysLeft: 10 },
+  { id: "demo-discovery-10", title: "Saving my first €10,000", coverUrl: null, category: "Finance", creatorName: "Rahul M.", creatorAvatarUrl: null, followersCount: 99, episodesCount: 3, daysLeft: 7 },
 ];
 
 export const DEMO_TOP_JOURNEYS: TopJourneyItem[] = [

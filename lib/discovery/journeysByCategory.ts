@@ -3,6 +3,7 @@ import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { JOURNEY_CATEGORIES, categoryToSlug, type JourneyCategory } from "@/lib/constants/categories";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { resolveAvatarUrl, withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
+import { getPublishedEpisodeCounts } from "@/lib/journey/episodeCounts";
 import { getStableWildcardPicks } from "@/lib/discovery/wildcard";
 import type { JourneyCardData } from "@/components/journey/JourneyCard";
 
@@ -36,6 +37,7 @@ export async function getJourneysByCategory(): Promise<JourneyCategoryRow[]> {
   const scoreById = new Map(freshScores.map((journey) => [journey.id, journey.journeyScore]));
 
   const resolved = await withResolvedCoverUrls(journeys);
+  const episodeCounts = await getPublishedEpisodeCounts(resolved.map((journey) => journey.id));
 
   const byCategory = new Map<string, typeof resolved>();
   for (const journey of resolved) {
@@ -64,6 +66,7 @@ export async function getJourneysByCategory(): Promise<JourneyCategoryRow[]> {
           coverUrl: journey.coverUrl,
           category: journey.category,
           journeyScore: scoreById.get(journey.id),
+          episodeCount: episodeCounts.get(journey.id) ?? 0,
           creator: {
             displayName: journey.creator.displayName,
             avatarUrl: await resolveAvatarUrl(journey.creator.user.avatarUrl),
@@ -95,6 +98,7 @@ export async function getJourneysInCategory(category: JourneyCategory): Promise<
   const scoreById = new Map(freshScores.map((journey) => [journey.id, journey.journeyScore]));
 
   const resolved = await withResolvedCoverUrls(journeys);
+  const episodeCounts = await getPublishedEpisodeCounts(resolved.map((journey) => journey.id));
 
   return Promise.all(
     resolved.map(async (journey) => ({
@@ -103,6 +107,7 @@ export async function getJourneysInCategory(category: JourneyCategory): Promise<
       coverUrl: journey.coverUrl,
       category: journey.category,
       journeyScore: scoreById.get(journey.id),
+      episodeCount: episodeCounts.get(journey.id) ?? 0,
       creator: {
         displayName: journey.creator.displayName,
         avatarUrl: await resolveAvatarUrl(journey.creator.user.avatarUrl),

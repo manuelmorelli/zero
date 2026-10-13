@@ -13,6 +13,8 @@ export type JourneyCardData = {
   /** Journey Score (0-100, lib/scoring/journeyScore.ts): assente per i Journey ancora in
    * Discovery Phase, che non partecipano a questo punteggio (troppo recenti per essere affidabile). */
   journeyScore?: number;
+  /** Episodi pubblicati: se presente, "N episodes" compare sotto il titolo. */
+  episodeCount?: number;
   creator: {
     displayName: string;
     avatarUrl: string | null;
@@ -34,7 +36,7 @@ type JourneyCardProps = {
 //
 // Formato ufficiale delle card Journey (scelta 20C): verticale 4:5, cinque per riga.
 export function JourneyCard({ journey, className, badge, footer }: JourneyCardProps) {
-  const { id, title, coverUrl, category, creator, journeyScore } = journey;
+  const { id, title, coverUrl, category, creator, journeyScore, episodeCount } = journey;
 
   return (
     <div className={className}>
@@ -49,6 +51,11 @@ export function JourneyCard({ journey, className, badge, footer }: JourneyCardPr
           <>
             {category && <CoverChip>{category}</CoverChip>}
             <CoverTitle className="mt-2">{title}</CoverTitle>
+            {episodeCount !== undefined && (
+              <p className="mt-1 text-sm">
+                {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
+              </p>
+            )}
             <div className="mt-2 flex items-center justify-between gap-2 text-sm">
               <span className="flex min-w-0 items-center gap-1.5">
                 <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="xs" />

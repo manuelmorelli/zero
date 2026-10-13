@@ -1,3 +1,4 @@
+import { getPublishedEpisodeCounts } from "@/lib/journey/episodeCounts";
 import { getImagePlaybackUrl } from "@/lib/r2";
 
 /**
@@ -31,11 +32,13 @@ export function resolveAvatarUrl(avatarKey: string | null): Promise<string | nul
  * due chiavi R2 vivono su record diversi (Journey.coverUrl e User.avatarUrl) ma vanno sempre
  * risolte insieme prima di passare la card al client. */
 export async function withResolvedJourneyCardUrls<
-  T extends { coverUrl: string | null; creator: { avatarUrl: string | null } },
->(items: T[]): Promise<T[]> {
+  T extends { id: string; coverUrl: string | null; creator: { avatarUrl: string | null } },
+>(items: T[]): Promise<(T & { episodeCount: number })[]> {
+  const episodeCounts = await getPublishedEpisodeCounts(items.map((item) => item.id));
   return Promise.all(
     items.map(async (item) => ({
       ...item,
+      episodeCount: episodeCounts.get(item.id) ?? 0,
       coverUrl: await resolveCoverUrl(item.coverUrl),
       creator: { ...item.creator, avatarUrl: await resolveAvatarUrl(item.creator.avatarUrl) },
     }))

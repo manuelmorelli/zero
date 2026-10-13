@@ -35,6 +35,7 @@ export default async function DiscoveringNowPage() {
                     title: journey.title,
                     coverUrl: journey.coverUrl,
                     category: journey.category,
+                    episodeCount: journey.episodesCount,
                     creator: { displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
                   }}
                   footer={

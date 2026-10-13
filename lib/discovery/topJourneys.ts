@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { computeFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
+import { getPublishedEpisodeCounts } from "@/lib/journey/episodeCounts";
 import { isAlgorithmicRankingUnlocked } from "@/lib/discovery/algorithmUnlock";
 
 /** Quanti candidati valutare per gruppo: ben più dei posti mostrati, così un punteggio salvato
@@ -46,10 +47,6 @@ export async function getTopJourneys({
       orderBy: rankingUnlocked ? [{ journeyScore: "desc" }, { publishedAt: "desc" }] : { publishedAt: "desc" },
       include: {
         creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } },
-        chapters: {
-          where: { deletedAt: null },
-          select: { _count: { select: { episodes: { where: { deletedAt: null, publishedAt: { not: null } } } } } },
-        },
       },
     });
   const [general, interestMatches] = await Promise.all([
@@ -78,6 +75,7 @@ export async function getTopJourneys({
     ? [...journeys].sort((a, b) => (freshScores.get(b.id) ?? 0) - (freshScores.get(a.id) ?? 0))
     : [...journeys].sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
 
+  const episodeCounts = await getPublishedEpisodeCounts(rankedJourneys.map((journey) => journey.id));
   const sorted = rankedJourneys.map((journey) => ({
     id: journey.id,
     title: journey.title,
@@ -86,7 +84,7 @@ export async function getTopJourneys({
     creatorName: journey.creator.displayName,
     creatorAvatarUrl: journey.creator.user.avatarUrl,
     followersCount: journey.creator.user._count.followers,
-    episodesCount: journey.chapters.reduce((sum, chapter) => sum + chapter._count.episodes, 0),
+    episodesCount: episodeCounts.get(journey.id) ?? 0,
     journeyScore: freshScores.get(journey.id) ?? journey.journeyScore,
   }));
 
