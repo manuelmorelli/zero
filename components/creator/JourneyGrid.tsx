@@ -76,7 +76,7 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
                   className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-sm font-bold uppercase tracking-wider backdrop-blur-md ${
                     journey.status === "DRAFT"
                       ? "bg-ember text-bg"
-                      : "border border-border bg-overlay-soft text-ink-muted"
+                      : "journey-status-badge border border-border bg-overlay-soft text-ink-muted"
                   }`}
                 >
                   {STATUS_LABEL[journey.status] ?? journey.status}

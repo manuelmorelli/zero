@@ -338,6 +338,24 @@ html[data-theme="light"] .video-play-circle {
   border-color: oklch(1 0 0 / 14%);
 }
 
+/* Campi di ricerca (Journeys, Journeyers, ricerca globale): nel tema chiaro il segnaposto e la lente
+ * (ink-faint) si perdevano sul grigio del campo; qui un grigio più scuro (neutral 700). Solo tema
+ * chiaro: lo scuro non è toccato. */
+html[data-theme="light"] input[type="search"]::placeholder {
+  color: oklch(37.1% 0 0);
+}
+html[data-theme="light"] .pill-field svg {
+  color: oklch(37.1% 0 0);
+}
+
+/* Etichetta di stato (Published, Archived...) sulle copertine delle card della Dashboard: nel
+ * chiaro il testo grigio spariva sulle foto chiare. Arancione su velo scuro, leggibile su qualunque
+ * foto. Solo tema chiaro. */
+html[data-theme="light"] .journey-status-badge {
+  color: var(--color-ember);
+  background-color: var(--color-scrim);
+}
+
 html {
   /* Manopola "tutto il resto" (spazi/layout): tutte le unità rem di Tailwind si restringono di
    * conseguenza. Il testo non ne risente: vedi --text-scale sopra. */

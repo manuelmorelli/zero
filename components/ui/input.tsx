@@ -11,7 +11,7 @@ export const FIELD =
 
 /** Campo tondo a pillola (ricerca, chat, filtri): contenitore con icona e testo dentro. */
 export const PILL_FIELD =
-  "flex w-full items-center gap-2 rounded-full border border-border bg-surface-2 px-4 py-2 text-sm text-ink transition-colors focus-within:border-ink-muted";
+  "pill-field flex w-full items-center gap-2 rounded-full border border-border bg-surface-2 px-4 py-2 text-sm text-ink transition-colors focus-within:border-ink-muted";
 
 /** Il testo scritto dentro un PILL_FIELD: nessun bordo/sfondo proprio. */
 export const PILL_FIELD_INPUT = "w-full min-w-0 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint";
