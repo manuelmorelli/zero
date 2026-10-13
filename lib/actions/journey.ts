@@ -297,6 +297,35 @@ export async function unpublishJourney(
   return { error: null };
 }
 
+// "Mark as completed": il creator dichiara finito un Journey pubblicato. Non cambia lo stato né la
+// visibilità (resta in Top, Recommended e sul Profilo), ferma solo la perdita di punti di continuità
+// nel Journey Score (lib/scoring/journeyScore.ts). Si può riaprire, a mano o pubblicando un episodio
+// nuovo (lib/actions/episode.ts). journeyScoreUpdatedAt a null: il punteggio si ricalcola subito.
+export async function setJourneyCompleted(
+  _prevState: { error: string | null },
+  formData: FormData
+): Promise<{ error: string | null }> {
+  const journeyId = formData.get("journeyId");
+  if (typeof journeyId !== "string" || !journeyId) {
+    return { error: "Invalid journey." };
+  }
+  const completed = formData.get("completed") === "true";
+  const journey = await requireOwnedJourney(journeyId);
+
+  if (journey.status !== "PUBLISHED" && journey.status !== "DISCOVERY") {
+    return { error: "Only a published Journey can be marked as completed." };
+  }
+
+  await prisma.journey.update({
+    where: { id: journey.id },
+    data: { completedAt: completed ? new Date() : null, journeyScoreUpdatedAt: null },
+  });
+
+  revalidatePath(`/dashboard/journeys/${journey.id}`);
+  revalidatePath(`/journeys/${journey.id}`);
+  return { error: null };
+}
+
 // Archiving is one-way in the MVP: no action ever moves a Journey out of
 // ARCHIVED again. A creator with an archived Journey is free to start a new
 // one (see createJourney), and the archived Journey stays visible on the

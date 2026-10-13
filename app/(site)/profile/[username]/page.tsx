@@ -23,7 +23,7 @@ import { getCreatorFeed } from "@/lib/profile/creatorFeed";
 import { getCreatorActiveStory } from "@/lib/discovery/stories";
 import { canMessage } from "@/lib/messaging";
 import { isBlockedEitherWay } from "@/lib/block";
-import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
+import { getCreatorTrust } from "@/lib/profile/trustScore";
 import { getFeaturedJourney } from "@/lib/profile/featuredJourney";
 import { PUBLICLY_REACHABLE_JOURNEY_STATUSES, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
@@ -145,7 +145,7 @@ export default async function PublicProfilePage({
     ? await getCreatorActiveStory({ creatorId: creator.id, viewerId: session?.user.id ?? null })
     : null;
 
-  const trustScore = creator ? computeTrustScore(await getCreatorTrustInputs(creator.id, followersCount)) : null;
+  const trust = creator ? await getCreatorTrust(creator.id, followersCount) : null;
 
   // Video di presentazione (attiva il Trust Score sopra, vedi lib/profile/trustScore.ts): un
   // visitatore che non ne ha mai caricato uno non vede la card, il proprietario la vede sempre
@@ -196,7 +196,7 @@ export default async function PublicProfilePage({
         username={user.username}
         location={user.location}
         joinedAt={user.createdAt}
-        trustScore={trustScore}
+        trust={trust}
         journeysCount={journeys.length}
         viewerId={session?.user.id ?? null}
         isLoggedIn={isLoggedIn}

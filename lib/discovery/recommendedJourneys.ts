@@ -105,6 +105,7 @@ async function findPublishedJourneys(filters: {
     journeys.map((journey) => ({
       id: journey.id,
       publishedAt: journey.publishedAt,
+      completedAt: journey.completedAt,
       journeyScore: journey.journeyScore,
       journeyScoreUpdatedAt: journey.journeyScoreUpdatedAt,
       followersCount: journey.creator.user._count.followers,

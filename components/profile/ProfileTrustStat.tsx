@@ -42,13 +42,11 @@ export function ProfileTrustStat({ score }: { score: number | null }) {
         className="w-full transition duration-300 hover:scale-110 hover:brightness-125"
         aria-expanded={open}
       >
-        <span className="relative mx-auto grid h-8 w-8 place-items-center md:h-9 md:w-9">
-          <Shield className="absolute inset-0 h-full w-full text-ember" strokeWidth={1.5} aria-hidden="true" />
-          <span className="relative text-sm font-bold tracking-tight text-ember">
-            {score ?? "—"}
-          </span>
+        <span className="inline-flex items-center gap-1 text-base font-bold leading-tight text-ember">
+          <Shield className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+          {score ?? "—"}
         </span>
-        <p className="mt-0.5 text-sm font-medium uppercase tracking-wider text-on-photo-muted">Trust Score</p>
+        <p className="text-sm leading-tight text-on-photo-muted">Trust Score</p>
       </button>
       {open &&
         coords &&

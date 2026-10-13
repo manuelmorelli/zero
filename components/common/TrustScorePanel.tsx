@@ -11,15 +11,18 @@ import {
  * (components/common/TrustScoreBadge.tsx) e la statistica cliccabile del Profilo
  * (components/profile/ProfileTrustStat.tsx): stesso testo e stesso link in un solo posto.
  * `className` posiziona il pannello rispetto al genitore (che deve avere position:relative).
- * `active=false` mostra il testo per un creator che non ha ancora caricato la presentazione. */
+ * `active=false` mostra il testo per un creator che non ha ancora caricato la presentazione.
+ * `trustedByCount`, se presente, apre il pannello con le persone che hanno dato Trusty al creator. */
 export function TrustScorePanel({
   className = "",
   onClose,
   active = true,
+  trustedByCount,
 }: {
   className?: string;
   onClose: () => void;
   active?: boolean;
+  trustedByCount?: number;
 }) {
   return (
     <span
@@ -35,6 +38,11 @@ export function TrustScorePanel({
           <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
         </svg>
       </button>
+      {trustedByCount !== undefined && trustedByCount > 0 && (
+        <span className="mb-1.5 block font-semibold text-ink">
+          {trustedByCount.toLocaleString("en-US")} Trusty
+        </span>
+      )}
       {active ? TRUST_SCORE_EXPLANATION : TRUST_SCORE_INACTIVE_EXPLANATION}{" "}
       <Link href={TRUST_SCORE_LEARN_MORE_HREF} className="font-semibold text-ember hover:underline">
         Learn More →

@@ -34,6 +34,7 @@ const WEIGHTS = {
 type ScoreInput = {
   journeyId: string;
   publishedAt: Date | null;
+  completedAt: Date | null;
   followersCount: number;
 };
 
@@ -56,6 +57,7 @@ export async function ensureFreshJourneyScores(journeyIds: string[]): Promise<vo
     select: {
       id: true,
       publishedAt: true,
+      completedAt: true,
       creator: { select: { user: { select: { _count: { select: { followers: true } } } } } },
     },
   });
@@ -65,6 +67,7 @@ export async function ensureFreshJourneyScores(journeyIds: string[]): Promise<vo
     staleJourneys.map((journey) => ({
       journeyId: journey.id,
       publishedAt: journey.publishedAt,
+      completedAt: journey.completedAt,
       followersCount: journey.creator.user._count.followers,
     }))
   );
@@ -83,6 +86,7 @@ export async function ensureFreshJourneyScores(journeyIds: string[]): Promise<vo
 export type JourneyScoreRow = {
   id: string;
   publishedAt: Date | null;
+  completedAt: Date | null;
   journeyScore: number;
   journeyScoreUpdatedAt: Date | null;
   followersCount: number;
@@ -105,7 +109,12 @@ export async function computeFreshJourneyScores(rows: JourneyScoreRow[]): Promis
   if (stale.length === 0) return scores;
 
   const freshScores = await computeJourneyScores(
-    stale.map((row) => ({ journeyId: row.id, publishedAt: row.publishedAt, followersCount: row.followersCount }))
+    stale.map((row) => ({
+      journeyId: row.id,
+      publishedAt: row.publishedAt,
+      completedAt: row.completedAt,
+      followersCount: row.followersCount,
+    }))
   );
   for (const [journeyId, score] of freshScores) scores.set(journeyId, score);
 
@@ -206,6 +215,7 @@ async function computeJourneyScores(inputs: ScoreInput[]): Promise<Map<string, n
     const continuityScore = computeContinuityScore(
       journeyEpisodes.map((episode) => episode.createdAt),
       input.publishedAt,
+      input.completedAt,
       now
     );
 
@@ -235,20 +245,31 @@ function completionBand(completionShare: number): number {
   return 100; // Super Hero Level
 }
 
-/** Media tra "quanto è recente l'ultimo episodio" e "quanto pubblica di frequente il creator". */
-function computeContinuityScore(episodeDates: Date[], publishedAt: Date | null, now: number): number {
+/**
+ * Media tra "quanto è recente l'ultimo episodio" e "quanto pubblica di frequente il creator".
+ * Un Journey segnato come finito (`completedAt`) non perde più punti col tempo: la recenza non
+ * conta e la frequenza si misura solo sul periodo in cui è stato pubblicato, fino all'ultimo episodio.
+ * Un Journey lasciato a metà continua invece a perderli.
+ */
+function computeContinuityScore(
+  episodeDates: Date[],
+  publishedAt: Date | null,
+  completedAt: Date | null,
+  now: number
+): number {
   if (episodeDates.length === 0) return 0;
 
   const lastEpisodeAt = Math.max(...episodeDates.map((date) => date.getTime()));
   const daysSinceLastEpisode = (now - lastEpisodeAt) / (24 * 60 * 60 * 1000);
-  const recencyScore = Math.max(0, 1 - daysSinceLastEpisode / RECENCY_WINDOW_DAYS);
+  const recencyScore = completedAt ? 1 : Math.max(0, 1 - daysSinceLastEpisode / RECENCY_WINDOW_DAYS);
+  const measuredUntil = completedAt ? lastEpisodeAt : now;
 
   // Il minimo è 1 mese, non 1 giorno: appena dopo la pubblicazione del primo episodio il tempo
   // trascorso è troppo poco per dire quanto spesso il creator pubblica davvero (altrimenti un solo
   // episodio del primo giorno darebbe già il punteggio di frequenza massimo).
   const firstEpisodeAt = Math.min(...episodeDates.map((date) => date.getTime()));
   const since = publishedAt ?? new Date(firstEpisodeAt);
-  const monthsSincePublished = Math.max((now - since.getTime()) / (30 * 24 * 60 * 60 * 1000), 1);
+  const monthsSincePublished = Math.max((measuredUntil - since.getTime()) / (30 * 24 * 60 * 60 * 1000), 1);
   const episodesPerMonth = episodeDates.length / monthsSincePublished;
   const frequencyScore = Math.min(episodesPerMonth / TARGET_EPISODES_PER_MONTH, 1);
 

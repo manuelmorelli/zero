@@ -4,7 +4,7 @@ import { getViewerSession } from "@/lib/session";
 import { getImagePlaybackUrl, getVideoPlaybackUrl } from "@/lib/r2";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
-import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
+import { getCreatorTrust } from "@/lib/profile/trustScore";
 import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { EpisodePlayer } from "@/components/journey/EpisodePlayer";
 import { UpNextList } from "@/components/journey/UpNextList";
@@ -52,7 +52,7 @@ export default async function EpisodePlayerPage({
       : Promise.resolve([]),
   ]);
 
-  const trustScore = computeTrustScore(await getCreatorTrustInputs(journey.creator.id, followersCount));
+  const trust = await getCreatorTrust(journey.creator.id, followersCount);
   const currentIndex = flatEpisodes.findIndex((item) => item.id === episodeId);
   const currentNumber = currentIndex >= 0 ? flatEpisodes[currentIndex].number : 1;
   const nextTimelineEpisode = currentIndex >= 0 ? (flatEpisodes[currentIndex + 1] ?? null) : null;
@@ -76,7 +76,7 @@ export default async function EpisodePlayerPage({
           journeyTitle={journey.title}
           journeyCategory={journey.category}
           creator={{ userId: journey.creator.userId, displayName: journey.creator.displayName, avatarUrl: creatorAvatarUrl }}
-          trustScore={trustScore}
+          trust={trust}
           episode={{
             id: episode.id,
             title: episode.title,

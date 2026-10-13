@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { saveEpisodeProgress } from "@/lib/actions/progress";
 import { Avatar } from "@/components/ui/avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
+import type { CreatorTrust } from "@/lib/profile/trustScore";
 import { TrustyButton } from "@/components/journey/TrustyButton";
 import { HighlightMarkButton } from "@/components/journey/HighlightMarkButton";
 import { HighlightList } from "@/components/journey/HighlightList";
@@ -32,7 +33,7 @@ type EpisodePlayerProps = {
   journeyTitle: string;
   journeyCategory: string | null;
   creator: { userId: string; displayName: string; avatarUrl: string | null };
-  trustScore: number | null;
+  trust: CreatorTrust;
   episode: {
     id: string;
     title: string;
@@ -65,7 +66,7 @@ export function EpisodePlayer({
   journeyTitle,
   journeyCategory,
   creator,
-  trustScore,
+  trust,
   episode,
   initialPositionSec,
   initialCompleted,
@@ -282,7 +283,7 @@ export function EpisodePlayer({
                 <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="sm" />
                 <span className="truncate">{creator.displayName}</span>
               </Link>
-              {trustScore !== null && <TrustScoreBadge score={trustScore} />}
+              {trust.score !== null && <TrustScoreBadge score={trust.score} trustedByCount={trust.trustedByCount} />}
               {episode.isSponsored && <SponsoredLabel />}
             </div>
             {episode.caption && (

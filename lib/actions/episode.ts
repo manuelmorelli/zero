@@ -260,6 +260,14 @@ async function insertEpisode(
     },
   });
 
+  if (published) {
+    // Un episodio nuovo su un Journey segnato come finito lo riapre: torna a contare come in corso.
+    await prisma.journey.updateMany({
+      where: { id: journey.id, completedAt: { not: null } },
+      data: { completedAt: null, journeyScoreUpdatedAt: null },
+    });
+  }
+
   // Notifica i follower solo se l'episodio è pubblicato E il Journey che lo contiene è già
   // pubblicato: gli episodi caricati mentre il Journey è ancora in Bozza diventano visibili tutti
   // insieme alla prima pubblicazione, già coperta da `notifyNewJourney` (vedi
@@ -475,6 +483,11 @@ export async function updateEpisode(
   if (published && !episode.publishedAt) {
     const readiness = await getPublishReadiness();
     if (!readiness.ready) return { error: publishGateMessage(readiness.missing) };
+    // Un episodio nuovo su un Journey segnato come finito lo riapre: torna a contare come in corso.
+    await prisma.journey.updateMany({
+      where: { id: episode.journeyId, completedAt: { not: null } },
+      data: { completedAt: null, journeyScoreUpdatedAt: null },
+    });
   }
 
   await prisma.episode.update({

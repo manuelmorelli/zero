@@ -10,6 +10,7 @@ import { JourneyHeaderMenu } from "@/components/creator/JourneyHeaderMenu";
 import { DashboardPanel } from "@/components/creator/DashboardPanel";
 import { ChaptersAndEpisodesPanel } from "@/components/creator/ChaptersAndEpisodesPanel";
 import { PrivateStatsPanel } from "@/components/creator/PrivateStatsPanel";
+import { JourneyCompletionControl } from "@/components/creator/JourneyCompletionControl";
 import { Reveal } from "@/components/common/Reveal";
 import Link from "next/link";
 import { PageTitle } from "@/components/ui/heading";
@@ -88,6 +89,7 @@ export default async function JourneyManagePage({
                   aria-hidden="true"
                 />
                 {STATUS_LABEL[journey.status] ?? journey.status}
+                {journey.completedAt && journey.status !== "ARCHIVED" && " · Completed"}
               </span>
               <JourneyPublishControl journeyId={journey.id} status={journey.status} />
               {journey.status !== "DRAFT" && (
@@ -129,6 +131,12 @@ export default async function JourneyManagePage({
             coverUrl={coverUrl}
           />
         </Reveal>
+
+        {(journey.status === "PUBLISHED" || journey.status === "DISCOVERY") && (
+          <Reveal delayMs={135}>
+            <JourneyCompletionControl journeyId={journey.id} isCompleted={journey.completedAt !== null} />
+          </Reveal>
+        )}
 
         <Reveal delayMs={150}>
           <PrivateStatsPanel stats={stats} />

@@ -7,7 +7,7 @@ import { getViewerSession } from "@/lib/session";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
 import { getWatchAction } from "@/lib/journey/watchAction";
 import { isPubliclyReachableJourneyStatus, promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
-import { computeTrustScore, getCreatorTrustInputs } from "@/lib/profile/trustScore";
+import { getCreatorTrust } from "@/lib/profile/trustScore";
 import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { formatDuration } from "@/lib/format/duration";
 import { FollowButton } from "@/components/profile/FollowButton";
@@ -67,7 +67,7 @@ export default async function PublicJourneyPage({
         )
       : false;
 
-  const trustScore = computeTrustScore(await getCreatorTrustInputs(journey.creator.id, followersCount));
+  const trust = await getCreatorTrust(journey.creator.id, followersCount);
 
   return (
     <main>
@@ -95,9 +95,9 @@ export default async function PublicJourneyPage({
                   {journey.category}
                 </span>
               )}
-              {journey.status === "ARCHIVED" && (
+              {(journey.status === "ARCHIVED" || journey.completedAt) && (
                 <span className="absolute right-3 top-3 rounded-full border border-border bg-scrim px-2.5 py-1 text-sm font-semibold uppercase tracking-wider">
-                  Archived
+                  {journey.status === "ARCHIVED" ? "Archived" : "Completed"}
                 </span>
               )}
             </div>
@@ -118,7 +118,7 @@ export default async function PublicJourneyPage({
                     <Avatar name={journey.creator.displayName} avatarUrl={creatorAvatarUrl} size="sm" />
                     <span className="truncate">{journey.creator.displayName}</span>
                   </Link>
-                  {trustScore !== null && <TrustScoreBadge score={trustScore} />}
+                  {trust.score !== null && <TrustScoreBadge score={trust.score} trustedByCount={trust.trustedByCount} />}
                   <span className="inline-flex items-center gap-1.5">
                     <ListVideo className="h-3.5 w-3.5" aria-hidden="true" />
                     {flatEpisodes.length} {flatEpisodes.length === 1 ? "Episode" : "Episodes"}

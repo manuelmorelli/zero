@@ -1,11 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
+import { PUBLICLY_REACHABLE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 
 /**
  * Trust Level del creator (0-100), mostrato come "Trust Score" nell'Hero del Profilo pubblico
  * (08_Algorithm.md, "Trust Level"). Si attiva solo dopo il caricamento del video/card di
  * presentazione (`Creator.presentationVideoUrl`): prima di allora `computeTrustScore` ritorna
  * `null` e il badge non va mostrato da nessuna parte, invece di mostrare uno zero fuorviante.
+ * Non entra in nessuna classifica: è solo un'informazione mostrata.
  */
 
 const PRESENTATION_BONUS = 5;
@@ -16,13 +18,17 @@ const TRUSTY_MIN_SAMPLE = 5;
 const FOLLOWERS_CAP = 500;
 const FOLLOWERS_WEIGHT = 15;
 const QUALITY_WEIGHT = 50;
-const LIVE_JOURNEY_BONUS = 5;
+const ACTIVE_BONUS = 5;
 const REPORT_PENALTY = 10;
 // Tetto legato all'esperienza del creator: sotto questa soglia di episodi pubblicati, il punteggio
 // finale viene scalato in proporzione, anche se tutte le altre metriche fossero perfette. Impedisce
 // che un creator con pochissimi contenuti (es. 2 episodi) arrivi al 100% grazie a pochi amici che
 // completano e "trustano" tutto.
 const TRACK_RECORD_EPISODES = 10;
+// I pezzi che vengono dagli spettatori (Trusty e qualità) crescono col numero di persone diverse
+// che hanno finito almeno un episodio del creator, e sono pieni solo da qui in su. Non riconosce
+// chi è amico: dà poco peso a qualunque pubblico piccolo, così pochi account compiacenti non bastano.
+const AUDIENCE_FULL_WEIGHT = 100;
 
 export type TrustScoreInput = {
   hasPresentation: boolean;
@@ -31,8 +37,10 @@ export type TrustScoreInput = {
   followersCount: number;
   /** Media del Journey Score (0-100) dei Journey pubblicati del creator; 0 se non ne ha. */
   averageJourneyScore: number;
-  /** Il creator ha almeno un Journey pubblicato o in Discovery Phase. */
-  hasLiveJourney: boolean;
+  /** Persone diverse (creator escluso) che hanno finito almeno un episodio del creator. */
+  audienceCount: number;
+  /** Ha almeno un Journey online e non ha ancora ricevuto avvisi di inattività (6 mesi, 10 in pausa). */
+  isActive: boolean;
   /** Numero di Report confermati (status RESOLVED) verso questo creator. */
   confirmedReportsCount: number;
   /** Episodi pubblicati (published + discovery) su tutti i Journey del creator. */
@@ -44,25 +52,23 @@ export function computeTrustScore({
   trustyContribution,
   followersCount,
   averageJourneyScore,
-  hasLiveJourney,
+  audienceCount,
+  isActive,
   confirmedReportsCount,
   publishedEpisodesCount,
 }: TrustScoreInput): number | null {
   if (!hasPresentation) return null;
 
+  const audienceFactor = Math.min(audienceCount / AUDIENCE_FULL_WEIGHT, 1);
+  const trustyPart = Math.min(trustyContribution, TRUSTY_MAX) * audienceFactor;
   const followersContribution = (Math.min(followersCount, FOLLOWERS_CAP) / FOLLOWERS_CAP) * FOLLOWERS_WEIGHT;
-  const qualityContribution = (averageJourneyScore / 100) * QUALITY_WEIGHT;
-  const liveJourneyBonus = hasLiveJourney ? LIVE_JOURNEY_BONUS : 0;
+  const qualityContribution = (averageJourneyScore / 100) * QUALITY_WEIGHT * audienceFactor;
+  const activeBonus = isActive ? ACTIVE_BONUS : 0;
   const reportPenalty = confirmedReportsCount * REPORT_PENALTY;
 
   const trackRecordFactor = Math.min(publishedEpisodesCount / TRACK_RECORD_EPISODES, 1);
 
-  const rawScore =
-    PRESENTATION_BONUS +
-    Math.min(trustyContribution, TRUSTY_MAX) +
-    followersContribution +
-    qualityContribution +
-    liveJourneyBonus;
+  const rawScore = PRESENTATION_BONUS + trustyPart + followersContribution + qualityContribution + activeBonus;
 
   const score = rawScore * trackRecordFactor - reportPenalty;
 
@@ -73,16 +79,16 @@ export function computeTrustScore({
  * Per ogni episodio pubblicato del creator con almeno `TRUSTY_MIN_SAMPLE` completamenti distinti,
  * calcola la quota di quei completatori che hanno anche cliccato "Trusty" (0-1). La media di questa
  * quota sugli episodi che hanno abbastanza dati, scalata su `TRUSTY_MAX`, è il contributo al Trust
- * Score. Un episodio senza abbastanza completamenti reali non conta né in positivo né in negativo:
- * evita che pochi amici bastino a portare il Trusty al massimo.
+ * Score. Un episodio senza abbastanza completamenti reali non conta né in positivo né in negativo.
+ * Il creator non conta mai, né tra i completatori né tra chi ha dato Trusty.
  */
-async function getTrustyContribution(episodeIds: string[], creatorUserId: string | undefined): Promise<number> {
+async function getTrustyContribution(episodeIds: string[], creatorUserId: string): Promise<number> {
   if (episodeIds.length === 0) return 0;
 
   const [completions, trustyClicks] = await Promise.all([
     prisma.episodeProgress.groupBy({
       by: ["episodeId"],
-      where: { episodeId: { in: episodeIds }, completedAt: { not: null } },
+      where: { episodeId: { in: episodeIds }, completedAt: { not: null }, userId: { not: creatorUserId } },
       _count: { _all: true },
     }),
     prisma.like.groupBy({
@@ -105,38 +111,47 @@ async function getTrustyContribution(episodeIds: string[], creatorUserId: string
   return averageRatio * TRUSTY_MAX;
 }
 
+async function countDistinctCompleters(episodeIds: string[], creatorUserId: string): Promise<number> {
+  if (episodeIds.length === 0) return 0;
+  const rows = await prisma.episodeProgress.groupBy({
+    by: ["userId"],
+    where: { episodeId: { in: episodeIds }, completedAt: { not: null }, userId: { not: creatorUserId } },
+  });
+  return rows.length;
+}
+
 /**
  * Raccoglie gli input reali per `computeTrustScore` di un creator. La media qualità guarda solo
  * ai Journey già usciti dalla Discovery Phase (PUBLISHED): quelli ancora in DISCOVERY sono troppo
  * recenti per avere un Journey Score affidabile (vedi lib/scoring/journeyScore.ts).
  */
-export async function getCreatorTrustInputs(
-  creatorId: string,
+async function getCreatorTrustInputs(
+  creator: { id: string; userId: string; presentationVideoUrl: string | null; inactivityNoticeStage: number },
   followersCount: number
 ): Promise<TrustScoreInput> {
-  const [creator, publishedJourneys, liveEpisodes, confirmedReportsCount] = await Promise.all([
-    prisma.creator.findUnique({ where: { id: creatorId }, select: { presentationVideoUrl: true, userId: true } }),
+  const [publishedJourneys, liveEpisodes, confirmedReportsCount] = await Promise.all([
     prisma.journey.findMany({
-      where: { creatorId, status: "PUBLISHED", deletedAt: null },
-      select: { id: true, journeyScore: true },
+      where: { creatorId: creator.id, status: "PUBLISHED", deletedAt: null },
+      select: { id: true },
     }),
     prisma.episode.findMany({
       where: {
-        journey: { creatorId, status: { in: ["PUBLISHED", "DISCOVERY"] }, deletedAt: null },
+        journey: { creatorId: creator.id, status: { in: ["PUBLISHED", "DISCOVERY"] }, deletedAt: null },
         deletedAt: null,
         publishedAt: { not: null },
       },
       select: { id: true },
     }),
     prisma.report.count({
-      where: { targetType: "CREATOR", targetId: creatorId, status: "RESOLVED" },
+      where: { targetType: "CREATOR", targetId: creator.id, status: "RESOLVED" },
     }),
   ]);
 
-  const trustyContribution = await getTrustyContribution(
-    liveEpisodes.map((episode) => episode.id),
-    creator?.userId
-  );
+  const liveEpisodeIds = liveEpisodes.map((episode) => episode.id);
+  const [trustyContribution, audienceCount] = await Promise.all([
+    getTrustyContribution(liveEpisodeIds, creator.userId),
+    countDistinctCompleters(liveEpisodeIds, creator.userId),
+  ]);
 
   let averageJourneyScore = 0;
   if (publishedJourneys.length > 0) {
@@ -150,12 +165,54 @@ export async function getCreatorTrustInputs(
   }
 
   return {
-    hasPresentation: creator?.presentationVideoUrl != null,
+    hasPresentation: creator.presentationVideoUrl != null,
     trustyContribution,
     followersCount,
     averageJourneyScore: Math.round(averageJourneyScore),
-    hasLiveJourney: liveEpisodes.length > 0,
+    audienceCount,
+    isActive: liveEpisodes.length > 0 && creator.inactivityNoticeStage === 0,
     confirmedReportsCount,
     publishedEpisodesCount: liveEpisodes.length,
   };
+}
+
+/**
+ * Persone diverse che hanno dato Trusty ad almeno un episodio del creator ("1,240 people trust this
+ * creator"), creator escluso. Conta anche i Journey archiviati: chi si è fidato resta tale.
+ */
+async function countTrustedBy(creatorId: string, creatorUserId: string): Promise<number> {
+  const episodes = await prisma.episode.findMany({
+    where: {
+      journey: { creatorId, status: { in: PUBLICLY_REACHABLE_JOURNEY_STATUSES }, deletedAt: null },
+      deletedAt: null,
+      publishedAt: { not: null },
+    },
+    select: { id: true },
+  });
+  if (episodes.length === 0) return 0;
+  const rows = await prisma.like.groupBy({
+    by: ["userId"],
+    where: { targetType: "EPISODE", targetId: { in: episodes.map((episode) => episode.id) }, userId: { not: creatorUserId } },
+  });
+  return rows.length;
+}
+
+export type CreatorTrust = {
+  /** null finché il creator non carica il video di presentazione. */
+  score: number | null;
+  trustedByCount: number;
+};
+
+export async function getCreatorTrust(creatorId: string, followersCount: number): Promise<CreatorTrust> {
+  const creator = await prisma.creator.findUnique({
+    where: { id: creatorId },
+    select: { id: true, userId: true, presentationVideoUrl: true, inactivityNoticeStage: true },
+  });
+  if (!creator) return { score: null, trustedByCount: 0 };
+
+  const [inputs, trustedByCount] = await Promise.all([
+    getCreatorTrustInputs(creator, followersCount),
+    countTrustedBy(creator.id, creator.userId),
+  ]);
+  return { score: computeTrustScore(inputs), trustedByCount };
 }

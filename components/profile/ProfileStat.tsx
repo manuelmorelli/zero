@@ -12,8 +12,8 @@ export function Stat({
 }) {
   const content = (
     <>
-      <p className="text-sm font-bold tracking-tight text-ember md:text-base">{value}</p>
-      <p className="text-sm font-medium uppercase tracking-wider text-on-photo-muted">{label}</p>
+      <p className="text-base font-bold leading-tight text-ember">{value}</p>
+      <p className="text-sm leading-tight text-on-photo-muted">{label}</p>
     </>
   );
 

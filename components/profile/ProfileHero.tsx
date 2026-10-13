@@ -5,6 +5,7 @@ import { ProfileFollowStats } from "@/components/profile/ProfileFollowStats";
 import { ProfileTrustStat } from "@/components/profile/ProfileTrustStat";
 import { Stat } from "@/components/profile/ProfileStat";
 import type { CreatorStory } from "@/lib/discovery/stories";
+import type { CreatorTrust } from "@/lib/profile/trustScore";
 import { PageTitle } from "@/components/ui/heading";
 import { PANEL_ACCENT } from "@/components/ui/panel";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
@@ -19,7 +20,8 @@ type ProfileHeroProps = {
   username: string | null;
   location: string | null;
   joinedAt: Date;
-  trustScore: number | null;
+  /** null per chi non è creator: niente Trust Score né "Trusted by". */
+  trust: CreatorTrust | null;
   journeysCount: number;
   followersCount: number;
   followingCount: number;
@@ -40,7 +42,7 @@ export function ProfileHero({
   username,
   location,
   joinedAt,
-  trustScore,
+  trust,
   journeysCount,
   followersCount,
   followingCount,
@@ -97,6 +99,11 @@ export function ProfileHero({
               {name}
             </PageTitle>
             {username && <p className="text-sm text-on-photo-muted drop-shadow-sm">@{username}</p>}
+            {trust && trust.trustedByCount > 0 && (
+              <p className="mt-0.5 text-sm font-semibold text-on-photo drop-shadow-sm">
+                {trust.trustedByCount.toLocaleString("en-US")} Trusty
+              </p>
+            )}
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-on-photo-muted drop-shadow-sm">
               {location && (
                 <span className="inline-flex items-center gap-1.5">
@@ -113,8 +120,8 @@ export function ProfileHero({
         </div>
 
         <div className="mt-1.5 flex flex-wrap items-center justify-between gap-3 pb-4">
-          <ul className={cn(PANEL_ACCENT, "profile-hero-glass grid shrink-0 grid-cols-4 gap-2 px-3 py-2")}>
-            <ProfileTrustStat score={trustScore} />
+          <ul className={cn(PANEL_ACCENT, "profile-hero-glass grid shrink-0 grid-cols-4 gap-x-5 px-4 py-2")}>
+            <ProfileTrustStat score={trust?.score ?? null} />
             <Stat label="Journeys" value={formatCompactNumber(journeysCount)} />
             <ProfileFollowStats
               profileUserId={profileUserId}

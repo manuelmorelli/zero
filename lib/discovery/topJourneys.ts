@@ -3,6 +3,10 @@ import { computeFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { resolveAvatarUrl, resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { isAlgorithmicRankingUnlocked } from "@/lib/discovery/algorithmUnlock";
 
+/** Quanti candidati valutare per gruppo: ben più dei posti mostrati, così un punteggio salvato
+ * da poco superato (ricalcolo ogni 24 ore) non tiene fuori nessuno. */
+const TOP_CANDIDATES = 50;
+
 export type TopJourneyItem = {
   id: string;
   title: string;
@@ -29,12 +33,17 @@ export async function getTopJourneys({
   limit = 10,
   interests = [],
 }: { limit?: number; interests?: string[] } = {}): Promise<TopJourneyItem[]> {
-  // Le due domande qui sotto non dipendono l'una dall'altra: partono insieme invece che in fila.
-  const [journeys, rankingUnlocked] = await Promise.all([
+  const rankingUnlocked = await isAlgorithmicRankingUnlocked();
+
+  // I candidati sono i migliori per punteggio già salvato (o i più recenti, prima dello sblocco),
+  // non più i 50 pubblicati più di recente: un Journey vecchio ma ottimo, anche finito, resta in
+  // gara. Con interessi dichiarati si prendono a parte anche i migliori di quelle categorie, che
+  // altrimenti potrebbero restare fuori dal gruppo generale.
+  const findCandidates = (categories?: string[]) =>
     prisma.journey.findMany({
-      where: { status: "PUBLISHED", deletedAt: null },
-      take: 50,
-      orderBy: { publishedAt: "desc" },
+      where: { status: "PUBLISHED", deletedAt: null, ...(categories ? { category: { in: categories } } : {}) },
+      take: TOP_CANDIDATES,
+      orderBy: rankingUnlocked ? [{ journeyScore: "desc" }, { publishedAt: "desc" }] : { publishedAt: "desc" },
       include: {
         creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } },
         chapters: {
@@ -42,9 +51,12 @@ export async function getTopJourneys({
           select: { _count: { select: { episodes: { where: { deletedAt: null, publishedAt: { not: null } } } } } },
         },
       },
-    }),
-    isAlgorithmicRankingUnlocked(),
+    });
+  const [general, interestMatches] = await Promise.all([
+    findCandidates(),
+    interests.length > 0 ? findCandidates(interests) : Promise.resolve([]),
   ]);
+  const journeys = [...new Map([...interestMatches, ...general].map((journey) => [journey.id, journey])).values()];
 
   // Punteggio calcolato subito in memoria per chi è scaduto, invece di salvarlo e rileggerlo dal
   // database: stesso valore che si otterrebbe rileggendo, senza il giro a vuoto.
@@ -52,6 +64,7 @@ export async function getTopJourneys({
     journeys.map((journey) => ({
       id: journey.id,
       publishedAt: journey.publishedAt,
+      completedAt: journey.completedAt,
       journeyScore: journey.journeyScore,
       journeyScoreUpdatedAt: journey.journeyScoreUpdatedAt,
       followersCount: journey.creator.user._count.followers,

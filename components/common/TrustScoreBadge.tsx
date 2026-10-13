@@ -8,7 +8,7 @@ import { TrustScorePanel } from "@/components/common/TrustScorePanel";
 /** Punteggio di fiducia del creator (lib/profile/trustScore.ts), mostrato ovunque appaia il suo
  * nome nelle card. Il pannello si apre al click/tocco: un tooltip al passaggio del mouse non
  * funzionerebbe su schermo touch, dove non esiste hover. */
-export function TrustScoreBadge({ score }: { score: number }) {
+export function TrustScoreBadge({ score, trustedByCount }: { score: number; trustedByCount: number }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
   useDismiss(ref, () => setOpen(false), open);
@@ -25,7 +25,7 @@ export function TrustScoreBadge({ score }: { score: number }) {
         {score}
       </button>
       {open && (
-        <TrustScorePanel className="bottom-full left-1/2 mb-1.5 -translate-x-1/2" onClose={() => setOpen(false)} />
+        <TrustScorePanel className="bottom-full left-1/2 mb-1.5 -translate-x-1/2" onClose={() => setOpen(false)} trustedByCount={trustedByCount} />
       )}
     </span>
   );

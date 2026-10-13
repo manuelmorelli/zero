@@ -354,6 +354,9 @@ model Journey {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   publishedAt    DateTime? // valorizzato solo la prima volta che il Journey passa da Draft a Published; non cambia più in seguito
+  // Segnato dal creator come finito ("Mark as completed"), si può riaprire (torna null). Un Journey
+  // finito non perde più punti di continuità nel Journey Score (lib/scoring/journeyScore.ts).
+  completedAt    DateTime?
   deletedAt      DateTime?
   // Valorizzato solo quando la modalità Creator viene spenta o chiusa (lib/account/creatorLifecycle.ts):
   // il Journey è nascosto tramite deletedAt (come ogni altro contenuto nascosto), e lifecycleDeleteAt
