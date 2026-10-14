@@ -20,7 +20,7 @@ export const algorithmParagraphs = [
 ];
 
 export const algorithmHighlights = [
-  "A creator with 5 followers, where everyone finishes every episode, is shown to more people than a creator with 600 followers that nobody finishes.",
+  "A journeyer with 5 followers, where everyone finishes every episode, is shown to more people than a journeyer with 600 followers that nobody finishes.",
   "Paying doesn't get you seen more. On Zero, a Journey rises only because people actually watch and love it, never because someone paid for it.",
 ];
 
@@ -41,7 +41,7 @@ export const steps = [
   {
     number: "03",
     title: "Build your own",
-    text: "Become a creator and document your Journey, mistakes included.",
+    text: "Become a journeyer and document your Journey, mistakes included.",
   },
 ];
 
@@ -52,11 +52,11 @@ export const questions = [
   },
   {
     q: "Is Zero free?",
-    a: "Yes, following Journeys and using Zero as a viewer is free. Some creators offer paid communities, workshops, or services.",
+    a: "Yes, following Journeys and using Zero as a viewer is free. Some journeyers offer paid communities, workshops, or services.",
   },
   {
-    q: "Can I become a creator?",
-    a: "Yes. Create a creator profile and publish your first Journey (in the first version you can have one active Journey at a time).",
+    q: "Can I become a journeyer?",
+    a: "Yes. Create a journeyer profile and publish your first Journey (in the first version you can have one active Journey at a time).",
   },
   {
     q: "Is my data safe?",

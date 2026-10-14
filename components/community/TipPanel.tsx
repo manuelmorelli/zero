@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 const TIP_AMOUNTS = [3, 5, 10];
 
-/** "Send a tip" on the creator's page. Opens a short form; the creator keeps the whole tip, minus payment fees. Payment stays off until Stripe is connected. */
+/** "Send a tip" on the journeyer's page. Opens a short form; the journeyer keeps the whole tip, minus payment fees. Payment stays off until Stripe is connected. */
 export function TipPanel() {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState(TIP_AMOUNTS[1]);
@@ -25,7 +25,7 @@ export function TipPanel() {
 
   return (
     <Panel className="flex w-full flex-col gap-3 sm:max-w-md">
-      <p className="text-sm text-ink-muted">Say thank you with a one-time tip. The creator receives the full amount.</p>
+      <p className="text-sm text-ink-muted">Say thank you with a one-time tip. The journeyer receives the full amount.</p>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Tip amount">
         {TIP_AMOUNTS.map((value) => (
           <button
@@ -42,7 +42,7 @@ export function TipPanel() {
       <Textarea rows={3} placeholder="Write a short message (optional)" />
       <Switch
         label="Stay anonymous"
-        description="Your name won't be shown to the creator."
+        description="Your name won't be shown to the journeyer."
         checked={anonymous}
         onChange={setAnonymous}
       />

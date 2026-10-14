@@ -327,7 +327,7 @@ export async function setJourneyCompleted(
 }
 
 // Archiving is one-way in the MVP: no action ever moves a Journey out of
-// ARCHIVED again. A creator with an archived Journey is free to start a new
+// ARCHIVED again. A journeyer with an archived Journey is free to start a new
 // one (see createJourney), and the archived Journey stays visible on the
 // creator's public profile (never deleted).
 export async function archiveJourney(

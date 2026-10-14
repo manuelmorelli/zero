@@ -27,7 +27,7 @@ export default async function SettingsCreatorPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle className="text-ember">Creator</PageTitle>
+        <PageTitle className="text-ember">Journeyer</PageTitle>
         <p className="mt-2 text-sm text-ink">Notifications and tools for what you publish on Zero.</p>
 
         <SectionTitle className="mt-8">Account type</SectionTitle>
@@ -36,7 +36,7 @@ export default async function SettingsCreatorPage() {
           {preferences.creatorMode && <CreatorPauseSwitch paused={preferences.creator?.pausedAt != null} />}
         </div>
         <Link href="/creator" className="mt-3 inline-block text-sm text-ink-muted underline underline-offset-4">
-          How Creator mode works
+          How Journeyer mode works
         </Link>
 
         <SectionTitle className="mt-8">Notifications</SectionTitle>

@@ -45,7 +45,7 @@ export function SupportLinkForm({ supportLinkUrl }: SupportLinkFormProps) {
           className={cn(FIELD, "mt-1.5")}
         />
         <p className="mt-2 text-sm text-ink-muted">
-          Viewers who press &quot;Support this Creator&quot; are sent to this page. Payments happen there, not on Zero.
+          Viewers who press &quot;Support this Journeyer&quot; are sent to this page. Payments happen there, not on Zero.
         </p>
       </div>
 

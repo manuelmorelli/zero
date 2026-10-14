@@ -94,7 +94,7 @@ function TrustyTooltip({ locked, isOwnContent }: { locked: boolean; isOwnContent
         ? "Trusty comes from your viewers, you can't give it to your own episode."
         : locked
           ? "Watch the episode to the end to unlock Trusty."
-          : "Give a Trusty once you've finished watching, it helps build the creator's Trust Score."}
+          : "Give a Trusty once you've finished watching, it helps build the journeyer's Trust Score."}
     </span>
   );
 }

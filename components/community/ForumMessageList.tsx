@@ -63,7 +63,7 @@ export function ForumMessageList({ messages, currentUserId, isCreatorViewer, sea
                       </span>
                     )}
                     {message.isCreator && (
-                      <span className="shrink-0 text-sm font-semibold uppercase tracking-wide text-ember">· Creator</span>
+                      <span className="shrink-0 text-sm font-semibold uppercase tracking-wide text-ember">· Journeyer</span>
                     )}
                   </div>
                   <span className="text-sm text-ink-faint">{formatTimestamp(message.createdAt)}</span>

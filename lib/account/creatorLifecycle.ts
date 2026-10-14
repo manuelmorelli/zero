@@ -181,19 +181,19 @@ function noticeEmail(stage: Exclude<NoticeStage, 0>, paused: boolean): { subject
 
   if (stage === NOTICE_STAGE.FIRST) {
     return {
-      subject: `Your Zero Creator account has been quiet for ${months[1]} months`,
-      body: `It has been ${months[1]} months ${sinceLabel} on Zero. Your Journeys are still online. If you are done with Creator mode, you can switch it off in your settings. If nothing changes, we will send you one more reminder soon.`,
+      subject: `Your Zero Journeyer account has been quiet for ${months[1]} months`,
+      body: `It has been ${months[1]} months ${sinceLabel} on Zero. Your Journeys are still online. If you are done with Journeyer mode, you can switch it off in your settings. If nothing changes, we will send you one more reminder soon.`,
     };
   }
   if (stage === NOTICE_STAGE.SECOND) {
     return {
-      subject: "Your Zero Creator account: one month left",
-      body: `It has been ${months[2]} months ${sinceLabel} on Zero. If you do not publish in the next month, we will close Creator mode. Your Journeys will then be hidden, and permanently deleted 30 days later unless you turn Creator mode back on.`,
+      subject: "Your Zero Journeyer account: one month left",
+      body: `It has been ${months[2]} months ${sinceLabel} on Zero. If you do not publish in the next month, we will close Journeyer mode. Your Journeys will then be hidden, and permanently deleted 30 days later unless you turn Journeyer mode back on.`,
     };
   }
   return {
-    subject: "Your Zero Creator mode has been closed",
-    body: `Creator mode has been closed after ${months[3]} months ${sinceLabel}. Your Journeys are now hidden from Zero. You can turn Creator mode back on within 30 days to restore them. After 30 days they will be permanently deleted.`,
+    subject: "Your Zero Journeyer mode has been closed",
+    body: `Journeyer mode has been closed after ${months[3]} months ${sinceLabel}. Your Journeys are now hidden from Zero. You can turn Journeyer mode back on within 30 days to restore them. After 30 days they will be permanently deleted.`,
   };
 }
 

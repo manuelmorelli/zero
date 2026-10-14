@@ -8,7 +8,7 @@ import { DEMO_CREATORS } from "@/lib/demo/demoContent";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { CARD_GRID } from "@/components/ui/cover-card";
 
-export const metadata = { title: "Creators to Follow | Zero" };
+export const metadata = { title: "Journeyers to Follow | Zero" };
 
 export default async function RecommendedCreatorsPage() {
   const session = await getViewerSession();
@@ -26,7 +26,7 @@ export default async function RecommendedCreatorsPage() {
         <SectionHeading
           page
           icon={<UserPlus className="h-6 w-6" aria-hidden="true" />}
-          title="Creators to Follow"
+          title="Journeyers to Follow"
           subtitle="People documenting journeys like the ones you follow."
         />
 

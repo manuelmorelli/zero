@@ -85,7 +85,7 @@ export default async function CreatorDashboardPage() {
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-sm uppercase tracking-[0.18em] text-ember">Creator Area</p>
+              <p className="text-sm uppercase tracking-[0.18em] text-ember">Journeyer Area</p>
               <PageTitle>
                 Hi, {creator.displayName}
               </PageTitle>

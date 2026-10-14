@@ -62,7 +62,7 @@ export default async function SearchPage({
         <SearchFilters defaultQuery={query} defaultCategory={category} defaultDatePreset={date} />
 
         {!query && !hasJourneyFilters && (
-          <p className="mt-10 text-sm text-ink-muted">Search for a Journey or a creator, or filter by category and date.</p>
+          <p className="mt-10 text-sm text-ink-muted">Search for a Journey or a journeyer, or filter by category and date.</p>
         )}
 
         {(query || hasJourneyFilters) &&
@@ -108,7 +108,7 @@ export default async function SearchPage({
 
         {creators.length > 0 && (
           <section className="mt-10">
-            <SectionTitle>Creators</SectionTitle>
+            <SectionTitle>Journeyers</SectionTitle>
             <div className={`mt-4 ${CARD_GRID.person}`}>
               {creators.map((creator) => (
                 <JourneyerCard key={creator.id} journeyer={creator} />

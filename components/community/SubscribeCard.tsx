@@ -10,19 +10,19 @@ import { cn } from "@/lib/utils";
 /** What every subscriber gets each month. Copy is in English, like the rest of the site. */
 const BENEFITS = [
   "Exclusive content every month",
-  "Walk the Path With Me: a challenge you take on alongside the creator",
-  "Members room, with written answers from the creator",
+  "Walk the Path With Me: a challenge you take on alongside the journeyer",
+  "Members room, with written answers from the journeyer",
 ];
 
 type SubscribeCardProps = {
   name: string;
   username: string;
   avatarUrl: string | null;
-  /** Price chosen by the creator, e.g. "€7 per month". Null while no price is set. */
+  /** Price chosen by the journeyer, e.g. "€7 per month". Null while no price is set. */
   priceLabel: string | null;
   /** Post-MVP: off at launch, so the subscription and gift actions stay hidden. */
   paidEnabled: boolean;
-  /** External support page of the creator (S9). Null when no link is set: the tip block stays hidden. */
+  /** External support page of the journeyer (S9). Null when no link is set: the tip block stays hidden. */
   supportLinkUrl: string | null;
 };
 
@@ -74,7 +74,7 @@ export function SubscribeCard({ name, username, avatarUrl, priceLabel, paidEnabl
       {supportLinkUrl && (
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-ink-muted">
-            Help {name} with a one-time tip. The payment happens on the creator&apos;s external page, not on Zero.
+            Help {name} with a one-time tip. The payment happens on the journeyer&apos;s external page, not on Zero.
           </p>
           <Button
             variant="secondary"
@@ -83,7 +83,7 @@ export function SubscribeCard({ name, username, avatarUrl, priceLabel, paidEnabl
             rel="noopener noreferrer"
             className="shrink-0"
           >
-            Support this Creator
+            Support this Journeyer
           </Button>
         </div>
       )}

@@ -46,7 +46,7 @@ export const simpleSections: Group[] = [
   },
   {
     title: "What happens when guidelines are broken",
-    body: "Depending on severity: a warning, removal of the specific content, or **suspension of the account.** Confirmed reports against a creator also reduce their Trust Score, on top of any other action taken.",
+    body: "Depending on severity: a warning, removal of the specific content, or **suspension of the account.** Confirmed reports against a journeyer also reduce their Trust Score, on top of any other action taken.",
   },
 ];
 
@@ -81,7 +81,7 @@ export const notAllowedGroups: Group[] = [
   },
   {
     title: "Authenticity",
-    body: "Zero is built around real people, real identities, and real accountability. Anonymous accounts or fake identities as a creator's whole model, an AI pretending to be a real person or telling experiences it never lived, reposting someone else's content without adding your own experience, and spam or automated, duplicated content aren't allowed. A single video without a face isn't automatically against the rules if it belongs to an authentic, valuable project.",
+    body: "Zero is built around real people, real identities, and real accountability. Anonymous accounts or fake identities as a journeyer's whole model, an AI pretending to be a real person or telling experiences it never lived, reposting someone else's content without adding your own experience, and spam or automated, duplicated content aren't allowed. A single video without a face isn't automatically against the rules if it belongs to an authentic, valuable project.",
   },
 ];
 

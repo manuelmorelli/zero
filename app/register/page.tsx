@@ -146,13 +146,13 @@ function RegisterForm() {
       />
       <div>
         <Switch
-          label="Creator mode"
+          label="Journeyer mode"
           description="Off: you can watch, follow and like. On: you can publish Journeys. You can change this anytime in Settings."
           checked={creatorMode}
           onChange={setCreatorMode}
         />
         <Link href="/creator" className="mt-2 inline-block text-sm text-ink-muted underline underline-offset-4">
-          How Creator mode works
+          How Journeyer mode works
         </Link>
       </div>
       <PasswordField

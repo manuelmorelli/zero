@@ -37,9 +37,9 @@ export const sections: Section[] = [
     ],
   },
   {
-    title: "Payments and creator earnings",
+    title: "Payments and journeyer earnings",
     body: [
-      "Zero doesn't process real payments yet. Once payment features launch, they'll be covered by their own terms describing fees, payout schedules, and how creator earnings work, and you'll be asked to accept those before using them.",
+      "Zero doesn't process real payments yet. Once payment features launch, they'll be covered by their own terms describing fees, payout schedules, and how journeyer earnings work, and you'll be asked to accept those before using them.",
     ],
   },
   {

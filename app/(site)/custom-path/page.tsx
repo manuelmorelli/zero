@@ -32,7 +32,7 @@ export default async function CustomPathPage({
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
         <PageTitle>Your Path</PageTitle>
         <p className="mt-2 text-sm text-ink-muted">
-          Describe what you&apos;re going through. We&apos;ll look for real moments from other creators who&apos;ve faced
+          Describe what you&apos;re going through. We&apos;ll look for real moments from other journeyers who&apos;ve faced
           something similar.
         </p>
         <CustomPathForm defaultValue={situation} className="mt-6" />

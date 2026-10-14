@@ -6,7 +6,7 @@ export default function PricingPage() {
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
         <PageTitle>Pricing</PageTitle>
         <p className="mt-2 text-sm text-ink-muted">
-          Coming soon. Following Journeys on Zero is free. Pricing for creators is on its way.
+          Coming soon. Following Journeys on Zero is free. Pricing for journeyers is on its way.
         </p>
       </div>
     </main>

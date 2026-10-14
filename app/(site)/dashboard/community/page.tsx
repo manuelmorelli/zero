@@ -158,7 +158,7 @@ export default async function CommunityDashboardPage() {
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-sm uppercase tracking-[0.18em] text-ember">Creator Area</p>
+              <p className="text-sm uppercase tracking-[0.18em] text-ember">Journeyer Area</p>
               <PageTitle>Community</PageTitle>
               <p className="mt-1 text-sm text-ink-muted">
                 Workshops, Events, Digital Products and 1:1 Services you offer on your Community page.

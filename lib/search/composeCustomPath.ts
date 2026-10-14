@@ -16,7 +16,7 @@ const CANDIDATE_POOL_SIZE = 15;
 const MIN_PATH_LENGTH = 2;
 const MAX_PATH_LENGTH = 8;
 
-const ORDER_INSTRUCTION = `Someone describes a personal situation on Zero, a platform where people share real personal journeys. You are given short real notes found by meaning in different video episodes from other creators. Pick only the notes that genuinely fit together as a coherent path for this person (skip ones that don't really fit, even if given to you), and order them so the sequence reads like a journey: first the problem or struggle, then the obstacle or turning point, then the outcome or lesson. Use only the notes given, never invent new ones or change their wording. Return between 2 and 8 ids, in the chosen order.`;
+const ORDER_INSTRUCTION = `Someone describes a personal situation on Zero, a platform where people share real personal journeys. You are given short real notes found by meaning in different video episodes from other journeyers. Pick only the notes that genuinely fit together as a coherent path for this person (skip ones that don't really fit, even if given to you), and order them so the sequence reads like a journey: first the problem or struggle, then the obstacle or turning point, then the outcome or lesson. Use only the notes given, never invent new ones or change their wording. Return between 2 and 8 ids, in the chosen order.`;
 
 const ORDER_SCHEMA = {
   type: "object",

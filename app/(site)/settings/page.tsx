@@ -9,7 +9,7 @@ const SETTINGS_SECTIONS = [
   { href: "/settings/account", label: "Account", description: "Name, username, bio, location" },
   { href: "/settings/security", label: "Password & Security", description: "Password and email address" },
   { href: "/settings/notifications", label: "Notifications", description: "Which updates you receive" },
-  { href: "/settings/creator", label: "Creator", description: "Notifications and tools for what you publish" },
+  { href: "/settings/creator", label: "Journeyer", description: "Notifications and tools for what you publish" },
   { href: "/settings/privacy", label: "Privacy", description: "Who can interact with you" },
   { href: "/settings/interests", label: "Interests", description: "Categories you care about" },
   { href: "/settings/subscription", label: "Subscription", description: "Billing and plan" },

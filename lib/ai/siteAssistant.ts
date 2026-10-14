@@ -45,7 +45,7 @@ const SETTINGS_PATHS = [
   "/settings/privacy — blocking people, private account.",
   "/settings/interests — interest categories.",
   "/settings/subscription — Community subscription (not active yet, Post-MVP).",
-  "/settings/creator — turning Creator mode on or off, pausing as a creator.",
+  "/settings/creator — turning Journeyer mode on or off, pausing as a journeyer.",
 ].join("\n");
 
 function section(title: string, body: string[]): string {
@@ -83,19 +83,19 @@ function buildKnowledgeBase(): string {
     section("Frequently asked questions", faqQuestions.map((item) => `Q: ${item.q}\nA: ${item.a}`)),
     section("Publishing and re-uploading episodes", [publishingNote]),
     section("Video upload tips", uploadTips.map((tip) => tip.text)),
-    section("Creator mode", [
+    section("Journeyer mode", [
       CREATOR_MODE_INTRO,
       `Visitor: ${VISITOR_DESCRIPTION}`,
-      `Creator: ${CREATOR_DESCRIPTION}`,
+      `Journeyer: ${CREATOR_DESCRIPTION}`,
     ]),
-    section("How to start as a creator", creatorSteps),
-    section("What happens if a creator stops publishing", [
+    section("How to start as a journeyer", creatorSteps),
+    section("What happens if a journeyer stops publishing", [
       INACTIVITY_POLICY_INTRO,
       ...INACTIVITY_MILESTONES,
       PAUSE_POLICY,
     ]),
-    section("Turning Creator mode off", [TURN_OFF_POLICY]),
-    section("Creator earnings", [EARNINGS_STATUS]),
+    section("Turning Journeyer mode off", [TURN_OFF_POLICY]),
+    section("Journeyer earnings", [EARNINGS_STATUS]),
     section("Privacy Policy", privacySections.flatMap((item) => [`#### ${item.title}`, ...item.body])),
     section("Terms of Service", termsSections.flatMap((item) => [`#### ${item.title}`, ...item.body])),
     section("Cookie Policy", cookiesSections.flatMap((item) => [`#### ${item.title}`, ...item.body])),

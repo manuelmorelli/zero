@@ -16,12 +16,12 @@ const TOGGLES: Array<{ name: keyof NotificationsFormProps; label: string; descri
   {
     name: "notifyNewEpisode",
     label: "New episodes",
-    description: "When a creator you follow publishes a new episode.",
+    description: "When a journeyer you follow publishes a new episode.",
   },
   {
     name: "notifyNewJourney",
     label: "New Journeys",
-    description: "When a creator you follow publishes a new Journey.",
+    description: "When a journeyer you follow publishes a new Journey.",
   },
   {
     name: "notifyQuestionAnswered",
@@ -31,7 +31,7 @@ const TOGGLES: Array<{ name: keyof NotificationsFormProps; label: string; descri
   {
     name: "notifyNewOffering",
     label: "New Community offerings",
-    description: "When a creator you follow publishes a Workshop, Event, Digital Product or 1:1 Service.",
+    description: "When a journeyer you follow publishes a Workshop, Event, Digital Product or 1:1 Service.",
   },
 ];
 

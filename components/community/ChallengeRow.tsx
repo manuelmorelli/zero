@@ -1,7 +1,7 @@
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
 import { Notice } from "@/components/ui/panel";
 
-/** Row of the creator's current challenge. Empty until challenges are built: it says so honestly. */
+/** Row of the journeyer's current challenge. Empty until challenges are built: it says so honestly. */
 export function ChallengeRow({ firstName }: { firstName: string }) {
   return (
     <div className="mt-12">

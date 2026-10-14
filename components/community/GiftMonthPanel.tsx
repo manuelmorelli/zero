@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
 import { Textarea } from "@/components/ui/textarea";
 
-/** "Gift a month" on the creator's page. Opens a short form; payment stays off until Stripe is connected. */
+/** "Gift a month" on the journeyer's page. Opens a short form; payment stays off until Stripe is connected. */
 export function GiftMonthPanel() {
   const [open, setOpen] = useState(false);
 

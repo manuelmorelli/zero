@@ -39,7 +39,7 @@ const STATUS_LABELS: Record<Report["status"], string> = {
 
 const TARGET_LABELS: Record<Report["targetType"], string> = {
   USER: "Utente",
-  CREATOR: "Creator",
+  CREATOR: "Journeyer",
   JOURNEY: "Journey",
   UPDATE: "Aggiornamento",
   COMMENT: "Commento del forum",

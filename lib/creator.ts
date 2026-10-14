@@ -22,14 +22,14 @@ export async function requireCreator() {
 export type PublishRequirement = "creatorMode" | "profile" | "presentation" | "guidelines";
 
 const PUBLISH_REQUIREMENT_LABELS: Record<PublishRequirement, string> = {
-  creatorMode: "Creator mode turned on in Settings",
+  creatorMode: "Journeyer mode turned on in Settings",
   profile: "a complete profile (username, photo and bio)",
   presentation: "your presentation video",
   guidelines: "acceptance of the Community Guidelines",
 };
 
 export const CREATOR_MODE_REQUIRED_MESSAGE =
-  "Turn on Creator mode in Settings before you can create or publish.";
+  "Turn on Journeyer mode in Settings before you can create or publish.";
 
 /** Controllo per le azioni che creano o pubblicano senza passare da getPublishReadiness (Journey, Update). */
 export async function creatorModeError(userId: string): Promise<string | null> {
@@ -65,7 +65,7 @@ export async function getPublishReadiness(): Promise<{
 }
 
 export function publishGateMessage(missing: PublishRequirement[]): string {
-  return `Before you can publish, finish becoming a creator: ${missing
+  return `Before you can publish, finish becoming a journeyer: ${missing
     .map((requirement) => PUBLISH_REQUIREMENT_LABELS[requirement])
     .join(", ")}.`;
 }

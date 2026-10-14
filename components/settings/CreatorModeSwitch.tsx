@@ -30,7 +30,7 @@ export function CreatorModeSwitch({ creatorMode, journeyCount }: CreatorModeSwit
     startTransition(async () => {
       try {
         await setCreatorMode(next);
-        toast.success(next ? "Creator mode is on" : "Creator mode is off");
+        toast.success(next ? "Journeyer mode is on" : "Journeyer mode is off");
       } catch {
         setEnabled(!next);
         toast.error("Something went wrong. Please try again.");
@@ -51,7 +51,7 @@ export function CreatorModeSwitch({ creatorMode, journeyCount }: CreatorModeSwit
   return (
     <>
       <Switch
-        label="Creator mode"
+        label="Journeyer mode"
         description={
           enabled
             ? "You can publish Journeys and Updates. We send reminders if you stop publishing for a long time."
@@ -65,14 +65,14 @@ export function CreatorModeSwitch({ creatorMode, journeyCount }: CreatorModeSwit
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Turn off Creator mode?</DialogTitle>
+            <DialogTitle>Turn off Journeyer mode?</DialogTitle>
             <DialogDescription>
               Your {journeyLabel} will be hidden from Zero now and permanently deleted in 30 days. Turn
-              Creator mode back on within those 30 days to restore them.
+              Journeyer mode back on within those 30 days to restore them.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <ButtonSecondary onClick={() => setConfirmOpen(false)}>Keep Creator mode</ButtonSecondary>
+            <ButtonSecondary onClick={() => setConfirmOpen(false)}>Keep Journeyer mode</ButtonSecondary>
             <ButtonDanger
               onClick={() => {
                 setConfirmOpen(false);

@@ -37,48 +37,48 @@ export type CommunityChatTurnResult =
 function buildChatInstruction(today: Date, creatorFirstName: string | null, imagesEnabled: boolean): string {
   const todayLabel = today.toISOString().slice(0, 10);
   const nameLine = creatorFirstName
-    ? `The creator you're talking to is called ${creatorFirstName}. Use their name occasionally and naturally, not in every reply.\n\n`
+    ? `The journeyer you're talking to is called ${creatorFirstName}. Use their name occasionally and naturally, not in every reply.\n\n`
     : "";
   const imageLine = imagesEnabled
-    ? `Images: you can create and edit images (covers, posters) for the creator. When the creator asks for one, Zero adds a note in square brackets to their message saying whether the image was actually created. Only say an image exists when that note says so; it is shown to the creator right above your reply, with a "Use as cover" button. If the note says it wasn't created, explain why honestly.`
+    ? `Images: you can create and edit images (covers, posters) for the journeyer. When the journeyer asks for one, Zero adds a note in square brackets to their message saying whether the image was actually created. Only say an image exists when that note says so; it is shown to the journeyer right above your reply, with a "Use as cover" button. If the note says it wasn't created, explain why honestly.`
     : `Images: creating images isn't active on Zero yet (coming soon). If asked, say so honestly and offer to write a detailed description of the image instead.`;
   return `You are the AI assistant on Zero, a platform where creators share their real journeys and build a community around them. You chat freely and naturally, like Gemini or ChatGPT would: answer any question, give ideas and honest advice (pricing, titles, audience, how to structure a session), and write good copy. Use Markdown (bold, bullet lists) when it helps readability.
 
 ${nameLine}Today's date is ${todayLabel}.
 
-Your special skill here is helping the creator prepare something for their Community. Zero supports exactly four kinds:
+Your special skill here is helping the journeyer prepare something for their Community. Zero supports exactly four kinds:
 - Workshop: a live or online session, free or paid, with a date and time.
 - Event: an in-person or online event or meetup, free or paid, with a date and time.
 - Digital product: a downloadable file (guide, template, ebook), always paid, no date.
 - 1:1 service: consulting or coaching, always paid, no date.
 
-When the creator wants to create one of these:
+When the journeyer wants to create one of these:
 - Once you understand the kind and the topic, help complete it like a thoughtful collaborator: ask about the missing details one or two at a time (date and time, online or where, free or price, who it's for, what people will get or learn, duration).
 - Write a complete, engaging description for them (not a single line) and improve it as you learn more.
 - Suggest a price only if they ask for advice; never assume one.
 
-How the app works (describe nothing else): while you talk, Zero automatically prepares a draft from the conversation. A button labelled exactly "Fill the form with this" (always in English, never translate its name) appears under the chat once the kind and topic are clear; it opens the real form pre-filled, where the creator reviews, changes and saves it themselves. You never save, publish or send anything yourself, and you have no other buttons, panels or previews. The creator can attach photos and PDFs with the "+" button: when they do, you see them and can use them (describe a photo, summarize a PDF, turn it into a listing). Other file types aren't supported yet.
+How the app works (describe nothing else): while you talk, Zero automatically prepares a draft from the conversation. A button labelled exactly "Fill the form with this" (always in English, never translate its name) appears under the chat once the kind and topic are clear; it opens the real form pre-filled, where the journeyer reviews, changes and saves it themselves. You never save, publish or send anything yourself, and you have no other buttons, panels or previews. The journeyer can attach photos and PDFs with the "+" button: when they do, you see them and can use them (describe a photo, summarize a PDF, turn it into a listing). Other file types aren't supported yet.
 
 ${imageLine}
 
-Reply in the same language the creator writes in.`;
+Reply in the same language the journeyer writes in.`;
 }
 
 // La data di oggi serve anche qui: senza, "sabato 8 novembre" finiva in un anno passato.
 function buildExtractionInstruction(today: Date): string {
   return `Today's date is ${today.toISOString().slice(0, 10)}.
 
-You read a conversation between a creator and an AI assistant on Zero and extract the Community listing being prepared, as JSON. Kinds: "workshop", "event", "digital_product", "personal_service".
+You read a conversation between a journeyer and an AI assistant on Zero and extract the Community listing being prepared, as JSON. Kinds: "workshop", "event", "digital_product", "personal_service".
 
 Rules:
-- First decide "hasDraft": true as soon as the kind AND a topic are known, even if date, price, place and other details are still missing (a draft is meant to be incomplete, the creator finishes it in the form). Example: "an event" + "a trail run on Mont Blanc" is enough. false only if the kind or the topic is still unknown.
+- First decide "hasDraft": true as soon as the kind AND a topic are known, even if date, price, place and other details are still missing (a draft is meant to be incomplete, the journeyer finishes it in the form). Example: "an event" + "a trail run on Mont Blanc" is enough. false only if the kind or the topic is still unknown.
 - When hasDraft is true, always include "draft".
 - If several listings were discussed, extract the most recent one.
-- title: short and specific, based on what the creator said or accepted. Never a placeholder like "New Event".
-- description: the most complete description available (use the assistant's proposed description if the creator didn't reject it), otherwise write a short one from the facts given. Plain text, no Markdown.
-- isFree: true only if the creator said it's free. price: only if the creator stated a price, never invent one.
+- title: short and specific, based on what the journeyer said or accepted. Never a placeholder like "New Event".
+- description: the most complete description available (use the assistant's proposed description if the journeyer didn't reject it), otherwise write a short one from the facts given. Plain text, no Markdown.
+- isFree: true only if the journeyer said it's free. price: only if the journeyer stated a price, never invent one.
 - startsAt: only for workshop/event, ISO 8601 (YYYY-MM-DDTHH:mm if a time was given, else YYYY-MM-DD), always the next future occurrence after today.
-- location: only for workshop/event, the venue address or online link if the creator mentioned one, otherwise omit.`;
+- location: only for workshop/event, the venue address or online link if the journeyer mentioned one, otherwise omit.`;
 }
 
 // Se presente, la bozza deve avere tipo/titolo/descrizione: con i campi tutti facoltativi Gemini
@@ -137,7 +137,7 @@ function normalizeDraft(raw: RawDraft | undefined, today: Date): CommunityDraft 
 
 function formatTranscript(messages: CommunityChatMessage[]): string {
   return messages
-    .map((message) => `${message.role === "user" ? "Creator" : "Assistant"}: ${message.text}`)
+    .map((message) => `${message.role === "user" ? "Journeyer" : "Assistant"}: ${message.text}`)
     .join("\n\n");
 }
 
@@ -151,7 +151,7 @@ async function extractDraft(conversation: CommunityChatMessage[], today: Date): 
   return normalizeDraft(parseGeminiJson<{ draft?: RawDraft }>(result.text)?.draft, today);
 }
 
-const IMAGE_REQUEST_INSTRUCTION = `You read the end of a conversation between a creator and an AI assistant and decide whether the creator's LAST message asks to create or edit an image (cover, poster, picture, illustration). Return JSON.
+const IMAGE_REQUEST_INSTRUCTION = `You read the end of a conversation between a journeyer and an AI assistant and decide whether the journeyer's LAST message asks to create or edit an image (cover, poster, picture, illustration). Return JSON.
 - wantsImage: true only if the last message asks for an image now.
 - editPreviousImage: true if they want to change the image created earlier in the conversation (e.g. "add the title", "make it brighter"), false for a brand new image.
 - prompt: a detailed English prompt for an image model describing the whole result (subject, style, mood, any text to write in the image), using details from the conversation.`;
@@ -187,8 +187,8 @@ async function detectImageRequest(
 // Nota aggiunta al messaggio del creator (solo verso Gemini, mai mostrata): così la risposta dice
 // sempre la verità su un'immagine creata o no, stesso principio della bozza.
 const IMAGE_NOTES = {
-  created: "[Zero note: the image was created and is shown to the creator above your reply.]",
-  limit: `[Zero note: the image was NOT created: the creator reached today's limit of ${DAILY_AI_IMAGE_LIMIT} images, they can create more tomorrow.]`,
+  created: "[Zero note: the image was created and is shown to the journeyer above your reply.]",
+  limit: `[Zero note: the image was NOT created: the journeyer reached today's limit of ${DAILY_AI_IMAGE_LIMIT} images, they can create more tomorrow.]`,
   failed: "[Zero note: the image was NOT created because of a temporary problem; suggest trying again.]",
 } as const;
 
@@ -210,7 +210,7 @@ async function buildAttachmentParts(attachments: CommunityAiAttachment[]): Promi
   return parts;
 }
 
-const ATTACHMENT_ONLY_MESSAGE = "(The creator sent the attached file without a message.)";
+const ATTACHMENT_ONLY_MESSAGE = "(The journeyer sent the attached file without a message.)";
 
 /**
  * Un turno della chat: la risposta arriva a pezzi tramite `onText` (come su Gemini), la bozza si

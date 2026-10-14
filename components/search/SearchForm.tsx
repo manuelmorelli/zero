@@ -21,7 +21,7 @@ export function SearchForm({
   defaultValue = "",
   className = "",
   action = "/search",
-  placeholder = "Search Journeys and creators",
+  placeholder = "Search Journeys and journeyers",
 }: SearchFormProps) {
   return (
     <Form action={action} className={`flex items-center gap-2 ${className}`}>
