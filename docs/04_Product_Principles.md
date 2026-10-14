@@ -69,11 +69,11 @@ Zero privilegia contenuti consultabili e rilevanti anche a distanza di mesi o an
 
 ---
 
-### Creator Ownership
+### Journeyer Ownership
 
-Ogni creator mantiene il controllo del proprio Journey e della propria community.
+Ogni journeyer mantiene il controllo del proprio Journey e della propria community.
 
-La piattaforma fornisce strumenti, non sostituisce il rapporto tra creator e utenti.
+La piattaforma fornisce strumenti, non sostituisce il rapporto tra journeyer e utenti.
 
 ---
 

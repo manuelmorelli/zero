@@ -31,9 +31,9 @@ Ogni pagina deve avere uno scopo preciso e guidare l'utente verso l'azione princ
 
 ### Home
 
-Punto di accesso principale alla piattaforma, identico per ogni persona che ha fatto login — creator o no.
+Punto di accesso principale alla piattaforma, identico per ogni persona che ha fatto login — journeyer o no.
 
-Zero non separa "utenti" e "creator" come ruoli con destinazioni diverse: ogni persona può seguire Journey altrui e, allo stesso tempo, avere un proprio Journey da gestire. Per questo l'accesso dopo il login porta sempre alla Home, mai direttamente alla Dashboard.
+Zero non separa "utenti" e "journeyer" come ruoli con destinazioni diverse: ogni persona può seguire Journey altrui e, allo stesso tempo, avere un proprio Journey da gestire. Per questo l'accesso dopo il login porta sempre alla Home, mai direttamente alla Dashboard.
 
 Si apre con una Hero a schermo intero: logo "ZERO", tagline e le due azioni principali ("Explore Journeys" ed "Create Your Journey"). Non è una sezione di Discovery: è il biglietto da visita della piattaforma, identico per chiunque arrivi in Home, loggato o no.
 
@@ -47,17 +47,17 @@ Subito sotto la Hero, quattro righe scorrevoli orizzontalmente (stile Netflix) m
 Il resto della pagina segue, in quest'ordine:
 
 - Continue Your Journey;
-- Feed dei creator seguiti;
-- Updates dei creator seguiti, in una riga di cerchi cliccabili in stile Instagram Stories (solo i creator seguiti, contorno colorato se c'è qualcosa di non ancora visto), che apre un visualizzatore a schermo intero;
+- Feed dei journeyer seguiti;
+- Updates dei journeyer seguiti, in una riga di cerchi cliccabili in stile Instagram Stories (solo i journeyer seguiti, contorno colorato se c'è qualcosa di non ancora visto), che apre un visualizzatore a schermo intero;
 - Recommended Journeys;
-- Creator consigliati;
+- Journeyer consigliati;
 - New Journeys;
 - Most Completed Journeys;
 - Categories.
 
-Le quattro righe subito sotto la Hero danno alla Home un primo colpo d'occhio ricco anche a chi non segue ancora nessuno; il resto della pagina torna a riflettere la vicinanza all'utente: prima tutto ciò che riguarda le persone che segue già (continuità, Feed, Updates — massima rilevanza personale secondo `08_Algorithm.md`), poi ciò che aiuta a scoprire persone nuove (Recommended Journeys, Creator consigliati), infine i contenuti globali uguali per tutti (New Journeys, Most Completed Journeys), con Categories in fondo come strumento di navigazione libera per chi non ha trovato nulla di rilevante nelle sezioni precedenti.
+Le quattro righe subito sotto la Hero danno alla Home un primo colpo d'occhio ricco anche a chi non segue ancora nessuno; il resto della pagina torna a riflettere la vicinanza all'utente: prima tutto ciò che riguarda le persone che segue già (continuità, Feed, Updates — massima rilevanza personale secondo `08_Algorithm.md`), poi ciò che aiuta a scoprire persone nuove (Recommended Journeys, Journeyer consigliati), infine i contenuti globali uguali per tutti (New Journeys, Most Completed Journeys), con Categories in fondo come strumento di navigazione libera per chi non ha trovato nulla di rilevante nelle sezioni precedenti.
 
-Il Feed dei creator seguiti e gli Updates dei creator seguiti sono due sezioni distinte, non intercambiabili: il Feed mostra eventi permanenti del Journey (nuovi Journey pubblicati, nuovi Episodi), gli Updates mostrano i contenuti brevi e temporanei descritti in `09_Updates.md` (testo, foto, video, sondaggio, domanda). Un creator seguito può comparire in una sezione, nell'altra, in entrambe o in nessuna delle due, a seconda di cosa ha effettivamente pubblicato.
+Il Feed dei journeyer seguiti e gli Updates dei journeyer seguiti sono due sezioni distinte, non intercambiabili: il Feed mostra eventi permanenti del Journey (nuovi Journey pubblicati, nuovi Episodi), gli Updates mostrano i contenuti brevi e temporanei descritti in `09_Updates.md` (testo, foto, video, sondaggio, domanda). Un journeyer seguito può comparire in una sezione, nell'altra, in entrambe o in nessuna delle due, a seconda di cosa ha effettivamente pubblicato.
 
 Gli Updates vivono solo in questa riga della Home: il Profilo pubblico non ha una tab dedicata agli Updates.
 
@@ -74,7 +74,7 @@ Permette di scoprire nuovi Journey attraverso categorie, ricerca e suggerimenti.
 Consente di cercare:
 
 - Journey;
-- Creator;
+- Journeyer;
 - categorie.
 
 ---
@@ -107,7 +107,7 @@ Contiene:
 
 - Presentazione;
 - Episodi, in sequenza lineare;
-- Capitoli, quando il creator li ha usati per organizzare gli Episodi;
+- Capitoli, quando il journeyer li ha usati per organizzare gli Episodi;
 - avanzamento dell'utente: il pulsante principale dice "Start" (mai guardato niente), "Continue watching · Episode N" (porta all'episodio iniziato o al primo non finito) oppure "Watch again" (tutto finito); negli elenchi episodi compaiono "Resume" e "Finished";
 - strumenti di condivisione.
 
@@ -151,7 +151,7 @@ Permette di:
 
 Permette di modificare la struttura completa del Journey.
 
-Il creator può:
+Il journeyer può:
 
 - modificare la Presentazione;
 - creare Episodi;
@@ -176,7 +176,7 @@ Permette di gestire:
 
 ### Analytics
 
-Mostra le principali metriche del creator.
+Mostra le principali metriche del journeyer.
 
 Le statistiche devono privilegiare indicatori di qualità, continuità e completamento dei Journey rispetto alle sole metriche di visualizzazione.
 
@@ -191,12 +191,12 @@ Permette la gestione di:
 - notifiche;
 - privacy;
 - preferenze;
-- modalità Creator (Visitatore o Creator), con una domanda di conferma prima di nascondere i Journey;
-- pausa del creator (nessun avviso per i primi 10 mesi, Journey online).
+- modalità Journeyer (Visitatore o Journeyer), con una domanda di conferma prima di nascondere i Journey;
+- pausa del journeyer (nessun avviso per i primi 10 mesi, Journey online).
 
-### Pagina informativa Creator (`/creator`)
+### Pagina informativa Journeyer (`/creator`)
 
-Pagina statica che spiega cos'è la modalità Creator: chi può pubblicare, come iniziare, cosa succede dopo 6, 9 e 10 mesi senza pubblicare, e cosa succede se la modalità viene spenta. La sezione sui guadagni resta "in arrivo" finché la monetizzazione non è decisa. È raggiungibile dal form di registrazione e dalle Impostazioni.
+Pagina statica che spiega cos'è la modalità Journeyer: chi può pubblicare, come iniziare, cosa succede dopo 6, 9 e 10 mesi senza pubblicare, e cosa succede se la modalità viene spenta. La sezione sui guadagni resta "in arrivo" finché la monetizzazione non è decisa. È raggiungibile dal form di registrazione e dalle Impostazioni.
 
 ---
 

@@ -18,7 +18,7 @@ Definire le regole della messaggistica privata di Zero: chi può scrivere a chi,
 
 ## Dichiarazione
 
-La messaggistica privata permette a due persone di scriversi direttamente, uno a uno. Non introduce una distinzione tra creator e non-creator: la regola per poter scrivere è identica per chiunque, coerente con il "Modello utente unico" (`00-project-context.md`).
+La messaggistica privata permette a due persone di scriversi direttamente, uno a uno. Non introduce una distinzione tra journeyer e non-creator: la regola per poter scrivere è identica per chiunque, coerente con il "Modello utente unico" (`00-project-context.md`).
 
 ## Chi può scrivere a chi
 

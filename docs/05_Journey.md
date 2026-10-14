@@ -64,7 +64,7 @@ Gli Episodi rimangono parte integrante del Journey e non scompaiono nel tempo.
 
 I Capitoli sono un livello organizzativo facoltativo: un Journey può esistere ed essere pubblicato anche senza Capitoli, con gli Episodi che si susseguono direttamente in un'unica sequenza lineare.
 
-Quando il creator ritiene che raggruppare gli Episodi in fasi distinte migliori la comprensione del percorso, può organizzarli in Capitoli. Ogni Capitolo rappresenta allora una fase significativa del percorso — la suddivisione resta sempre una scelta del creator, mai un passaggio richiesto dalla piattaforma.
+Quando il journeyer ritiene che raggruppare gli Episodi in fasi distinte migliori la comprensione del percorso, può organizzarli in Capitoli. Ogni Capitolo rappresenta allora una fase significativa del percorso — la suddivisione resta sempre una scelta del journeyer, mai un passaggio richiesto dalla piattaforma.
 
 ## Caratteristiche
 
@@ -78,13 +78,13 @@ Un Journey:
 
 ## Gestione
 
-Un creator può avere più Journey attivi (non archiviati) in parallelo (vedi `00-project-context.md`, sezione "Archiviazione del Journey").
+Un journeyer può avere più Journey attivi (non archiviati) in parallelo (vedi `00-project-context.md`, sezione "Archiviazione del Journey").
 
 Un Journey può essere archiviato ma non eliminato: l'archiviazione è un'azione a senso unico e non riporta il Journey in Bozza o Pubblicato.
 
-Il Journey archiviato resta visibile nel profilo pubblico del creator e la sua Pagina Journey pubblica resta raggiungibile in sola lettura, ma non compare in nessuna sezione di Discovery (Home, Categories, Ricerca, Feed, Recommended), riservate ai Journey pubblicati.
+Il Journey archiviato resta visibile nel profilo pubblico del journeyer e la sua Pagina Journey pubblica resta raggiungibile in sola lettura, ma non compare in nessuna sezione di Discovery (Home, Categories, Ricerca, Feed, Recommended), riservate ai Journey pubblicati.
 
-Ogni creator può:
+Ogni journeyer può:
 
 - modificare la struttura del Journey;
 - creare, modificare ed eliminare Episodi;
@@ -93,7 +93,7 @@ Ogni creator può:
 
 Il drag & drop rappresenta uno degli strumenti principali di Zero.
 
-Permette al creator di migliorare la struttura narrativa del proprio Journey senza alterare la cronologia reale degli eventi.
+Permette al journeyer di migliorare la struttura narrativa del proprio Journey senza alterare la cronologia reale degli eventi.
 
 L'ordine narrativo e la sequenza temporale vengono gestiti come informazioni distinte, consentendo di organizzare il percorso nel modo più efficace per la community.
 
@@ -101,7 +101,7 @@ L'ordine narrativo e la sequenza temporale vengono gestiti come informazioni dis
 
 Seguire un Journey significa seguire una storia dall'inizio, non una sequenza di contenuti indipendenti.
 
-La lettura di un Journey è naturale e lineare: dal primo all'ultimo Episodio, nell'ordine scelto dal creator. Quando il Journey è organizzato in Capitoli, questi aiutano a orientarsi tra le fasi del racconto, ma non cambiano la natura sequenziale della lettura.
+La lettura di un Journey è naturale e lineare: dal primo all'ultimo Episodio, nell'ordine scelto dal journeyer. Quando il Journey è organizzato in Capitoli, questi aiutano a orientarsi tra le fasi del racconto, ma non cambiano la natura sequenziale della lettura.
 
 L'utente può comprendere facilmente:
 

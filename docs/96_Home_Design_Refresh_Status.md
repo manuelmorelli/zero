@@ -16,7 +16,7 @@ Punto della situazione sul lavoro di "dare vita" al design del sito, cominciato 
 ## Fatto e verificato (Home + Hero)
 
 - Bordi ammorbiditi in tutto il sito (`--color-border` unico token, un solo punto da cambiare)
-- Card (Journey, Video, Profilo, Creator) con bagliore ambra visibile anche a riposo, non solo in hover
+- Card (Journey, Video, Profilo, Journeyer) con bagliore ambra visibile anche a riposo, non solo in hover
 - `ButtonSecondary` reso vivo anche da fermo (prima cambiava solo in hover)
 - `ButtonPrimary` con sweep di luce animato
 - Hero: zoom lentissimo continuo ("Ken Burns"), tinta calda, grana pellicola più marcata che nel resto del sito
@@ -51,7 +51,7 @@ Sessione dedicata a rivedere sfondo e accento dopo il round precedente. Diversi 
 ## Realizzato il 2026-10-07 (Regola di Movimento, `21_Motion_Guidelines.md`)
 
 - Video nella Hero da computer: due clip di 14 secondi da "the valley" e "Swiss Alps" (2-3MB, in `public/videos/`), mute, in dissolvenza tra loro, pulsante audio in alto a destra. Su telefono resta la foto.
-- La card a destra segue il video e mostra titolo e didascalia scritti dal creator per quell'episodio.
+- La card a destra segue il video e mostra titolo e didascalia scritti dal journeyer per quell'episodio.
 - Frasi a rotazione nel titolo: frase di Zero più sette citazioni, ogni 11 secondi, ognuna con la parte finale in arancione, con una dissolvenza pulita in due tempi (righe di luce, puntini e sabbia 2D sulle frasi sono stati provati e scartati).
 - 2026-10-09: sfondo di sabbia dorata 3D (three.js) dietro alle card su Home, Journeys, Journeyers, profili e pagine vetrina; immagine ferma su telefono. Carattere Satoshi su tutto il sito.
 - Scroll scenico sulla Hero: il video si rimpicciolisce e il testo sale mentre la pagina scorre, senza bloccarla.
@@ -70,5 +70,5 @@ Sessione dedicata a rivedere sfondo e accento dopo il round precedente. Diversi 
 
 - "Manovella" colori: costruita, `--ember-l`/`--ember-c`/`--ember-h` in `app/globals.css` regolano il tono dell'arancione in un solo punto
 - Card Profilo: Manuel le ha già sistemate così come sono e ne è soddisfatto — non si porta più l'effetto vetro della Hero, chiuso
-- Freccia "← [Nome creator]'s Community": rimossa
+- Freccia "← [Nome journeyer]'s Community": rimossa
 - Logo "ZERO" nella Hero: sistemato (commit `6dbd7d3`)

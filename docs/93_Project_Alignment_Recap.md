@@ -21,7 +21,7 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 - Alla chiusura di un punto: si produce un riepilogo esportabile, Manuel lo copia nella cartella personale `Desktop\Zero - Punti Chiusi`, e il punto successivo parte in una nuova chat.
 - Nessuna attivazione di servizi a pagamento finché Manuel non decide di spendere: l'obiettivo delle parti infrastrutturali è avere tutto pronto e testato gratis/in locale, non attivarlo.
 - A ogni nuovo punto, prima di partire si aggiorna la ricerca online già fatta nei punti precedenti (crediti cloud, normative, benchmark di mercato), non solo l'argomento nuovo.
-- Obiettivo finale dichiarato: un progetto completo, funzionante, con un piano di guadagno reale (anche se ipotetico) per Zero e per i creator, e un dossier credibile per investitori o programmi di crediti cloud gratuiti.
+- Obiettivo finale dichiarato: un progetto completo, funzionante, con un piano di guadagno reale (anche se ipotetico) per Zero e per i journeyer, e un dossier credibile per investitori o programmi di crediti cloud gratuiti.
 
 ## Elenco punti
 
@@ -29,25 +29,25 @@ Diario delle sessioni di allineamento avviate il 2026-09-17 per dare a Manuel un
 |---|---|---|
 | 0 | Fotografia generale | ✅ Chiuso (2026-09-17) |
 | 1 | Prodotto e esperienza utente | ✅ Chiuso (2026-09-20) |
-| 2 | Esperienza Creator | ✅ Chiuso (2026-09-20) |
+| 2 | Esperienza Journeyer | ✅ Chiuso (2026-09-20) |
 | 3 | Monetizzazione (Business Model) | ✅ Chiuso (2026-09-21) |
 | 4 | Algoritmo e Discovery | ✅ Chiuso (2026-09-21) |
 | 5 | Trust & Safety (Trust Score + moderazione contenuti) | ✅ Chiuso (2026-09-21) |
 | 6 | Legale (Privacy, Termini, Cookie — continua `91_Legal_Audit_And_Roadmap.md`) | ✅ Chiuso (2026-09-22) |
-| 7 | Struttura pagine Creator Economy (Community Premium, Prodotti/Servizi, Workshop/Eventi — le "Strumenti" mai costruiti di `07_Creator_Experience.md`) | ✅ Chiuso (2026-09-22) |
-| 8 | AI sulla piattaforma (nuovo, mai discusso prima, portato da Manuel da una conversazione separata con Claude) | Completato e funzionante: la Chat AI Community è disponibile per i creator e fa parte del Launch; la creazione immagini AI è Post-MVP (S5). |
+| 7 | Struttura pagine Journeyer Economy (Community Premium, Prodotti/Servizi, Workshop/Eventi — le "Strumenti" mai costruiti di `07_Creator_Experience.md`) | ✅ Chiuso (2026-09-22) |
+| 8 | AI sulla piattaforma (nuovo, mai discusso prima, portato da Manuel da una conversazione separata con Claude) | Completato e funzionante: la Chat AI Community è disponibile per i journeyer e fa parte del Launch; la creazione immagini AI è Post-MVP (S5). |
 | 9 | Business Plan / Dossier investitori (Mercato, Team, Trazione, Piano Finanziario, la Richiesta) | ⬜ Da fare |
 | 10 | Infrastruttura tecnica e pagamenti (hosting, sicurezza, test, monitoraggio, Stripe Connect reale) | ⬜ Da fare |
 | 11 | Piano di lancio | ⬜ Da fare |
 
-**Riordino deciso il 2026-09-22** (sostituisce l'elenco originale a 10 punti): i Punti 7-9 originali (Infrastruttura tecnica, Piano di lancio, Business Plan) sono stati riorganizzati in 5 punti. Motivo: prima chiarire come guadagnano i creator con le loro skills (pagine/strumenti mancanti) prima di costruire il meccanismo tecnico dei pagamenti dietro; il Business Plan non dipende dall'infrastruttura pronta e viene prima per chiarire quali pezzi di infrastruttura contano davvero per un investitore; il Piano di lancio resta per ultimo perché dipende da tutto il resto.
+**Riordino deciso il 2026-09-22** (sostituisce l'elenco originale a 10 punti): i Punti 7-9 originali (Infrastruttura tecnica, Piano di lancio, Business Plan) sono stati riorganizzati in 5 punti. Motivo: prima chiarire come guadagnano i journeyer con le loro skills (pagine/strumenti mancanti) prima di costruire il meccanismo tecnico dei pagamenti dietro; il Business Plan non dipende dall'infrastruttura pronta e viene prima per chiarire quali pezzi di infrastruttura contano davvero per un investitore; il Piano di lancio resta per ultimo perché dipende da tutto il resto.
 
 ## Punto 0 — Fotografia generale
 
 ### Cosa è stato costruito (solido, verificato)
 
-- **Percorso Creator completo**: creazione Journey → Capitoli → Episodi, modifica, Publish/Unpublish, riordino via drag & drop. Verificato end-to-end su dati reali, considerato chiuso.
-- **Discovery**: Home con Recommended, Feed dei creator seguiti, New Journeys, Categorie, ricerca Journey/Creator, Follow universale persona-a-persona.
+- **Percorso Journeyer completo**: creazione Journey → Capitoli → Episodi, modifica, Publish/Unpublish, riordino via drag & drop. Verificato end-to-end su dati reali, considerato chiuso.
+- **Discovery**: Home con Recommended, Feed dei journeyer seguiti, New Journeys, Categorie, ricerca Journey/Creator, Follow universale persona-a-persona.
 - **Updates in stile Stories**: tutti i formati (testo, foto, video, sondaggio, domanda), scadenza automatica 24h, nessun cron job necessario.
 - **Messaggistica 1:1**, sbloccata da un follow in una sola direzione.
 - **Video reale**: upload diretto su Cloudflare R2, player interno con ripresa esatta della posizione, versioni leggere pronte ma volutamente non attivate (nessun costo finché non ci sono utenti reali).
@@ -60,7 +60,7 @@ Controllando il codice reale (non solo la documentazione), **l'infrastruttura è
 ### Punti deboli confermati (letti direttamente nel codice/documenti, non per sentito dire)
 
 - **Monetizzazione**: `10_Monetization.md` contiene solo principi, nessun numero, nessuna percentuale, nessun meccanismo tecnico. Testuale: "le percentuali... sono definite a livello di business" — cioè non sono mai state decise. Conferma la preoccupazione di Manuel.
-- **Creator Economy (Fase 4 della Roadmap) non è ancora iniziata**: Community Premium, integrazione Stripe, Analytics, Creator Insights, Monetization Dashboard sono tutti segnati "non iniziato". Non è un allarme: è sequenziato correttamente. Stripe offre una modalità di prova (sandbox) completamente gratuita — si può costruire e testare tutto il meccanismo di pagamento senza spendere nulla, esattamente come già fatto per database/email/storage, lasciando solo l'attivazione dei pagamenti veri come ultimo passo prima del lancio (Punto 3 per decidere il meccanismo, Punto 7 per costruirlo).
+- **Journeyer Economy (Fase 4 della Roadmap) non è ancora iniziata**: Community Premium, integrazione Stripe, Analytics, Journeyer Insights, Monetization Dashboard sono tutti segnati "non iniziato". Non è un allarme: è sequenziato correttamente. Stripe offre una modalità di prova (sandbox) completamente gratuita — si può costruire e testare tutto il meccanismo di pagamento senza spendere nulla, esattamente come già fatto per database/email/storage, lasciando solo l'attivazione dei pagamenti veri come ultimo passo prima del lancio (Punto 3 per decidere il meccanismo, Punto 7 per costruirlo).
 - **Moderazione dei contenuti**: esiste nel database una tabella pensata per le segnalazioni (`Report`), ma non è collegata a nessun pulsante o funzione reale — un utente non può segnalare nulla oggi. Già annotato come decisione aperta in `91_Legal_Audit_And_Roadmap.md`, mai presa.
 - **Nessun controllo età minima** in registrazione.
 - **Fase 5 (Preparazione al lancio)** non iniziata: nessun audit di sicurezza, nessuna suite di test automatizzata permanente, nessun deploy. Per scelta di Manuel, questa fase resta in pausa finché non ci saranno fondi/utenti reali, non è un'urgenza.
@@ -101,7 +101,7 @@ Tutte le voci nuove/aperte sono nel registro unico `docs/94_Product_Backlog.md`,
 ### Ricerca di mercato aggiornata rilevante per questo punto
 
 - Nessun concorrente diretto 1:1: le piattaforme community/corsi (Skool, Circle, Mighty Networks) non fanno percorsi narrativi a Capitoli/Episodi; le piattaforme di narrativa seriale (Wattpad, Tapas) fanno fiction scritta, non contenuti reali di vita. Zero è una categoria a sé — buon argomento per un dossier investitori.
-- Il principio "pagamento non compra visibilità" risponde a un problema reale e attuale del mercato: il 10% dei creator guadagna il 62% dei pagamenti totali, e gli algoritmi (es. TikTok) possono far crollare la visibilità di un creator dall'oggi al domani con un solo aggiornamento.
+- Il principio "pagamento non compra visibilità" risponde a un problema reale e attuale del mercato: il 10% dei journeyer guadagna il 62% dei pagamenti totali, e gli algoritmi (es. TikTok) possono far crollare la visibilità di un journeyer dall'oggi al domani con un solo aggiornamento.
 - Formato Stories/effimero ed empty-state con contenuti demo: entrambi allineati alle best practice UX 2026 confermate da più fonti indipendenti.
 - Messaggi sbloccati da un follow in una direzione: più restrittivo (quindi più sicuro) di quanto fa oggi Instagram con le richieste di messaggio da non-follower.
 
@@ -115,49 +115,49 @@ Tutte le voci nuove/aperte sono nel registro unico `docs/94_Product_Backlog.md`,
 
 Chiuso il 2026-09-20, confermato da Manuel. Riepilogo esportato in `Desktop\Zero - Punti Chiusi\Punto 1 - Prodotto e Esperienza Utente.md`.
 
-## Punto 2 — Esperienza Creator
+## Punto 2 — Esperienza Journeyer
 
 ### Cosa è stato confermato solido (letto nel codice reale)
 
-- **Diventare creator è automatico e invisibile**: nessuna schermata di iscrizione separata. Basta pubblicare qualcosa e il profilo Creator viene creato al volo (`lib/creator.ts`), coerente con il principio "modello utente unico" già in `00-project-context.md`.
+- **Diventare journeyer è automatico e invisibile**: nessuna schermata di iscrizione separata. Basta pubblicare qualcosa e il profilo Journeyer viene creato al volo (`lib/creator.ts`), coerente con il principio "modello utente unico" già in `00-project-context.md`.
 - **Percorso di creazione/gestione già chiuso al Punto 0** riconfermato: Journey → Capitoli → Episodi, modifica, Publish/Unpublish, Archive, drag & drop.
 - **Pannello statistiche nella Dashboard** — Total views, tasso di completamento, Completions, Interactions: numeri reali calcolati dal database, senza dati finti né trend inventati.
 
 ### Correzione importante emersa durante il punto
 
-I documenti (`99_Current_Project_Status.md`) davano ancora le Analytics del creator come "placeholder — coming soon" e la Roadmap le segnava "non iniziate" (Fase 4). Verifica diretta nel codice (`lib/dashboard/creatorStats.ts`, `PrivateStatsPanel.tsx`): sono reali e già in produzione, solo in versione base — nessuno storico, nessuna suddivisione per fonte di ricavo. Stesso tipo di scostamento documenti/codice già trovato al Punto 1 con l'Hero. Corretto in questa sessione in `99_Current_Project_Status.md`.
+I documenti (`99_Current_Project_Status.md`) davano ancora le Analytics del journeyer come "placeholder — coming soon" e la Roadmap le segnava "non iniziate" (Fase 4). Verifica diretta nel codice (`lib/dashboard/creatorStats.ts`, `PrivateStatsPanel.tsx`): sono reali e già in produzione, solo in versione base — nessuno storico, nessuna suddivisione per fonte di ricavo. Stesso tipo di scostamento documenti/codice già trovato al Punto 1 con l'Hero. Corretto in questa sessione in `99_Current_Project_Status.md`.
 
 ### Scoperta durante il punto: Trust Score e Trusty già in lavorazione altrove
 
 Durante questo punto è emerso che **un'altra sessione**, in parallelo a questa, stava già costruendo (codice non ancora salvato su Git al momento della scoperta) esattamente le due voci che il backlog aveva segnalato come aperte per il Trust Score:
 
-- Eliminata la base automatica di 30 punti: il Trust Score ora si attiva **solo** dopo che il creator carica un video/card di presentazione (prima: nessun badge, non uno zero).
+- Eliminata la base automatica di 30 punti: il Trust Score ora si attiva **solo** dopo che il journeyer carica un video/card di presentazione (prima: nessun badge, non uno zero).
 - Formula attivata: presentazione 10% (fissa) + Trusty 2% (reazioni, cappate) + follower 20% + qualità 58% (media Journey Score) + Journey live 10% − 10 per segnalazione confermata.
 - Il vecchio bottone Like è stato rinominato **"Trusty"**: si sblocca solo a fine visione dell'episodio, e non pesa più nella qualità del singolo Journey (quel 5% è confluito nel peso del completamento, ora 50%).
 
-Manuel ha confermato (in questa stessa sessione) che questo lavoro è reale e voluto, fatto in un'altra chat. **Resta un gap aperto anche in quel lavoro**: non esiste ancora nessuna interfaccia per caricare il video/card di presentazione — quindi, a oggi, il Trust Score è disattivato per ogni creator esistente, incluso Manuel stesso. Non è stato deciso in questo punto (competenza dei Punti 4/5), solo osservato e registrato per accuratezza: la formula descritta sopra è quella reale al 2026-09-20, non quella vecchia a base 30 citata ai Punti 0/1.
+Manuel ha confermato (in questa stessa sessione) che questo lavoro è reale e voluto, fatto in un'altra chat. **Resta un gap aperto anche in quel lavoro**: non esiste ancora nessuna interfaccia per caricare il video/card di presentazione — quindi, a oggi, il Trust Score è disattivato per ogni journeyer esistente, incluso Manuel stesso. Non è stato deciso in questo punto (competenza dei Punti 4/5), solo osservato e registrato per accuratezza: la formula descritta sopra è quella reale al 2026-09-20, non quella vecchia a base 30 citata ai Punti 0/1.
 
 ### Punti deboli/aperture confermati
 
-- **Tutto ciò che genera reddito diretto per il creator è a zero, non parziale**: Community Premium, Stripe, Payouts (`/settings/creator`), Pricing (`/pricing`), Subscription (`/settings/subscription`) — tutte pagine reali ma con testo "Coming soon", nessun collegamento funzionante. Confermato da Manuel che va costruito, ma resta volutamente per ultimo: prima si costruisce tutto il motore gratis/in locale, Stripe si collega solo alla fine, appena prima di andare online ("prima il motore, poi le chiavi della macchina").
+- **Tutto ciò che genera reddito diretto per il journeyer è a zero, non parziale**: Community Premium, Stripe, Payouts (`/settings/creator`), Pricing (`/pricing`), Subscription (`/settings/subscription`) — tutte pagine reali ma con testo "Coming soon", nessun collegamento funzionante. Confermato da Manuel che va costruito, ma resta volutamente per ultimo: prima si costruisce tutto il motore gratis/in locale, Stripe si collega solo alla fine, appena prima di andare online ("prima il motore, poi le chiavi della macchina").
 - Nessuno strumento per workshop, eventi, prodotti digitali o servizi professionali (previsti come "Strumenti" in `07_Creator_Experience.md`, mai costruiti).
-- Il pannello Analytics resta minimo rispetto ai concorrenti diretti di community/creator tools (vedi ricerca sotto) — per scelta di prodotto confermata da Manuel in questa sessione: deve restare intuitivo per il creator e semplice da costruire, non deve rincorrere la complessità dei concorrenti (cohort analysis, previsione abbandono) solo perché ce l'hanno loro.
-- Video di presentazione del creator per attivare il Trust Score: schema pronto, nessuna interfaccia di caricamento — vedi sopra.
+- Il pannello Analytics resta minimo rispetto ai concorrenti diretti di community/creator tools (vedi ricerca sotto) — per scelta di prodotto confermata da Manuel in questa sessione: deve restare intuitivo per il journeyer e semplice da costruire, non deve rincorrere la complessità dei concorrenti (cohort analysis, previsione abbandono) solo perché ce l'hanno loro.
+- Video di presentazione del journeyer per attivare il Trust Score: schema pronto, nessuna interfaccia di caricamento — vedi sopra.
 
 ### Ricerca di mercato aggiornata rilevante per questo punto
 
-- **Commissioni tipiche su piattaforme creator comparabili** (dato utile per orientare il Punto 3, non deciso qui): Ko-fi 5%, Patreon 8-12% (12-15% effettivo con le commissioni di pagamento), Substack 10% (~13% effettivo), Skool ~10% tutto incluso.
+- **Commissioni tipiche su piattaforme journeyer comparabili** (dato utile per orientare il Punto 3, non deciso qui): Ko-fi 5%, Patreon 8-12% (12-15% effettivo con le commissioni di pagamento), Substack 10% (~13% effettivo), Skool ~10% tutto incluso.
 - **Piattaforme community concorrenti** (Skool, Circle, Mighty Networks) offrono pannelli statistiche più maturi di quello attuale di Zero: cohort analysis, previsione abbandono, report automatici via email. Zero è più semplice ma anche più onesto (zero numeri finiti/trend inventati) — scelta di prodotto deliberata, non un ritardo da colmare subito.
-- **Dimensione del mercato creator economy 2026**: stime discordanti tra fonti indipendenti (da 214 a 323 miliardi di dollari secondo la fonte) — nessun numero singolo abbastanza affidabile da citare a un investitore senza ulteriore verifica mirata.
-- **Normativa fiscale USA sui pagamenti ai creator** (soglia di reporting 1099-K): le fonti trovate nel 2026 sono in disaccordo tra loro (alcune indicano un ritorno a 20.000$/200 transazioni, altre 600$) — materia instabile, da chiarire con precisione al Punto 6 (Infrastruttura/Legale), non blocca nulla ora.
+- **Dimensione del mercato journeyer economy 2026**: stime discordanti tra fonti indipendenti (da 214 a 323 miliardi di dollari secondo la fonte) — nessun numero singolo abbastanza affidabile da citare a un investitore senza ulteriore verifica mirata.
+- **Normativa fiscale USA sui pagamenti ai journeyer** (soglia di reporting 1099-K): le fonti trovate nel 2026 sono in disaccordo tra loro (alcune indicano un ritorno a 20.000$/200 transazioni, altre 600$) — materia instabile, da chiarire con precisione al Punto 6 (Infrastruttura/Legale), non blocca nulla ora.
 - **Programmi di crediti cloud** (refresh richiesto dal processo): nessuna novità rispetto a quanto già noto — Cloudflare for Startups, Google for Startups Cloud (fino a 350.000$ per startup orientate AI), AWS Activate, Microsoft for Startups tutti ancora attivi e gratuiti all'iscrizione.
 
 ### Punti di forza per un investitore
 
-- Percorso creator completo e testato end-to-end, non un mockup — confermato di nuovo in questo punto.
+- Percorso journeyer completo e testato end-to-end, non un mockup — confermato di nuovo in questo punto.
 - Analytics oneste (zero numeri finti) rafforzano lo stesso principio di trasparenza già mostrato ai Punti 0 e 1 ("il pagamento non compra visibilità") — coerenza di valori lungo tutto il prodotto, non solo a parole.
-- Il Trust Score, appena rivisto, lega la fiducia del creator a segnali reali (presentazione, completamento, qualità) invece che a un punteggio di partenza gratuito — differenziazione concreta rispetto ai social generalisti, anche se resta da attivare con l'interfaccia di caricamento mancante.
-- Il gap economico per il creator è identificato con precisione e sequenziato per scelta (Stripe per ultimo, non per trascuratezza): una storia chiara da raccontare a un investitore, non un buco nascosto.
+- Il Trust Score, appena rivisto, lega la fiducia del journeyer a segnali reali (presentazione, completamento, qualità) invece che a un punteggio di partenza gratuito — differenziazione concreta rispetto ai social generalisti, anche se resta da attivare con l'interfaccia di caricamento mancante.
+- Il gap economico per il journeyer è identificato con precisione e sequenziato per scelta (Stripe per ultimo, non per trascuratezza): una storia chiara da raccontare a un investitore, non un buco nascosto.
 
 ### Stato del punto
 
@@ -172,29 +172,29 @@ Chiuso il 2026-09-20, confermato da Manuel. Riepilogo esportato in `Desktop\Zero
 ### Decisioni prese in questo punto
 
 - **Ordine di attivazione delle fonti** (non tutte insieme): 1) pubblicità contestuale, 2) tips/donazioni, 3) Community Premium + eventi/workshop + consulenze 1:1 + prodotti digitali (stesso gruppo, stesso meccanismo).
-- **Percentuali**: pubblicità 60% creator / 40% Zero; tips 100% creator / 0% Zero (cambiato il 2026-10-04, prima era 90/10); gruppo 3 al 90% creator / 10% Zero; marketplace sponsorizzazioni 10% trattenuto solo dal brand; sponsorizzazioni dirette creator-brand fuori piattaforma non toccate da Zero (100% creator, solo obbligo di dichiararle visibilmente).
-- **Commissioni Stripe**: a carico di chi riceve il denaro (decisione del 2026-10-04). Il creator riceve la sua quota meno le commissioni Stripe; Zero non paga nulla su quelle transazioni e non aggiunge supplementi a carico dell'utente.
-- **Pagamenti ai creator**: cadenza mensile (non ogni 15 giorni: raddoppierebbe i costi fissi di ogni bonifico, e nessun concorrente studiato paga più spesso del mese), soglia minima di pagamento ~100 nella valuta locale. Dettagli fiscali per paese (Unione Europea, Svizzera, resto del mondo) rimandati al Punto 6 legale.
+- **Percentuali**: pubblicità 60% journeyer / 40% Zero; tips 100% journeyer / 0% Zero (cambiato il 2026-10-04, prima era 90/10); gruppo 3 al 90% journeyer / 10% Zero; marketplace sponsorizzazioni 10% trattenuto solo dal brand; sponsorizzazioni dirette creator-brand fuori piattaforma non toccate da Zero (100% journeyer, solo obbligo di dichiararle visibilmente).
+- **Commissioni Stripe**: a carico di chi riceve il denaro (decisione del 2026-10-04). Il journeyer riceve la sua quota meno le commissioni Stripe; Zero non paga nulla su quelle transazioni e non aggiunge supplementi a carico dell'utente.
+- **Pagamenti ai journeyer**: cadenza mensile (non ogni 15 giorni: raddoppierebbe i costi fissi di ogni bonifico, e nessun concorrente studiato paga più spesso del mese), soglia minima di pagamento ~100 nella valuta locale. Dettagli fiscali per paese (Unione Europea, Svizzera, resto del mondo) rimandati al Punto 6 legale.
 - **Chiarito "prodotti digitali"** (parola presente nei documenti ma mai definita): file/accessi vendibili illimitatamente senza spedizione fisica (e-book, corsi, template, guide scaricabili) — confermato da Manuel, unito nello stesso gruppo economico di consulenze 1:1 ed eventi/workshop.
-- **Sponsorizzazioni brand-creator**: distinzione tra accordo privato (Zero non trattiene nulla, solo tag "contenuto sponsorizzato" obbligatoria) e futuro marketplace interno stile TikTok Creator Marketplace (Zero trattiene commissione solo dal brand, non dal creator) — collega e attiva le idee già presenti in backlog (sezione sponsor, marketplace UGC).
+- **Sponsorizzazioni brand-creator**: distinzione tra accordo privato (Zero non trattiene nulla, solo tag "contenuto sponsorizzato" obbligatoria) e futuro marketplace interno stile TikTok Journeyer Marketplace (Zero trattiene commissione solo dal brand, non dal journeyer) — collega e attiva le idee già presenti in backlog (sezione sponsor, marketplace UGC).
 - Meccanismo tecnico dei pagamenti (Stripe Connect: Standard/Express/Custom) discusso solo a livello concettuale, decisione rimandata al Punto 7 (costruzione), non blocca le percentuali decise qui.
 
 Tutto scritto in `docs/10_Monetization.md` (versione 4.0). Le voci ancora da costruire sono registrate in `docs/94_Product_Backlog.md`.
 
 ### Ricerca di mercato aggiornata rilevante per questo punto
 
-- **Split pubblicitario di riferimento**: YouTube paga 55% al creator / 45% alla piattaforma, invariato dal 2007, uguale per canali piccoli e grandi — Zero parte da 60/40, leggermente più generoso verso i creator per compensare la mancanza di rete propria nella fase iniziale.
+- **Split pubblicitario di riferimento**: YouTube paga 55% al journeyer / 45% alla piattaforma, invariato dal 2007, uguale per canali piccoli e grandi — Zero parte da 60/40, leggermente più generoso verso i journeyer per compensare la mancanza di rete propria nella fase iniziale.
 - **Pagamenti YouTube**: mensili, soglia minima 100$, pagamento tra il 21 e il 26 del mese — modello di riferimento diretto per la cadenza scelta da Zero.
 - **Commissioni su tips/abbonamenti dei concorrenti diretti**: Ko-fi 0% (piano gratuito), Buy Me a Coffee 5%, Passes 10%, Substack/Patreon ~10% (12-15% con le commissioni di pagamento incluse), OnlyFans 20% fisso — il 10% scelto da Zero sugli abbonamenti è in linea con la fascia bassa/onesta del mercato. Per i tips, dal 2026-10-04 Zero applica 0%, allo stesso livello del piano gratuito di Ko-fi.
-- **Sponsorizzazioni brand-creator**: TikTok Creator Marketplace trattiene circa il 10% dal brand e zero dal creator — stesso schema scelto da Zero per il futuro marketplace interno.
-- **Obblighi di trasparenza (FTC, USA)**: ogni collegamento materiale tra brand e creator va dichiarato in modo visibile e non ambiguo ("#ad" esplicito, non "#collab"); le sanzioni nel 2026 sono salite fino a oltre 50.000$ a violazione — rafforza la scelta di rendere obbligatoria la tag sponsorizzata fin da subito, anche prima di costruire il marketplace.
-- **Normativa fiscale USA aggiornata** (incerta al Punto 2): il 1099-K è tornato alla soglia storica di 20.000$ e 200 transazioni — meno burocrazia automatica per i creator piccoli rispetto a quanto temuto.
+- **Sponsorizzazioni brand-creator**: TikTok Journeyer Marketplace trattiene circa il 10% dal brand e zero dal journeyer — stesso schema scelto da Zero per il futuro marketplace interno.
+- **Obblighi di trasparenza (FTC, USA)**: ogni collegamento materiale tra brand e journeyer va dichiarato in modo visibile e non ambiguo ("#ad" esplicito, non "#collab"); le sanzioni nel 2026 sono salite fino a oltre 50.000$ a violazione — rafforza la scelta di rendere obbligatoria la tag sponsorizzata fin da subito, anche prima di costruire il marketplace.
+- **Normativa fiscale USA aggiornata** (incerta al Punto 2): il 1099-K è tornato alla soglia storica di 20.000$ e 200 transazioni — meno burocrazia automatica per i journeyer piccoli rispetto a quanto temuto.
 - **Reti pubblicitarie adatte a una piattaforma piccola**: esistono alternative concrete a Google AdSense pensate per publisher piccoli o contenuti video (Media.net, Ezoic/Humix, Primis), compatibili con l'approccio "contestuale, non invasivo" già scritto nel documento.
 
 ### Punti di forza per un investitore
 
 - Modello di monetizzazione ora concreto e citabile (percentuali, ordine, cadenza), non solo un principio dichiarato — colma esattamente la debolezza più visibile individuata al Punto 0.
-- Split pubblicitario più generoso di YouTube verso i creator: argomento di acquisizione concreto per attrarre creator da altre piattaforme.
+- Split pubblicitario più generoso di YouTube verso i journeyer: argomento di acquisizione concreto per attrarre journeyer da altre piattaforme.
 - Coerenza mantenuta con il principio "il pagamento non compra visibilità" anche nelle nuove regole su pubblicità e sponsorizzazioni.
 - Approccio disciplinato sui costi: cadenza di pagamento e soglie scelte guardando ai costi reali di ogni transazione, non per copiare la concorrenza senza motivo.
 
@@ -244,12 +244,12 @@ Chiuso il 2026-09-21, confermato da Manuel. Riepilogo da esportare in `Desktop\Z
 
 ### Situazione di partenza
 
-Il Trust Score era già stato rivisto in una sessione parallela (vedi Punto 2): formula pronta in `lib/profile/trustScore.ts`, ma disattivata per ogni creator esistente, incluso Manuel, perché mancava un'interfaccia per caricare il video di presentazione che la attiva. Sul fronte moderazione, il modello `Report` esisteva nello schema del database ma era usato solo in lettura dal Trust Score: nessun utente poteva davvero segnalare nulla, nessun pulsante da nessuna parte. Le pagine Community Guidelines e Copyright & Report Content erano ancora placeholder "Coming soon", e non esisteva alcun controllo automatico sui contenuti caricati.
+Il Trust Score era già stato rivisto in una sessione parallela (vedi Punto 2): formula pronta in `lib/profile/trustScore.ts`, ma disattivata per ogni journeyer esistente, incluso Manuel, perché mancava un'interfaccia per caricare il video di presentazione che la attiva. Sul fronte moderazione, il modello `Report` esisteva nello schema del database ma era usato solo in lettura dal Trust Score: nessun utente poteva davvero segnalare nulla, nessun pulsante da nessuna parte. Le pagine Community Guidelines e Copyright & Report Content erano ancora placeholder "Coming soon", e non esisteva alcun controllo automatico sui contenuti caricati.
 
 ### Decisioni prese e costruite in questo punto
 
 - **Segnalazioni contenuti**: pulsante "Report" aggiunto a pagina Journey e a profilo utente, non alle Update (escluse volutamente da Manuel perché sono contenuto effimero, sparisce da solo entro 24 ore). Scrive nel modello `Report` già esistente (`lib/actions/report.ts`), con una mail di avviso a un indirizzo amministratore. Nessun pannello di gestione: le segnalazioni si vedono e si chiudono da Prisma Studio, coerente con il volume atteso oggi.
-- **Video di presentazione**: nuova card "Who I am" nella Home personale del creator, stesso stile visivo della card Bio, inserita come terza colonna nella stessa riga di bio e Journey in progress. Upload diretto su Cloudflare R2 con lo stesso meccanismo già usato per i video degli episodi. Attiva per la prima volta il Trust Score appena caricato.
+- **Video di presentazione**: nuova card "Who I am" nella Home personale del journeyer, stesso stile visivo della card Bio, inserita come terza colonna nella stessa riga di bio e Journey in progress. Upload diretto su Cloudflare R2 con lo stesso meccanismo già usato per i video degli episodi. Attiva per la prima volta il Trust Score appena caricato.
 - **Primo filtro automatico** su testo e immagini appena caricati (`lib/moderation.ts`), tramite l'endpoint di moderazione di OpenAI: copre bio, titoli e descrizioni di Journey ed Episodi, testo delle Update, e le immagini caricate (copertine, foto profilo, foto delle Update), non ancora i video. Codice pronto e collegato ovunque serve, ma tenuto spento: creare la chiave OpenAI richiede una carta di credito reale e un primo acquisto minimo di crediti (circa 5 dollari), non un account gratuito come Neon, R2 o Resend. Scoperto durante questo punto, corretto subito a Manuel dopo una prima informazione imprecisa. Manuel ha deciso di rimandare questa spesa, minima ma vera, a quando ci saranno utenti reali sulla piattaforma.
 - **Community Guidelines e Copyright & Report Content**: contenuto vero scritto al posto delle due pagine "Coming soon", in inglese come il resto del sito. Spiegano le regole della community, l'obbligo di dichiarare le sponsorizzazioni già deciso al Punto 3, come funziona il pulsante Report, e cosa copre (e non copre ancora) il filtro automatico.
 - **Controllo età minima**: discusso e confermato che resta di competenza del Punto 6 (Legale), non di questo punto.
@@ -269,7 +269,7 @@ Manuel ha corretto ripetutamente l'uso del trattino come punteggiatura nei testi
 ### Punti di forza per un investitore
 
 - Meccanismo di segnalazione e primo filtro automatico costruiti prima che servissero davvero (zero utenti esterni oggi), non rincorsi dopo un problema reale.
-- Trust Score finalmente attivabile dai creator, non più bloccato da un pezzo di interfaccia mancante.
+- Trust Score finalmente attivabile dai journeyer, non più bloccato da un pezzo di interfaccia mancante.
 - Onestà mantenuta anche sui limiti: il filtro automatico copre testo e immagini ma non i video, che sono esclusi, dichiarato chiaramente nella pagina pubblica invece di sovrapromettere.
 
 ### Stato del punto
@@ -309,11 +309,11 @@ Prima di iniziare, verificato che nessun'altra sessione in parallelo stesse lavo
 - Content Policy dettagliata (28 categorie) integrata prima del lancio pubblico, non dopo un incidente: stessa logica già mostrata al Punto 5 con segnalazioni e filtro automatico, costruiti in anticipo.
 - Nessun banner cookie necessario, un dettaglio piccolo ma concreto che mostra un prodotto pensato per non raccogliere più dati del necessario, coerente con il principio di trasparenza già mostrato ai Punti 0-1 e 4.
 
-### Decisione aggiuntiva emersa nello stesso punto: requisiti per diventare creator
+### Decisione aggiuntiva emersa nello stesso punto: requisiti per diventare journeyer
 
-Discutendo dove far leggere le Community Guidelines, è emerso un ripensamento più grande: **diventare creator non deve più essere completamente automatico e senza requisiti**. Prima, chiunque poteva pubblicare un Journey/Episodio senza mai aver compilato il profilo, caricato un video di presentazione o letto le regole. Decisione di Manuel: tutti e tre insieme diventano obbligatori prima di poter pubblicare per la prima volta — profilo compilato (nome utente, foto, bio), video di presentazione, accettazione delle Community Guidelines (scrollando fino in fondo alla pagina). **Riguarda solo chi vuole diventare creator, mai i visitatori/spettatori**, che restano liberi di guardare e condividere senza account, confermato coerente con YouTube da una ricerca aggiornata nella stessa sessione. Nessun grandfathering: vale anche per gli account creator già esistenti, incluso quello di Manuel.
+Discutendo dove far leggere le Community Guidelines, è emerso un ripensamento più grande: **diventare journeyer non deve più essere completamente automatico e senza requisiti**. Prima, chiunque poteva pubblicare un Journey/Episodio senza mai aver compilato il profilo, caricato un video di presentazione o letto le regole. Decisione di Manuel: tutti e tre insieme diventano obbligatori prima di poter pubblicare per la prima volta — profilo compilato (nome utente, foto, bio), video di presentazione, accettazione delle Community Guidelines (scrollando fino in fondo alla pagina). **Riguarda solo chi vuole diventare journeyer, mai i visitatori/spettatori**, che restano liberi di guardare e condividere senza account, confermato coerente con YouTube da una ricerca aggiornata nella stessa sessione. Nessun grandfathering: vale anche per gli account journeyer già esistenti, incluso quello di Manuel.
 
-Questo corregge (con decisione esplicita, non per svista) il principio "diventare creator è automatico" registrato dopo il Punto 2: resta vero che non c'è una schermata di iscrizione separata dietro un bottone, ma ora pubblicare per la prima volta richiede di aver completato questi tre passaggi.
+Questo corregge (con decisione esplicita, non per svista) il principio "diventare journeyer è automatico" registrato dopo il Punto 2: resta vero che non c'è una schermata di iscrizione separata dietro un bottone, ma ora pubblicare per la prima volta richiede di aver completato questi tre passaggi.
 
 Durante la stessa discussione, sistemato anche un piccolo problema di UX trovato per strada: il banner "Pick your interests" in Home spariva per sempre dopo la prima chiusura (localStorage), anche per chi non aveva mai scelto un interesse — ora usa sessionStorage e torna a comparire a ogni nuovo login finché gli interessi non vengono davvero scelti.
 
@@ -331,17 +331,17 @@ Provando il nuovo requisito del video di presentazione, Manuel ha caricato un vi
 
 Chiuso il 2026-09-22, confermato da Manuel dopo un controllo finale diretto nel codice (campo `dateOfBirth` e blocco server-side in `lib/auth.ts`, `getPublishReadiness()` in `lib/creator.ts`, riquadro rosso delle tre categorie a tolleranza zero nelle Community Guidelines, migrazione applicata su Neon). Riepilogo esportato in `Desktop\Zero - Punti Chiusi\Punto 6 - Legale.md`. Il Punto 7 (Infrastruttura tecnica) parte in questa stessa chat, come da indicazione di Manuel di procedere più velocemente sui punti restanti.
 
-## Punto 7 — Struttura pagine Creator Economy
+## Punto 7 — Struttura pagine Journeyer Economy
 
 ### Situazione di partenza
 
-Le "Strumenti" del creator previste in `07_Creator_Experience.md` (Community Premium, prodotti/servizi, workshop/eventi) non erano mai state costruite: solo testo "Coming soon" nelle pagine reali. Community Premium (`membership`) e Shop (prodotti digitali) costruite in una sessione precedente della stessa giornata (commit `2ec8702`), restavano da fare Workshop/Evento e Consulenza 1:1.
+Le "Strumenti" del journeyer previste in `07_Creator_Experience.md` (Community Premium, prodotti/servizi, workshop/eventi) non erano mai state costruite: solo testo "Coming soon" nelle pagine reali. Community Premium (`membership`) e Shop (prodotti digitali) costruite in una sessione precedente della stessa giornata (commit `2ec8702`), restavano da fare Workshop/Evento e Consulenza 1:1.
 
 ### Decisioni prese e costruite in questo punto
 
 - **Workshop/Evento e Consulenza 1:1** costruite direttamente nel codice reale di Zero (non su Lovable: crediti quasi esauriti), stesso stile e pattern già stabilito da Membership/Shop: bozze visive, dati di esempio, pulsante disattivato "Coming soon", nessun pagamento reale (commit `3ea4a14`).
 - **Ripensamento della struttura, deciso da Manuel subito dopo**: invece di quattro pulsanti/pagine separati sul profilo (Become a Member, Shop, Workshops, 1:1 Consulting), un solo punto di ingresso. "Become a Member" rinominato **"Subscribe"** (stesso nome usato da YouTube), unico pulsante rimasto sul profilo. Shop, Workshop & Events e 1:1 Consulting sono ora sezioni dentro quella stessa pagina, non pagine a parte: le tre pagine separate sono state rimosse. **Logica di accesso confermata da Manuel**: l'abbonamento sblocca l'accesso alla pagina, ma ogni card resta a prezzo indipendente (Shop/Workshop/Consulenza non sono incluse gratis nell'abbonamento) — coerente con come funzionano già Patreon/YouTube Membership. Implementato in `app/(site)/profile/[username]/membership/page.tsx` (nuovo componente interno `OfferingSection`, riusato per le tre sezioni), commit `a271d19`.
-- **Idea emersa e rimandata al Punto 8**: Manuel ha proposto, invece di pagine statiche, un assistente AI a cui il creator può chiedere in linguaggio naturale di costruire i propri strumenti (es. "crea un evento workshop per il 23 febbraio e invita i miei follower"), riconoscendo lo stile del sito ed eseguendo azioni vere (non solo suggerire testo). Riconosciuto come l'argomento del Punto 8 ("AI sulla piattaforma"), non una rifinitura del Punto 7: richiede un collegamento a un servizio AI vero (costo minimo reale, stesso ostacolo già incontrato con il filtro di moderazione OpenAI) e scelte di sicurezza (conferma prima di azioni che coinvolgono altre persone, es. notificare i follower). Idea salvata, da riprendere quando si aprirà il Punto 8. Resta aperta anche la domanda se le pagine statiche costruite ora (Membership/Shop/Workshop/Consulenza) diventeranno superflue una volta pronto l'assistente.
+- **Idea emersa e rimandata al Punto 8**: Manuel ha proposto, invece di pagine statiche, un assistente AI a cui il journeyer può chiedere in linguaggio naturale di costruire i propri strumenti (es. "crea un evento workshop per il 23 febbraio e invita i miei follower"), riconoscendo lo stile del sito ed eseguendo azioni vere (non solo suggerire testo). Riconosciuto come l'argomento del Punto 8 ("AI sulla piattaforma"), non una rifinitura del Punto 7: richiede un collegamento a un servizio AI vero (costo minimo reale, stesso ostacolo già incontrato con il filtro di moderazione OpenAI) e scelte di sicurezza (conferma prima di azioni che coinvolgono altre persone, es. notificare i follower). Idea salvata, da riprendere quando si aprirà il Punto 8. Resta aperta anche la domanda se le pagine statiche costruite ora (Membership/Shop/Workshop/Consulenza) diventeranno superflue una volta pronto l'assistente.
 
 ### Stato del punto
 
@@ -351,17 +351,17 @@ Chiuso il 2026-09-22, confermato da Manuel. Il Punto 8 (AI sulla piattaforma) pa
 
 ### Situazione di partenza
 
-Idea nata a chiusura del Punto 7 (vedi sopra): un assistente a cui il creator chiede in linguaggio naturale di costruire i propri strumenti (es. "crea un evento workshop per il 23 febbraio e invita tutti i miei follower a partecipare"), capace di eseguire azioni vere sulla piattaforma, non solo suggerire testo. Prima di iniziare, verificato che nessun'altra sessione in parallelo stesse lavorando su aree collegate (chiesto direttamente a `zero-0b`, che risultava ferma su una modifica di stile già committata, `bf89ec1`): nessuna sovrapposizione.
+Idea nata a chiusura del Punto 7 (vedi sopra): un assistente a cui il journeyer chiede in linguaggio naturale di costruire i propri strumenti (es. "crea un evento workshop per il 23 febbraio e invita tutti i miei follower a partecipare"), capace di eseguire azioni vere sulla piattaforma, non solo suggerire testo. Prima di iniziare, verificato che nessun'altra sessione in parallelo stesse lavorando su aree collegate (chiesto direttamente a `zero-0b`, che risultava ferma su una modifica di stile già committata, `bf89ec1`): nessuna sovrapposizione.
 
 ### Decisioni prese in questo punto (solo discussione, nessun codice ancora scritto)
 
-- **Niente AI locale, per ora**: né un modello sui server di Zero (conviene solo sopra i 50.000$/anno di spesa o 5-10 milioni di token al giorno, lontanissimo dai volumi attuali), né un modello nel browser del creator (i modelli abbastanza piccoli per girarci hanno ancora un tasso di errore reale — circa 1 esecuzione su 3 — quando devono eseguire un'azione precisa, non solo chiacchierare).
+- **Niente AI locale, per ora**: né un modello sui server di Zero (conviene solo sopra i 50.000$/anno di spesa o 5-10 milioni di token al giorno, lontanissimo dai volumi attuali), né un modello nel browser del journeyer (i modelli abbastanza piccoli per girarci hanno ancora un tasso di errore reale — circa 1 esecuzione su 3 — quando devono eseguire un'azione precisa, non solo chiacchierare).
 - **Gemini (Google AI Studio) come servizio scelto**: piano gratuito vero, nessuna carta di credito richiesta, a differenza del filtro moderazione OpenAI del Punto 5. Account Google creato apposta per Zero, separato da quello personale di Manuel, per tenere l'infrastruttura del progetto scollegata dall'identità personale fin da ora (stessa logica già seguita per gli altri servizi). Chiave `GEMINI_API_KEY` salvata in `.env` (mai su Git), segnaposto documentato in `.env.example`.
-- **Ambito dell'AI, i "mattoncini"**: l'assistente può creare solo dentro i quattro modelli già presenti in `prisma/schema.prisma` ma mai collegati a nulla (`Workshop`, `Event`, `DigitalProduct`, `PersonalService`, vedi sezione "WORKSHOP / EVENT / DIGITAL PRODUCT / PERSONAL SERVICE"). Nessun tipo di contenuto nuovo inventato dall'AI. Dentro questi quattro, libertà piena su come vengono riempiti e presentati: un creator di hiking e uno di finanza useranno lo stesso "mattoncino" Workshop in modo completamente diverso, senza bisogno di campi diversi per ogni nicchia.
-- **Nuova sezione "Community" nella Dashboard del creator**: emersa parlando di dove l'AI dovrebbe scrivere i suoi risultati — oggi non esiste nessun posto dove il creator gestisce (modifica, cancella, vede l'elenco) ciò che crea, solo la vetrina pubblica. La sezione ospiterà sia la creazione a mano (form vuoto) sia quella assistita dall'AI (richiesta in linguaggio naturale → bozza pre-compilata nello stesso form → conferma del creator prima di salvare).
+- **Ambito dell'AI, i "mattoncini"**: l'assistente può creare solo dentro i quattro modelli già presenti in `prisma/schema.prisma` ma mai collegati a nulla (`Workshop`, `Event`, `DigitalProduct`, `PersonalService`, vedi sezione "WORKSHOP / EVENT / DIGITAL PRODUCT / PERSONAL SERVICE"). Nessun tipo di contenuto nuovo inventato dall'AI. Dentro questi quattro, libertà piena su come vengono riempiti e presentati: un journeyer di hiking e uno di finanza useranno lo stesso "mattoncino" Workshop in modo completamente diverso, senza bisogno di campi diversi per ogni nicchia.
+- **Nuova sezione "Community" nella Dashboard del journeyer**: emersa parlando di dove l'AI dovrebbe scrivere i suoi risultati — oggi non esiste nessun posto dove il journeyer gestisce (modifica, cancella, vede l'elenco) ciò che crea, solo la vetrina pubblica. La sezione ospiterà sia la creazione a mano (form vuoto) sia quella assistita dall'AI (richiesta in linguaggio naturale → bozza pre-compilata nello stesso form → conferma del journeyer prima di salvare).
 - **Pulsante "Pubblica"** per ogni elemento, stesso pattern già usato per i Journey: solo da quel momento appare nella pagina pubblica Subscribe, che smette di mostrare gli esempi finti (`shopItems`, `workshops`, `consultingSessions` hardcoded in `membership/page.tsx`) e mostra dati veri.
-- **Pulsante separato "Avvisa i tuoi follower"**, visibile solo dopo la pubblicazione, mai automatico: riusa il sistema di notifiche già esistente (gratis, nessun cron). Applica la regola di sicurezza concordata fin dall'inizio della discussione — nessuna azione dell'AI verso altre persone senza una conferma esplicita del creator.
-- **Accesso**: tutta la zona di creazione/gestione (AI e manuale) resta visibile solo al creator proprietario della pagina, mai a chi si abbona o segue — stesso confine già esistente tra Dashboard privata e profilo pubblico.
+- **Pulsante separato "Avvisa i tuoi follower"**, visibile solo dopo la pubblicazione, mai automatico: riusa il sistema di notifiche già esistente (gratis, nessun cron). Applica la regola di sicurezza concordata fin dall'inizio della discussione — nessuna azione dell'AI verso altre persone senza una conferma esplicita del journeyer.
+- **Accesso**: tutta la zona di creazione/gestione (AI e manuale) resta visibile solo al journeyer proprietario della pagina, mai a chi si abbona o segue — stesso confine già esistente tra Dashboard privata e profilo pubblico.
 - **Le pagine statiche costruite al Punto 7 restano**, come modalità manuale accanto all'AI, non vengono sostituite.
 
 ### Ricerca aggiornata rilevante per questo punto
@@ -374,7 +374,7 @@ Idea nata a chiusura del Punto 7 (vedi sopra): un assistente a cui il creator ch
 
 ### Nota di processo
 
-Durante la discussione, Manuel ha comunicato l'acquisto del dominio reale del progetto, **zerojourneys.com**, registrato su Cloudflare — fatto slegato dal Punto 8 in sé, salvato in memoria per i Punti 10/11 (Infrastruttura, Lancio). Emerso anche un piccolo disallineamento tra `docs/93` e `docs/99_Current_Project_Status.md`, quest'ultimo ancora fermo su "Creator Economy non iniziata" nonostante il Punto 7 avesse già costruito le bozze visive: corretto nella stessa sessione.
+Durante la discussione, Manuel ha comunicato l'acquisto del dominio reale del progetto, **zerojourneys.com**, registrato su Cloudflare — fatto slegato dal Punto 8 in sé, salvato in memoria per i Punti 10/11 (Infrastruttura, Lancio). Emerso anche un piccolo disallineamento tra `docs/93` e `docs/99_Current_Project_Status.md`, quest'ultimo ancora fermo su "Journeyer Economy non iniziata" nonostante il Punto 7 avesse già costruito le bozze visive: corretto nella stessa sessione.
 
 ### Costruzione (2026-09-25 → 2026-09-27, più chat tecniche dedicate)
 
@@ -382,10 +382,10 @@ Tutto costruito e committato sul branch `design-wow-experiment`. In ordine:
 
 1. **Fondamenta** (commit `fdc282b`): CRUD reale sui quattro modelli dalla nuova sezione `/dashboard/community`, tutto parte come Bozza; pulsante "Notify your followers" separato; Workshop/Event gratuiti con RSVP reale ("Partecipo"); pagina Subscribe con dati veri. Prima di scrivere codice, verificata dal vivo l'API Gemini: Google l'aveva cambiata (nuova "Interactions API"). Moderazione contenuti passata da OpenAI a Gemini, attiva per la prima volta su tutto il sito (testo e immagini, mai video).
 2. **Correzioni dopo test reale** (`aab91a2`, `1562ab4`, `1428c6a`): copertine per i quattro tipi, badge Free/Locked in stile vetro, pagina di dettaglio pubblica e condivisibile, card cliccabili, **"Subscribe" rinominata "Community"** (decisione di Manuel: un follower che clicca un evento gratuito non deve finire su una pagina di abbonamento). Card evento gratuito enorme corretta riallineandola alla griglia a 4 colonne esistente; da qui la regola "riusare componenti esistenti e chiedere in caso di dubbio di design".
-3. **Chat AI affidabile** (`c907513`): la bozza "promessa ma mai allegata" succedeva circa 6 volte su 7 perché Gemini mandava bozze incomplete; corretta rendendo la bozza completa o assente. Scorrimento automatico, benvenuto con il nome del creator (letto dal profilo, non "addestrato").
+3. **Chat AI affidabile** (`c907513`): la bozza "promessa ma mai allegata" succedeva circa 6 volte su 7 perché Gemini mandava bozze incomplete; corretta rendendo la bozza completa o assente. Scorrimento automatico, benvenuto con il nome del journeyer (letto dal profilo, non "addestrato").
 4. **Chat come un'AI normale** (`b3f2468`): Manuel l'ha trovata robotica ("perché gli hai imposto dei limiti?"). Ora risponde liberamente (Markdown, consigli, domande sui dettagli, descrizioni complete) e la bozza viene estratta dalla conversazione con una seconda chiamata separata. Conversazione salvata nel browser fino al logout (scelta di Manuel), pulsante della bozza nascosto dopo una creazione confermata per evitare doppioni. Resta sul modello gratuito Flash-Lite ("vediamo se va bene, poi casomai Flash"). Campo prezzo senza freccette, orario evento corretto (era un'ora indietro).
-5. **Creazione immagini, pronta ma spenta** (`ae45645`): Nano Banana via API **non è gratuito** (circa 0,034$ a immagine; gratis è solo l'app Gemini usata a mano). Esplorate e scartate con Manuel: Cloudflare Workers AI, link a Gemini con incolla manuale, modelli cinesi (Zhipu CogView-3-Flash, non verificato). Decisione: struttura pronta con interruttore spento, tetto di 5 immagini ogni 24 ore per creator, "Use as cover" porta l'immagine nel modulo. Verificato dal vivo che Google risponde "limite 0 sul piano gratuito": manca solo la fatturazione.
-6. **"+" per allegati** (`32be1fb`, `be86459`): versione minima scelta da Manuel, solo foto e PDF (gratis in lettura), max 3 per messaggio, menu "Photo / PDF document" invece di aprire subito la cartella. Verificato dal vivo: foto descritta, PDF letto e trasformato in bozza. Word/Excel/video esclusi di proposito finché i creator non li chiedono.
+5. **Creazione immagini, pronta ma spenta** (`ae45645`): Nano Banana via API **non è gratuito** (circa 0,034$ a immagine; gratis è solo l'app Gemini usata a mano). Esplorate e scartate con Manuel: Cloudflare Workers AI, link a Gemini con incolla manuale, modelli cinesi (Zhipu CogView-3-Flash, non verificato). Decisione: struttura pronta con interruttore spento, tetto di 5 immagini ogni 24 ore per journeyer, "Use as cover" porta l'immagine nel modulo. Verificato dal vivo che Google risponde "limite 0 sul piano gratuito": manca solo la fatturazione.
+6. **"+" per allegati** (`32be1fb`, `be86459`): versione minima scelta da Manuel, solo foto e PDF (gratis in lettura), max 3 per messaggio, menu "Photo / PDF document" invece di aprire subito la cartella. Verificato dal vivo: foto descritta, PDF letto e trasformato in bozza. Word/Excel/video esclusi di proposito finché i journeyer non li chiedono.
 
 **Scartata**: un'AI cinese per la chat (DeepSeek), proposta da Manuel. Motivi: blocco del Garante Privacy italiano (gennaio 2025), API a pagamento, e il problema reale era il design della chat, non il modello.
 
@@ -399,7 +399,7 @@ Costruito e funzionante. Unica parte non attiva: la creazione immagini, che è P
 
 Nuovo brainstorming aperto da Manuel su cosa l'AI potrebbe davvero portare a Zero per un salto tecnologico percepibile ("sei forte lo puoi fare"), guardando avanti invece di limitarsi alle funzioni già costruite. Ricerca aggiornata su Gemini 3.x (comprensione video "agentica", fino all'88% in meno di token; voce in tempo reale 3.8 Live; Nano Banana/Omni Flash per immagini e video) e sui trend 2026 di settore (contenuto umano verificato in forte domanda, contro la saturazione di contenuti generati dall'AI). Scartate in modo definitivo: generazione video, sintesi vocale dei Journey, trascrizione, sottotitoli, doppiaggio e funzione di accessibilità per utenti non vedenti. Restano idee Post-MVP: ricerca semantica e trailer automatico (per sostituire la foto nella Hero).
 
-L'idea che ha convinto di più, dopo un secondo giro di ricerca mirato: un **"Percorso su Misura"**, composto dall'AI prendendo momenti veri da episodi di creator diversi in base alla situazione reale di chi cerca (non un consiglio di un video intero, un Journey nuovo cucito da pezzi di Journey esistenti, sempre con link all'episodio originale). Richiede come base un'infrastruttura comune a ricerca semantica e trailer: appunti scritti su cosa succede in ogni episodio, non il riuso del video ogni volta — la **Mappa dei Momenti**.
+L'idea che ha convinto di più, dopo un secondo giro di ricerca mirato: un **"Percorso su Misura"**, composto dall'AI prendendo momenti veri da episodi di journeyer diversi in base alla situazione reale di chi cerca (non un consiglio di un video intero, un Journey nuovo cucito da pezzi di Journey esistenti, sempre con link all'episodio originale). Richiede come base un'infrastruttura comune a ricerca semantica e trailer: appunti scritti su cosa succede in ogni episodio, non il riuso del video ogni volta — la **Mappa dei Momenti**.
 
 **Costruita e testata dal vivo** (Post-MVP, S6, non attivata): nuovo modello `EpisodeMoment` (vedi `11_Database_Architecture.md`), funzione `extractEpisodeMoments` (`lib/ai/episodeMoments.ts`) che carica il video su Gemini (Files API, comprensione agentica), scrive timestamp + descrizione + firma di significato (embedding, `gemini-embedding-2`). Interruttore `MOMENTS_LIBRARY_ENABLED`, spento di default, stesso schema di Nano Banana. Script di test manuale `scripts/extract-episode-moments.ts`.
 
@@ -409,23 +409,23 @@ Due bug reali trovati ed emersi solo testando su episodi veri (non su dati finti
 
 ## Decisione S4: abbonamento o acquisto singolo (5 ottobre 2026)
 
-**Situazione di partenza.** Nei documenti la Community era già descritta come abbonamento mensile, ma nel codice esisteva solo un prezzo unico per creator, senza periodo di rinnovo, e nessun controllo di accesso era collegato. La scelta era quindi ancora aperta.
+**Situazione di partenza.** Nei documenti la Community era già descritta come abbonamento mensile, ma nel codice esisteva solo un prezzo unico per journeyer, senza periodo di rinnovo, e nessun controllo di accesso era collegato. La scelta era quindi ancora aperta.
 
 **Decisione presa da Manuel.**
-- Abbonamento mensile per creator, un solo livello, prezzo scelto dal creator da 5 euro in su, senza tetto.
+- Abbonamento mensile per journeyer, un solo livello, prezzo scelto dal journeyer da 5 euro in su, senza tetto.
 - Chi si abbona riceve la sfida "Fai il percorso con lui" e la stanza degli abbonati (domande in forma scritta, nessuna diretta).
-- Se il creator non pubblica nulla nel mese, il mese è gratis per chi paga.
+- Se il journeyer non pubblica nulla nel mese, il mese è gratis per chi paga.
 - Chi si abbona può regalare un mese, senza obblighi per chi lo riceve.
-- Chi completa la sfida può aprire un Journey collegato a quello del creator (staffetta).
+- Chi completa la sfida può aprire un Journey collegato a quello del journeyer (staffetta).
 - Workshop, consulenze e prodotti digitali restano acquisti separati.
 - Esclusi: video singoli a pagamento, emoji, badge, pagella delle promesse, co-autore nei crediti, Journey personale, backstage a orario, archivio a sblocco, domande in diretta.
 
-**Perché.** Rispetto a Patreon la commissione è la stessa, 10%: il creator guadagna solo pochi decimi di euro in più, per via dei costi di pagamento più bassi. Il vantaggio reale sta nella trasparenza e nella qualità dell'esperienza, non nel prezzo. Un video singolo da pochi euro lascerebbe al creator una quota troppo bassa dopo le commissioni Stripe. Le idee scelte puntano sul rapporto tra creator e abbonato, non sull'elenco di funzioni.
+**Perché.** Rispetto a Patreon la commissione è la stessa, 10%: il journeyer guadagna solo pochi decimi di euro in più, per via dei costi di pagamento più bassi. Il vantaggio reale sta nella trasparenza e nella qualità dell'esperienza, non nel prezzo. Un video singolo da pochi euro lascerebbe al journeyer una quota troppo bassa dopo le commissioni Stripe. Le idee scelte puntano sul rapporto tra journeyer e abbonato, non sull'elenco di funzioni.
 
 **Stato.** Nessun codice è stato scritto. Prima si disegnano le schermate, da approvare, poi si costruisce. I pagamenti veri dipendono da Stripe (voce S14).
 
 ### Perimetro Launch e Post-MVP (aggiornamento 5 ottobre 2026)
 
-La decisione S4 resta valida, ma la sua parte economica è Post-MVP: l'abbonamento Community non è al lancio. Restano validi il modello (abbonamento mensile, un solo livello, prezzo scelto dal creator da 5 euro in su, senza tetto), Walk the Path With Me, Members Room, mese gratis se il creator non pubblica, Gift Month, Staffetta, e i workshop, le consulenze e i prodotti digitali come acquisti separati.
+La decisione S4 resta valida, ma la sua parte economica è Post-MVP: l'abbonamento Community non è al lancio. Restano validi il modello (abbonamento mensile, un solo livello, prezzo scelto dal journeyer da 5 euro in su, senza tetto), Walk the Path With Me, Members Room, mese gratis se il journeyer non pubblica, Gift Month, Staffetta, e i workshop, le consulenze e i prodotti digitali come acquisti separati.
 
-Al lancio ci sono invece le tips ai creator e la pubblicità contestuale. La Community esiste già al lancio, ma con le sole parti gratuite (eventi gratuiti con iscrizione e forum per Journey). I video singoli a pagamento restano esclusi.
+Al lancio ci sono invece le tips ai journeyer e la pubblicità contestuale. La Community esiste già al lancio, ma con le sole parti gratuite (eventi gratuiti con iscrizione e forum per Journey). I video singoli a pagamento restano esclusi.

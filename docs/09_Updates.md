@@ -17,7 +17,7 @@ related_docs:
 
 Definire il ruolo degli Updates all'interno di Zero.
 
-Gli Updates permettono ai creator di condividere contenuti temporanei senza sostituire il Journey come elemento centrale della piattaforma.
+Gli Updates permettono ai journeyer di condividere contenuti temporanei senza sostituire il Journey come elemento centrale della piattaforma.
 
 ## Dichiarazione
 
@@ -33,7 +33,7 @@ Non costituiscono il contenuto principale di Zero e non sostituiscono gli Episod
 
 Gli Updates completano il Journey ma non ne fanno parte.
 
-Il loro scopo è mantenere viva la relazione tra creator e community.
+Il loro scopo è mantenere viva la relazione tra journeyer e community.
 
 ---
 
@@ -55,7 +55,7 @@ Non richiedono la struttura narrativa tipica degli Episodi.
 
 ### Bassa pressione
 
-I creator non devono sentirsi obbligati a pubblicare Updates con continuità.
+I journeyer non devono sentirsi obbligati a pubblicare Updates con continuità.
 
 L'assenza di Updates non deve penalizzare la visibilità del Journey.
 
@@ -77,11 +77,11 @@ Un Update può essere pubblicato in cinque formati, tutti raggiungibili dal puls
 - **Foto** — un'immagine, con una didascalia facoltativa.
 - **Video** — una clip breve (fino a 60 secondi): un Update non è l'archivio del Journey, non deve competere con gli Episodi come durata o qualità produttiva.
 - **Sondaggio** — una domanda con 2-4 opzioni; ogni persona può votare una sola volta e i risultati compaiono solo dopo aver votato.
-- **Domanda** — un invito a rispondere in un campo di testo libero; le risposte sono visibili solo al creator, mai pubbliche.
+- **Domanda** — un invito a rispondere in un campo di testo libero; le risposte sono visibili solo al journeyer, mai pubbliche.
 
-A prescindere dal formato, un Update può anche collegarsi a un Episodio o Journey del creator già pubblico (mai una Bozza), utile ad esempio per annunciare l'uscita di un nuovo Episodio con un link diretto.
+A prescindere dal formato, un Update può anche collegarsi a un Episodio o Journey del journeyer già pubblico (mai una Bozza), utile ad esempio per annunciare l'uscita di un nuovo Episodio con un link diretto.
 
-Ogni Update, di qualunque formato, permette a chi legge una reazione rapida con un'emoji (un tocco, non un commento): il conteggio delle reazioni è visibile solo al creator, mai un numero pubblico — coerente con la "bassa pressione" descritta più sopra.
+Ogni Update, di qualunque formato, permette a chi legge una reazione rapida con un'emoji (un tocco, non un commento): il conteggio delle reazioni è visibile solo al journeyer, mai un numero pubblico — coerente con la "bassa pressione" descritta più sopra.
 
 ## Regole
 

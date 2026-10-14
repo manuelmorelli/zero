@@ -10,7 +10,7 @@ status: living
 ## Da fare
 
 - **Il Testimone**: al posto del badge rischioso, mostra prove misurabili, come la stessa persona dall'episodio 1 e il progresso misurato nel tempo.
-- **Da viewer a creator con un click**: "Inizia il tuo percorso", con una struttura suggerita dai Journey di chi ce l'ha fatta.
+- **Da viewer a journeyer con un click**: "Inizia il tuo percorso", con una struttura suggerita dai Journey di chi ce l'ha fatta.
 - **Rivedere tutti i payoff del sito**: controllare e riscrivere le frasi di presentazione in tutte le pagine.
 
 ## Post-MVP

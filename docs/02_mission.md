@@ -40,7 +40,7 @@ Zero rende il percorso il contenuto principale della piattaforma.
 
 La fiducia nasce dalla continuità, dalla trasparenza e dalla coerenza nel tempo.
 
-Ogni funzionalità della piattaforma deve contribuire a rafforzare questo rapporto tra creator e community.
+Ogni funzionalità della piattaforma deve contribuire a rafforzare questo rapporto tra journeyer e community.
 
 ### Premiare la qualità
 
@@ -53,7 +53,7 @@ La qualità deve prevalere sulla quantità.
 Ogni partecipante deve ottenere un beneficio concreto.
 
 - Gli utenti imparano osservando esperienze reali.
-- I creator costruiscono autorevolezza e una community di qualità.
+- I journeyer costruiscono autorevolezza e una community di qualità.
 - La piattaforma favorisce relazioni basate sulla fiducia e sul valore condiviso.
 
 ## Implicazioni sul prodotto
@@ -64,7 +64,7 @@ Ogni nuova funzionalità deve rispondere ad almeno una delle seguenti domande:
 
 - Aiuta a raccontare meglio un Journey?
 - Aumenta il valore per chi segue quel Journey?
-- Rafforza il rapporto di fiducia tra creator e community?
+- Rafforza il rapporto di fiducia tra journeyer e community?
 - Incentiva la continuità del percorso?
 - È coerente con la Vision e i Product Principles?
 

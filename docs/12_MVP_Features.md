@@ -24,7 +24,7 @@ L'MVP deve validare il modello di prodotto con il minor livello possibile di com
 
 L'MVP non ha l'obiettivo di offrire tutte le funzionalità previste dal progetto.
 
-Ha l'obiettivo di dimostrare che il concetto di Journey rappresenta un'alternativa concreta ai social network tradizionali e genera valore reale per utenti e creator.
+Ha l'obiettivo di dimostrare che il concetto di Journey rappresenta un'alternativa concreta ai social network tradizionali e genera valore reale per utenti e journeyer.
 
 ## Funzionalità incluse
 
@@ -42,11 +42,11 @@ Ha l'obiettivo di dimostrare che il concetto di Journey rappresenta un'alternati
 - Creazione di Journey.
 - Modifica di Journey.
 - Creazione di Episodi (elemento principale del Journey).
-- Creazione di Capitoli (opzionale, per organizzare gli Episodi quando il creator lo ritiene utile).
+- Creazione di Capitoli (opzionale, per organizzare gli Episodi quando il journeyer lo ritiene utile).
 - Gestione della struttura del Journey.
 - Archiviazione del Journey (Archive Journey).
 
-Un creator può avere più Journey attivi (non archiviati) in parallelo (vedi `00-project-context.md`, sezione "Archiviazione del Journey"). Un Journey può essere archiviato ma non eliminato; l'archiviazione è un'azione a senso unico. Un Journey archiviato resta visibile nel profilo pubblico ma non partecipa alla Discovery.
+Un journeyer può avere più Journey attivi (non archiviati) in parallelo (vedi `00-project-context.md`, sezione "Archiviazione del Journey"). Un Journey può essere archiviato ma non eliminato; l'archiviazione è un'azione a senso unico. Un Journey archiviato resta visibile nel profilo pubblico ma non partecipa alla Discovery.
 
 ---
 
@@ -62,17 +62,17 @@ Un creator può avere più Journey attivi (non archiviati) in parallelo (vedi `0
 
 ### Community
 
-- Seguire creator.
-- Notifiche interne al sito per i creator seguiti (nuovo Journey pubblicato, nuovo Episodio aggiunto a un Journey già pubblicato).
-- Pagina Community del creator con le parti gratuite: eventi e workshop gratuiti con iscrizione, forum per Journey.
-- Creazione delle offerte Community con la chat AI: l'assistente prepara una bozza, che il creator controlla e salva lui stesso.
+- Seguire journeyer.
+- Notifiche interne al sito per i journeyer seguiti (nuovo Journey pubblicato, nuovo Episodio aggiunto a un Journey già pubblicato).
+- Pagina Community del journeyer con le parti gratuite: eventi e workshop gratuiti con iscrizione, forum per Journey.
+- Creazione delle offerte Community con la chat AI: l'assistente prepara una bozza, che il journeyer controlla e salva lui stesso.
 
 ---
 
 ### Monetizzazione
 
-- Tips ai creator: il creator riceve l'intero importo, meno le commissioni di pagamento.
-- Pubblicità contestuale sui Journey, con una quota per il creator.
+- Tips ai journeyer: il journeyer riceve l'intero importo, meno le commissioni di pagamento.
+- Pubblicità contestuale sui Journey, con una quota per il journeyer.
 
 ---
 

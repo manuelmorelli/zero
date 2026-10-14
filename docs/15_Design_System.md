@@ -30,7 +30,7 @@ L'interfaccia deve accompagnare l'utente senza distrarlo, eliminando elementi su
 
 Ogni elemento grafico deve valorizzare il Journey e i suoi contenuti.
 
-L'interfaccia non deve competere con ciò che il creator desidera raccontare.
+L'interfaccia non deve competere con ciò che il journeyer desidera raccontare.
 
 ---
 

@@ -21,7 +21,7 @@ Ogni funzione descritta qui sotto è **reale e funzionante**, testata su dati ve
 
 ## In breve
 
-Zero è una piattaforma dove i creator pubblicano "Journey": percorsi a episodi (non singoli video sparsi) organizzati in capitoli opzionali, con un player dedicato che ricorda il punto esatto in cui ogni spettatore ha interrotto la visione. Intorno ai Journey gira un livello social completo (follow, stories, messaggi, notifiche) e un livello community dove il creator può proporre workshop, eventi, prodotti digitali e consulenze, aiutato da un assistente AI che lo guida nella creazione.
+Zero è una piattaforma dove i journeyer pubblicano "Journey": percorsi a episodi (non singoli video sparsi) organizzati in capitoli opzionali, con un player dedicato che ricorda il punto esatto in cui ogni spettatore ha interrotto la visione. Intorno ai Journey gira un livello social completo (follow, stories, messaggi, notifiche) e un livello community dove il journeyer può proporre workshop, eventi, prodotti digitali e consulenze, aiutato da un assistente AI che lo guida nella creazione.
 
 Il cuore del prodotto è l'algoritmo di scoperta: è costruito fin dall'inizio perché il pagamento non comandi mai la visibilità, e perché la qualità reale (quanto le persone guardano e tornano) conti più dei numeri grezzi di follower.
 
@@ -31,21 +31,21 @@ Queste sono le caratteristiche che non si trovano insieme da nessun'altra parte,
 
 **Il ranking non si può comprare.** Nessuna funzione a pagamento di Zero, oggi o in futuro, tocca l'ordine con cui i contenuti vengono mostrati. Non è solo una promessa scritta: è verificato nel codice e dichiarato pubblicamente nella pagina "How it works" del sito.
 
-**Un punteggio di fiducia per ogni creator (Trust Score), non solo un conteggio di follower.** Si attiva quando il creator carica un video di presentazione di sé stesso, e combina qualità reale dei contenuti, continuità, follower e segnalazioni confermate. Un creator con pochi follower ma contenuti seguiti fino alla fine può valere più di uno con tanti follower e poco coinvolgimento. Accanto al punteggio si vede quante persone diverse hanno dato **Trusty** a quel creator (es. "1,240 Trusty"), un numero concreto che chiunque capisce. Il punteggio è costruito per non farsi gonfiare da pochi amici: la parte che viene dagli spettatori raggiunge il peso pieno solo quando 100 persone diverse hanno finito i suoi episodi, e il creator non può darsi Trusty da solo. Con 5 amici compiacenti si arriva intorno al 14%, non all'80%.
+**Un punteggio di fiducia per ogni journeyer (Trust Score), non solo un conteggio di follower.** Si attiva quando il journeyer carica un video di presentazione di sé stesso, e combina qualità reale dei contenuti, continuità, follower e segnalazioni confermate. Un journeyer con pochi follower ma contenuti seguiti fino alla fine può valere più di uno con tanti follower e poco coinvolgimento. Accanto al punteggio si vede quante persone diverse hanno dato **Trusty** a quel journeyer (es. "1,240 Trusty"), un numero concreto che chiunque capisce. Il punteggio è costruito per non farsi gonfiare da pochi amici: la parte che viene dagli spettatori raggiunge il peso pieno solo quando 100 persone diverse hanno finito i suoi episodi, e il journeyer non può darsi Trusty da solo. Con 5 amici compiacenti si arriva intorno al 14%, non all'80%.
 
-**Un Journey finito non viene punito.** Il creator può segnare un Journey come finito ("Mark as completed"): resta nelle classifiche e non perde più punti col passare del tempo, a differenza di un Journey lasciato a metà. Se riprende a pubblicare, il Journey si riapre da solo.
+**Un Journey finito non viene punito.** Il journeyer può segnare un Journey come finito ("Mark as completed"): resta nelle classifiche e non perde più punti col passare del tempo, a differenza di un Journey lasciato a metà. Se riprende a pubblicare, il Journey si riapre da solo.
 
 **L'algoritmo resta onesto finché la piattaforma è piccola.** Finché Zero non raggiunge 100 Journey pubblicati in totale, le classifiche "in evidenza" mostrano i contenuti in ordine cronologico invece che per punteggio, proprio per evitare che con pochi dati un ranking artificiale favorisca il primo arrivato. È una soglia scelta dopo aver studiato come YouTube e Patreon hanno gestito (e in parte sbagliato) lo stesso problema nei loro primi anni.
 
-**Riordino narrativo con trascinamento (drag&drop).** Un creator può riorganizzare capitoli ed episodi del proprio Journey trascinandoli con il mouse (o da tastiera), per cambiare l'ordine in cui la storia viene raccontata senza dover ricaricare nulla.
+**Riordino narrativo con trascinamento (drag&drop).** Un journeyer può riorganizzare capitoli ed episodi del proprio Journey trascinandoli con il mouse (o da tastiera), per cambiare l'ordine in cui la storia viene raccontata senza dover ricaricare nulla.
 
-**Nessuna compressione dei video caricati.** A differenza della maggior parte delle piattaforme video, Zero non comprime i video dei creator: restano alla qualità originale con cui sono stati caricati. È una scelta dichiarata pubblicamente, non un limite tecnico nascosto.
+**Nessuna compressione dei video caricati.** A differenza della maggior parte delle piattaforme video, Zero non comprime i video dei journeyer: restano alla qualità originale con cui sono stati caricati. È una scelta dichiarata pubblicamente, non un limite tecnico nascosto.
 
-**Un assistente AI che aiuta il creator a creare la propria offerta, parlandoci.** Nella sezione Community, il creator può descrivere a parole (anche allegando foto o PDF) il workshop, l'evento o il prodotto che vuole proporre, e l'assistente prepara una bozza pronta da confermare. Non è un modulo da compilare a mano.
+**Un assistente AI che aiuta il journeyer a creare la propria offerta, parlandoci.** Nella sezione Community, il journeyer può descrivere a parole (anche allegando foto o PDF) il workshop, l'evento o il prodotto che vuole proporre, e l'assistente prepara una bozza pronta da confermare. Non è un modulo da compilare a mano.
 
 **Moderazione automatica dei contenuti scritti e delle immagini**, attiva su bio, titoli, descrizioni e contenuti Community, per mantenere la piattaforma pulita fin da subito senza intervento manuale continuo.
 
-**Un solo tipo di "seguire" per tutti.** Non esiste una distinzione tra seguire una persona normale e "abbonarsi" a un creator: il follow è universale, chiunque può seguire chiunque, e questo sblocca automaticamente anche la messaggistica privata.
+**Un solo tipo di "seguire" per tutti.** Non esiste una distinzione tra seguire una persona normale e "abbonarsi" a un journeyer: il follow è universale, chiunque può seguire chiunque, e questo sblocca automaticamente anche la messaggistica privata.
 
 ## Cosa può fare oggi chi guarda i contenuti
 
@@ -53,28 +53,28 @@ La Home si apre con un video di paesaggio che scorre in sottofondo (da computer,
 
 In fondo alla Home due card quadrate chiudono la pagina: una finta pagina "Error 404" con una barca a vela illustrata che naviga al tramonto ("This path doesn't exist, but you can create it"), con il bottone per creare il primo Journey, e una card "How Zero works" con i tre passi e la promessa che pagare non fa mai vedere di più.
 
-Uno spettatore può scoprire i Journey attraverso una Home personalizzata (contenuti nuovi, consigliati in base agli interessi, creator da seguire); la classifica dei Journey più completati si trova nella pagina Journeys, oppure cercarli per categoria o per testo con filtri simili a YouTube (categoria e data, non ordinati per popolarità: una scelta voluta per non premiare la viralità fine a sé stessa).
+Uno spettatore può scoprire i Journey attraverso una Home personalizzata (contenuti nuovi, consigliati in base agli interessi, journeyer da seguire); la classifica dei Journey più completati si trova nella pagina Journeys, oppure cercarli per categoria o per testo con filtri simili a YouTube (categoria e data, non ordinati per popolarità: una scelta voluta per non premiare la viralità fine a sé stessa).
 
 Ogni Journey si guarda in un player dedicato che tiene il segno esatto di dove si è arrivati, episodio per episodio, con possibilità di saltare indietro di 15 secondi, vedere "cosa guardare dopo" (a fine episodio parte da solo il successivo, con un conto alla rovescia annullabile) e riprendere da dove si era interrotta la visione anche giorni dopo.
 
 Intorno ai contenuti c'è un livello social completo:
 
-- **Follow**: si può seguire qualunque persona, non solo i creator.
+- **Follow**: si può seguire qualunque persona, non solo i journeyer.
 - **Stories (Updates)**: contenuti che durano 24 ore in cinque formati (testo, foto, video, sondaggio, domanda), con una reazione rapida visibile solo a chi li ha pubblicati.
 - **Messaggi privati**: una conversazione uno a uno si sblocca appena una delle due persone segue l'altra (non serve che sia reciproco).
 - **Notifiche**: nuovo follower, nuovo episodio o Journey di chi si segue, nuove offerte Community, risposte alle domande poste.
-- **Trusty**: la reazione "mi fido di questo contenuto", che si sblocca solo arrivando alla fine di un episodio, e che alimenta il punteggio di fiducia del creator. Il numero di persone che hanno dato Trusty a un creator è visibile sul suo profilo, sotto il nome.
-- **Ember**: l'assistente AI che spiega come funziona Zero, raggiungibile dal pulsante mascotte nell'header, visibile a chiunque anche senza login. Risponde solo sulla base dei contenuti veri del sito (pagine pubbliche, catalogo funzionalità, mappa delle pagine), senza accesso a internet e senza inventare: se non sa qualcosa lo dice onestamente. Spiega soltanto, non esegue mai azioni al posto di chi lo usa e non rivela le percentuali esatte dell'algoritmo o del Trust Score, che restano riservate. È un assistente diverso da quello della sezione Community, che aiuta invece i creator a scrivere le proprie offerte.
+- **Trusty**: la reazione "mi fido di questo contenuto", che si sblocca solo arrivando alla fine di un episodio, e che alimenta il punteggio di fiducia del journeyer. Il numero di persone che hanno dato Trusty a un journeyer è visibile sul suo profilo, sotto il nome.
+- **Ember**: l'assistente AI che spiega come funziona Zero, raggiungibile dal pulsante mascotte nell'header, visibile a chiunque anche senza login. Risponde solo sulla base dei contenuti veri del sito (pagine pubbliche, catalogo funzionalità, mappa delle pagine), senza accesso a internet e senza inventare: se non sa qualcosa lo dice onestamente. Spiega soltanto, non esegue mai azioni al posto di chi lo usa e non rivela le percentuali esatte dell'algoritmo o del Trust Score, che restano riservate. È un assistente diverso da quello della sezione Community, che aiuta invece i journeyer a scrivere le proprie offerte.
 
-## Cosa può fare oggi un creator
+## Cosa può fare oggi un journeyer
 
-Ogni account nasce **Visitatore**: può guardare, seguire, mettere like e scrivere messaggi, ma non pubblicare. Per pubblicare bisogna attivare la **modalità Creator**, scelta esplicita sia in registrazione sia in Impostazioni (con una pagina che spiega come funziona). Chi non pubblica da tempo riceve avvisi via email a 6 e 9 mesi; a 10 mesi la modalità si chiude e i Journey vengono nascosti, recuperabili per 30 giorni prima della cancellazione definitiva. Lo stesso vale se il creator spegne la modalità volontariamente, con una domanda di conferma prima. Chi è tra un Journey e l'altro può attivare una **pausa** dalle Impostazioni: i Journey restano online e il primo avviso arriva solo dopo 10 mesi di pausa.
+Ogni account nasce **Visitatore**: può guardare, seguire, mettere like e scrivere messaggi, ma non pubblicare. Per pubblicare bisogna attivare la **modalità Journeyer**, scelta esplicita sia in registrazione sia in Impostazioni (con una pagina che spiega come funziona). Chi non pubblica da tempo riceve avvisi via email a 6 e 9 mesi; a 10 mesi la modalità si chiude e i Journey vengono nascosti, recuperabili per 30 giorni prima della cancellazione definitiva. Lo stesso vale se il journeyer spegne la modalità volontariamente, con una domanda di conferma prima. Chi è tra un Journey e l'altro può attivare una **pausa** dalle Impostazioni: i Journey restano online e il primo avviso arriva solo dopo 10 mesi di pausa.
 
-Un creator costruisce un Journey organizzandolo in capitoli (facoltativi) ed episodi, carica i video, scrive la presentazione, sceglie la categoria, e decide quando pubblicare. Ogni Journey appena pubblicato ottiene 15 giorni di visibilità garantita a tutti, indipendentemente dagli interessi di ciascuno, per dargli una possibilità reale di farsi notare.
+Un journeyer costruisce un Journey organizzandolo in capitoli (facoltativi) ed episodi, carica i video, scrive la presentazione, sceglie la categoria, e decide quando pubblicare. Ogni Journey appena pubblicato ottiene 15 giorni di visibilità garantita a tutti, indipendentemente dagli interessi di ciascuno, per dargli una possibilità reale di farsi notare.
 
-Dalla propria Dashboard il creator gestisce tutti i suoi Journey (bozza, pubblicato, finito, archiviato), gli Update, e ha accesso a statistiche reali: visualizzazioni totali, tasso medio di completamento, quante persone hanno finito l'intero percorso, quante interazioni ha ricevuto.
+Dalla propria Dashboard il journeyer gestisce tutti i suoi Journey (bozza, pubblicato, finito, archiviato), gli Update, e ha accesso a statistiche reali: visualizzazioni totali, tasso medio di completamento, quante persone hanno finito l'intero percorso, quante interazioni ha ricevuto.
 
-Nella sezione **Community** del proprio profilo, il creator può proporre:
+Nella sezione **Community** del proprio profilo, il journeyer può proporre:
 
 - **Workshop ed eventi** (oggi solo gratuiti, con iscrizione reale),
 - **Prodotti digitali** scaricabili (e-book, guide, corsi, template),
@@ -82,15 +82,15 @@ Nella sezione **Community** del proprio profilo, il creator può proporre:
 
 Per creare una di queste offerte può scrivere una semplice descrizione a un assistente AI, che prepara automaticamente la bozza da confermare, capendo anche foto e documenti allegati. La generazione di immagini di copertina direttamente dall'AI è prevista dopo il lancio (Post-MVP).
 
-Ogni episodio ha un interruttore "Sponsored content": se il creator lo accende (perché un brand l'ha pagato o gli ha regalato qualcosa per mostrarlo), l'episodio riporta in bella vista l'etichetta, in linea con le Linee guida. L'etichetta serve solo a informare chi guarda e non cambia in alcun modo la posizione del Journey nelle classifiche.
+Ogni episodio ha un interruttore "Sponsored content": se il journeyer lo accende (perché un brand l'ha pagato o gli ha regalato qualcosa per mostrarlo), l'episodio riporta in bella vista l'etichetta, in linea con le Linee guida. L'etichetta serve solo a informare chi guarda e non cambia in alcun modo la posizione del Journey nelle classifiche.
 
-Un pulsante dedicato permette al creator di avvisare manualmente i propri follower quando pubblica una nuova offerta Community, sempre per sua scelta esplicita, mai in automatico.
+Un pulsante dedicato permette al journeyer di avvisare manualmente i propri follower quando pubblica una nuova offerta Community, sempre per sua scelta esplicita, mai in automatico.
 
 ## Sicurezza e privacy
 
 - **Blocco utente**: interrompe ogni rapporto reciproco (follow, messaggi, visibilità del profilo) tra due persone.
 - **Account privato**: chi non segue vede solo nome, foto e bio, non i contenuti pubblicati.
-- **Segnalazioni**: ogni Journey e ogni profilo può essere segnalato; le segnalazioni confermate riducono il punteggio di fiducia del creator segnalato. Le segnalazioni si gestiscono da un pannello riservato agli amministratori.
+- **Segnalazioni**: ogni Journey e ogni profilo può essere segnalato; le segnalazioni confermate riducono il punteggio di fiducia del journeyer segnalato. Le segnalazioni si gestiscono da un pannello riservato agli amministratori.
 - **Età minima 16 anni**, verificata in fase di registrazione e non aggirabile.
 - **Cancellazione account** con 10 giorni di tempo per ripensarci prima che tutto venga eliminato in modo definitivo.
 - **Regole di contenuto dettagliate**, con tolleranza zero esplicita su minori, incitamento alla violenza e autolesionismo/suicidio.
@@ -100,7 +100,7 @@ Un pulsante dedicato permette al creator di avvisare manualmente i propri follow
 
 Per onestà verso chi legge questo documento, ecco cosa oggi non è ancora reale, raggruppato per non confonderlo con le funzioni già attive:
 
-- **Nessun pagamento vero è ancora collegato.** Abbonamenti Community, vendita di eventi/prodotti/consulenze, pubblicità: tutto ha già percentuali e meccanismo decisi, ma nessuna riga di codice si collega oggi a un pagamento reale. Le donazioni (Tips) funzionano con un link esterno scelto dal creator: il pagamento avviene fuori da Zero. È una scelta di sequenza (prima il prodotto, poi i pagamenti), non una dimenticanza, e il collegamento ai pagamenti è predisposto per essere attivabile in pochi passaggi quando sarà il momento.
+- **Nessun pagamento vero è ancora collegato.** Abbonamenti Community, vendita di eventi/prodotti/consulenze, pubblicità: tutto ha già percentuali e meccanismo decisi, ma nessuna riga di codice si collega oggi a un pagamento reale. Le donazioni (Tips) funzionano con un link esterno scelto dal journeyer: il pagamento avviene fuori da Zero. È una scelta di sequenza (prima il prodotto, poi i pagamenti), non una dimenticanza, e il collegamento ai pagamenti è predisposto per essere attivabile in pochi passaggi quando sarà il momento.
 - **La generazione di immagini AI** è prevista dopo il lancio (Post-MVP): ha un costo reale per immagine e richiederà la fatturazione sul nostro account Google.
 - **La versione video a qualità adattiva per connessioni lente** (per far partire i video più in fretta su internet lento) è pronta ma spenta per lo stesso motivo: costa, e aspettiamo utenti reali prima di accenderla.
 - **La messaggistica resta volutamente semplice**: solo testo, solo conversazioni uno a uno, senza gruppi né allegati, per scelta della prima versione.

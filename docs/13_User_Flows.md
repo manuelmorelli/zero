@@ -51,7 +51,7 @@ Ogni flusso deve ridurre la complessità e mantenere il Journey al centro dell'e
 
 1. Apertura del Journey.
 2. Visualizzazione della Presentazione.
-3. Lettura o visione degli Episodi, in sequenza lineare dal primo all'ultimo (organizzati in Capitoli quando il creator li ha usati).
+3. Lettura o visione degli Episodi, in sequenza lineare dal primo all'ultimo (organizzati in Capitoli quando il journeyer li ha usati).
 4. Ripresa automatica dal punto raggiunto.
 
 ---
@@ -61,7 +61,7 @@ Ogni flusso deve ridurre la complessità e mantenere il Journey al centro dell'e
 1. Creazione del Journey.
 2. Definizione della Presentazione.
 3. Pubblicazione dei primi Episodi.
-4. Organizzazione facoltativa degli Episodi in Capitoli, se il creator lo ritiene utile.
+4. Organizzazione facoltativa degli Episodi in Capitoli, se il journeyer lo ritiene utile.
 5. Pubblicazione del Journey.
 
 ---
@@ -76,7 +76,7 @@ Ogni flusso deve ridurre la complessità e mantenere il Journey al centro dell'e
 
 ### Gestione del Journey
 
-Il creator può:
+Il journeyer può:
 
 - modificare la Presentazione;
 - creare, modificare o eliminare Episodi;
@@ -88,7 +88,7 @@ Il creator può:
 
 ### Riorganizzazione del Journey (Drag & Drop)
 
-Il creator può riordinare Capitoli ed Episodi tramite drag & drop.
+Il journeyer può riordinare Capitoli ed Episodi tramite drag & drop.
 
 La riorganizzazione modifica esclusivamente la struttura narrativa del Journey.
 

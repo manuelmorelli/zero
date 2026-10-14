@@ -1,5 +1,5 @@
 ---
-title: Creator Experience
+title: Journeyer Experience
 doc_id: 07-creator-experience
 version: "3.1"
 status: approved
@@ -11,23 +11,23 @@ related_docs:
   - 10_Monetization
 ---
 
-# Creator Experience
+# Journeyer Experience
 
 ## Dichiarazione
 
-"Creator", in questo documento, non indica una categoria di utenti separata: indica lo stato di un utente che ha deciso di pubblicare un proprio Journey (vedi "Modello utente unico" in `00-project-context.md`). Ogni utente di Zero può trovarsi in questo stato, senza smettere di essere anche lettore dei Journey altrui. Questo documento descrive l'esperienza di chi si trova in quello stato.
+"Journeyer", in questo documento, non indica una categoria di utenti separata: indica lo stato di un utente che ha deciso di pubblicare un proprio Journey (vedi "Modello utente unico" in `00-project-context.md`). Ogni utente di Zero può trovarsi in questo stato, senza smettere di essere anche lettore dei Journey altrui. Questo documento descrive l'esperienza di chi si trova in quello stato.
 
-Su Zero il creator non produce contenuti per alimentare un algoritmo.
+Su Zero il journeyer non produce contenuti per alimentare un algoritmo.
 
 Costruisce un Journey che racconta un percorso reale nel tempo.
 
-La piattaforma deve offrire strumenti semplici, potenti e trasparenti, lasciando al creator il controllo della propria identità, del proprio lavoro e della propria community.
+La piattaforma deve offrire strumenti semplici, potenti e trasparenti, lasciando al journeyer il controllo della propria identità, del proprio lavoro e della propria community.
 
 ## Principi
 
-### Creator First
+### Journeyer First
 
-Il creator mantiene il pieno controllo del proprio Journey.
+Il journeyer mantiene il pieno controllo del proprio Journey.
 
 Zero fornisce strumenti, non impone modalità di pubblicazione.
 
@@ -35,7 +35,7 @@ Zero fornisce strumenti, non impone modalità di pubblicazione.
 
 ### Libertà editoriale
 
-Ogni creator decide:
+Ogni journeyer decide:
 
 - come organizzare il Journey;
 - quando pubblicare;
@@ -44,7 +44,7 @@ Ogni creator decide:
 
 ### Controllo della narrazione
 
-Il creator può organizzare liberamente il proprio Journey.
+Il journeyer può organizzare liberamente il proprio Journey.
 
 Capitoli ed Episodi possono essere riordinati tramite drag & drop per migliorare la qualità della narrazione senza modificare la cronologia reale del percorso.
 
@@ -54,7 +54,7 @@ La piattaforma deve offrire strumenti che permettano di evolvere la struttura de
 
 ### Community Ownership
 
-La relazione tra creator e community appartiene al creator.
+La relazione tra journeyer e community appartiene al journeyer.
 
 Zero facilita questa relazione senza sostituirsi ad essa.
 
@@ -70,7 +70,7 @@ La piattaforma favorisce una crescita costante, basata sulla fiducia e sul valor
 
 ### Monetizzazione integrata
 
-Ogni creator deve poter trasformare il proprio lavoro in valore economico attraverso strumenti nativi della piattaforma.
+Ogni journeyer deve poter trasformare il proprio lavoro in valore economico attraverso strumenti nativi della piattaforma.
 
 La monetizzazione è una conseguenza del valore creato, non il suo obiettivo.
 
@@ -89,7 +89,7 @@ Zero mette a disposizione strumenti per:
 
 ## Regole
 
-Le funzionalità dedicate ai creator devono:
+Le funzionalità dedicate ai journeyer devono:
 
 - essere semplici da utilizzare;
 - ridurre il tempo necessario alla gestione del Journey;
@@ -98,4 +98,4 @@ Le funzionalità dedicate ai creator devono:
 
 ## Implicazioni sul prodotto
 
-Dashboard, algoritmo, monetizzazione e strumenti di pubblicazione devono essere progettati per aiutare il creator a documentare il proprio percorso con continuità e qualità, senza dipendere da logiche di engagement artificiale.
+Dashboard, algoritmo, monetizzazione e strumenti di pubblicazione devono essere progettati per aiutare il journeyer a documentare il proprio percorso con continuità e qualità, senza dipendere da logiche di engagement artificiale.

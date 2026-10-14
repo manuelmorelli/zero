@@ -50,9 +50,9 @@ Questo incentiva contenuti superficiali invece di contenuti realmente utili.
 
 Gli utenti vedono solo frammenti della realtà.
 
-Manca il contesto necessario per valutare competenze, esperienza e autenticità dei creator.
+Manca il contesto necessario per valutare competenze, esperienza e autenticità dei journeyer.
 
-### 5. I creator dipendono dall'algoritmo
+### 5. I journeyer dipendono dall'algoritmo
 
 La crescita della propria community dipende spesso da dinamiche esterne e imprevedibili.
 

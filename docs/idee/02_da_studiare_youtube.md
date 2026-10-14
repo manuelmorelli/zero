@@ -7,7 +7,7 @@ status: living
 
 # Idee da studiare: YouTube
 
-Da approfondire: i limiti che YouTube impone ai creator, per capire cosa imparare e cosa evitare.
+Da approfondire: i limiti che YouTube impone ai journeyer, per capire cosa imparare e cosa evitare.
 
 ## Da studiare
 

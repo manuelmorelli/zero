@@ -140,7 +140,7 @@ dietro conferma esplicita.
   non è ancora collegato, quindi oggi queste righe non rappresentano
   denaro reale. **Da rivedere quando Stripe verrà davvero collegato**:
   a quel punto cancellarle del tutto potrebbe non essere corretto per
-  motivi fiscali/legali (un incasso reale di un creator non dovrebbe
+  motivi fiscali/legali (un incasso reale di un journeyer non dovrebbe
   sparire dalla sua contabilità solo perché chi ha pagato cancella
   l'account) — probabilmente andranno anonimizzate (scollegate
   dall'utente ma mantenute in forma aggregata) invece che cancellate.
@@ -163,10 +163,10 @@ del consenso dei genitori. Non retroattivo: gli account creati prima hanno
 
 ---
 
-## 7. Requisiti per diventare creator
+## 7. Requisiti per diventare journeyer
 
 **Implementato il 2026-09-22 (Punto 6 dell'allineamento).** Prima non esisteva alcun
-requisito: `requireCreator()` (`lib/creator.ts`) crea il profilo Creator al volo e
+requisito: `requireCreator()` (`lib/creator.ts`) crea il profilo Journeyer al volo e
 chiunque poteva pubblicare un Journey/Episodio senza aver mai compilato il profilo,
 caricato un video di presentazione o letto le regole della piattaforma.
 
@@ -189,12 +189,12 @@ al momento in cui un contenuto diventa davvero pubblico (`publishJourney`,
 pubblicazione di un episodio, mai su una modifica di contenuto già pubblicato):
 salvare in Bozza resta sempre libero.
 
-**Riguarda solo chi vuole diventare creator**, mai i visitatori/spettatori: guardare,
+**Riguarda solo chi vuole diventare journeyer**, mai i visitatori/spettatori: guardare,
 condividere un link, restano completamente liberi senza account, coerente con
 YouTube (ricerca aggiornata 2026: like/commenti/iscrizioni richiedono login, guardare
 e condividere no).
 
-**Nessun grandfathering**: la regola vale anche per gli account creator già
+**Nessun grandfathering**: la regola vale anche per gli account journeyer già
 esistenti (creati prima di questa funzione), incluso quello di Manuel — non è stato
 marcato "già accettato" retroattivamente per nessuno.
 
@@ -241,7 +241,7 @@ Da tracciare e aggiornare man mano che si decide/implementa:
       Privacy Policy; il passaggio a pagamento resta nel backlog
       (`94_Product_Backlog.md`), nell'ultimo passaggio insieme agli
       altri lavori che costano soldi.
-- [x] Requisiti per diventare creator (profilo compilato, video di
+- [x] Requisiti per diventare journeyer (profilo compilato, video di
       presentazione, Community Guidelines accettate) — implementato
       2026-09-22 (Punto 6), vedi sezione 7 sopra.
 
@@ -278,7 +278,7 @@ Da tracciare e aggiornare man mano che si decide/implementa:
   finora. Deciso di non correggere il testo su Stripe in
   `/how-it-works` (descrive lo stato a piattaforma online, non il
   prototipo di oggi). Più avanti nella stessa sessione, aggiunti i
-  requisiti per diventare creator (profilo compilato, video di
+  requisiti per diventare journeyer (profilo compilato, video di
   presentazione, Community Guidelines accettate, tutti obbligatori
   insieme prima di poter pubblicare, nessun grandfathering) — vedi
   sezione 7.
