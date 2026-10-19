@@ -321,7 +321,7 @@ html[data-theme="light"] .bio-card .text-ink-faint {
 
 /* Il logo "ZERO" in alto (components/layout/Logo.tsx) è un'immagine bianca fissa, pensata per lo
  * sfondo scuro: sullo sfondo chiaro sarebbe invisibile. Niente seconda immagine da caricare,
- * basta invertire i colori del PNG (bianco diventa nero) solo nel tema chiaro. */
+ * basta invertire i colori dell'SVG (bianco diventa nero) solo nel tema chiaro. */
 html[data-theme="light"] .logo-wordmark {
   filter: invert(1);
 }

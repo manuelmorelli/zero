@@ -147,12 +147,12 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             Every <span className="text-ember">journey</span> starts from
           </p>
           <Image
-            src="/images/zero-wordmark.png"
+            src="/images/zero-wordmark.svg"
             alt="Zero"
-            width={3000}
-            height={795}
+            width={597}
+            height={173}
             unoptimized
-            className="mt-1 w-72 origin-left scale-x-95 sm:w-80 lg:w-96"
+            className="mt-1 w-72 sm:w-80 lg:w-96"
           />
           <HeroPayoff
             index={payoffIndex}

@@ -7,10 +7,10 @@ type LogoProps = {
 export function Logo({ className }: LogoProps) {
   return (
     <Image
-      src="/images/logo.png"
+      src="/images/zero-wordmark.svg"
       alt="Zero, every journey starts from Zero"
-      width={3924}
-      height={1040}
+      width={597}
+      height={173}
       unoptimized
       className={`logo-wordmark w-auto ${className ?? ""}`}
     />
