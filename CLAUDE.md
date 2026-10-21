@@ -16,20 +16,25 @@ Esempio concreto già incontrato: il componente `<Image>` in questa versione ha 
 
 ## Stack tecnico
 
-- **Frontend**: Next.js (App Router), React, TypeScript, Tailwind CSS, shadcn/ui
-- **Backend**: Next.js API Routes, Prisma ORM, PostgreSQL, Better Auth
-- **Validazione**: Zod, React Hook Form
-- **AI**: Google Gemini (moderazione automatica di testi e immagini, chat AI della Community). OpenAI non è un provider AI attuale di Zero
-- **Storage**: Cloudflare R2
-- **Pagamenti**: Stripe
-- **Email**: Resend
+Elenco completo e motivato in `docs/16_Tech_Stack.md`; dettaglio architetturale in `docs/23_Technical_Build_History.md`.
 
-Stato attuale (verificare prima di dare per scontato che qualcosa sia già installato):
-- `shadcn/ui` **non è ancora installato**.
-- Prisma (v7) è installato e configurato: schema in `prisma/schema.prisma`, config CLI in `prisma.config.ts`, client generato in `generated/prisma` (non committato, rigenerato con `npx prisma generate` o automaticamente via `postinstall`). Import: `@/generated/prisma/client`. Usare sempre `PrismaClient` dal singleton `lib/prisma.ts`, mai istanziarlo altrove.
-- Better Auth è configurato in `lib/auth.ts` (server) e `lib/auth-client.ts` (client), route in `app/api/auth/[...all]/route.ts`. Solo email+password per ora, nessun provider social.
-- **Nessun account esterno è ancora collegato** (Neon, Stripe, Resend, Cloudflare R2): `.env` locale ha solo placeholder. Vedi `.env.example` per le variabili richieste. Finché Neon non è configurato, le query reali al DB falliranno: è previsto, non è un bug.
-- `components/ui/`, `hooks/`, `types/`, `prompts/` esistono come cartelle ma sono ancora vuote.
+- **Frontend**: Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, kit proprio in `components/ui/` su primitive Radix, `lucide-react`, `sonner`
+- **Animazioni**: CSS, GSAP, three.js (sabbia 3D), secondo `docs/21_Motion_Guidelines.md`
+- **Backend**: Server Components + Server Actions (`lib/actions/`); Route Handler solo per auth, streaming AI, cron e webhook
+- **Database**: PostgreSQL su Neon, Prisma 7 con `@prisma/adapter-neon`
+- **Auth**: Better Auth (email+password, verifica email obbligatoria)
+- **Storage**: Cloudflare R2 (upload diretto con URL prefirmati); copie leggere dei video su Cloudflare Stream
+- **AI**: Google Gemini (moderazione, chat Community, Ember, Mappa dei Momenti). OpenAI non è un provider AI attuale di Zero
+- **Email**: Resend, dominio `zerojourneys.com`
+- **Pagamenti**: nessun fornitore scelto; il lancio è previsto senza funzioni a pagamento
+- **Hosting**: predisposto per Vercel (`vercel.json` con i cron), sito non ancora online
+
+Stato attuale (verificare sul codice prima di dare per scontato qualcosa):
+- **Non installati**: shadcn/ui, Framer Motion, Zustand, Zod, React Hook Form. Non introdurli senza un motivo concreto.
+- Prisma (v7): schema in `prisma/schema.prisma`, config CLI in `prisma.config.ts`, client generato in `generated/prisma` (non committato, rigenerato con `npx prisma generate` o automaticamente via `postinstall`). Import: `@/generated/prisma/client`. Usare sempre `PrismaClient` dal singleton `lib/prisma.ts`, mai istanziarlo altrove. Negli script fuori da Next.js serve passare esplicitamente l'adapter Neon.
+- Better Auth è configurato in `lib/auth.ts` (server) e `lib/auth-client.ts` (client), route in `app/api/auth/[...all]/route.ts`. Nessun provider social.
+- **Account esterni collegati e funzionanti**: Neon, Cloudflare R2, Cloudflare Stream, Resend, Gemini. Vedi `.env.example` per le variabili richieste.
+- Funzioni costruite ma spente da variabile d'ambiente: `MOMENTS_LIBRARY_ENABLED`, `GEMINI_IMAGE_GENERATION_ENABLED`.
 - Alias import `@/*` → root del progetto (es. `@/lib/utils`).
 
 ---
@@ -37,20 +42,23 @@ Stato attuale (verificare prima di dare per scontato che qualcosa sia già insta
 ## Struttura delle cartelle
 
 ```
-app/                  Routing dell'applicazione (App Router)
+app/
+  (site)/             Pagine con header e menu condivisi (layout unico)
+  api/                Auth, streaming AI, cron, webhook
+  login, register...  Pagine di accesso, fuori dal layout del sito
 components/
-  landing/            Componenti della Landing Page
-  ui/                 Componenti UI condivisi (shadcn/ui)
-  layout/             Componenti di layout
-  common/             Componenti generici riutilizzabili
-  journey/            Componenti legati ai "Journey"
+  ui/                 Kit ufficiale del design system (obbligatorio)
+  layout/ common/     Layout e componenti generici
+  home/ journey/ profile/ community/ ...   Componenti per area
 docs/                 Documentazione ufficiale del progetto
 hooks/                Custom React hooks riutilizzabili
-lib/                  Utility e funzioni helper
+lib/
+  actions/            Server Actions per dominio
+  discovery/ search/ scoring/ profile/     Letture e calcoli per area
+  ai/                 Integrazione Gemini
 prisma/               Schema e migrazioni del database
 public/               Immagini, icone e asset statici
-types/                Tipi TypeScript condivisi
-prompts/              Prompt riutilizzabili per lo sviluppo AI
+scripts/              check-design.mjs (lucchetto di design), logo, script AI
 ```
 
 ---

@@ -1,7 +1,7 @@
 ---
 title: Project History
 doc_id: 92-project-history
-version: "2.4"
+version: "2.5"
 status: living
 related_docs:
   - 01_Vision
@@ -224,18 +224,6 @@ Chiude la sessione l'unico pezzo di lavoro discusso in anticipo prima di scriver
 
 ---
 
-## Epilogo — Dove siamo oggi
-
-A oggi, il percorso journeyer è completo e verificato end-to-end. Profilo pubblico, Follow universale, ricerca (ora per singola parola, non più solo a frase intera), Feed, Categorie, Updates e messaggistica funzionano con dati reali. La navigazione del sito è coerente su ogni pagina e ogni larghezza di schermo, con un'area Impostazioni reale al suo interno — inclusa una nuova sezione Journeyer, con il controllo sulla notifica "nuovo follower" — e con Journeys e Journeyers finalmente due pagine vere invece di una scorciatoia verso la Home. Ogni punto del sito che mostra una persona, non solo un Journey, mostra ora la sua foto vera quando c'è, e la Home stessa ha smesso di aprirsi con una citazione finta ovunque esista già qualcosa di vero da mostrare al suo posto. Chi ha un episodio a metà lo ritrova subito, in una riga "Continue Watching" in cima alla Home, e ogni card del sito — Home, Profilo, Journeys — condivide finalmente le stesse proporzioni e le stesse icone arancioni, invece di variare da sezione a sezione.
-
-I tuoi Journey di prova hanno cominciato a uscire dalla Discovery Phase nei primi giorni di settembre 2026 come previsto, alcuni sono già Published — ma la piattaforma aspetta ancora il suo primo journeyer esterno vero. Il sito resta pensato per funzionare esattamente allo stesso modo quando arriverà: nessuna funzionalità costruita "per quando ci saranno utenti" è rimasta a metà in attesa di quel momento, compresi i video più leggeri del Capitolo 18, pronti ma tenuti deliberatamente spenti fino ad allora.
-
-Restano aperti: Analytics reali e Community Premium, i pagamenti (Stripe non ancora collegato, da cui dipendono anche Abbonamento nelle Impostazioni e i Payout nella sezione Journeyer), i testi legali veri (Termini, Privacy, Cookie, Linee guida community — le pagine esistono già, vuote), la Privacy nelle Impostazioni (profilo privato, utenti bloccati), e — ora che il sito è più compatto e le foto caricano senza scatti — un aspetto ancora più "premium" per le pagine rimaste indietro.
-
-C'è anche un tratto di metodo che ha accompagnato tutte le ultime sessioni di lavoro e che vale la pena raccontare: l'abitudine di affrontare un solo compito per sessione, invece di incatenare più funzionalità insieme nello stesso momento — e, quando serve, di fermarsi a scrivere un piano intero prima ancora di aprire un editor, come nel Capitolo 18. È coerente con tutto il resto di questa storia — un progetto costruito un pezzo alla volta, verificato prima di passare al successivo, con una Vision scritta il primo giorno ("il percorso conta più del risultato") che si ritrova, con sorprendente coerenza, tanto nel prodotto quanto nel modo in cui è stato costruito.
-
----
-
 ## Capitolo 20 — Uno stile solo, ovunque ci sia una foto di copertina
 
 Il capitolo comincia con un confronto diretto: il design di riferimento su Lovable per le card di copertina — categoria, titolo, journeyer e un punteggio, tutti sovrapposti alla foto con una sfumatura scura in basso, non più separati sotto l'immagine come nel sito reale. La richiesta iniziale sembra circoscritta a Journey ed episodi, ma la frase che la accompagna — "tutte le card avevo detto" — arriva due volte nella stessa sessione, la seconda quando emerge che due card erano rimaste fuori dal primo giro: "Continue Watching" in Home e la card del Journey "in corso" nel Profilo personale, dimenticate nel piano iniziale e non segnalate come escluse. Nessuna delle due era stata usata come componente condiviso con le altre — ognuna aveva la propria copia del markup — e per questo nessuna delle due aveva ricevuto lo stile nuovo insieme al resto. Il rifacimento arriva a chiudere il cerchio: ogni card di copertina del sito, senza eccezioni residue, condivide oggi lo stesso linguaggio visivo.
@@ -444,8 +432,44 @@ Due scelte di Manuel meritano di essere ricordate. Il player non mostra bordi ne
 
 Ultimo punto: le card Journey ora mostrano "N episodes" sotto il titolo, anche nel Profilo. Il Profilo usa un componente di card separato da quello del resto del sito, ed è per questo che la prima volta il numero mancava lì. Unificarle resta un lavoro di pulizia aperto, da fare con un controllo accurato del tema chiaro.
 
-## Capitolo 42, La barca che naviga in fondo alla Home
+## Capitolo 43, La barca che naviga in fondo alla Home
 
 Il 13 ottobre una chat dedicata al design ha prima fatto ordine: quasi tutte le idee scritte nei documenti erano già state realizzate da altre chat (video nella Hero, sabbia al posto delle righe di luce, racconto con lo scroll, assistente Ember, manovella dei colori), e i documenti sono stati riallineati alla realtà. Poi Manuel ha voluto cambiare la fine della Home: la card "How Zero Works" e il banner con una foto che non gli piaceva. Al loro posto sono nate due card quadrate. La prima è una finta pagina d'errore, "Error 404, This path doesn't exist, but you can create it", con il bottone per creare il primo Journey. Si è partiti da una foto di montagne, poi una foto vera di barca a vela, poi un'illustrazione disegnata nei colori di Zero, infine animata: una barca con scafo grigio come i granelli chiari della sabbia e vele rosse attraversa la card al tramonto, dondola sull'onda, mentre il mare scorre su tre piani. Il controllo automatico del design ha costretto a stare nelle durate della Regola di Movimento, e la barca è diventata il terzo elemento del sito che si muove di continuo, dopo la sabbia e il video. La seconda card spiega Zero in tre passi, con la frase "Paying never gets you seen more".
 
 Nella stessa chat Manuel ha tolto una parola che non lo rappresentava: "transformation". Un Journey è un percorso, non per forza una trasformazione, e Zero non è una piattaforma motivazionale. La parola è sparita da sito e documenti, sostituita di volta in volta da Journey, path, story, experience.
+
+## Capitolo 44, La Mappa dei Momenti esce dal laboratorio
+
+Il Capitolo 28 si era chiuso con una base pronta e quattro idee da costruirci sopra "dopo il lancio". Tra il 10 e il 13 ottobre, in più chat parallele, quelle idee sono state costruite tutte, pur restando spente dietro lo stesso interruttore. La Mappa dei Momenti ora parte da sola quando un episodio viene pubblicato. La ricerca per senso entra in gioco solo quando la ricerca normale non trova nulla: chi cerca "lasciare il lavoro senza soldi" trova l'episodio che lo racconta anche se il titolo non contiene quelle parole. Il Percorso su Misura ha una sua pagina: si descrive la propria situazione e l'AI sceglie e mette in ordine momenti veri presi da episodi diversi, senza mai scrivere testo nuovo, solo scegliendo tra quello che esiste già.
+
+Il piano originale chiedeva che ogni video del percorso partisse dal minuto esatto del momento scelto. Manuel l'ha corretto a metà lavoro: un video si apre sempre dall'inizio, perché dire il minuto invita a saltare dritto lì e a non guardare il racconto intero. È la stessa idea del Capitolo 5, applicata a una funzione nuova: Zero non ottimizza per il pezzo più rapido da consumare.
+
+L'ultimo pezzo è il trailer della Hero, con un'aggiunta che non era nel piano: una stellina con cui il journeyer segna a mano i propri momenti migliori mentre guarda il suo episodio. Funziona anche ad AI spenta, e riempie lo stesso archivio che riempirebbe l'AI. Due strade per lo stesso risultato, una delle quali non costa nulla.
+
+## Capitolo 45, Una seconda luce, e un lucchetto senza più eccezioni
+
+L'11 ottobre il sito ha ricevuto un tema chiaro, da scegliere nelle Impostazioni. Il problema è emerso subito dopo: una modifica pensata per il tema chiaro aveva rotto tre dettagli del tema scuro sul Profilo (la sfumatura della copertina, il colore del pannello statistiche, la scheda attiva). Riparati il giorno dopo, hanno lasciato una regola scritta: i due temi vivono in due blocchi separati, e ogni modifica a uno si verifica anche sull'altro.
+
+Nello stesso arco Manuel ha cambiato idea su una scelta che aveva approvato lui stesso a fine settembre: il bottone principale bianco. "Lo odio", e l'errore era stato suo. Il colore del bottone viveva in un punto solo, quindi è bastata una riga per cambiarlo in tutto il sito: la prova concreta che il lavoro del Capitolo 27 serviva. Il lucchetto del design è stato rinforzato. Ora controlla anche i testi scritti fuori dalle pagine (email, notifiche) e riconosce due nuove forme di pezzo fatto a mano. Le sette eccezioni concesse alle chat AI sono state eliminate, sostituite da pezzi ufficiali nuovi. Il controllo sul movimento ha trovato un rimbalzo vietato sull'icona di Ember. Corretto, poi rimesso su richiesta di Manuel come unico rimbalzo ammesso nel sito, scritto nella regola e non lasciato come svista.
+
+## Capitolo 46, Creator diventa Journeyer, e un logo che si ridisegna da solo
+
+Il 14 ottobre la parola "Creator" è sparita dai testi del sito e dai documenti, sostituita da "Journeyer". Non è solo un nome: "creator" è la parola di YouTube e Instagram, quella di chi produce contenuti; "journeyer" è chi percorre un cammino e lo racconta, coerente con la decisione del Capitolo 43 di non chiamare "trasformazione" ogni Journey. Il cambio ha toccato 35 file, solo nelle parole visibili: dentro il codice la struttura dei dati conserva il vecchio nome, per non rischiare di rompere qualcosa che funziona.
+
+Il 19 ottobre è arrivato il nuovo logo. Invece di un'immagine ritoccata a mano, il logo è stato ricalcato come disegno vettoriale pulito, prodotto da un piccolo programma con due manopole (spessore del tratto, +30%, e spazio tra le lettere, 35%) e una pagina per provarle dal vivo prima di scegliere. Nello stesso giorno l'icona di serie di Next.js nella scheda del browser è stata sostituita dal simbolo di Zero, il cerchio sopra la linea, con una versione per la schermata Home del telefono.
+
+## Capitolo 47, Il telefono, prima su carta
+
+Il Capitolo 26 aveva fissato un ordine: prima si finisce il sito da computer, poi il telefono pagina per pagina, poi l'app. Dal 18 ottobre il secondo passo è cominciato, ma senza toccare il sito vero: prima un prototipo cliccabile, una schermata per pagina, da rivedere con Manuel in chat brevi e correggere al volo. La direzione l'ha data lui: la struttura di Netflix (barra in basso, righe orizzontali, schede che salgono dal basso) con la semplicità di Instagram, ma sempre con i colori e le regole di Zero, mai quelli delle due piattaforme. E mai copiare un elenco di funzioni solo perché lo fanno gli altri.
+
+Il prototipo ha presto mostrato il suo limite: disegnato a memoria, inventava pezzi che il sito non ha (una scheda "About" nel Profilo, un cuore al posto dello scudo di Trusty) e ne dimenticava altri che esistono. Da qui la regola che ha chiuso questo tratto: il telefono deve avere tutte le funzioni del sito vero, adattando solo lo spazio, e per saperlo bisogna leggere il sito vero, non ricordarlo. Il 20 ottobre è nato un inventario completo di pagine, flussi e aspetto del sito da computer, la lista di controllo con cui il prototipo verrà completato prima di scrivere una sola riga di codice per il telefono.
+
+## Epilogo, Dove siamo oggi
+
+Al 21 ottobre 2026, dopo circa 370 salvataggi in poco più di tre mesi, Zero è un sito completo da computer. Si crea un Journey con Capitoli ed Episodi, lo si pubblica in due click, lo si guarda con un player che riprende da dove ci si era fermati e passa da solo all'episodio successivo. Ci sono il Profilo, il Follow, i messaggi, le Stories, le notifiche, la ricerca con filtri, le pagine Journeys e Journeyers, la Community con eventi gratuiti e forum, Ember che spiega il sito, il pannello delle segnalazioni. Un algoritmo resta cronologico finché i Journey pubblicati non saranno 100, e un Trust Score ormai difficile da gonfiare con gli amici. Un sistema di design con un lucchetto automatico impedisce al sito di tornare un patchwork. Due temi, chiaro e scuro, tenuti separati per regola.
+
+Alcune funzioni sono costruite e tenute spente per scelta, in attesa di utenti veri o di una spesa che oggi non ha senso: la Mappa dei Momenti con ricerca per senso, Percorso su Misura e trailer, e la creazione di immagini con l'AI. Il sito non è ancora online: il dominio zerojourneys.com è comprato ma non collegato.
+
+Restano aperti la versione per telefono (oggi un prototipo in revisione), poi l'app per gli store; la scelta automatica dei video della Hero, oggi fissa; e tutto ciò che riguarda i pagamenti, rimandato dopo il lancio per scelta: Zero partirà senza nessuna funzione a pagamento.
+
+Il metodo è rimasto quello del primo giorno: un pezzo alla volta, verificato sul sito vero prima di passare al successivo, con le regole scritte prima del codice. Ora che lo stesso sito va riportato sul telefono, questo modo di lavorare conta più che mai.

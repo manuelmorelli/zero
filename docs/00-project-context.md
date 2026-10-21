@@ -1,7 +1,7 @@
 ---
 title: Project Context
 doc_id: 00-project-context
-version: "4.2"
+version: "4.3"
 status: approved
 related_docs:
   - 01_Vision
@@ -247,21 +247,19 @@ Le principali aree del progetto sono:
 
 Le tecnologie ufficiali del progetto sono:
 
-- Next.js
+- Next.js e React
 - TypeScript
 - Tailwind CSS
-- shadcn/ui
-- Framer Motion
-- Zustand
-- React Hook Form
-- Zod
-- Node.js
-- PostgreSQL
+- Radix (primitive UI) con kit proprio in `components/ui/`
+- GSAP e three.js (animazioni)
+- PostgreSQL su Neon
 - Prisma ORM
 - Better Auth
-- Cloudflare R2
-- Stripe
+- Cloudflare R2 e Cloudflare Stream
+- Google Gemini
 - Resend
+
+Nessun fornitore di pagamento è stato scelto: il lancio è previsto senza funzioni a pagamento.
 
 Qualsiasi modifica della stack deve essere riflessa nel documento `16_Tech_Stack.md`.
 
