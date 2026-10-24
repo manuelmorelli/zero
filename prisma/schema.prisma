@@ -291,6 +291,11 @@ model Creator {
   // Video/card di presentazione da caricare per attivare il Trust Score (lib/profile/trustScore.ts).
   // Null finché non lo carica: il Trust Score resta disattivato (nessun badge) fino ad allora.
   presentationVideoUrl String?
+  // Copertina/thumbnail del video di presentazione, mostrata come immagine iniziale prima del
+  // play (richiesta da Manuel, 2026-10-24): prima il video non aveva nessun fotogramma iniziale,
+  // restava nero finché non partiva il caricamento. Indipendente dal video stesso: può restare
+  // vuota anche a video già caricato.
+  presentationCoverUrl String?
   // Link esterno di supporto (S9, Tips): il creator incassa fuori da Zero, Zero mostra solo il pulsante "Support this Creator".
   // Il campo è generico, non legato a nessun fornitore di pagamento. Null = nessun pulsante.
   supportLinkUrl String?

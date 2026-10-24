@@ -5,9 +5,16 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Maximize, Pause, PenLine, Play, Video as VideoIcon, Volume2, VolumeX, X } from "lucide-react";
 import { toast } from "sonner";
-import { createPresentationVideoUploadUrl, updatePresentationVideo } from "@/lib/actions/creatorPresentation";
+import {
+  createPresentationCoverUploadUrl,
+  createPresentationVideoUploadUrl,
+  updatePresentationCover,
+  updatePresentationVideo,
+} from "@/lib/actions/creatorPresentation";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { ALLOWED_VIDEO_TYPES } from "@/lib/constants/video";
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
+import { ImageCropper } from "@/components/common/ImageCropper";
 import { VideoPlayer, type VideoPlayerHandle } from "@/components/common/VideoPlayer";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/heading";
@@ -18,6 +25,9 @@ import { cn } from "@/lib/utils";
 type PresentationVideoCardProps = {
   /** Link temporaneo già risolto (chiave R2 -> URL), o null se non è mai stato caricato nulla. */
   videoUrl: string | null;
+  /** Copertina mostrata come fotogramma iniziale prima del play, indipendente dal video (può
+   * mancare anche a video già caricato). Null = nessuna, il video resta nero finché non parte. */
+  coverUrl: string | null;
   isOwnProfile: boolean;
   /** Bio incorporata nella stessa card (richiesto da Manuel, 2026-09-22): unica card invece di
    * due separate, stesso contenuto/stile prima mostrato da AboutCard. AboutCard resta usata da
@@ -35,15 +45,22 @@ type PresentationVideoCardProps = {
  * caso resta solo AboutCard, vedi sopra. Il proprietario la vede sempre, anche con video vuoto,
  * per poter caricarlo.
  */
-export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, interests }: PresentationVideoCardProps) {
+export function PresentationVideoCard({ videoUrl, coverUrl, isOwnProfile, name, bio, interests }: PresentationVideoCardProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [expanded, setExpanded] = useState(false);
+
+  const [coverProgress, setCoverProgress] = useState<number | null>(null);
+  const [coverError, setCoverError] = useState<string | null>(null);
+  // File scelto per la copertina, in attesa del riquadro "sposta e zooma" prima dell'upload:
+  // stesso pattern di EditProfileButton.tsx per avatar/cover.
+  const [coverCropSrc, setCoverCropSrc] = useState<string | null>(null);
 
   function togglePlay() {
     const video = videoRef.current;
@@ -89,6 +106,48 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
       setError("Upload failed. Please try again.");
     } finally {
       setProgress(null);
+    }
+  }
+
+  function handleCoverFileChosen(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setCoverError(null);
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      setCoverError("Unsupported image format (use JPG, PNG or WebP).");
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setCoverError("Image is too large.");
+      return;
+    }
+    setCoverCropSrc(URL.createObjectURL(file));
+  }
+
+  async function handleCoverCropConfirm(blob: Blob) {
+    setCoverCropSrc(null);
+    setCoverError(null);
+    setCoverProgress(0);
+    try {
+      const result = await createPresentationCoverUploadUrl(blob.type);
+      if ("error" in result) {
+        setCoverError(result.error);
+        return;
+      }
+      await uploadFileWithProgress(result.uploadUrl, blob, setCoverProgress);
+      const saveResult = await updatePresentationCover(result.key);
+      if (saveResult.error) {
+        setCoverError(saveResult.error);
+      } else {
+        toast.success("Cover updated");
+        router.refresh();
+      }
+    } catch {
+      setCoverError("Upload failed. Please try again.");
+    } finally {
+      setCoverProgress(null);
     }
   }
 
@@ -161,6 +220,7 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
               <video
                 ref={videoRef}
                 src={videoUrl}
+                poster={coverUrl ?? undefined}
                 playsInline
                 className="h-full w-full object-cover"
                 onPlay={() => setIsPlaying(true)}
@@ -225,15 +285,35 @@ export function PresentationVideoCard({ videoUrl, isOwnProfile, name, bio, inter
 
         {isOwnProfile && (
           <>
-            <Button variant="secondary" onClick={() => inputRef.current?.click()} disabled={progress !== null} className="mt-3 w-full">
-              {progress !== null ? `Uploading… ${progress}%` : videoUrl ? "Change video" : "Upload video"}
-            </Button>
+            <div className="mt-3 flex gap-2">
+              <Button variant="secondary" onClick={() => inputRef.current?.click()} disabled={progress !== null} className="flex-1">
+                {progress !== null ? `Uploading… ${progress}%` : videoUrl ? "Change video" : "Upload video"}
+              </Button>
+              {videoUrl && (
+                <Button variant="secondary" onClick={() => coverInputRef.current?.click()} disabled={coverProgress !== null} className="flex-1">
+                  {coverProgress !== null ? `Uploading… ${coverProgress}%` : "Change cover"}
+                </Button>
+              )}
+            </div>
             <input ref={inputRef} type="file" accept="video/*" onChange={handleFileChosen} className="hidden" />
+            <input ref={coverInputRef} type="file" accept="image/*" onChange={handleCoverFileChosen} className="hidden" />
             {error && <p className="mt-2 text-sm text-danger">{error}</p>}
+            {coverError && <p className="mt-2 text-sm text-danger">{coverError}</p>}
           </>
         )}
         </div>
       </div>
+
+      {coverCropSrc && (
+        <ImageCropper
+          imageSrc={coverCropSrc}
+          title="Adjust your cover photo"
+          aspect={4 / 3}
+          cropShape="rect"
+          onCancel={() => setCoverCropSrc(null)}
+          onConfirm={handleCoverCropConfirm}
+        />
+      )}
     </div>
   );
 }

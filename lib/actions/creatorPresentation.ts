@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireCreator } from "@/lib/creator";
-import { deleteVideo, getVideoSize, getVideoUploadUrl, newVideoKey } from "@/lib/r2";
+import { deleteImage, deleteVideo, getImagePlaybackUrl, getImageUploadUrl, getVideoSize, getVideoUploadUrl, newImageKey, newVideoKey } from "@/lib/r2";
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
+import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
+import { moderateImageUrl, MODERATION_REJECTION_MESSAGE } from "@/lib/moderation";
 
 /** Genera l'URL di upload diretto verso R2 per il video di presentazione del creator loggato —
  * stesso meccanismo del video degli episodi (vedi createEpisodeVideoUploadUrl in
@@ -46,6 +48,51 @@ export async function updatePresentationVideo(key: string): Promise<{ error: str
   // Il vecchio file resta orfano su R2 se non viene ripulito qui: nessun'altra riga lo referenzia più.
   if (previousKey && previousKey !== key) {
     await deleteVideo(previousKey);
+  }
+
+  revalidatePath(`/profile/${creator.userId}`);
+  return { error: null };
+}
+
+/** Genera l'URL di upload diretto verso R2 per la copertina del video di presentazione —
+ * stesso meccanismo di createProfileImageUploadUrl (lib/actions/profileMedia.ts), solo con un
+ * prefisso di chiave dedicato. */
+export async function createPresentationCoverUploadUrl(
+  contentType: string
+): Promise<{ uploadUrl: string; key: string } | { error: string }> {
+  await requireCreator();
+
+  if (!ALLOWED_IMAGE_TYPES.has(contentType)) {
+    return { error: "Unsupported image format." };
+  }
+
+  const key = newImageKey("presentation-covers", contentType);
+  const uploadUrl = await getImageUploadUrl(key, contentType);
+  return { uploadUrl, key };
+}
+
+/** Salva la copertina del video di presentazione. Indipendente da updatePresentationVideo:
+ * si può cambiare la copertina senza toccare il video, e viceversa. */
+export async function updatePresentationCover(key: string): Promise<{ error: string | null }> {
+  const { creator } = await requireCreator();
+  if (!key) return { error: "Missing image." };
+
+  // Stesso filtro automatico (lib/moderation.ts, Gemini) già usato per le altre foto profilo in
+  // updateAccount (lib/actions/account.ts): fail-open se il servizio non risponde.
+  const playbackUrl = await getImagePlaybackUrl(key);
+  const moderation = await moderateImageUrl(playbackUrl);
+  if (moderation.flagged) {
+    await deleteImage(key);
+    return { error: MODERATION_REJECTION_MESSAGE };
+  }
+
+  const previousKey = creator.presentationCoverUrl;
+  await prisma.creator.update({
+    where: { id: creator.id },
+    data: { presentationCoverUrl: key },
+  });
+  if (previousKey && previousKey !== key) {
+    await deleteImage(previousKey);
   }
 
   revalidatePath(`/profile/${creator.userId}`);

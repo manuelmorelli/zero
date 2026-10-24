@@ -155,6 +155,10 @@ export default async function PublicProfilePage({
   const presentationVideoUrl = creator?.presentationVideoUrl
     ? await getVideoPlaybackUrl(creator.presentationVideoUrl)
     : null;
+  // Copertina del video, indipendente da esso (può mancare anche a video già caricato).
+  const presentationCoverUrl = creator?.presentationCoverUrl
+    ? await getImagePlaybackUrl(creator.presentationCoverUrl)
+    : null;
   const showPresentationCard = isOwnProfile || presentationVideoUrl !== null;
 
   // Bio e video di presentazione condividono un'unica card (richiesto da Manuel, 2026-09-22):
@@ -167,6 +171,7 @@ export default async function PublicProfilePage({
       <PresentationVideoCard
         key="about-presentation"
         videoUrl={presentationVideoUrl}
+        coverUrl={presentationCoverUrl}
         isOwnProfile={isOwnProfile}
         name={user.name}
         bio={user.bio}
