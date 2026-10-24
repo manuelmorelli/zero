@@ -127,6 +127,7 @@ enum NotificationType {
   NEW_JOURNEY
   DIGITAL_PRODUCT
   PERSONAL_SERVICE
+  MENTION
 }
 
 // ------------------------------------------------------------
@@ -192,6 +193,8 @@ model User {
   // Prodotto Digitale, Consulenza 1:1, vedi Punto 8 dell'allineamento) invece di quattro
   // separati: sono la stessa famiglia di contenuto agli occhi di chi riceve la notifica.
   notifyNewOffering      Boolean @default(true)
+  // Qualcuno ti ha menzionato con @username in un forum.
+  notifyMention          Boolean @default(true)
 
   sessions  Session[]
   accounts  Account[]

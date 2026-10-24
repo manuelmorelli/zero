@@ -163,6 +163,41 @@ export async function notifyNewFollower(params: { followedUserId: string; follow
   await pruneOldNotifications(params.followedUserId);
 }
 
+/** Chi viene menzionato con @username in un forum (lib/community/mentions.ts). Mai l'autore
+ * stesso, mai chi ha bloccato l'autore o è stato bloccato da lui, mai account in cancellazione. */
+export async function notifyForumMentions(params: {
+  usernames: string[];
+  authorUserId: string;
+  authorName: string;
+  journeyId: string;
+  journeyTitle: string;
+}): Promise<void> {
+  if (params.usernames.length === 0) return;
+
+  const recipients = await prisma.user.findMany({
+    where: {
+      username: { in: params.usernames, mode: "insensitive" },
+      id: { not: params.authorUserId },
+      deletedAt: null,
+      notifyMention: true,
+      blocksMade: { none: { blockedId: params.authorUserId } },
+      blockedBy: { none: { blockerId: params.authorUserId } },
+    },
+    select: { id: true },
+  });
+  if (recipients.length === 0) return;
+
+  await prisma.notification.createMany({
+    data: recipients.map((recipient) => ({
+      userId: recipient.id,
+      type: "MENTION" as const,
+      content: `${params.authorName} mentioned you in the forum of "${params.journeyTitle}".`,
+      link: `/community/forum/${params.journeyId}`,
+    })),
+  });
+  await Promise.all(recipients.map((recipient) => pruneOldNotifications(recipient.id)));
+}
+
 export async function getUnreadNotificationCount(userId: string): Promise<number> {
   return prisma.notification.count({ where: { userId, read: false } });
 }

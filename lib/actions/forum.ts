@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 import { FORUM_MESSAGE_MAX_LENGTH } from "@/lib/constants/forum";
 import { canWriteInForum } from "@/lib/community/forumAccess";
+import { extractMentionUsernames } from "@/lib/community/mentions";
+import { notifyForumMentions } from "@/lib/notifications";
+import { searchPeople } from "@/lib/search/searchPeople";
 
 const PostSchema = z.object({
   journeyId: z.string().trim().min(1),
@@ -32,7 +35,50 @@ export async function postForumMessage(journeyId: string, content: string): Prom
     },
   });
 
+  const usernames = extractMentionUsernames(parsed.data.content);
+  if (usernames.length > 0) {
+    const journey = await prisma.journey.findUnique({
+      where: { id: parsed.data.journeyId },
+      select: { title: true },
+    });
+    await notifyForumMentions({
+      usernames,
+      authorUserId: session.user.id,
+      authorName: session.user.name,
+      journeyId: parsed.data.journeyId,
+      journeyTitle: journey?.title ?? "a Journey",
+    });
+  }
+
   return { error: null };
+}
+
+export type MentionSuggestion = { username: string; name: string; avatarUrl: string | null };
+
+const MENTION_SUGGESTIONS_LIMIT = 6;
+
+/** Suggerimenti mentre si scrive "@...": chiunque sia iscritto a Zero e abbia uno username
+ * (senza, non c'è niente da scrivere dopo la @), tranne sé stessi e le persone bloccate in una
+ * delle due direzioni. Query vuota (solo "@") = nessun suggerimento, come su Instagram. */
+export async function searchMentionSuggestions(query: string): Promise<MentionSuggestion[]> {
+  const session = await requireSession();
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+
+  const blocks = await prisma.block.findMany({
+    where: { OR: [{ blockerId: session.user.id }, { blockedId: session.user.id }] },
+    select: { blockerId: true, blockedId: true },
+  });
+  const excludeIds = [
+    session.user.id,
+    ...blocks.map((block) => (block.blockerId === session.user.id ? block.blockedId : block.blockerId)),
+  ];
+
+  const people = await searchPeople(trimmed, excludeIds, MENTION_SUGGESTIONS_LIMIT * 2);
+  return people
+    .filter((person): person is typeof person & { username: string } => person.username !== null)
+    .slice(0, MENTION_SUGGESTIONS_LIMIT)
+    .map((person) => ({ username: person.username, name: person.name, avatarUrl: person.avatarUrl }));
 }
 
 /** Cancellazione propria (autore) o moderazione del creator sul forum del proprio Journey —

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Hls from "hls.js";
+import { MessageSquare } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { saveEpisodeProgress } from "@/lib/actions/progress";
 import { Avatar } from "@/components/ui/avatar";
@@ -249,6 +250,15 @@ export function EpisodePlayer({
                 unlocked={trustyUnlocked}
                 isOwnContent={isOwnContent}
               />
+              {/* Forum del Journey a un clic dal video, accanto a Trusty (richiesto da Manuel). */}
+              <Link
+                href={`/community/forum/${journeyId}`}
+                aria-label="Open the Journey forum"
+                title="Forum"
+                className="grid h-7 w-7 place-items-center text-ember transition-opacity hover:opacity-80"
+              >
+                <MessageSquare className="h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
               <ShareButton
                 path={`/journeys/${journeyId}/episodes/${episode.id}`}
                 label={episode.title}
@@ -261,7 +271,7 @@ export function EpisodePlayer({
                 className="text-ember transition-opacity hover:opacity-80"
               />
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-2 pr-24">
+            <div className="flex flex-wrap items-center justify-between gap-2 pr-32">
               <p className="text-sm leading-none tracking-[0.22em] text-ember uppercase">
                 Episode {episode.number}
                 {journeyCategory ? ` · ${journeyCategory}` : ""}

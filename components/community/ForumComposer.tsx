@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { postForumMessage } from "@/lib/actions/forum";
 import { FORUM_MESSAGE_MAX_LENGTH } from "@/lib/constants/forum";
 import { Avatar } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
+import { MentionTextarea } from "@/components/community/MentionTextarea";
 import { Button } from "@/components/ui/button";
 
 type ForumComposerProps = {
@@ -50,12 +50,12 @@ export function ForumComposer({ journeyId, canWrite, isLoggedIn, viewerName, vie
     <form onSubmit={handleSubmit} className="mt-4 flex items-start gap-2.5">
       <Avatar name={viewerName} avatarUrl={viewerAvatarUrl} size="sm" className="mt-1" />
       <div className="min-w-0 flex-1">
-        <Textarea
+        <MentionTextarea
           value={content}
-          onChange={(event) => setContent(event.target.value)}
+          onValueChange={setContent}
           maxLength={FORUM_MESSAGE_MAX_LENGTH}
           rows={2}
-          placeholder="Share your thoughts on this Journey…"
+          placeholder="Share your thoughts on this Journey… Use @ to mention someone."
           disabled={pending}
         />
         <div className="mt-2 flex justify-end">

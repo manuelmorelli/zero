@@ -14,6 +14,7 @@ export default async function SettingsNotificationsPage() {
       notifyNewJourney: true,
       notifyQuestionAnswered: true,
       notifyNewOffering: true,
+      notifyMention: true,
     },
   });
 
@@ -29,6 +30,7 @@ export default async function SettingsNotificationsPage() {
             notifyNewJourney={preferences.notifyNewJourney}
             notifyQuestionAnswered={preferences.notifyQuestionAnswered}
             notifyNewOffering={preferences.notifyNewOffering}
+            notifyMention={preferences.notifyMention}
           />
         </div>
       </div>

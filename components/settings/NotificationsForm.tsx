@@ -10,6 +10,7 @@ type NotificationsFormProps = {
   notifyNewJourney: boolean;
   notifyQuestionAnswered: boolean;
   notifyNewOffering: boolean;
+  notifyMention: boolean;
 };
 
 const TOGGLES: Array<{ name: keyof NotificationsFormProps; label: string; description: string }> = [
@@ -32,6 +33,11 @@ const TOGGLES: Array<{ name: keyof NotificationsFormProps; label: string; descri
     name: "notifyNewOffering",
     label: "New Community offerings",
     description: "When a journeyer you follow publishes a Workshop, Event, Digital Product or 1:1 Service.",
+  },
+  {
+    name: "notifyMention",
+    label: "Mentions",
+    description: "When someone mentions you with @ in a forum.",
   },
 ];
 

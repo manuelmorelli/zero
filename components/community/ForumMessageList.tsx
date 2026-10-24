@@ -5,6 +5,7 @@ import { ForumMessageDeleteButton } from "@/components/community/ForumMessageDel
 import { Avatar } from "@/components/ui/avatar";
 import { PANEL, PANEL_GLASS } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
+import { splitMentions } from "@/lib/community/mentions";
 
 type ForumMessageListProps = {
   messages: ForumMessageItem[];
@@ -74,7 +75,17 @@ export function ForumMessageList({ messages, currentUserId, isCreatorViewer, sea
                 {canDelete && <ForumMessageDeleteButton messageId={message.id} />}
               </div>
             </div>
-            <p className="mt-2.5 whitespace-pre-line text-sm leading-relaxed text-ink">{message.content}</p>
+            <p className="mt-2.5 whitespace-pre-line text-sm leading-relaxed text-ink">
+              {splitMentions(message.content).map((part, index) =>
+                part.kind === "mention" ? (
+                  <Link key={index} href={`/profile/${part.username.toLowerCase()}`} className="font-semibold text-ember hover:underline">
+                    @{part.username}
+                  </Link>
+                ) : (
+                  part.value
+                )
+              )}
+            </p>
           </li>
         );
       })}
