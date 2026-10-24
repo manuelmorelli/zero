@@ -1,16 +1,25 @@
 import {
   BadgeCheck,
+  Briefcase,
   Clock,
   Compass,
   Eye,
+  Footprints,
+  HeartPulse,
+  House,
+  Languages,
   Layers,
   ListOrdered,
   MousePointerClick,
+  Music,
+  PenLine,
   ShieldCheck,
   Sparkles,
+  Store,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { Fragment } from "react";
 import { ButtonSecondary } from "@/components/ui/button";
 import { ScrollStory } from "@/components/common/ScrollStory";
 import { DisplayTitle, SectionTitle } from "@/components/ui/heading";
@@ -24,11 +33,18 @@ export const metadata = {
     "Zero is built around Journeys: real paths documented from the very first day. Reputation earned over time, ranked by Trust Score instead of likes.",
 };
 
+const JOURNEY_MEANING =
+  "When we say Journey, we don't mean a trip. Not a holiday, not a suitcase, not a plane ticket. A Journey is the start of a path, and that path can be any path in life.";
+const LIFE_IS_A_JOURNEY = "Life itself is a Journey, made of many small Journeys.";
+
 // Esportati per Ember (lib/ai/siteAssistant.ts): stesso testo di questa pagina, nessuna copia a parte.
 export const paragraphs = [
   "There are stories we only ever meet at the end. We see someone who made it. We see the result. We see the house, the project, the body, the business, the success. But we almost never see the moment it all began. The doubt. The fear of not making it. The first attempt that failed. The decision to start again. The day no one was watching.",
   "Zero begins exactly there.",
   "Zero is a platform built around Journeys: real paths, told as they happen. We don't want to show you only where someone ended up. We want to let you see how they got there.",
+  JOURNEY_MEANING,
+  LIFE_IS_A_JOURNEY,
+  "Some last a few weeks, others take years. Some run side by side. Some end, and the next one begins the following morning. Each one is a story worth telling, and on Zero each one has its own place, from the very first day.",
   "On Zero you can meet a person at their starting point and decide to follow their path. You can see the attempts, the mistakes, the insights, the struggles, the small wins, and the decisions that change the direction of the story.",
   "A Journey isn't a collection of videos. It's a story that takes shape over time. It has a Presentation. It has Chapters. It has Episodes. It has a path. And you can step inside it.",
   "You can start today. Pause tomorrow. Come back in a week and pick up exactly where you left off. You can follow it all the way to the end.",
@@ -43,6 +59,7 @@ export const paragraphs = [
 
 const highlighted = new Set([
   "Zero begins exactly there.",
+  LIFE_IS_A_JOURNEY,
   "And that's the relationship we want to build. Not audience. Community. Not virality. Trust. Not disposable content. Journeys that stay.",
 ]);
 
@@ -53,6 +70,17 @@ export const different: Bullet[] = [
   { icon: Layers, text: "Drag & drop reordering directly on your cards." },
   { icon: ShieldCheck, text: "Ranked by Trust Score, not likes." },
   { icon: Eye, text: "Every new Journey gets 15 days of guaranteed visibility to everyone." },
+];
+
+export const journeyExamples: Bullet[] = [
+  { icon: Languages, text: "Learning a new language, one lesson at a time." },
+  { icon: Store, text: "Opening a small business from an empty room." },
+  { icon: Footprints, text: "Training for your first marathon." },
+  { icon: HeartPulse, text: "Getting back on your feet after an injury." },
+  { icon: House, text: "Renovating a house with your own hands." },
+  { icon: Music, text: "Learning to play an instrument." },
+  { icon: PenLine, text: "Writing your first book." },
+  { icon: Briefcase, text: "Changing career at forty." },
 ];
 
 export const howItWorks: Bullet[] = [
@@ -106,9 +134,20 @@ export default function WhatIsZeroPage() {
                   </p>
                 </div>
               ) : (
-                <p key={text.slice(0, 40)} data-story="lines" className="text-base leading-relaxed text-ink">
-                  {text}
-                </p>
+                <Fragment key={text.slice(0, 40)}>
+                  <p data-story="lines" className="text-base leading-relaxed text-ink">
+                    {text}
+                  </p>
+                  {text === JOURNEY_MEANING && (
+                    <section data-story="rise" className={PANEL_ACCENT}>
+                      <SectionTitle>A Journey Can Be</SectionTitle>
+                      <div className="grid sm:grid-cols-2 sm:gap-x-6">
+                        <BulletList items={journeyExamples.slice(0, 4)} />
+                        <BulletList items={journeyExamples.slice(4)} />
+                      </div>
+                    </section>
+                  )}
+                </Fragment>
               )
             )}
             <p

@@ -4,7 +4,7 @@ import { streamGemini } from "@/lib/ai/gemini";
 import { sections as privacySections } from "@/app/(site)/privacy/page";
 import { sections as termsSections } from "@/app/(site)/terms/page";
 import { sections as cookiesSections } from "@/app/(site)/cookies/page";
-import { paragraphs as whatIsZeroParagraphs, different as whatMakesDifferent, howItWorks as howZeroWorksList } from "@/app/(site)/what-is-zero/page";
+import { paragraphs as whatIsZeroParagraphs, different as whatMakesDifferent, howItWorks as howZeroWorksList, journeyExamples } from "@/app/(site)/what-is-zero/page";
 import {
   algorithmParagraphs,
   algorithmHighlights,
@@ -73,6 +73,7 @@ function readDoc(filename: string): string {
 function buildKnowledgeBase(): string {
   return [
     section("What Zero is", whatIsZeroParagraphs),
+    section("Examples of what a Journey can be", journeyExamples.map((item) => item.text)),
     section("What makes Zero different", whatMakesDifferent.map((item) => item.text)),
     section("How it works in practice", howZeroWorksList.map((item) => item.text)),
     section("How the algorithm decides what to show (general explanation only, see hard rules below)", [
