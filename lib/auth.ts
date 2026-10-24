@@ -19,6 +19,9 @@ export const auth = betterAuth({
   }),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
+  trustedOrigins: [process.env.BETTER_AUTH_URL, process.env.MOBILE_TEST_URL].filter(
+    (origin): origin is string => Boolean(origin),
+  ),
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
