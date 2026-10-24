@@ -68,6 +68,7 @@ export async function getJourneysByCategory(): Promise<JourneyCategoryRow[]> {
           journeyScore: scoreById.get(journey.id),
           episodeCount: episodeCounts.get(journey.id) ?? 0,
           creator: {
+            userId: journey.creator.userId,
             displayName: journey.creator.displayName,
             avatarUrl: await resolveAvatarUrl(journey.creator.user.avatarUrl),
           },
@@ -109,6 +110,7 @@ export async function getJourneysInCategory(category: JourneyCategory): Promise<
       journeyScore: scoreById.get(journey.id),
       episodeCount: episodeCounts.get(journey.id) ?? 0,
       creator: {
+        userId: journey.creator.userId,
         displayName: journey.creator.displayName,
         avatarUrl: await resolveAvatarUrl(journey.creator.user.avatarUrl),
       },

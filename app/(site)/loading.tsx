@@ -2,7 +2,7 @@ import { Skeleton, SkeletonCardRow } from "@/components/ui/skeleton";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 
 /** Sagoma della Home: segue l'Hero e le righe scorrevoli di card (Recommended, Discovering Now,
- * Top Journeys, Latest Videos), così la pagina non appare bianca durante il caricamento. */
+ * Most Trusted, Latest Videos), così la pagina non appare bianca durante il caricamento. */
 export default function HomeLoading() {
   return (
     <main className="skeleton-reveal">

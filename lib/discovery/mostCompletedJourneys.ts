@@ -6,7 +6,7 @@ import type { JourneyCardData } from "@/components/journey/JourneyCard";
 /**
  * Journey pubblicati ordinati per quota di spettatori che li hanno finiti (≥90% degli episodi,
  * stesso criterio di "completamento" di `lib/scoring/journeyScore.ts`), non per il punteggio misto
- * di Top Journeys. Solo `/journeys` la mostra (`94_Product_Backlog.md`), mai in Home. Un Journey
+ * di Most Trusted. Solo `/journeys` la mostra (`94_Product_Backlog.md`), mai in Home. Un Journey
  * entra in classifica solo con almeno `MIN_SAMPLE_SIZE` spettatori distinti: sotto soglia la riga
  * semplicemente non lo include (mai una percentuale mostrata, coerente con journeyScore.ts).
  */
@@ -18,7 +18,7 @@ export async function getMostCompletedJourneys(limit = 10): Promise<JourneyCardD
       title: true,
       coverUrl: true,
       category: true,
-      creator: { select: { displayName: true, user: { select: { avatarUrl: true } } } },
+      creator: { select: { userId: true, displayName: true, user: { select: { avatarUrl: true } } } },
     },
   });
   if (candidates.length === 0) return [];
@@ -45,7 +45,7 @@ export async function getMostCompletedJourneys(limit = 10): Promise<JourneyCardD
       title: journey.title,
       coverUrl: journey.coverUrl,
       category: journey.category,
-      creator: { displayName: journey.creator.displayName, avatarUrl: journey.creator.user.avatarUrl },
+      creator: { userId: journey.creator.userId, displayName: journey.creator.displayName, avatarUrl: journey.creator.user.avatarUrl },
     }));
 
   return withResolvedJourneyCardUrls(ranked);

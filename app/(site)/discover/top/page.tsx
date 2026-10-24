@@ -8,7 +8,7 @@ import { DEMO_TOP_JOURNEYS } from "@/lib/demo/demoContent";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { CARD_GRID } from "@/components/ui/cover-card";
 
-export const metadata = { title: "Top Journeys | Zero" };
+export const metadata = { title: "Most Trusted | Zero" };
 
 export default async function TopJourneysPage() {
   const session = await getViewerSession();
@@ -26,7 +26,7 @@ export default async function TopJourneysPage() {
         <SectionHeading
           page
           icon={<Star className="h-6 w-6 fill-current" aria-hidden="true" />}
-          title="Top Journeys"
+          title="Most Trusted"
           subtitle="Timeless stories that continue to inspire."
         />
 
@@ -41,7 +41,7 @@ export default async function TopJourneysPage() {
                   category: journey.category,
                   journeyScore: journey.journeyScore,
                   episodeCount: journey.episodesCount,
-                  creator: { displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
+                  creator: { userId: journey.creatorUserId, displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
                 }}
               />
             </li>

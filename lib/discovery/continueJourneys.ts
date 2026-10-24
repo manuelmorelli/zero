@@ -10,6 +10,8 @@ export type ContinueJourneyItem = {
   coverUrl: string | null;
   category: string | null;
   creatorName: string;
+  /** Per il link al profilo dal nome sulla card. */
+  creatorUserId?: string;
   creatorAvatarUrl: string | null;
   episodeId: string | null;
   episodeTitle: string | null;
@@ -62,6 +64,7 @@ export async function getContinueJourneys(
       coverUrl: episode?.posterKey ?? progress.journey.coverUrl,
       category: progress.journey.category,
       creatorName: progress.journey.creator.displayName,
+      creatorUserId: progress.journey.creator.userId,
       creatorAvatarUrl: progress.journey.creator.user.avatarUrl,
       episodeId: episode?.id ?? null,
       episodeTitle: episode?.title ?? null,

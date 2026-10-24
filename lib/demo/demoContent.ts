@@ -7,7 +7,7 @@ import type { DiscoveringNowItem } from "@/lib/discovery/discoveringNow";
 
 // DEMO DATA - replace when real data available: placeholder per le sezioni Home che restano
 // vuote finché la piattaforma non ha abbastanza dati reali (Updates, Feed, Creator consigliati,
-// Latest Videos, Top Journeys). Stesso principio già in uso per DEMO_JOURNEYS (New Journeys):
+// Latest Videos, Most Trusted). Stesso principio già in uso per DEMO_JOURNEYS (New Journeys):
 // ogni sezione torna automaticamente ai dati reali non appena ce ne sono abbastanza.
 
 const hoursAgo = (h: number) => new Date(Date.now() - h * 60 * 60 * 1000);

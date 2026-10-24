@@ -102,6 +102,6 @@ function toJourneyCardData(journey: JourneyWithCreator, journeyScore?: number): 
     coverUrl: journey.coverUrl,
     category: journey.category,
     journeyScore,
-    creator: { displayName: journey.creator.displayName, avatarUrl: journey.creator.user.avatarUrl },
+    creator: { userId: journey.creator.userId, displayName: journey.creator.displayName, avatarUrl: journey.creator.user.avatarUrl },
   };
 }

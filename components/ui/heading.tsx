@@ -32,7 +32,7 @@ export const PageTitle = make("h1", "text-2xl font-extrabold tracking-tight text
 /** Titolone delle pagine di presentazione e legali. Le parole arancioni sono sempre piene. */
 export const DisplayTitle = make("h1", "text-5xl font-black leading-[0.9] tracking-tight text-ink sm:text-6xl");
 
-/** Titolo che apre una sezione della pagina (Episodes, About, Top Journeys...). */
+/** Titolo che apre una sezione della pagina (Episodes, About, Most Trusted...). */
 export const SectionTitle = make("h2", "text-lg font-bold tracking-tight text-ink");
 
 /** Titolo di sezione arancione delle pagine di lettura (How it works, legali, Linee guida). */

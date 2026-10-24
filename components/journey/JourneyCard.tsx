@@ -1,5 +1,6 @@
 import { ShieldCheck } from "lucide-react";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
+import { CreatorProfileLink } from "@/components/journey/CreatorProfileLink";
 import { Avatar } from "@/components/ui/avatar";
 import { CoverChip, CoverFrame, CoverTitle } from "@/components/ui/cover-card";
 
@@ -16,6 +17,8 @@ export type JourneyCardData = {
   /** Episodi pubblicati: se presente, "N episodes" compare sotto il titolo. */
   episodeCount?: number;
   creator: {
+    /** Per il link al profilo dal nome: assente sulle card dimostrative. */
+    userId?: string;
     displayName: string;
     avatarUrl: string | null;
   };
@@ -26,7 +29,7 @@ type JourneyCardProps = {
   className?: string;
   /** Contenuto assoluto sovrapposto in alto a destra, es. il badge "Archived". */
   badge?: React.ReactNode;
-  /** Contenuto extra sotto la card (es. conteggio episodi in "Top Journeys", giorni rimasti in Discovery). */
+  /** Contenuto extra sotto la card (es. conteggio episodi in "Most Trusted", giorni rimasti in Discovery). */
   footer?: React.ReactNode;
 };
 
@@ -57,10 +60,10 @@ export function JourneyCard({ journey, className, badge, footer }: JourneyCardPr
               </p>
             )}
             <div className="mt-2 flex items-center justify-between gap-2 text-sm">
-              <span className="flex min-w-0 items-center gap-1.5">
+              <CreatorProfileLink userId={creator.userId} className="flex min-w-0 items-center gap-1.5">
                 <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="xs" />
                 <span className="truncate">{creator.displayName}</span>
-              </span>
+              </CreatorProfileLink>
               {journeyScore !== undefined && (
                 <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
                   <ShieldCheck className="h-4 w-4" aria-hidden="true" />

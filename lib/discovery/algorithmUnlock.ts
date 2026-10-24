@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-// Soglia di volume prima di attivare il ranking algoritmico reale (Top Journeys, spinta extra in
+// Soglia di volume prima di attivare il ranking algoritmico reale (Most Trusted, spinta extra in
 // Recommended) invece dell'ordine cronologico. Non arbitraria: sotto questa soglia, una sezione
 // "Top" da poche posizioni finirebbe per mostrare quasi l'intero catalogo — il ranking comincia a
 // significare qualcosa solo quando "i migliori" sono un sottoinsieme reale, non quasi tutto quello

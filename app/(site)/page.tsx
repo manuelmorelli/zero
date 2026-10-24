@@ -38,10 +38,11 @@ import { getContinueJourneys } from "@/lib/discovery/continueJourneys";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
+import { CreatorProfileLink } from "@/components/journey/CreatorProfileLink";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 
 /** Quanti elementi caricare per le righe scorrevoli della Home (Recommended, Discovering Now,
- * Top Journeys, Latest Videos): più di quelli che entrano in una schermata, altrimenti le
+ * Most Trusted, Latest Videos): più di quelli che entrano in una schermata, altrimenti le
  * freccine di HorizontalScrollRow non hanno mai altro da mostrare e restano invisibili. */
 const HOME_ROW_LIMIT = 10;
 
@@ -190,10 +191,10 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
                   {item.category && <CoverChip>{item.category}</CoverChip>}
                   <CoverTitle className="mt-2">{item.episodeTitle ?? item.title}</CoverTitle>
                   <div className="mt-2 flex items-center justify-between gap-2 text-sm">
-                    <span className="flex min-w-0 items-center gap-1.5">
+                    <CreatorProfileLink userId={item.creatorUserId} className="flex min-w-0 items-center gap-1.5">
                       <Avatar name={item.creatorName} avatarUrl={item.creatorAvatarUrl} size="xs" />
                       <span className="truncate">{item.creatorName}</span>
-                    </span>
+                    </CreatorProfileLink>
                     {item.journeyScore !== undefined && (
                       <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
                         <ShieldCheck className="h-4 w-4" aria-hidden="true" />
@@ -234,7 +235,7 @@ function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
                 coverUrl: journey.coverUrl,
                 category: journey.category,
                 episodeCount: journey.episodesCount,
-                creator: { displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
+                creator: { userId: journey.creatorUserId, displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
               }}
               footer={
                 <p className="mt-2 text-sm text-ink-muted">
@@ -272,7 +273,7 @@ function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestV
 }
 
 /* ------------------------------------------------------------------ */
-/* TOP JOURNEYS                                                         */
+/* MOST TRUSTED                                                         */
 /* ------------------------------------------------------------------ */
 
 function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJourneys>> }) {
@@ -281,7 +282,7 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
       <Reveal>
         <HorizontalScrollRow
           icon={<Star className="h-6 w-6 fill-current" aria-hidden="true" />}
-          title="Top Journeys"
+          title="Most Trusted"
           subtitle="Timeless stories that continue to inspire."
         >
           {journeys.map((journey) => (
@@ -295,7 +296,7 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
                 category: journey.category,
                 journeyScore: journey.journeyScore,
                 episodeCount: journey.episodesCount,
-                creator: { displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
+                creator: { userId: journey.creatorUserId, displayName: journey.creatorName, avatarUrl: journey.creatorAvatarUrl },
               }}
             />
           ))}

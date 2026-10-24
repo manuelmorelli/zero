@@ -40,7 +40,7 @@ export function SkeletonCard({
   );
 }
 
-/** Riga/griglia di card, per le sezioni scorrevoli (Recommended, Latest Videos, Top Journeys...). */
+/** Riga/griglia di card, per le sezioni scorrevoli (Recommended, Latest Videos, Most Trusted...). */
 export function SkeletonCardRow({
   count = 5,
   format = "journey",

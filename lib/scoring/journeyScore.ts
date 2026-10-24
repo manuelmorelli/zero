@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 /**
  * Journey Score (0-100) — 08_Algorithm.md, "Journey Score". Entra in gioco solo per le sezioni
- * "bonus" di Discovery (Top Journeys, spinta extra dentro Recommended): non tocca mai le sezioni
+ * "bonus" di Discovery (Most Trusted, spinta extra dentro Recommended): non tocca mai le sezioni
  * base garantite a tutti dal primo secondo (New Journeys, Latest Videos, Feed, Discovering Now,
  * raccomandazioni per interesse). Un Journey in Discovery Phase non partecipa a questo punteggio:
  * il criterio di ranking prende il controllo solo dopo, quando lo stato torna PUBLISHED.
@@ -96,7 +96,7 @@ export type JourneyScoreRow = {
  * Come ensureFreshJourneyScores, ma per chi ha già in mano le righe Journey (una query sola
  * invece di due): restituisce subito la mappa dei punteggi, freschi per i Journey scaduti, invece
  * di dover rileggere dal database dopo il salvataggio. Usata dalle sezioni della Home
- * (Recommended, Top Journeys, Latest Videos) per non raddoppiare i viaggi verso il database;
+ * (Recommended, Most Trusted, Latest Videos) per non raddoppiare i viaggi verso il database;
  * ensureFreshJourneyScores resta invariata per gli altri usi (ricerca, Trust Score, Continue
  * Watching...). Il salvataggio dei punteggi ricalcolati avviene in background, senza far
  * aspettare chi guarda la pagina: stessa tolleranza di 24 ore di sopra.

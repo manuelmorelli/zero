@@ -13,6 +13,8 @@ export type EpisodeMomentSearchItem = {
   coverUrl: string | null;
   category: string | null;
   creatorName: string;
+  /** Per il link al profilo dal nome sulla card. */
+  creatorUserId?: string;
   creatorAvatarUrl: string | null;
   journeyScore?: number;
   timestampSec: number;
@@ -98,6 +100,7 @@ export async function enrichMoments(moments: EligibleMoment[]): Promise<EpisodeM
     coverUrl: moment.episode.posterKey ?? moment.episode.journey.coverUrl,
     category: moment.episode.journey.category,
     creatorName: moment.episode.journey.creator.displayName,
+    creatorUserId: moment.episode.journey.creator.userId,
     creatorAvatarUrl: moment.episode.journey.creator.user.avatarUrl,
     journeyScore: scoreByJourneyId.get(moment.episode.journey.id),
     timestampSec: moment.timestampSec,

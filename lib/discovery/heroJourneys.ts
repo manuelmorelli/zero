@@ -13,7 +13,7 @@ export type HeroJourneyItem = {
 
 /**
  * Journey reali da mostrare a rotazione nella Hero della Home, al posto delle 4 foto demo fisse
- * (lib/demo/heroSlides.ts). Stesso criterio di "Top Journeys" (Journey Score, 08_Algorithm.md),
+ * (lib/demo/heroSlides.ts). Stesso criterio di "Most Trusted" (Journey Score, 08_Algorithm.md),
  * ma senza escludere la Discovery Phase — qui non c'è sovrapposizione con "Discovering Now" — e
  * solo tra i Journey con una foto di copertina reale, altrimenti la Hero non avrebbe una foto da
  * mostrare.

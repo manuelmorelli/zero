@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PageTitle, SectionTitle } from "@/components/ui/heading";
 import { BUTTON_VARIANTS } from "@/components/ui/button";
 
-/** Intestazione di una riga ("Discovering Now", "Top Journeys", ecc.): icona + titolo + sottotitolo + "View all".
+/** Intestazione di una riga ("Discovering Now", "Most Trusted", ecc.): icona + titolo + sottotitolo + "View all".
  * Con `page` fa da intestazione di una pagina intera (es. /discover/now) e usa il titolo di pagina. */
 export function SectionHeading({
   icon,

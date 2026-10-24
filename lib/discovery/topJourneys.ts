@@ -14,6 +14,8 @@ export type TopJourneyItem = {
   coverUrl: string | null;
   category: string | null;
   creatorName: string;
+  /** Per il link al profilo dal nome sulla card. */
+  creatorUserId?: string;
   creatorAvatarUrl: string | null;
   followersCount: number;
   episodesCount: number;
@@ -82,6 +84,7 @@ export async function getTopJourneys({
     coverUrl: journey.coverUrl,
     category: journey.category,
     creatorName: journey.creator.displayName,
+    creatorUserId: journey.creator.userId,
     creatorAvatarUrl: journey.creator.user.avatarUrl,
     followersCount: journey.creator.user._count.followers,
     episodesCount: episodeCounts.get(journey.id) ?? 0,

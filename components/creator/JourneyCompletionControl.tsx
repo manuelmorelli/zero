@@ -29,8 +29,8 @@ export function JourneyCompletionControl({ journeyId, isCompleted }: { journeyId
       >
         <p className="max-w-xl text-sm text-ink-muted">
           {isCompleted
-            ? "It stays in Top Journeys and Recommended and no longer loses points over time. Publishing a new episode reopens it automatically."
-            : "Mark it as completed when the story is over: it stays in Top Journeys and Recommended and stops losing points over time. You can reopen it anytime."}
+            ? "It stays in Most Trusted and Recommended and no longer loses points over time. Publishing a new episode reopens it automatically."
+            : "Mark it as completed when the story is over: it stays in Most Trusted and Recommended and stops losing points over time. You can reopen it anytime."}
         </p>
         <input type="hidden" name="journeyId" value={journeyId} />
         <input type="hidden" name="completed" value={String(!isCompleted)} />

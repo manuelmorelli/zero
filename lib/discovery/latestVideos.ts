@@ -10,6 +10,8 @@ export type LatestVideoItem = {
   coverUrl: string | null;
   category: string | null;
   creatorName: string;
+  /** Per il link al profilo dal nome sulla card. */
+  creatorUserId?: string;
   creatorAvatarUrl: string | null;
   createdAt: Date;
   /** Journey Score (0-100) del Journey a cui appartiene l'episodio: gli episodi non hanno un
@@ -84,6 +86,7 @@ export async function getLatestVideos({
     coverUrl: episode.posterKey ?? episode.journey.coverUrl,
     category: episode.journey.category,
     creatorName: episode.journey.creator.displayName,
+    creatorUserId: episode.journey.creator.userId,
     creatorAvatarUrl: episode.journey.creator.user.avatarUrl,
     createdAt: episode.createdAt,
     journeyScore: scoreByJourneyId.get(episode.journey.id),

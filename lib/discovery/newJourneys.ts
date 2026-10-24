@@ -63,7 +63,7 @@ export async function getNewJourneys(
     coverUrl: journey.coverUrl,
     category: journey.category,
     journeyScore: scoreById.get(journey.id),
-    creator: { displayName: journey.creator.displayName, avatarUrl: journey.creator.user.avatarUrl },
+    creator: { userId: journey.creator.userId, displayName: journey.creator.displayName, avatarUrl: journey.creator.user.avatarUrl },
   }));
   return withResolvedJourneyCardUrls(items);
 }
