@@ -58,16 +58,25 @@ export function JourneyForm({ journey }: JourneyFormProps) {
       }
     : INITIAL_DRAFT;
   const [draft, setDraft] = useState(initialDraft);
-  const dirty =
-    draft.title !== initialDraft.title ||
-    draft.description !== initialDraft.description ||
-    draft.category !== initialDraft.category ||
-    draft.tags !== initialDraft.tags;
-
   const [categoryOpen, setCategoryOpen] = useState(false);
 
   const [coverKey, setCoverKey] = useState("");
   const [coverPreview, setCoverPreview] = useState(journey?.coverUrl ?? null);
+
+  // Dopo il salvataggio la pagina ricarica la stessa form: confrontare con coverUrl evita che la copertina appena salvata risulti ancora "modificata".
+  const coverChanged = coverKey !== "" && coverKey !== journey?.coverUrl;
+  const dirty =
+    draft.title !== initialDraft.title ||
+    draft.description !== initialDraft.description ||
+    draft.category !== initialDraft.category ||
+    draft.tags !== initialDraft.tags ||
+    coverChanged;
+
+  function handleCancel() {
+    setDraft(initialDraft);
+    setCoverKey("");
+    setCoverPreview(journey?.coverUrl ?? null);
+  }
   const [coverError, setCoverError] = useState<string | null>(null);
   const [coverProgress, setCoverProgress] = useState<number | null>(null);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
@@ -279,7 +288,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
           )}
           <div className="flex flex-wrap items-center gap-2.5">
             {journey && dirty && (
-              <Button variant="secondary" onClick={() => setDraft(initialDraft)}>
+              <Button variant="secondary" onClick={handleCancel}>
                 Cancel
               </Button>
             )}
