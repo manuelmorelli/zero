@@ -89,13 +89,13 @@ Ogni Journey appena pubblicato entra automaticamente in Discovery Phase per **15
 
 Durante questi 15 giorni il Journey è visibile a **tutti gli utenti**, non solo a chi ha già interessi compatibili con la sua categoria: l'obiettivo è aiutare le persone a scoprire passioni nuove, non solo confermare quelle che hanno già. In Home questo si traduce nella sezione **"Discovering Now"**, senza alcuna personalizzazione per interessi o journeyer seguiti — separata di proposito da "Recommended for you", che resta invece mirata.
 
-Un Journey in Discovery Phase è a tutti gli effetti pubblico: raggiungibile dalla sua pagina, dal profilo del journeyer, dalle categorie, dalla ricerca e dal Feed di chi segue il journeyer, esattamente come un Journey già "maturo". L'unica differenza è che non partecipa ancora al Journey Score (vedi sotto): le sezioni che dipendono dal punteggio (Top Journeys, spinta extra in Recommended) lo ignorano finché la Discovery Phase non è terminata.
+Un Journey in Discovery Phase è a tutti gli effetti pubblico: raggiungibile dalla sua pagina, dal profilo del journeyer, dalle categorie, dalla ricerca e dal Feed di chi segue il journeyer, esattamente come un Journey già "maturo". L'unica differenza è che non partecipa ancora al Journey Score (vedi sotto): le sezioni che dipendono dal punteggio (Most Trusted, spinta extra in Recommended) lo ignorano finché la Discovery Phase non è terminata.
 
 Allo scadere dei 15 giorni lo stato passa da `DISCOVERY` a `PUBLISHED`: da quel momento il Journey Score reale prende il controllo per le eventuali spinte extra. La scadenza si valorizza una sola volta, alla prima pubblicazione: un ciclo bozza → ripubblicazione non riapre una seconda Discovery Phase sullo stesso Journey.
 
 ## Journey Score
 
-Punteggio 0-100 calcolato per ogni Journey pubblicato, usato **solo** dalle sezioni "bonus" della Discovery (Top Journeys, spinta extra dentro Recommended). Non tocca mai le sezioni base, garantite a tutti dal primo secondo indipendentemente dal punteggio: New Journeys, Latest Videos, Discovering Now, Feed dei journeyer seguiti, raccomandazioni per categoria/interesse.
+Punteggio 0-100 calcolato per ogni Journey pubblicato, usato **solo** dalle sezioni "bonus" della Discovery (Most Trusted, spinta extra dentro Recommended). Non tocca mai le sezioni base, garantite a tutti dal primo secondo indipendentemente dal punteggio: New Journeys, Latest Videos, Discovering Now, Feed dei journeyer seguiti, raccomandazioni per categoria/interesse.
 
 Combina, con pesi diversi:
 
@@ -116,7 +116,7 @@ Combina, con pesi diversi:
 
 Il reagire "Trusty" su un episodio (vedi sotto) non entra più in questo punteggio: non misura la qualità del singolo episodio, alimenta invece il Trust Level del journeyer.
 
-**Top Journeys** sceglie i candidati tra i Journey con il Journey Score più alto (o i più recenti, sotto la soglia dei 100 Journey pubblicati), non più tra i 50 pubblicati più di recente: un Journey vecchio ma ottimo, anche finito, resta in gara. Se l'utente ha dichiarato interessi, si prendono a parte anche i migliori di quelle categorie.
+**Most Trusted** (chiamata "Top Journeys" fino al 24 ottobre 2026) sceglie i candidati tra i Journey con il Journey Score più alto (o i più recenti, sotto la soglia dei 100 Journey pubblicati), non più tra i 50 pubblicati più di recente: un Journey vecchio ma ottimo, anche finito, resta in gara. Se l'utente ha dichiarato interessi, si prendono a parte anche i migliori di quelle categorie.
 
 Il Journey Score si ricalcola **al massimo una volta al giorno** per Journey, non ad ogni richiesta: nessun servizio in background dedicato, il ricalcolo avviene come effetto collaterale della normale lettura di Discovery quando il valore salvato ha più di 24 ore.
 

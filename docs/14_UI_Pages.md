@@ -42,7 +42,7 @@ Subito sotto la Hero, quattro righe scorrevoli orizzontalmente (stile Netflix) m
 - **Discovering Now** — tutti i Journey attualmente in Discovery Phase (`08_Algorithm.md`), mostrati a chiunque indipendentemente dagli interessi: aiuta le persone a scoprire passioni nuove, non solo a confermare quelle che hanno già;
 - **Journeys of the Moment** — i Journey pubblicati più seguiti e rilevanti del momento;
 - **Latest Videos** — gli ultimi Episodi con un video caricato, pubblicati su tutta la piattaforma;
-- **Top Journeys** — i Journey pubblicati con il Journey Score più alto (`08_Algorithm.md`), con il conteggio dei loro Episodi.
+- **Most Trusted** — i Journey pubblicati con il Journey Score più alto (`08_Algorithm.md`), con il conteggio dei loro Episodi.
 
 Il resto della pagina segue, in quest'ordine:
 
@@ -93,7 +93,7 @@ Contiene:
 - prodotti e servizi (se offerti);
 - workshop ed eventi (se organizzati).
 
-La pagina Community del profilo (`/profile/[username]/community`) esiste già al lancio, ma mostra solo le parti gratuite: eventi e workshop gratuiti con iscrizione, e il forum per Journey. In cima c'è il pulsante per inviare un tip (Send a tip), attivo dal lancio quando i pagamenti saranno collegati.
+La pagina Community del profilo (`/profile/[username]/community`) esiste già al lancio, ma mostra solo le parti gratuite: eventi e workshop gratuiti con iscrizione, e il forum per Journey (con le menzioni @ e il tasto Forum accanto a Trusty nella pagina di ogni episodio). In cima c'è il pulsante per inviare un tip (Send a tip), attivo dal lancio quando i pagamenti saranno collegati.
 
 L'abbonamento Community (Post-MVP) non è visibile: il riquadro con Subscribe, il regalo di un mese (Gift a month), le righe Walk the Path With Me e Members room e le offerte a pagamento (workshop, eventi, consulenze, prodotti) restano nel codice ma nascosti finché non vengono attivati. Il pulsante di pagamento non è ancora collegato a Stripe: al clic mostra un breve avviso.
 
@@ -125,7 +125,7 @@ A fine episodio, dopo aver salvato progresso e Trusty, sopra il video compare il
 
 ### What is Zero
 
-Pagina editoriale statica (`/what-is-zero`) che spiega cos'è Zero e cosa lo rende diverso: nessun dato dinamico, stesso header del resto del sito.
+Pagina editoriale statica (`/what-is-zero`) che spiega cos'è Zero e cosa lo rende diverso: nessun dato dinamico, stesso header del resto del sito. Chiarisce che un Journey non è un viaggio di vacanza ma l'inizio di un percorso qualsiasi nella vita ("Life itself is a Journey, made of many small Journeys"), con un riquadro di esempi.
 
 ## Area autenticata
 
