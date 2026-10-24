@@ -13,7 +13,7 @@ export default async function NewJourneyPage() {
             Create Your Journey
           </PageTitle>
           <p className="mt-2 text-sm text-ink-muted">
-            Tell us about the path you&apos;re about to document. You&apos;ll be able to add Chapters and Episodes right after.
+            Tell us about the path you&apos;re about to document. You can add your first Episode right here, and Chapters right after.
           </p>
 
           <div className="mt-8">

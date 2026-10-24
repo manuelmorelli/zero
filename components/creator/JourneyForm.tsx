@@ -4,15 +4,16 @@ import Image from "next/image";
 import { useActionState, useRef, useState } from "react";
 import { ChevronDown, ImagePlus, Trash2 } from "lucide-react";
 import {
-  createJourney,
   createJourneyCoverUploadUrl,
   deleteJourney,
   updateJourney,
 } from "@/lib/actions/journey";
+import { createJourneyWithFirstEpisode } from "@/lib/actions/episode";
 import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { FirstEpisodeSection } from "@/components/creator/FirstEpisodeSection";
 import {
   Dialog,
   DialogContent,
@@ -45,7 +46,7 @@ const INITIAL_DRAFT = { title: "", description: "", category: "", tags: "" };
 
 export function JourneyForm({ journey }: JourneyFormProps) {
   const [state, formAction, pending] = useActionState(
-    journey ? updateJourney : createJourney,
+    journey ? updateJourney : createJourneyWithFirstEpisode,
     { error: null }
   );
 
@@ -59,6 +60,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
     : INITIAL_DRAFT;
   const [draft, setDraft] = useState(initialDraft);
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const [episodeBusy, setEpisodeBusy] = useState(false);
 
   const [coverKey, setCoverKey] = useState("");
   const [coverPreview, setCoverPreview] = useState(journey?.coverUrl ?? null);
@@ -275,6 +277,8 @@ export function JourneyForm({ journey }: JourneyFormProps) {
           )}
         </div>
 
+        {!journey && <FirstEpisodeSection onBusyChange={setEpisodeBusy} />}
+
         {state.error && <p className="mt-4 text-sm text-danger">{state.error}</p>}
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
@@ -292,7 +296,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
                 Cancel
               </Button>
             )}
-            <Button variant="primary" type="submit" disabled={pending || coverProgress !== null || (journey ? !dirty : false)}>
+            <Button variant="primary" type="submit" disabled={pending || coverProgress !== null || episodeBusy || (journey ? !dirty : false)}>
               {pending ? "Saving…" : journey ? "Save changes" : "Create Journey"}
             </Button>
           </div>

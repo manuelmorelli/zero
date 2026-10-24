@@ -24,7 +24,8 @@ import { ALLOWED_IMAGE_TYPES } from "@/lib/constants/image";
 import { moderateImageUrl, moderateText, MODERATION_REJECTION_MESSAGE } from "@/lib/moderation";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewEpisode } from "@/lib/notifications";
-import { autoPublishDraftJourney, nextJourneyOrder } from "@/lib/actions/journey";
+import { autoPublishDraftJourney, createJourney, nextJourneyOrder } from "@/lib/actions/journey";
+import { JourneySchema, parseTags } from "@/lib/journeyFields";
 import { extractEpisodeMoments, isMomentsLibraryEnabled } from "@/lib/ai/episodeMoments";
 
 const EpisodeSchema = z.object({
@@ -328,6 +329,80 @@ export async function createEpisode(
   // Il creator viene riportato alla pagina del Journey (hub di gestione di Capitoli ed
   // Episodi), così ha un feedback visivo immediato che l'episodio è stato salvato.
   redirect(`/dashboard/journeys/${journey.id}`);
+}
+
+// Pagina "Create Your Journey" (components/creator/JourneyForm.tsx): il primo episodio si può
+// caricare subito lì, senza passare dalla pagina del Journey e dal bottone "Add Episode". Senza
+// video resta la creazione di sempre (createJourney). Il Journey nasce comunque in Bozza, come
+// prima: pubblicarlo resta una scelta esplicita dalla sua pagina.
+export async function createJourneyWithFirstEpisode(
+  prevState: { error: string | null },
+  formData: FormData
+): Promise<{ error: string | null }> {
+  if (!formData.get("videoKey")) return createJourney(prevState, formData);
+
+  const { creator } = await requireCreator();
+  const modeError = await creatorModeError(creator.userId);
+  if (modeError) return { error: modeError };
+
+  const parsedJourney = JourneySchema.safeParse({
+    title: formData.get("title"),
+    description: formData.get("description") || undefined,
+    category: formData.get("category") || undefined,
+    tags: formData.get("tags") || undefined,
+  });
+  if (!parsedJourney.success) {
+    return { error: parsedJourney.error.issues[0]?.message ?? "Invalid data." };
+  }
+
+  const parsedEpisode = EpisodeSchema.safeParse({
+    title: formData.get("episodeTitle"),
+    caption: formData.get("episodeCaption") || undefined,
+    videoKey: formData.get("videoKey"),
+    posterKey: formData.get("posterKey") || undefined,
+    durationSec: formData.get("durationSec") || undefined,
+    occurredAt: formData.get("occurredAt"),
+  });
+  if (!parsedEpisode.success) {
+    return { error: `Episode: ${parsedEpisode.error.issues[0]?.message ?? "Invalid data."}` };
+  }
+
+  const moderation = await moderateText(`${parsedJourney.data.title}
+${parsedJourney.data.description ?? ""}`);
+  if (moderation.flagged) return { error: MODERATION_REJECTION_MESSAGE };
+
+  // Stessa regola del "+": senza una copertina sua, il Journey prende come copertina una copia di
+  // quella dell'episodio, così la sua pagina non parte con un riquadro vuoto.
+  const coverUrl = parsedEpisode.data.posterKey
+    ? await copyImage(parsedEpisode.data.posterKey, "journey-covers")
+    : null;
+
+  const created = await prisma.journey.create({
+    data: {
+      creatorId: creator.id,
+      title: parsedJourney.data.title,
+      description: parsedJourney.data.description,
+      category: parsedJourney.data.category,
+      tags: parseTags(parsedJourney.data.tags),
+      coverUrl,
+      order: await nextJourneyOrder(creator.id),
+    },
+  });
+
+  // L'episodio nasce pubblicato se il profilo è già pronto per pubblicare (resta comunque invisibile
+  // finché il Journey è in Bozza), altrimenti in Bozza: in entrambi i casi il creator non deve
+  // tornare a ricaricarlo.
+  const readiness = await getPublishReadiness();
+  const journey = await requireOwnedJourney(created.id);
+  const result = await insertEpisode(journey, null, parsedEpisode.data, readiness.ready);
+  if (result.error) {
+    // Il Journey appena creato è vuoto: lo si toglie, così un nuovo tentativo non lascia doppioni.
+    await prisma.journey.delete({ where: { id: created.id } });
+    if (coverUrl) await deleteImage(coverUrl);
+    return { error: `Episode: ${result.error}` };
+  }
+
+  redirect(`/dashboard/journeys/${created.id}`);
 }
 
 // Flusso rapido dal "+" globale (vedi components/creator/QuickUploadButton.tsx): una sola

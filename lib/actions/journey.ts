@@ -3,10 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { notFound } from "next/navigation";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireCreator, getPublishReadiness, publishGateMessage, creatorModeError } from "@/lib/creator";
-import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
+import { JourneySchema, parseTags } from "@/lib/journeyFields";
 import { DISCOVERY_PHASE_DAYS, PUBLICLY_REACHABLE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
 import { notifyNewJourney } from "@/lib/notifications";
 import { deleteImage, deleteVideo, getImagePlaybackUrl, getImageUploadUrl, newImageKey } from "@/lib/r2";
@@ -34,14 +33,6 @@ export async function nextJourneyOrder(creatorId: string): Promise<number> {
   return (firstJourney?.order ?? 0) - 1;
 }
 
-const JourneySchema = z.object({
-  title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
-  description: z.string().trim().max(2000).optional(),
-  category: z.enum(JOURNEY_CATEGORIES).optional(),
-  tags: z.string().trim().max(200).optional(),
-  coverKey: z.string().trim().optional(),
-});
-
 // Genera l'URL temporaneo con cui il browser carica la copertina direttamente su R2 (stesso
 // meccanismo del video degli episodi, vedi createEpisodeVideoUploadUrl in lib/actions/episode.ts).
 // Richiede un Journey già esistente: a differenza dei "cover" finti del mockup Lovable (scelti da
@@ -59,15 +50,6 @@ export async function createJourneyCoverUploadUrl(
   const key = newImageKey("journey-covers", contentType);
   const uploadUrl = await getImageUploadUrl(key, contentType);
   return { uploadUrl, key };
-}
-
-function parseTags(raw: string | undefined): string[] {
-  if (!raw) return [];
-  return raw
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter(Boolean)
-    .slice(0, 10);
 }
 
 export async function createJourney(

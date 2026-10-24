@@ -178,6 +178,7 @@ function QuickUploadModal({
         <div className="overflow-y-auto p-5">
           {step === "choice" && (
             <ChoiceStep
+              onPickNewJourney={onClose}
               onPickJourney={() => setStep("compose")}
               onPickUpdate={() => setStep("updateType")}
             />
@@ -220,9 +221,11 @@ function QuickUploadModal({
 /* ------------------------------------------------------------------ */
 
 function ChoiceStep({
+  onPickNewJourney,
   onPickJourney,
   onPickUpdate,
 }: {
+  onPickNewJourney: () => void;
   onPickJourney: () => void;
   onPickUpdate: () => void;
 }) {
@@ -230,11 +233,12 @@ function ChoiceStep({
     <div className="space-y-3">
       <Link
         href="/dashboard/journeys/new"
+        onClick={onPickNewJourney}
         className={cn(PANEL, "block w-full text-left shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
       >
         <span className="block text-sm font-semibold text-ink">Start a New Journey</span>
         <span className="mt-1 block text-sm text-ink-muted">
-          Set it up properly first (title, category, cover), then add episodes.
+          Title, category and your first episode, all on one page.
         </span>
       </Link>
       <button
