@@ -371,11 +371,47 @@ html {
    * temporaneamente lo scroll della pagina, la scrollbar sparisce e la larghezza disponibile
    * cambierebbe, allargando visibilmente il contenuto. Riservarlo sempre evita quel salto. */
   scrollbar-gutter: stable;
+  /* Il lampo grigio/blu che iOS/Android disegnano su ogni tap: toglie l'aspetto "sito dentro al
+   * browser". Ogni elemento toccabile ha già il proprio stato :active, non serve il lampo del
+   * sistema sopra. */
+  -webkit-tap-highlight-color: transparent;
+  /* Niente ingrandimento automatico del testo quando il telefono ruota in orizzontale. */
+  -webkit-text-size-adjust: 100%;
+  /* "Pull to refresh"/rimbalzo di tutta la pagina ai bordi: il sito non ha un refresh legato allo
+   * scroll, quindi è solo rumore su telefono. Le liste orizzontali interne (righe di categorie,
+   * Storie) scorrono su un asse diverso e non ne risentono. */
+  overscroll-behavior: none;
 }
 
 body {
   background-color: var(--color-bg);
   color: var(--color-ink);
+}
+
+/* Campi di testo: 16px è la soglia sotto la quale Safari su iPhone ingrandisce la pagina
+ * all'apertura della tastiera (e non torna indietro da solo). text-sm (14px) va benissimo su
+ * desktop (mouse, puntatore preciso): qui si alza SOLO sui touch screen, il desktop resta
+ * identico a prima. */
+@media (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* Bottoni: il dito risponde subito (niente attesa del doppio tap) e un tocco lungo non seleziona
+ * l'etichetta come fosse testo normale. Non tocca i link (<a>): molti portano testo che resta
+ * giusto poter selezionare. */
+button,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+a {
+  touch-action: manipulation;
 }
 
 /* Spazio occupato dalla barra di navigazione in basso (components/layout/BottomNav.tsx), solo sotto

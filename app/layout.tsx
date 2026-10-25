@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
 import { Theme } from "@/generated/prisma/client";
@@ -22,6 +22,24 @@ export const metadata: Metadata = {
   description:
     "Zero is the platform where real people document their Journey episode by episode, gathered into chapters you can follow from the start.",
 };
+
+/* viewportFit "cover" lascia disegnare la pagina fin sotto la "isola" o la tacca del telefono: da
+ * qui in poi env(safe-area-inset-*) (già usato da BottomNav e dai pulsanti flottanti) smette di
+ * valere sempre 0 e torna la misura vera. interactiveWidget "resizes-content" fa restringere il
+ * layout quando si apre la tastiera su Android, invece di lasciarla coprire i campi sotto.
+ * themeColor segue lo stesso tema scelto da chi guarda (stesso cookie di getThemeFromCookie qui
+ * sotto), non le impostazioni del sistema: altrimenti la barra di stato del telefono avrebbe il
+ * colore sbagliato ogni volta che tema del sito e tema del sistema non combaciano. */
+export async function generateViewport(): Promise<Viewport> {
+  const theme = await getThemeFromCookie();
+  const isLight = theme === Theme.LIGHT;
+  return {
+    viewportFit: "cover",
+    interactiveWidget: "resizes-content",
+    colorScheme: isLight ? "light" : "dark",
+    themeColor: isLight ? "#d4d4d4" : "#0a0a0a",
+  };
+}
 
 export default async function RootLayout({
   children,
