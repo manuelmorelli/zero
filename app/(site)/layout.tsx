@@ -1,6 +1,7 @@
 import { Theme } from "@/generated/prisma/client";
 import { getThemeFromCookie } from "@/lib/theme";
 import { Header } from "@/components/layout/Header";
+import { BottomNav } from "@/components/layout/BottomNav";
 import { SandBackground } from "@/components/common/SandBackground";
 
 // Header comune a tutte le pagine "principali" del sito (raggruppate qui via route group,
@@ -19,6 +20,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
        * scuro, quindi spento nel tema chiaro (quelle pagine mostrano il semplice sfondo chiaro). */}
       {theme !== Theme.LIGHT && <SandBackground />}
       {children}
+      {/* Solo sotto i 768px (md): vedi BottomNav.tsx. Qui e non in app/layout.tsx, così le pagine
+       * di autenticazione (fuori da questo gruppo di route) non la mostrano. */}
+      <BottomNav />
     </>
   );
 }

@@ -49,7 +49,7 @@ export function NotificationBellButton({ unreadCount, notifications }: Notificat
         // altezza + gap): il sito non ha un header comune a tutte le pagine, e la Home ha un
         // proprio header (SiteHeader) che occupa già l'angolo in alto a destra — l'angolo in
         // basso a destra, già usato dal "+", è l'unico punto libero su ogni pagina.
-        style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 4.25rem)" }}
+        style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 4.25rem + var(--mobile-bottom-nav-space))" }}
         className="fixed right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95"
       >
         <BellIcon className="h-5 w-5" />
@@ -66,7 +66,7 @@ export function NotificationBellButton({ unreadCount, notifications }: Notificat
           <div
             role="menu"
             aria-label="Notifications panel"
-            style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 7.75rem)" }}
+            style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 7.75rem + var(--mobile-bottom-nav-space))" }}
             className="fixed right-5 z-40 flex max-h-[70vh] w-full max-w-sm origin-bottom-right flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xl animate-[panel-in_300ms_cubic-bezier(0.16,1,0.3,1)]"
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">

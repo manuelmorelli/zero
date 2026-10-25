@@ -111,7 +111,9 @@ export function QuickUploadProvider({ journeys, linkableJourneys, children }: Qu
   );
 }
 
-/** Pulsante "+" flottante globale, visibile su tutto il sito per chi è loggato. */
+/** Pulsante "+" flottante globale, visibile su tutto il sito per chi è loggato. Nascosto sotto i
+ * 768px (md): lì la stessa azione vive nel pulsante centrale di BottomNav.tsx, per non avere due
+ * "+" sullo schermo del telefono. Sopra i 768px resta identico a prima. */
 export function QuickUploadFab() {
   const quickUpload = useQuickUpload();
 
@@ -121,7 +123,7 @@ export function QuickUploadFab() {
       onClick={() => quickUpload?.openChoice()}
       aria-label="Add to your Journey or post an Update"
       style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
-      className="fixed right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-ink text-bg shadow-2xl transition-transform hover:scale-105 active:scale-95"
+      className="fixed right-5 z-40 hidden h-14 w-14 items-center justify-center rounded-full bg-ink text-bg shadow-2xl transition-transform hover:scale-105 active:scale-95 md:flex"
     >
       <PlusIcon className="h-6 w-6" />
     </button>

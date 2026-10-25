@@ -378,6 +378,18 @@ body {
   color: var(--color-ink);
 }
 
+/* Spazio occupato dalla barra di navigazione in basso (components/layout/BottomNav.tsx), solo sotto
+ * i 768px di Tailwind (md): i pulsanti flottanti (notifiche, messaggi, "+") si alzano di questa
+ * misura per non finire sotto la barra. Sopra i 768px vale 0, quindi il desktop resta identico. */
+:root {
+  --mobile-bottom-nav-space: 0px;
+}
+@media (max-width: 767.98px) {
+  :root {
+    --mobile-bottom-nav-space: 4.5rem;
+  }
+}
+
 /* Scrollbar nello stile del sito, al posto di quella grigia di sistema. */
 * {
   scrollbar-width: thin;
