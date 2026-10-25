@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 import { OnboardingWelcome } from "@/components/onboarding/OnboardingWelcome";
 import { OnboardingForm } from "@/components/onboarding/OnboardingForm";
+import { OnboardingReadingTips } from "@/components/onboarding/OnboardingReadingTips";
 import { AuthHeader } from "@/components/layout/AuthHeader";
 import { SectionTitle } from "@/components/ui/heading";
 
@@ -22,6 +23,10 @@ export default async function OnboardingPage() {
 
         <div className="mt-8">
           <OnboardingWelcome name={user.name} />
+        </div>
+
+        <div className="mt-10">
+          <OnboardingReadingTips />
         </div>
 
         <div className="mt-12">
