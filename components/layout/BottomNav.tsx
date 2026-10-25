@@ -6,6 +6,7 @@ import { Home, Compass, Plus, Search, CircleUserRound } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useQuickUpload } from "@/components/creator/QuickUploadButton";
 import { PANEL } from "@/components/ui/panel";
+import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { cn } from "@/lib/utils";
 
 /**
@@ -29,6 +30,9 @@ export function BottomNav() {
   const { data } = useSession();
   const quickUpload = useQuickUpload();
   const isLoggedIn = Boolean(data);
+  // Stessa barra che si fa da parte di Header.tsx, qui verso il basso: più schermo al contenuto
+  // mentre si scorre, torna appena si risale anche di poco.
+  const hiddenOnScroll = useHideOnScroll();
 
   const isHome = pathname === "/";
   const isJourneys = pathname.startsWith("/journeys");
@@ -42,7 +46,8 @@ export function BottomNav() {
       aria-label="Primary"
       className={cn(
         PANEL,
-        "fixed inset-x-6 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center justify-around rounded-full p-2 md:hidden"
+        "fixed inset-x-6 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center justify-around rounded-full p-2 transition-transform duration-300 md:hidden",
+        hiddenOnScroll && "translate-y-24"
       )}
     >
       <NavTab href="/" label="Home" active={isHome}>

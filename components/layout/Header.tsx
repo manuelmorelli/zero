@@ -8,6 +8,7 @@ import { BackButton } from "@/components/layout/BackButton";
 import { SideMenu } from "@/components/layout/SideMenu";
 import { SearchIcon } from "@/components/search/SearchForm";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
+import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -26,6 +27,10 @@ const NAV_LINKS = [
  */
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  // Solo sotto i 768px (md): la barra si fa da parte scorrendo verso il basso, lasciando più
+  // schermo al contenuto, e torna subito appena si risale anche di poco. Sopra i 768px resta
+  // sempre ferma in cima, come prima (vedi md:translate-y-0 qui sotto).
+  const hiddenOnScroll = useHideOnScroll();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -36,9 +41,11 @@ export function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 border-b border-border bg-glass backdrop-blur-md transition-colors duration-300 ${
-        scrolled ? "bg-glass-strong" : ""
-      }`}
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 border-b border-border bg-glass backdrop-blur-md transition-all duration-300 md:translate-y-0",
+        scrolled && "bg-glass-strong",
+        hiddenOnScroll && "-translate-y-full"
+      )}
     >
       <div className={cn(PAGE_WIDTH.wide, "grid h-[3.85rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 md:grid-cols-[1fr_auto_1fr]")}>
         <div className="-ml-5 flex min-w-0 items-center gap-3 md:-ml-8">
