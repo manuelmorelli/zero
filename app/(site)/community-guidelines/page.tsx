@@ -99,7 +99,7 @@ export default async function CommunityGuidelinesPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <DisplayTitle className="whitespace-nowrap">
+        <DisplayTitle className="sm:whitespace-nowrap">
           Community{" "}
           <span className="text-ember">
             Guidelines
