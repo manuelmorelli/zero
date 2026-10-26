@@ -55,8 +55,8 @@ export function MessagesButtonClient({ unreadCount, conversations, currentUserId
         // Terzo pulsante impilato sopra "+" e la campanella (stesso pattern, vedi
         // components/layout/NotificationBellButton.tsx): +/campanella occupano già
         // 8.5rem di altezza totale da terra, questo si aggiunge sopra con lo stesso gap.
-        style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 7.75rem + var(--mobile-bottom-nav-space))" }}
-        className="fixed right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95"
+        // Sotto i 768px: dentro l'header come la campanella, stesso motivo (vedi lì).
+        className="fixed right-5 bottom-[calc(max(1.5rem,env(safe-area-inset-bottom))+7.75rem+var(--mobile-bottom-nav-space))] z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95 max-md:right-[10rem] max-md:top-[0.65rem] max-md:bottom-auto max-md:z-[51] max-md:h-9 max-md:w-9 max-md:border-border max-md:shadow-none"
       >
         <MessageIcon className="h-5 w-5" />
         {displayedUnreadCount > 0 && (
@@ -72,8 +72,7 @@ export function MessagesButtonClient({ unreadCount, conversations, currentUserId
           <div
             role="menu"
             aria-label="Messages panel"
-            style={{ bottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) + 11.25rem + var(--mobile-bottom-nav-space))" }}
-            className="fixed right-5 z-40 flex max-h-[70vh] w-full max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xl"
+            className="fixed right-5 bottom-[calc(max(1.5rem,env(safe-area-inset-bottom))+11.25rem+var(--mobile-bottom-nav-space))] z-40 flex max-h-[70vh] w-full max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xl max-md:top-[3.85rem] max-md:bottom-auto max-md:z-[51]"
           >
             {active ? (
               <InlineChat
