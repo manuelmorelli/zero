@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PANEL_GLASS } from "@/components/ui/panel";
 import { EmberChatPanel } from "@/components/common/EmberChatPanel";
 import { cn } from "@/lib/utils";
 
-const INTRO_VISIBLE_MS = 8000;
+const INTRO_VISIBLE_MS = 5000;
 
 /**
  * L'assistente AI di Zero nell'header: la "O" del logo con una faccina (idea di Manuel,
@@ -79,9 +80,22 @@ export function AiMascotButton() {
             aria-hidden="true"
             className="absolute -top-1.5 right-3 h-3 w-3 rotate-45 border-l border-t border-ember-line bg-scrim backdrop-blur-md"
           />
-          <p className={cn(PANEL_GLASS, "bg-scrim p-3 text-sm leading-snug text-on-photo shadow-xl backdrop-blur-md")}>
-            Hi, I&apos;m Ember, the assistant that explains how Zero works. Click here anytime you need a hand.
-          </p>
+          <div className={cn(PANEL_GLASS, "flex items-start gap-2 bg-scrim p-3 text-sm leading-snug text-on-photo shadow-xl backdrop-blur-md")}>
+            <p className="flex-1">
+              Hi, I&apos;m Ember, the assistant that explains how Zero works. Click here anytime you need a hand.
+            </p>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                setIntro("leaving");
+              }}
+              aria-label="Dismiss"
+              className="shrink-0 text-on-photo transition-colors hover:text-ember"
+            >
+              <X className="h-4 w-4" strokeWidth={1.75} />
+            </button>
+          </div>
         </div>
       )}
     </div>
