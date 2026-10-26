@@ -64,7 +64,12 @@ export function AiMascotButton() {
           role="status"
           onAnimationEnd={() => intro === "leaving" && setIntro("hidden")}
           className={cn(
-            "absolute right-0 top-11 z-40 w-64 origin-top-right",
+            // Solo da md in su: sotto, lo schermo è troppo stretto perché il fumetto (ancorato a
+            // destra, sotto l'icona) non copra il titolo della pagina, che su mobile corre bordo a
+            // bordo (su desktop c'è spazio vuoto a destra del titolo, qui non c'è). Ember resta
+            // comunque raggiungibile toccando l'icona in ogni caso, cambia solo il suggerimento
+            // automatico al primo accesso.
+            "absolute right-0 top-11 z-40 hidden w-64 origin-top-right md:block",
             intro === "visible"
               ? "animate-[panel-in_400ms_cubic-bezier(0.16,1,0.3,1)_forwards]"
               : "animate-[panel-out_300ms_cubic-bezier(0.16,1,0.3,1)_forwards]"
