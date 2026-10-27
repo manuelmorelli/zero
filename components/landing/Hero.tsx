@@ -15,6 +15,7 @@ import type { CreatorStory } from "@/lib/discovery/stories";
 import { HERO_PAYOFF_MS, HERO_PAYOFFS } from "@/lib/landing/heroPayoffs";
 import { getGsapScrollTrigger, prefersLightMotion } from "@/lib/gsapClient";
 import { PANEL_GLASS } from "@/components/ui/panel";
+import { CardTitle } from "@/components/ui/heading";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { cn } from "@/lib/utils";
 import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
@@ -80,15 +81,103 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
   // Da computer la card segue il video: cambia quando cambia la clip, con le parole del creator.
   const video = videoMode !== "none" ? (videos[videoIndex] ?? null) : null;
 
+  // Riga di Update (storie): usata sia dentro la Hero da desktop in su, sia come riga a sé sotto
+  // la Hero su mobile (dove la Hero stessa mostra solo foto + card, vedi sopra) — stesso contenuto,
+  // definita qui per condividere lo stato (setOpenStoryIndex/setOwnStoryOpen) senza passarlo a mano.
+  function StoriesRow() {
+    return ownStory || stories.length > 0 ? (
+      <div className="flex gap-1.5 overflow-x-auto pb-1">
+        {ownStory && (
+          <button
+            type="button"
+            onClick={() => ownStory.updates.length > 0 && setOwnStoryOpen(true)}
+            className="flex shrink-0 flex-col items-center gap-1.5"
+          >
+            <span
+              className={`flex h-11 w-11 items-center justify-center rounded-full p-[2px] ${
+                ownStory.hasUnseen ? "bg-ember" : "bg-border"
+              }`}
+            >
+              <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-bg bg-surface-2 text-sm font-semibold text-ink-muted">
+                {ownStory.creatorAvatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={ownStory.creatorAvatarUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  ownStory.creatorName.charAt(0).toUpperCase()
+                )}
+              </span>
+            </span>
+            <span className="max-w-11 truncate text-hero-caption text-on-photo-muted">You</span>
+          </button>
+        )}
+        {stories.slice(0, 6).map((story, index) => (
+          <button
+            key={story.creatorId}
+            type="button"
+            onClick={() => setOpenStoryIndex(index)}
+            className="flex shrink-0 flex-col items-center gap-1.5"
+          >
+            <span
+              className={`flex h-11 w-11 items-center justify-center rounded-full p-[2px] ${
+                story.hasUnseen ? "bg-ember" : "bg-border"
+              }`}
+            >
+              <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-bg bg-surface-2 text-sm font-semibold text-ink-muted">
+                {story.creatorAvatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={story.creatorAvatarUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  story.creatorName.charAt(0).toUpperCase()
+                )}
+              </span>
+            </span>
+            <span className="max-w-11 truncate text-hero-caption text-on-photo-muted">
+              {story.creatorName}
+            </span>
+          </button>
+        ))}
+        {stories.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setOpenStoryIndex(0)}
+            className="flex shrink-0 flex-col items-center gap-1.5"
+          >
+            <span className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-2 text-ink-muted transition-colors hover:text-ember">
+              &rarr;
+            </span>
+            <span className="text-hero-caption text-on-photo-muted">View All</span>
+          </button>
+        )}
+      </div>
+    ) : (
+      <div className="flex items-center gap-4">
+        <div className="flex -space-x-2.5">
+          {creators.map((name) => (
+            <Avatar key={name} name={name} size="sm" className="h-9 w-9 border-2 border-bg" />
+          ))}
+        </div>
+        <p className="text-sm leading-relaxed text-on-photo-muted">
+          No account needed to watch.
+          <br />
+          Join when you&apos;re ready to be part of it.
+        </p>
+      </div>
+    );
+  }
+
   return (
+    <>
     <section ref={sectionRef} className="relative overflow-hidden">
-      {/* Foto cinematografica: come oggi angoli vivi/piena larghezza su mobile, come una card
-       * (angoli arrotondati + margine laterale) da desktop in su, stile Netflix — stessa altezza
-       * di prima, cambia solo la forma del contenitore. Da desktop in su la sezione è spostata in
-       * basso di md:mt-12 (~altezza dell'header) così la card inizia subito sotto l'header invece
-       * di iniziare dietro di lui: su mobile l'header resta sovrapposto come oggi. Da computer la
-       * clip della Hero copre le foto (che restano sotto come riserva). */}
-      <div ref={mediaRef} className="absolute inset-0 md:inset-x-[4.43%] md:overflow-hidden md:rounded-2xl">
+      {/* Foto cinematografica: su mobile un blocco alto a sé (stile Netflix, solo foto + card del
+       * Journey in evidenza sopra, niente scritta ZERO/frase/pulsanti/storie qui — quelli restano
+       * solo da desktop in su, vedi contentRef più sotto; la scritta ZERO vive ora più grande
+       * nell'header, components/layout/Header.tsx). Da desktop in su resta come prima: angoli
+       * arrotondati + margine laterale, altezza che segue il contenuto a fianco (position
+       * absolute). Da computer la clip della Hero copre le foto (che restano sotto come riserva). */}
+      <div
+        ref={mediaRef}
+        className="relative h-[70vh] max-h-[552px] min-h-[420px] overflow-hidden rounded-t-[18px] md:absolute md:inset-0 md:inset-x-[4.43%] md:h-auto md:max-h-none md:min-h-0 md:rounded-2xl"
+      >
         {slides.map((item, index) => (
           <Image
             key={item.alt}
@@ -115,13 +204,17 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             onEnded={() => setVideoIndex((prev) => (prev + 1) % videos.length)}
           />
         )}
-        {/* Trattamento cinematografico: grana pellicola sulla foto e veli scuri per leggere il
-         * testo a sinistra (classi hero-* in app/globals.css). */}
-        <div className="hero-grain absolute inset-0" aria-hidden="true" />
-
-        <div className="hero-scrim absolute inset-0" />
-        <div className="hero-side-fade absolute inset-0" />
-        <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
+        {/* Trattamento cinematografico da desktop in su: grana pellicola e veli scuri per leggere
+         * il testo a sinistra (classi hero-* in app/globals.css). Su mobile solo una sfumatura in
+         * basso (card-scrim, la stessa di ogni card con foto del sito) per leggere la card sopra,
+         * la foto resta visibile. */}
+        <div className="hero-grain absolute inset-0 hidden md:block" aria-hidden="true" />
+        <div className="hero-scrim absolute inset-0 hidden md:block" />
+        <div className="hero-side-fade absolute inset-0 hidden md:block" />
+        <div className="cover-fade absolute inset-x-0 bottom-0 h-80 hidden md:block" />
+        {/* Solo sul basso, non su tutta la foto: card-scrim su inset-0 anneriva mezza foto, pensata
+         * per card piccole (150-250px), non per un blocco alto 552px come questo. */}
+        <div className="card-scrim absolute inset-x-0 bottom-0 h-64 md:hidden" />
         {/* Audio della clip, in alto a destra: parte sempre muta, si attiva solo con un clic. */}
         {video && videoMode === "play" && (
           <IconButton
@@ -132,14 +225,30 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             {muted ? <VolumeX className="h-4 w-4" aria-hidden="true" /> : <Volume2 className="h-4 w-4" aria-hidden="true" />}
           </IconButton>
         )}
+
+        {/* Card del Journey in evidenza, solo su mobile: titolo/autore/categoria in alto a
+         * sinistra + pulsante Watch, didascalia + pallini in basso al centro. Da desktop in su
+         * questa stessa informazione vive nella card a destra più sotto (HeroSlideCard). */}
+        <div className="absolute inset-0 flex flex-col justify-between p-4 pt-20 md:hidden">
+          <MobileHeroInfo slide={slide} />
+          <div className="flex flex-col items-center gap-3">
+            <MobileHeroCaption slide={slide} />
+            <div className="flex items-center gap-2">
+              {slides.map((item, index) => (
+                <HeroDot key={item.alt} label={`Show journey ${index + 1}`} current={index === active} onClick={() => setActive(index)} />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Margine laterale allineato alla foto rientrata della Hero (md:inset-x-[4.43%]). */}
+      {/* Margine laterale allineato alla foto rientrata della Hero (md:inset-x-[4.43%]): scritta
+       * ZERO, frase, pulsanti e storie, solo da desktop in su (vedi nota sopra). */}
       <div
         ref={contentRef}
         className={cn(
           PAGE_WIDTH.wideCover,
-          "pointer-events-none relative grid gap-5 pt-16 pb-12 *:pointer-events-auto md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto_auto] md:gap-x-8 md:gap-y-3 md:pt-6 md:pb-12"
+          "pointer-events-none relative hidden gap-5 pt-16 pb-12 *:pointer-events-auto md:grid md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:grid-rows-[auto_auto_auto] md:gap-x-8 md:gap-y-3 md:pt-6 md:pb-12"
         )}
       >
         <div className="max-w-lg md:col-start-1 md:row-start-1">
@@ -177,89 +286,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
 
         {/* Avatar/Updates — la card del Journey (o citazione) a destra si allinea a questa riga. */}
         <div className="max-w-lg md:col-start-1 md:row-start-3">
-          {ownStory || stories.length > 0 ? (
-            <div className="flex gap-1.5 overflow-x-auto pb-1">
-              {ownStory && (
-                <button
-                  type="button"
-                  onClick={() => ownStory.updates.length > 0 && setOwnStoryOpen(true)}
-                  className="flex shrink-0 flex-col items-center gap-1.5"
-                >
-                  <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-full p-[2px] ${
-                      ownStory.hasUnseen ? "bg-ember" : "bg-border"
-                    }`}
-                  >
-                    <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-bg bg-surface-2 text-sm font-semibold text-ink-muted">
-                      {ownStory.creatorAvatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={ownStory.creatorAvatarUrl} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        ownStory.creatorName.charAt(0).toUpperCase()
-                      )}
-                    </span>
-                  </span>
-                  <span className="max-w-11 truncate text-hero-caption text-on-photo-muted">You</span>
-                </button>
-              )}
-              {stories.slice(0, 6).map((story, index) => (
-                <button
-                  key={story.creatorId}
-                  type="button"
-                  onClick={() => setOpenStoryIndex(index)}
-                  className="flex shrink-0 flex-col items-center gap-1.5"
-                >
-                  <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-full p-[2px] ${
-                      story.hasUnseen ? "bg-ember" : "bg-border"
-                    }`}
-                  >
-                    <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-2 border-bg bg-surface-2 text-sm font-semibold text-ink-muted">
-                      {story.creatorAvatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={story.creatorAvatarUrl} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        story.creatorName.charAt(0).toUpperCase()
-                      )}
-                    </span>
-                  </span>
-                  <span className="max-w-11 truncate text-hero-caption text-on-photo-muted">
-                    {story.creatorName}
-                  </span>
-                </button>
-              ))}
-              {stories.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setOpenStoryIndex(0)}
-                  className="flex shrink-0 flex-col items-center gap-1.5"
-                >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-2 text-ink-muted transition-colors hover:text-ember">
-                    &rarr;
-                  </span>
-                  <span className="text-hero-caption text-on-photo-muted">View All</span>
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center gap-4">
-              <div className="flex -space-x-2.5">
-                {creators.map((name) => (
-                  <Avatar
-                    key={name}
-                    name={name}
-                    size="sm"
-                    className="h-9 w-9 border-2 border-bg"
-                  />
-                ))}
-              </div>
-              <p className="text-sm leading-relaxed text-on-photo-muted">
-                No account needed to watch.
-                <br />
-                Join when you&apos;re ready to be part of it.
-              </p>
-            </div>
-          )}
+          {StoriesRow()}
         </div>
 
         {/* Card sopra la foto, allineata alla riga degli Update: Journey reale se disponibile
@@ -299,6 +326,12 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         />
       )}
     </section>
+      {/* Storie, solo su mobile: sopra vivono dentro la Hero (da desktop in su), qui sotto perché
+       * la Hero mobile mostra solo foto + card del Journey (vedi sopra). */}
+      <div className={cn(PAGE_WIDTH.wideCover, "pt-4 md:hidden")}>
+        {StoriesRow()}
+      </div>
+    </>
   );
 }
 
@@ -310,6 +343,44 @@ function HeroDot({ label, current, onClick }: { label: string; current: boolean;
       onClick={onClick}
       className={`h-1.5 rounded-full transition-all duration-500 ${current ? "w-7 bg-ember" : "w-1.5 bg-overlay hover:bg-on-photo-muted"}`}
     />
+  );
+}
+
+/** In alto a sinistra sulla foto, solo su mobile: titolo, autore + numero episodi, categoria,
+ * pulsante Watch — tutto ciò che la Hero mobile mostra di un Journey (vedi la nota su mediaRef più
+ * sopra). Niente per la citazione demo: senza un Journey vero non c'è nulla da guardare. */
+function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
+  if (slide.kind === "demo") return null;
+
+  return (
+    <div className="max-w-[78%]">
+      <Link href={`/journeys/${slide.id}`} className="block">
+        <CardTitle as="h2" className="truncate !text-on-photo text-xl">{slide.title}</CardTitle>
+        <p className="mt-1 truncate text-sm text-on-photo-muted">
+          by {slide.creatorName} · {slide.episodesCount} {slide.episodesCount === 1 ? "episode" : "episodes"}
+        </p>
+        {slide.category && (
+          <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-ember">{slide.category}</p>
+        )}
+      </Link>
+      <ButtonSecondary href={`/journeys/${slide.id}`} className="!text-on-photo mt-3 px-4 py-1.5 text-sm">
+        Watch
+        <Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
+      </ButtonSecondary>
+    </div>
+  );
+}
+
+/** Pillola in basso al centro della foto, solo su mobile: solo la didascalia (la descrizione del
+ * Journey, o la citazione demo di fallback) — mai categoria/titolo, già mostrati sopra. */
+function MobileHeroCaption({ slide }: { slide: HeroSlide }) {
+  const text = slide.kind === "demo" ? slide.quote : slide.description;
+  if (!text) return null;
+
+  return (
+    <div className={cn(PANEL_GLASS, "max-w-[88%] rounded-full px-4 py-2 text-center")}>
+      <p className="truncate text-sm text-on-photo">{text}</p>
+    </div>
   );
 }
 

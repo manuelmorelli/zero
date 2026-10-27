@@ -14,6 +14,8 @@ export type JourneyHeroSlide = {
   title: string;
   category: string | null;
   creatorName: string;
+  description: string | null;
+  episodesCount: number;
 };
 
 export type HeroSlide = DemoHeroSlide | JourneyHeroSlide;

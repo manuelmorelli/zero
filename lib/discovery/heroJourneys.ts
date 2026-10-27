@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { ensureFreshJourneyScores } from "@/lib/scoring/journeyScore";
 import { withResolvedCoverUrls } from "@/lib/media/resolveCoverUrl";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { getPublishedEpisodeCounts } from "@/lib/journey/episodeCounts";
 
 export type HeroJourneyItem = {
   id: string;
@@ -9,6 +10,10 @@ export type HeroJourneyItem = {
   coverUrl: string | null;
   category: string | null;
   creatorName: string;
+  /** Riga sotto il titolo nella Hero mobile (solo foto, stile Netflix): la descrizione del
+   * Journey, se presente. */
+  description: string | null;
+  episodesCount: number;
 };
 
 /**
@@ -33,16 +38,18 @@ export async function getHeroJourneys(limit = 4): Promise<HeroJourneyItem[]> {
     include: { creator: true },
   });
 
-  const sorted = journeys
-    .sort((a, b) => b.journeyScore - a.journeyScore)
-    .slice(0, limit)
-    .map((journey) => ({
-      id: journey.id,
-      title: journey.title,
-      coverUrl: journey.coverUrl,
-      category: journey.category,
-      creatorName: journey.creator.displayName,
-    }));
+  const ranked = journeys.sort((a, b) => b.journeyScore - a.journeyScore).slice(0, limit);
+  const episodeCounts = await getPublishedEpisodeCounts(ranked.map((journey) => journey.id));
+
+  const sorted = ranked.map((journey) => ({
+    id: journey.id,
+    title: journey.title,
+    coverUrl: journey.coverUrl,
+    category: journey.category,
+    creatorName: journey.creator.displayName,
+    description: journey.description,
+    episodesCount: episodeCounts.get(journey.id) ?? 0,
+  }));
 
   return withResolvedCoverUrls(sorted);
 }

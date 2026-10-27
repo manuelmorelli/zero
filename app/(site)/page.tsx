@@ -127,6 +127,8 @@ export default async function Home() {
           title: journey.title,
           category: journey.category,
           creatorName: journey.creatorName,
+          description: journey.description,
+          episodesCount: journey.episodesCount,
         }))
       : demoHeroSlidesWithKind;
 

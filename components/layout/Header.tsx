@@ -52,7 +52,9 @@ export function Header() {
           <SideMenu />
           <BackButton />
           <Link href="/" className="flex min-w-0 items-center" aria-label="Zero home">
-            <Logo className="h-7" />
+            {/* Più grande su mobile (niente scritta ZERO nella Hero lì, vedi Hero.tsx): la
+             * identità del marchio nell'header ne porta il peso. Invariata da desktop in su. */}
+            <Logo className="h-9 md:h-7" />
           </Link>
         </div>
 
