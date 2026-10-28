@@ -20,21 +20,25 @@ const RATIO: Record<CoverFormat, string> = {
   featured: "aspect-[16/10]",
 };
 
-/** Griglia: quante card per riga su telefono / tablet / computer. */
+/** Griglia: quante card per riga su telefono / tablet / computer. Due per riga anche sul
+ * telefono (prima una sola, a piena larghezza: troppo grande, lontano dalla densità del mockup
+ * mobile — da tablet in su invariato). */
 export const CARD_GRID: Record<Exclude<CoverFormat, "featured">, string> = {
-  journey: "grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-5",
-  episode: "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4",
-  event: "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4",
+  journey: "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5",
+  episode: "grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4",
+  event: "grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4",
   // Le card persona sono piccole: due per riga anche sul telefono.
   person: "grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8",
 };
 
 /** Larghezza di una card dentro una riga che scorre (HorizontalScrollRow, gap-4): identica a
- * quella della griglia dello stesso formato, così la card non cambia misura tra pagine. */
+ * quella della griglia dello stesso formato, così la card non cambia misura tra pagine. Sul
+ * telefono ridotta da 80% (una sola card quasi a piena larghezza) a circa metà schermo, in modo
+ * che se ne vedano sempre almeno due come nel mockup — da tablet in su invariato. */
 export const CARD_ROW_ITEM: Record<Exclude<CoverFormat, "featured">, string> = {
-  journey: "w-[80%] shrink-0 sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
-  episode: "w-[80%] shrink-0 sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
-  event: "w-[80%] shrink-0 sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
+  journey: "w-[46%] shrink-0 sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
+  episode: "w-[46%] shrink-0 sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
+  event: "w-[46%] shrink-0 sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
   person: "w-[42%] shrink-0 sm:w-[calc((100%-3rem)/4)] lg:w-[calc((100%-7rem)/8)]",
 };
 

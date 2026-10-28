@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Home, Compass, Plus, Search, CircleUserRound } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useQuickUpload } from "@/components/creator/QuickUploadButton";
-import { PANEL } from "@/components/ui/panel";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { cn } from "@/lib/utils";
 
@@ -45,8 +44,9 @@ export function BottomNav() {
     <nav
       aria-label="Primary"
       className={cn(
-        PANEL,
-        "fixed inset-x-6 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center justify-around rounded-full p-2 transition-transform duration-300 md:hidden",
+        // Vetro sfocato come l'header in alto (bg-glass-strong backdrop-blur-md, Header.tsx),
+        // non uno sfondo pieno: prima si vedeva come un riquadro opaco, lontano dal mockup.
+        "fixed inset-x-6 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center justify-around rounded-full border border-border bg-glass-strong p-2 shadow-xl backdrop-blur-md transition-transform duration-300 md:hidden",
         hiddenOnScroll && "translate-y-24"
       )}
     >
