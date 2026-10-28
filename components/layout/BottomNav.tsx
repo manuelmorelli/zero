@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Home, Compass, Plus, Search, CircleUserRound } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useQuickUpload } from "@/components/creator/QuickUploadButton";
-import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { cn } from "@/lib/utils";
 
 /**
@@ -29,9 +28,6 @@ export function BottomNav() {
   const { data } = useSession();
   const quickUpload = useQuickUpload();
   const isLoggedIn = Boolean(data);
-  // Stessa barra che si fa da parte di Header.tsx, qui verso il basso: più schermo al contenuto
-  // mentre si scorre, torna appena si risale anche di poco.
-  const hiddenOnScroll = useHideOnScroll();
 
   const isHome = pathname === "/";
   const isJourneys = pathname.startsWith("/journeys");
@@ -46,8 +42,10 @@ export function BottomNav() {
       className={cn(
         // Vetro sfocato come l'header in alto (bg-glass-strong backdrop-blur-md, Header.tsx),
         // non uno sfondo pieno: prima si vedeva come un riquadro opaco, lontano dal mockup.
-        "fixed inset-x-6 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center justify-around rounded-full border border-border bg-glass-strong p-2 shadow-xl backdrop-blur-md transition-transform duration-300 md:hidden",
-        hiddenOnScroll && "translate-y-24"
+        // Sempre ferma: a differenza dell'header in alto (TopBar.dc.html ha davvero una logica di
+        // nascondersi scorrendo), BottomNav.dc.html nel mockup non si nasconde mai — una sessione
+        // precedente aveva applicato la stessa logica a entrambe per errore, qui tolta.
+        "fixed inset-x-6 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center justify-around rounded-full border border-border bg-glass-strong p-2 shadow-xl backdrop-blur-md md:hidden"
       )}
     >
       <NavTab href="/" label="Home" active={isHome}>
