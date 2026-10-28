@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Compass, Video as VideoIcon, Star, Sparkles, Shuffle, History, Play, ShieldCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { ContinueJourneyItem } from "@/lib/discovery/continueJourneys";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { VideoCard } from "@/components/journey/VideoCard";
@@ -374,11 +375,13 @@ function Categories({ countByCategory }: { countByCategory: Map<string, number> 
       </Reveal>
 
       <Reveal delayMs={60}>
-        <div className="mt-4 flex flex-wrap gap-2">
+        {/* Su mobile scorre in riga invece di andare a capo (25 categorie a capo diventano un
+         * blocco enorme, lontano dalla riga compatta del mockup): da tablet in su invariato. */}
+        <div className="mt-4 flex flex-wrap gap-2 max-md:flex-nowrap max-md:overflow-x-auto max-md:pb-1 max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden">
           {JOURNEY_CATEGORIES.map((category) => {
             const count = countByCategory.get(category) ?? 0;
             return (
-              <Link key={category} href={`/journeys#${categoryToSlug(category)}`} className={CHIP}>
+              <Link key={category} href={`/journeys#${categoryToSlug(category)}`} className={cn(CHIP, "max-md:shrink-0")}>
                 {category}
                 <span className="text-ink-faint">{count}</span>
               </Link>
