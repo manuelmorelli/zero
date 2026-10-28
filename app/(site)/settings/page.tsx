@@ -1,18 +1,20 @@
 import Link from "next/link";
+import { User, Lock, Bell, Star, Shield, Heart, CreditCard, LogOut } from "lucide-react";
 import { requireSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { PageTitle } from "@/components/ui/heading";
 import { ThemeToggle } from "@/components/settings/ThemeToggle";
+import { SignOutButton } from "@/components/common/SignOutButton";
 
 const SETTINGS_SECTIONS = [
-  { href: "/settings/account", label: "Account", description: "Name, username, bio, location" },
-  { href: "/settings/security", label: "Password & Security", description: "Password and email address" },
-  { href: "/settings/notifications", label: "Notifications", description: "Which updates you receive" },
-  { href: "/settings/creator", label: "Journeyer", description: "Notifications and tools for what you publish" },
-  { href: "/settings/privacy", label: "Privacy", description: "Who can interact with you" },
-  { href: "/settings/interests", label: "Interests", description: "Categories you care about" },
-  { href: "/settings/subscription", label: "Subscription", description: "Billing and plan" },
+  { href: "/settings/account", label: "Account", description: "Name, username, bio, location", icon: User },
+  { href: "/settings/security", label: "Password & Security", description: "Password and email address", icon: Lock },
+  { href: "/settings/notifications", label: "Notifications", description: "Which updates you receive", icon: Bell },
+  { href: "/settings/creator", label: "Journeyer", description: "Notifications and tools for what you publish", icon: Star },
+  { href: "/settings/privacy", label: "Privacy & Blocking", description: "Who can interact with you", icon: Shield },
+  { href: "/settings/interests", label: "Interests", description: "Categories you care about", icon: Heart },
+  { href: "/settings/subscription", label: "Subscription", description: "Billing and plan", icon: CreditCard },
 ];
 
 export default async function SettingsPage() {
@@ -32,7 +34,28 @@ export default async function SettingsPage() {
           <ThemeToggle theme={theme} />
         </div>
 
-        <div className="mt-6 divide-y divide-border rounded-xl border border-border bg-surface">
+        {/* Sotto i 768px: righe semplici icona+nome, senza descrizione/freccetta/riquadro bordato
+            (identico a Settings.dc.html del mockup). Da tablet in su invariato: righe con
+            descrizione e freccetta dentro un riquadro bordato, più informative per uno schermo
+            largo. */}
+        <div className="mt-6 divide-y divide-border pb-24 md:hidden">
+          {SETTINGS_SECTIONS.map((section) => (
+            <Link
+              key={section.href}
+              href={section.href}
+              className="flex items-center gap-4 py-4 text-ink transition-colors hover:text-ember"
+            >
+              <section.icon className="h-5 w-5 shrink-0" strokeWidth={1.75} />
+              <span className="text-base font-semibold">{section.label}</span>
+            </Link>
+          ))}
+          <SignOutButton className="flex w-full items-center gap-4 py-4 text-left text-danger transition-colors hover:opacity-80">
+            <LogOut className="h-5 w-5 shrink-0" strokeWidth={1.75} />
+            <span className="text-base font-semibold">Sign out</span>
+          </SignOutButton>
+        </div>
+
+        <div className="mt-6 hidden divide-y divide-border rounded-xl border border-border bg-surface md:block">
           {SETTINGS_SECTIONS.map((section) => (
             <Link
               key={section.href}

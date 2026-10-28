@@ -17,15 +17,15 @@ export default async function SettingsPrivacyPage() {
   return (
     <main>
       <div className={`${PAGE_WIDTH.narrow} ${PAGE_SPACING}`}>
-        <PageTitle className="text-ember">Privacy</PageTitle>
+        <PageTitle className="text-ember">Privacy & Blocking</PageTitle>
         <p className="mt-2 text-sm text-ink">Control who can see your profile and reach you.</p>
 
         <div className={`mt-8 ${PANEL}`}>
           <PrivacyForm isPrivate={isPrivate} />
         </div>
 
-        <SectionTitle className="mt-10">Blocked users</SectionTitle>
-        <p className="mt-1 text-sm text-ink-muted">
+        <SectionTitle className="mt-10">Blocked accounts</SectionTitle>
+        <p className="mt-1 hidden text-sm text-ink-muted md:block">
           Blocking stops you from following each other and from messaging each other, and hides
           your profiles from one another.
         </p>
