@@ -35,7 +35,9 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
   );
 
   return (
-    <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    // md, non sm (640px): stesso confine telefono/computer di Header/BottomNav/Hero, vedi la nota
+    // in components/ui/cover-card.tsx.
+    <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {journeys.map((journey) => {
         const reachableIndex = reachable.findIndex((item) => item.id === journey.id);
         const isReachable = reachableIndex !== -1;

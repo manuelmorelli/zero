@@ -49,7 +49,9 @@ export function SkeletonCardRow({
   format?: SkeletonCardFormat;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+    // md, non sm: stesso confine telefono/computer del resto (vedi components/ui/cover-card.tsx),
+    // così il placeholder di caricamento ha sempre la stessa densità della griglia vera sotto.
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
       {Array.from({ length: count }).map((_, index) => (
         <SkeletonCard key={index} format={format} />
       ))}

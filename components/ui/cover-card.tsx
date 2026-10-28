@@ -22,24 +22,28 @@ const RATIO: Record<CoverFormat, string> = {
 
 /** Griglia: quante card per riga su telefono / tablet / computer. Due per riga anche sul
  * telefono (prima una sola, a piena larghezza: troppo grande, lontano dalla densità del mockup
- * mobile — da tablet in su invariato). */
+ * mobile — da tablet in su invariato). Il cambio di densità scatta a 768px (md), non più a 640px
+ * (sm): il resto del porting mobile (Header, BottomNav, Hero) passa dalla modalità telefono a
+ * quella computer esattamente a 768px — tra 640 e 768px (un telefono in orizzontale, per esempio)
+ * si vedeva un mix: barra/header ancora da telefono ma card già nella densità da tablet/computer. */
 export const CARD_GRID: Record<Exclude<CoverFormat, "featured">, string> = {
-  journey: "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5",
-  episode: "grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4",
-  event: "grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4",
+  journey: "grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5",
+  episode: "grid grid-cols-2 gap-4 lg:grid-cols-4",
+  event: "grid grid-cols-2 gap-4 lg:grid-cols-4",
   // Le card persona sono piccole: due per riga anche sul telefono.
-  person: "grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8",
+  person: "grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-8",
 };
 
 /** Larghezza di una card dentro una riga che scorre (HorizontalScrollRow, gap-4): identica a
  * quella della griglia dello stesso formato, così la card non cambia misura tra pagine. Sul
  * telefono ridotta da 80% (una sola card quasi a piena larghezza) a circa metà schermo, in modo
- * che se ne vedano sempre almeno due come nel mockup — da tablet in su invariato. */
+ * che se ne vedano sempre almeno due come nel mockup — stessa nota sul cambio a 768px invece di
+ * 640px qui sopra, da tablet in su invariato. */
 export const CARD_ROW_ITEM: Record<Exclude<CoverFormat, "featured">, string> = {
-  journey: "w-[46%] shrink-0 sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
-  episode: "w-[46%] shrink-0 sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
-  event: "w-[46%] shrink-0 sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
-  person: "w-[42%] shrink-0 sm:w-[calc((100%-3rem)/4)] lg:w-[calc((100%-7rem)/8)]",
+  journey: "w-[46%] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
+  episode: "w-[46%] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
+  event: "w-[46%] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
+  person: "w-[42%] shrink-0 md:w-[calc((100%-3rem)/4)] lg:w-[calc((100%-7rem)/8)]",
 };
 
 const SIZES: Record<CoverFormat, string> = {
