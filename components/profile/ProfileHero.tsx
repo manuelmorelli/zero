@@ -56,33 +56,34 @@ export function ProfileHero({
 
   return (
     <section className="relative isolate w-full md:mt-[calc(3.85rem+0.5cm)]">
-      {/* Foto di copertina: piena larghezza su mobile, come una card (angoli arrotondati +
-       * margine laterale) da desktop in su — stesso trattamento della foto in Hero della Home.
-       * Occupa davvero questa altezza nel flusso della pagina (non più fuori flusso con un
-       * riempimento a mano sotto, misura che si disallineava ogni volta che il blocco sotto era
-       * più basso del previsto, es. su schermi stretti): quello che viene dopo non può più finire
-       * sopra la foto invece che sotto, qualunque cosa succeda al contenuto sotto. */}
-      <div className="relative h-[22rem] overflow-hidden sm:h-[26rem] md:mx-[4.43%] md:h-[29rem] md:rounded-2xl">
-        <div className="absolute inset-0 -z-10">
-          {coverUrl ? (
-            <FadeImage src={coverUrl} alt="" fill sizes="100vw" quality={90} className="object-cover" preload />
-          ) : (
-            <div className="absolute inset-0 cover-placeholder" />
-          )}
-          {/* Sfumatura ampia con curva "ad S" (vedi .cover-fade in globals.css): copre la parte
-           * bassa della foto, dove poggiano anche le statistiche e i bottoni, così quegli elementi
-           * si trovano su uno sfondo già naturalmente scurito invece che sulla foto a piena luce —
-           * meno contrasto netto, transizione morbida verso la barra Overview/Journeys sotto. */}
-          <div className="cover-fade absolute inset-x-0 bottom-0 h-32 sm:h-40 md:h-48" />
+      {/* Foto di copertina: su mobile una card con margine e angoli arrotondati (come la copertina
+       * di Presentation.dc.html nel mockup — prima era un rettangolo a piena larghezza, angoli
+       * vivi, molto più alto: lontano dal mockup), da desktop in su invariata (margine laterale +
+       * angoli arrotondati, come prima). Occupa davvero questa altezza nel flusso della pagina:
+       * quello che viene dopo non può finire sopra la foto invece che sotto. */}
+      <div className="px-5 pt-3.5 md:px-0 md:pt-0">
+        <div className="relative aspect-4/3 overflow-hidden rounded-xl md:aspect-auto md:mx-[4.43%] md:h-[29rem] md:rounded-2xl">
+          <div className="absolute inset-0 -z-10">
+            {coverUrl ? (
+              <FadeImage src={coverUrl} alt="" fill sizes="100vw" quality={90} className="object-cover" preload />
+            ) : (
+              <div className="absolute inset-0 cover-placeholder" />
+            )}
+            {/* Sfumatura ampia con curva "ad S" (vedi .cover-fade in globals.css): copre la parte
+             * bassa della foto, dove poggia anche l'avatar che vi si sovrappone, così quell'angolo
+             * si trova su uno sfondo già naturalmente scurito invece che sulla foto a piena luce. */}
+            <div className="cover-fade absolute inset-x-0 bottom-0 h-24 md:h-48" />
+          </div>
         </div>
       </div>
 
-      {/* Stesso spostamento verso l'alto di prima (foto meno il margine da cima a dove inizia il
-       * nome), solo calcolato come risalita da sotto invece che riempimento da sopra: il risultato
-       * visivo è identico, ma ora la foto sopra ha sempre la sua altezza garantita. */}
+      {/* Risalita dell'avatar sopra il bordo della card qui sopra: su mobile la card è più corta
+       * di prima (aspect-4/3, non più un rettangolo h-[22rem]), quindi la risalita è molto minore
+       * — tarata sulla metà dell'avatar (h-28=112px) così si sovrappone al bordo della foto senza
+       * coprirla quasi tutta. Da desktop in su invariata. */}
       <div
         className={cn(
-          "relative z-10 -mt-[calc(14.5rem-0.9cm)] sm:-mt-[calc(15rem-0.9cm)] md:-mt-[calc(17rem-0.9cm)]",
+          "relative z-10 -mt-14 sm:-mt-16 md:-mt-[calc(17rem-0.9cm)]",
           PAGE_WIDTH.wideCover
         )}
       >
