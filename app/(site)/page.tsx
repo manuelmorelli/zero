@@ -53,7 +53,7 @@ function padWithDemo<T>(real: T[], demo: T[], limit: number): T[] {
   if (real.length >= limit) return real.slice(0, limit);
   return [...real, ...demo].slice(0, limit);
 }
-/** Riga piena della griglia a scomparsa delle persone (CARD_GRID.person, Wildcards to Follow). */
+/** Quanti Wildcard to Follow caricare (riga che scorre in Home, non una griglia). */
 const PEOPLE_PER_ROW = 8;
 const HOME_SECTION = `${PAGE_WIDTH.wide} py-4`;
 
@@ -340,20 +340,18 @@ function WildcardsToFollow({ creators }: { creators: CreatorSearchResult[] }) {
   return (
     <section className={HOME_SECTION}>
       <Reveal>
-        <SectionHeading
+        {/* Riga che scorre come le altre sezioni della Home (prima una griglia a 2 colonne che
+         * andava a capo, diversa da ogni altra riga qui sopra e dal mockup, dove scorre). */}
+        <HorizontalScrollRow
           icon={<Shuffle className="h-6 w-6" aria-hidden="true" />}
           title="Wildcards to Follow"
           subtitle="A random pick from each category, refreshed daily."
-        />
+        >
+          {creators.map((creator) => (
+            <JourneyerCard key={creator.id} journeyer={creator} className={CARD_ROW_ITEM.person} />
+          ))}
+        </HorizontalScrollRow>
       </Reveal>
-
-      <ul className={`mt-4 ${CARD_GRID.person}`}>
-        {creators.map((creator, index) => (
-          <Reveal key={creator.id} as="li" delayMs={index * 70}>
-            <JourneyerCard journeyer={creator} />
-          </Reveal>
-        ))}
-      </ul>
     </section>
   );
 }
