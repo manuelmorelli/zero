@@ -26,23 +26,27 @@ const RATIO: Record<CoverFormat, string> = {
  * (sm): il resto del porting mobile (Header, BottomNav, Hero) passa dalla modalità telefono a
  * quella computer esattamente a 768px — tra 640 e 768px (un telefono in orizzontale, per esempio)
  * si vedeva un mix: barra/header ancora da telefono ma card già nella densità da tablet/computer. */
+// Sul telefono colonne a larghezza fissa (112px, come le card nelle righe — stesso motivo:
+// niente colonne che si allargano ruotando lo schermo). Da tablet in su invariate (colonne
+// fluide, numero fisso per riga).
 export const CARD_GRID: Record<Exclude<CoverFormat, "featured">, string> = {
-  journey: "grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5",
-  episode: "grid grid-cols-2 gap-4 lg:grid-cols-4",
-  event: "grid grid-cols-2 gap-4 lg:grid-cols-4",
+  journey: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-3 lg:grid-cols-5",
+  episode: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 lg:grid-cols-4",
+  event: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 lg:grid-cols-4",
   // Le card persona sono piccole: due per riga anche sul telefono.
   person: "grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-8",
 };
 
 /** Larghezza di una card dentro una riga che scorre (HorizontalScrollRow, gap-4): identica a
  * quella della griglia dello stesso formato, così la card non cambia misura tra pagine. Sul
- * telefono ridotta da 80% (una sola card quasi a piena larghezza) a circa metà schermo, in modo
- * che se ne vedano sempre almeno due come nel mockup — stessa nota sul cambio a 768px invece di
- * 640px qui sopra, da tablet in su invariato. */
+ * telefono un valore fisso in px (112px, lo stesso di PosterCard.dc.html nel mockup), non più
+ * una percentuale dello schermo: prima, con una % (es. w-[46%]), la card cambiava misura
+ * ruotando il telefono (più larga in orizzontale) — nel mockup resta sempre uguale, identica in
+ * entrambi gli orientamenti. Da tablet in su invariato (fluida, come prima). */
 export const CARD_ROW_ITEM: Record<Exclude<CoverFormat, "featured">, string> = {
-  journey: "w-[46%] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
-  episode: "w-[46%] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
-  event: "w-[46%] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
+  journey: "w-[112px] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
+  episode: "w-[112px] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
+  event: "w-[112px] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
   person: "w-[42%] shrink-0 md:w-[calc((100%-3rem)/4)] lg:w-[calc((100%-7rem)/8)]",
 };
 

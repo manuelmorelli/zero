@@ -273,7 +273,13 @@ export default async function PublicProfilePage({
               {overviewCards.length === 1 ? (
                 <div className="max-w-md">{overviewCards}</div>
               ) : (
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,34%)_minmax(0,50%)] lg:justify-between">
+                // Da tablet in su (md, non più solo lg) affiancate invece di impilate: prima il
+                // cambio scattava solo a 1024px, restando impilate (a piena larghezza, enormi)
+                // anche su tablet. Il Journey in corso resta compatto (16:10, il suo formato
+                // ufficiale); la card Bio+video ha testo vero (bio, interessi) che su un telefono
+                // stretto affiancata diventerebbe illeggibile — resta a piena larghezza lì, si
+                // affianca solo quando c'è spazio.
+                <div className="grid gap-4 md:grid-cols-[minmax(0,34%)_minmax(0,50%)] md:justify-between">
                   {overviewCards}
                 </div>
               )}
