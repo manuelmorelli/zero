@@ -38,7 +38,7 @@ export default async function SettingsPage() {
             (identico a Settings.dc.html del mockup). Da tablet in su invariato: righe con
             descrizione e freccetta dentro un riquadro bordato, più informative per uno schermo
             largo. */}
-        <div className="mt-6 divide-y divide-border pb-24 md:hidden">
+        <div className="mt-6 divide-y divide-border md:hidden">
           {SETTINGS_SECTIONS.map((section) => (
             <Link
               key={section.href}
