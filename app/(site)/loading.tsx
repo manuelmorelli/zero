@@ -1,4 +1,4 @@
-import { Skeleton, SkeletonCardRow } from "@/components/ui/skeleton";
+import { Skeleton, SkeletonScrollRow } from "@/components/ui/skeleton";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 
 /** Sagoma della Home: segue l'Hero e le righe scorrevoli di card (Recommended, Discovering Now,
@@ -15,7 +15,7 @@ export default function HomeLoading() {
       {Array.from({ length: 3 }).map((_, index) => (
         <div key={index} className={`${PAGE_WIDTH.wide} space-y-4 py-4`}>
           <Skeleton className="h-6 w-48" />
-          <SkeletonCardRow />
+          <SkeletonScrollRow />
         </div>
       ))}
     </main>

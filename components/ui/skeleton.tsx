@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
 
 /*
  * Sagoma di caricamento ufficiale (scelta di Manuel, punto D2 della lista design): un blocco
@@ -40,7 +41,8 @@ export function SkeletonCard({
   );
 }
 
-/** Riga/griglia di card, per le sezioni scorrevoli (Recommended, Latest Videos, Most Trusted...). */
+/** Griglia di card (Dashboard, Profilo): stessa densità di JourneyGrid/"Published Journeys",
+ * due per riga anche sul telefono. */
 export function SkeletonCardRow({
   count = 5,
   format = "journey",
@@ -54,6 +56,26 @@ export function SkeletonCardRow({
     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
       {Array.from({ length: count }).map((_, index) => (
         <SkeletonCard key={index} format={format} />
+      ))}
+    </div>
+  );
+}
+
+/** Riga che scorre lateralmente (Home: Recommended, Latest Videos, Most Trusted...): stessa
+ * larghezza fissa delle card vere in HorizontalScrollRow (CARD_ROW_ITEM), non una griglia — prima
+ * usava la stessa sagoma a griglia di Dashboard/Profilo (2 colonne larghe), molto più grande delle
+ * card vere a 112px fissi: un salto di misura visibile appena arrivavano i dati veri. */
+export function SkeletonScrollRow({
+  count = 5,
+  format = "journey",
+}: {
+  count?: number;
+  format?: Exclude<SkeletonCardFormat, "person">;
+}) {
+  return (
+    <div className="flex items-start gap-4 overflow-x-hidden">
+      {Array.from({ length: count }).map((_, index) => (
+        <SkeletonCard key={index} format={format} className={CARD_ROW_ITEM[format]} />
       ))}
     </div>
   );
