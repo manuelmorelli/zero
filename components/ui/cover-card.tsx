@@ -39,14 +39,15 @@ export const CARD_GRID: Record<Exclude<CoverFormat, "featured">, string> = {
 
 /** Larghezza di una card dentro una riga che scorre (HorizontalScrollRow, gap-4): identica a
  * quella della griglia dello stesso formato, così la card non cambia misura tra pagine. Sul
- * telefono un valore fisso in px (112px, lo stesso di PosterCard.dc.html nel mockup), non più
- * una percentuale dello schermo: prima, con una % (es. w-[46%]), la card cambiava misura
- * ruotando il telefono (più larga in orizzontale) — nel mockup resta sempre uguale, identica in
- * entrambi gli orientamenti. Da tablet in su invariato (fluida, come prima). */
+ * telefono le stesse dimensioni della card "person" (quella delle Wildcard to Follow in Home,
+ * w-[42%]): su richiesta esplicita di Manuel, 2026-10-29, le card dei video in Home (Continue
+ * Watching e le altre righe) erano troppo piccole rispetto alla card Wildcard sulla stessa
+ * pagina — niente più 112px fisso (quello seguiva PosterCard.dc.html nel mockup, ma risultava
+ * comunque troppo piccolo nel confronto reale). Da tablet in su invariato (fluida, come prima). */
 export const CARD_ROW_ITEM: Record<Exclude<CoverFormat, "featured">, string> = {
-  journey: "w-[112px] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
-  episode: "w-[112px] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
-  event: "w-[112px] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
+  journey: "w-[42%] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
+  episode: "w-[42%] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
+  event: "w-[42%] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
   person: "w-[42%] shrink-0 md:w-[calc((100%-3rem)/4)] lg:w-[calc((100%-7rem)/8)]",
 };
 

@@ -13,7 +13,7 @@ import { HomeClosingCards } from "@/components/landing/HomeClosingCards";
 import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
-import { CARD_GRID, CARD_ROW_ITEM, CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
+import { CARD_ROW_ITEM, CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
 import { CHIP } from "@/components/ui/panel";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { getViewerSession } from "@/lib/session";
@@ -168,17 +168,15 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
   return (
     <section className={HOME_SECTION}>
       <Reveal>
-        <SectionHeading
+        <HorizontalScrollRow
           icon={<History className="h-6 w-6" aria-hidden="true" />}
           title="Continue Watching"
           subtitle="Pick up where you left off."
-        />
-      </Reveal>
-
-      <ul className={`mt-4 ${CARD_GRID.episode}`}>
-        {journeys.map((item, index) => (
-          <Reveal key={item.journeyId} as="li" delayMs={index * 70}>
+        >
+          {journeys.map((item) => (
             <CoverFrame
+              key={item.journeyId}
+              className={CARD_ROW_ITEM.episode}
               format="episode"
               href={item.episodeId ? `/journeys/${item.journeyId}/episodes/${item.episodeId}` : `/journeys/${item.journeyId}`}
               imageUrl={item.coverUrl}
@@ -208,9 +206,9 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
                 </>
               }
             />
-          </Reveal>
-        ))}
-      </ul>
+          ))}
+        </HorizontalScrollRow>
+      </Reveal>
     </section>
   );
 }
