@@ -126,6 +126,22 @@ Una pagina nuova compone questi pezzi; non ne disegna di propri. Un'eccezione (u
 
 Le scelte di colore, formato delle card e grandezze sono quelle decise da Manuel il 2026-09-29 tramite due pagine di confronto (bottoni/titoli/card e colori), non inventate durante la pulizia.
 
+## Porting mobile: regole pratiche (dal 2026-10-29)
+
+Durante il porting del sito vero su mobile (branch `mobile-redesign`, pagina per pagina) sono emersi diversi errori che si ripetevano identici su pagine diverse. Per non reinventarli ogni volta, regole fisse:
+
+1. **Confine telefono/computer**: sempre `md` (768px), mai `sm` (640px). Tutto il porting mobile (Header, BottomNav, Hero, card) usa questo confine; un file che usa ancora `sm`/`lg` come coppia (es. `HomeClosingCards.tsx` nel suo grid esterno) è un residuo pre-unificazione, non un nuovo pattern da copiare.
+
+2. **Le card con foto passano sempre da `CoverFrame`** (`components/ui/cover-card.tsx`), mai da un riquadro disegnato a mano. Le misure (`RATIO`, `CARD_GRID`, `CARD_ROW_ITEM`) sono centralizzate lì: cambiarle cambia tutte le card del sito, per scelta. Dentro `CoverFrame`, `overlay` è il contenuto sopra la foto (titolo, categoria, ancorato in basso su una sfumatura scura); `below` è il contenuto fuori dalla foto, sotto (nome del creator + punteggio Trust ci stanno lì, non sopra la foto, scelta di Manuel 2026-10-29).
+
+3. **Il testo grande si rompe sulle card strette del telefono.** Una grandezza che sta bene su una card da tablet/computer (es. `text-xl` su un titolo) può andare a capo 4-5 volte su una card larga ~150px sul telefono, allungando tutto il blocco verticalmente (è successo con "This path doesn't exist..." nella card Error 404). Regola: qualunque titolo dentro un contenitore stretto sul telefono ha sempre una grandezza ridotta esplicita per il telefono, tipo `text-base md:text-xl`, mai un'unica grandezza pensata per il computer.
+
+4. **Trappola CSS: `padding-top`/`padding-bottom` in percentuale sono sempre relativi alla LARGHEZZA, mai all'altezza** (è una regola del CSS stesso, non un bug). Usare `pb-[30%]` per riservare spazio verticale funziona solo se il contenitore è quadrato (larghezza = altezza, es. `aspect-square`). Se quel contenitore sul telefono perde l'`aspect-square` e la sua altezza segue solo il contenuto, `pb-[%]` riserva uno spazio completamente sbagliato in modo silenzioso (è il bug del bottone "Get started" finito sopra la barca animata). In quei casi: altezza fissa (`h-[300px] md:h-auto`) + impilamento naturale del contenuto (senza `justify-center`), oppure un'altezza in percentuale (`h-[X%]`, valido perché relativo all'altezza del genitore, a differenza del padding).
+
+5. **Trasparenze**: mai un modificatore di opacità a mano su un colore semantico (`bg-ember/40`) — il lucchetto lo blocca. Se serve una versione trasparente di un colore, si aggiunge un nuovo token con nome in `app/globals.css` (vedi `--color-ember-glass`), non un'eccezione al lucchetto.
+
+6. **Prima di dire "fatto, controlla tu"**: se la modifica riguarda proporzioni, sovrapposizioni o testo che potrebbe andare a capo in modo imprevisto su schermo stretto, verificare prima con uno screenshot reale (Playwright, viewport telefono ~390×844) invece di descrivere a parole quello che dovrebbe succedere. Per le modifiche semplici (un colore, uno spostamento di pochi pixel) non serve: lì Manuel controlla lui stesso su localhost.
+
 ## Regole
 
 Ogni nuova schermata o componente deve rispettare i principi definiti in questo documento e i mattoncini della sezione precedente.

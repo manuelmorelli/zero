@@ -7,8 +7,11 @@ import { cn } from "@/lib/utils";
 
 /** Card quadrata con bordo arancione: stessa base per le due card in fondo alla Home. Quadrata
  * solo da tablet in su: su telefono stanno affiancate in uno spazio più strette (vedi il grid
- * qui sotto), un quadrato ci schiaccerebbe dentro il contenuto, qui l'altezza segue il contenuto. */
-const SQUARE_CARD = cn(PANEL_ACCENT, "relative overflow-hidden shadow-glow md:aspect-square max-md:p-4");
+ * qui sotto). Altezza fissa (non più libera sul contenuto) sul telefono: con l'altezza libera il
+ * bottone "Get started" finiva sopra la barca animata, perché il testo spingeva in basso finché
+ * non ci sbatteva contro; con un'altezza fissa il contenuto resta ancorato in alto e la barca ha
+ * sempre il suo spazio vuoto sotto. */
+const SQUARE_CARD = cn(PANEL_ACCENT, "relative h-[300px] overflow-hidden shadow-glow max-md:p-4 md:h-auto md:aspect-square");
 
 /** I tre passi di Zero in breve (versione completa in app/(site)/how-it-works/page.tsx). */
 const STEPS = [
@@ -29,12 +32,12 @@ export function HomeClosingCards({ signedIn }: { signedIn: boolean }) {
         <SailingScene className="absolute inset-0 h-full w-full" />
         <div className="absolute inset-0 bg-gradient-to-b from-scrim-soft to-transparent to-55%" />
 
-        <div className="relative flex h-full flex-col items-center justify-center gap-3 px-6 pt-6 pb-[30%] text-center">
+        <div className="relative flex h-full flex-col items-center gap-3 px-6 pt-6 text-center md:justify-center md:pb-[30%]">
           <Badge className="border-ember-line bg-ember-soft uppercase tracking-[0.18em] text-ember">
             <CircleAlert className="h-3.5 w-3.5" aria-hidden="true" />
             Error 404
           </Badge>
-          <PageTitle as="h2" className="max-w-[17ch] text-xl leading-tight text-on-photo">
+          <PageTitle as="h2" className="text-base leading-tight text-on-photo md:max-w-[17ch] md:text-xl">
             This path doesn&apos;t exist, but you can create it.
           </PageTitle>
           <p className="text-sm font-medium text-on-photo-muted">Become a journeyer.</p>

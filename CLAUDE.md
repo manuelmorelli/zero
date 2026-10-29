@@ -92,6 +92,17 @@ scripts/              check-design.mjs (lucchetto di design), logo, script AI
 - Approccio Mobile First.
 - **Non disegnare a mano bottoni, titoli, riquadri, campi o card: usare sempre i componenti di `components/ui/`** (`button.tsx`, `heading.tsx`, `panel.tsx`, `input.tsx`, `page-container.tsx`, `cover-card.tsx`, `avatar.tsx` — dettagli in `docs/15_Design_System.md`). Prima di scrivere un pezzo di interfaccia nuovo, controllare se esiste già lì. `npm run check:design` (o `node scripts/check-design.mjs`) lo verifica e blocca automaticamente il commit se trova uno scarto: se lo segnala, il pezzo va rifatto con i componenti ufficiali, non aggirato.
 
+### Porting mobile (pagina per pagina) — errori già visti, non ripeterli
+
+Dettaglio e perché in `docs/15_Design_System.md` § "Porting mobile: regole pratiche". Riassunto:
+
+- Confine telefono/computer sempre a `md` (768px), mai `sm` (640px).
+- Ogni card con foto passa da `CoverFrame` (`components/ui/cover-card.tsx`): misure in `RATIO`/`CARD_GRID`/`CARD_ROW_ITEM`, mai riquadri fatti a mano. `overlay` = sopra la foto, `below` = sotto/fuori dalla foto (creator+Trust Score stanno in `below`).
+- Un titolo che sta bene su una card da computer può andare a capo 4-5 volte su una card stretta da telefono e sfondare il layout: dargli sempre una grandezza ridotta per il telefono (`text-base md:text-xl`), mai una sola grandezza pensata per il computer.
+- `pb-[X%]`/`pt-[X%]` sono SEMPRE relativi alla larghezza del box, mai all'altezza (regola CSS) — funzionano per riservare spazio verticale solo su un box quadrato (`aspect-square`). Se sul telefono quel box perde il quadrato e la sua altezza segue il contenuto, usare un'altezza fissa (`h-[300px] md:h-auto`) o una percentuale di altezza (`h-[X%]`), mai un padding percentuale.
+- Mai un'opacità a mano su un colore semantico (`bg-ember/40`, bloccato dal lucchetto): serve un token nuovo in `app/globals.css` (vedi `--color-ember-glass`).
+- Prima di dire "fatto, controlla tu" su una modifica a rischio di sovrapposizioni/testo-a-capo imprevisto, verificare con uno screenshot Playwright reale (viewport telefono ~390×844), non descrivere a parole quello che dovrebbe succedere. Per ritocchi semplici (colore, pochi pixel) non serve, lì basta Manuel su localhost.
+
 ## Convenzioni di naming
 
 | Cosa | Convenzione | Esempio |
