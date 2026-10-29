@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  * bottone "Get started" finiva sopra la barca animata, perché il testo spingeva in basso finché
  * non ci sbatteva contro; con un'altezza fissa il contenuto resta ancorato in alto e la barca ha
  * sempre il suo spazio vuoto sotto. */
-const SQUARE_CARD = cn(PANEL_ACCENT, "relative h-[300px] overflow-hidden shadow-glow max-md:p-4 md:h-auto md:aspect-square");
+const SQUARE_CARD = cn(PANEL_ACCENT, "relative h-[360px] overflow-hidden shadow-glow max-md:p-4 md:h-auto md:aspect-square");
 
 /** I tre passi di Zero in breve (versione completa in app/(site)/how-it-works/page.tsx). */
 const STEPS = [
@@ -32,16 +32,21 @@ export function HomeClosingCards({ signedIn }: { signedIn: boolean }) {
         <SailingScene className="absolute inset-0 h-full w-full" />
         <div className="absolute inset-0 bg-gradient-to-b from-scrim-soft to-transparent to-55%" />
 
-        <div className="relative flex h-full flex-col items-center gap-3 px-6 pt-6 text-center md:justify-center md:pb-[30%]">
-          <Badge className="border-ember-line bg-ember-soft uppercase tracking-[0.18em] text-ember">
-            <CircleAlert className="h-3.5 w-3.5" aria-hidden="true" />
-            Error 404
-          </Badge>
-          <PageTitle as="h2" className="text-base leading-tight text-on-photo md:max-w-[17ch] md:text-xl">
-            This path doesn&apos;t exist, but you can create it.
-          </PageTitle>
-          <p className="text-sm font-medium text-on-photo-muted">Become a journeyer.</p>
-          <ButtonPrimary href={signedIn ? "/dashboard/journeys/new" : "/register"} className="!text-on-photo">
+        <div className="relative flex h-full flex-col items-center px-6 pb-4 pt-3 text-center md:justify-center md:gap-3 md:pb-[30%]">
+          <div className="flex flex-col items-center gap-1.5">
+            <Badge className="border-ember-line bg-ember-soft uppercase tracking-[0.18em] text-ember">
+              <CircleAlert className="h-3.5 w-3.5" aria-hidden="true" />
+              Error 404
+            </Badge>
+            <PageTitle as="h2" className="text-base leading-tight text-on-photo md:max-w-[17ch] md:text-xl">
+              This path doesn&apos;t exist, but you can create it.
+            </PageTitle>
+            <p className="text-sm font-medium text-on-photo-muted">Become a journeyer.</p>
+          </div>
+          <ButtonPrimary
+            href={signedIn ? "/dashboard/journeys/new" : "/register"}
+            className="mt-auto !text-on-photo md:mt-0"
+          >
             Get started
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </ButtonPrimary>

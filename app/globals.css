@@ -485,6 +485,17 @@ a {
   );
 }
 
+/* Prova (2026-10-30, Manuel): invece di dipingere sopra la foto un colore che indovina cosa c'è
+ * dietro (.cover-fade, non abbastanza sul telefono perché dietro non c'è un colore piatto, c'è lo
+ * sfondo di sabbia animato), rende la foto stessa trasparente verso il basso con una maschera: si
+ * vede quindi quello che c'è davvero dietro, qualunque cosa sia. Solo sul telefono. */
+@media (max-width: 767px) {
+  .hero-mobile-fade {
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, black 30%);
+    mask-image: linear-gradient(to top, transparent 0%, black 30%);
+  }
+}
+
 /* Sfumatura scura sulle copertine delle card, per leggere il testo bianco sopra la foto.
  * Una sola, uguale per tutte le card. */
 .card-scrim {

@@ -166,46 +166,51 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         ref={mediaRef}
         className="relative h-[70vh] max-h-[552px] min-h-[420px] overflow-hidden rounded-t-[18px] md:absolute md:inset-0 md:inset-x-[4.43%] md:h-auto md:max-h-none md:min-h-0 md:rounded-2xl"
       >
-        {slides.map((item, index) => (
-          <Image
-            key={item.alt}
-            src={item.image}
-            alt={item.alt}
-            fill
-            sizes="100vw"
-            quality={COVER_IMAGE_QUALITY}
-            preload={index === 0}
-            className={`animate-[kenburns_14s_ease-in-out_infinite_alternate] object-cover transition-opacity duration-1000 ${
-              // Spente del tutto quando c'è un video (non solo "sotto" di lui): se il video avesse
-              // mai un vuoto momentaneo durante il cambio clip, sotto non deve comparire la foto di
-              // un altro Journey che non c'entra, meglio restasse nero.
-              video ? "opacity-0" : index === active ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
-        {video && videoMode !== "none" && (
-          <HeroBackgroundVideo
-            clips={videos}
-            index={videoIndex}
-            mode={videoMode}
-            muted={muted}
-            onEnded={() => setVideoIndex((prev) => (prev + 1) % videos.length)}
-          />
-        )}
-        {/* Trattamento cinematografico da desktop in su: grana pellicola e veli scuri per leggere
-         * il testo a sinistra (classi hero-* in app/globals.css). Su mobile solo una sfumatura in
-         * basso (card-scrim, la stessa di ogni card con foto del sito) per leggere la card sopra,
-         * la foto resta visibile. */}
-        <div className="hero-grain absolute inset-0 hidden md:block" aria-hidden="true" />
-        <div className="hero-scrim absolute inset-0 hidden md:block" />
-        <div className="hero-side-fade absolute inset-0 hidden md:block" />
-        {/* Solo sul basso, non su tutta la foto: card-scrim su inset-0 anneriva mezza foto, pensata
-         * per card piccole (150-250px), non per un blocco alto 552px come questo. */}
-        <div className="card-scrim absolute inset-x-0 bottom-0 h-80 md:hidden" />
-        {/* Sfumatura verso il colore di sfondo della pagina, per eliminare la riga netta dove la
-         * foto finisce e comincia il resto della pagina (Manuel, 2026-10-29). Dipinta per ultima
-         * (sopra card-scrim) così è lei a decidere il colore proprio sul bordo finale. */}
-        <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
+        {/* Solo la foto/video e i veli scuri sono dentro questo involucro con la maschera: la
+         * pillola col messaggio e i pallini più sotto NON ci stanno dentro apposta, altrimenti la
+         * maschera sbiadiva anche loro (bug trovato da Manuel, 2026-10-30). */}
+        <div className="hero-mobile-fade absolute inset-0">
+          {slides.map((item, index) => (
+            <Image
+              key={item.alt}
+              src={item.image}
+              alt={item.alt}
+              fill
+              sizes="100vw"
+              quality={COVER_IMAGE_QUALITY}
+              preload={index === 0}
+              className={`animate-[kenburns_14s_ease-in-out_infinite_alternate] object-cover transition-opacity duration-1000 ${
+                // Spente del tutto quando c'è un video (non solo "sotto" di lui): se il video avesse
+                // mai un vuoto momentaneo durante il cambio clip, sotto non deve comparire la foto di
+                // un altro Journey che non c'entra, meglio restasse nero.
+                video ? "opacity-0" : index === active ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
+          {video && videoMode !== "none" && (
+            <HeroBackgroundVideo
+              clips={videos}
+              index={videoIndex}
+              mode={videoMode}
+              muted={muted}
+              onEnded={() => setVideoIndex((prev) => (prev + 1) % videos.length)}
+            />
+          )}
+          {/* Trattamento cinematografico da desktop in su: grana pellicola e veli scuri per leggere
+           * il testo a sinistra (classi hero-* in app/globals.css). Su mobile solo una sfumatura in
+           * basso (card-scrim, la stessa di ogni card con foto del sito) per leggere la card sopra,
+           * la foto resta visibile. */}
+          <div className="hero-grain absolute inset-0 hidden md:block" aria-hidden="true" />
+          <div className="hero-scrim absolute inset-0 hidden md:block" />
+          <div className="hero-side-fade absolute inset-0 hidden md:block" />
+          {/* Solo sul basso, non su tutta la foto: card-scrim su inset-0 anneriva mezza foto, pensata
+           * per card piccole (150-250px), non per un blocco alto 552px come questo. */}
+          <div className="card-scrim absolute inset-x-0 bottom-0 h-80 md:hidden" />
+          {/* Sfumatura verso il colore di sfondo della pagina, per eliminare la riga netta dove la
+           * foto finisce e comincia il resto della pagina (Manuel, 2026-10-29). Dipinta per ultima
+           * (sopra card-scrim) così è lei a decidere il colore proprio sul bordo finale. */}
+          <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
+        </div>
         {/* Audio della clip, in alto a destra: parte sempre muta, si attiva solo con un clic. */}
         {video && videoMode === "play" && (
           <IconButton
