@@ -12,11 +12,17 @@ import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
 export type CoverFormat = "journey" | "episode" | "event" | "person" | "featured";
 
+// Stessa identica proporzione per journey/episode/event/person (112x156 nel mockup,
+// ContinueCard.dc.html e PosterCard.dc.html: la stessa scatola per ogni tipo di card),
+// su richiesta esplicita di Manuel, 2026-10-29: card di forma diversa tra loro nella stessa
+// pagina (Continue Watching più "quadrata" dell'4:3, Recommended più alta col 4:5) non erano
+// accettabili. "featured" resta diversa: è una card singola in bella mostra, non una riga.
+const ROW_RATIO = "aspect-[112/156]";
 const RATIO: Record<CoverFormat, string> = {
-  journey: "aspect-4/5",
-  episode: "aspect-4/3",
-  event: "aspect-video",
-  person: "aspect-4/5",
+  journey: ROW_RATIO,
+  episode: ROW_RATIO,
+  event: ROW_RATIO,
+  person: ROW_RATIO,
   featured: "aspect-[16/10]",
 };
 
