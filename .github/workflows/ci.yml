@@ -1,0 +1,37 @@
+name: CI
+
+# Controllo automatico che gira da solo su GitHub a ogni commit, su qualunque branch: se qualcosa
+# è rotto (tipi sbagliati, codice morto, un pezzo di interfaccia disegnato a mano invece che con i
+# componenti ufficiali) lo segnala qui, senza dover ricordarsi di controllarlo a mano prima di
+# ogni commit. Non chiama database o servizi veri: solo controlli statici sul codice.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    env:
+      # Valori finti, solo per far partire "prisma generate" (postinstall): non serve un database
+      # vero per generare il client o per i controlli di questo workflow.
+      DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci"
+      DIRECT_URL: "postgresql://ci:ci@localhost:5432/ci"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Controllo dei tipi (TypeScript)
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Lucchetto di design (componenti ufficiali, nessuno stile a mano)
+        run: npm run check:design
