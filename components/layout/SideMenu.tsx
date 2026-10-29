@@ -153,7 +153,11 @@ export function SideMenu() {
                     onClick={close}
                     className="flex items-center gap-3 border-b border-border px-5 py-4 transition-colors hover:bg-surface-2"
                   >
-                    <Avatar name={data.user.name} avatarUrl={data.user.image ?? null} size="sm" />
+                    {/* Niente avatarUrl: data.user.image della sessione è la chiave di
+                        archiviazione (R2), non un link vero alla foto — serve risolverla lato
+                        server (vedi getImagePlaybackUrl, come fa ProfileHero), qui bastano le
+                        iniziali, come nel mockup. */}
+                    <Avatar name={data.user.name} size="sm" />
                     <span>
                       <span className="block text-sm font-semibold text-ink">{data.user.name}</span>
                       <span className="block text-sm text-ember">View profile</span>

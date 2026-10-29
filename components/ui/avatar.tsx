@@ -35,7 +35,10 @@ export function Avatar({
     .slice(0, 2)
     .toUpperCase();
 
-  if (avatarUrl) {
+  // Solo un vero URL (assoluto http/https o un percorso locale "/..."): un valore malformato
+  // (es. per errore una chiave di archiviazione invece di un link) mandava in crash l'intera
+  // pagina, perché <Image> prova a costruire un URL e lancia un errore se non ci riesce.
+  if (avatarUrl && (avatarUrl.startsWith("/") || /^https?:\/\//.test(avatarUrl))) {
     return (
       <span className={cn("relative block shrink-0 overflow-hidden rounded-full border border-border", SIZE[size], className)}>
         <Image src={avatarUrl} alt="" fill sizes="128px" className="object-cover" />
