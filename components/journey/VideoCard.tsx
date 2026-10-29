@@ -46,21 +46,23 @@ export function VideoCard({ video, className, footer }: VideoCardProps) {
         }
         overlay={
           <>
-            {category && <CoverChip>{category}</CoverChip>}
+            {category && <CoverChip className="mt-2 px-2 py-0.5">{category}</CoverChip>}
             <CoverTitle className="mt-2">{title}</CoverTitle>
-            <div className="mt-2 flex items-center justify-between gap-2 text-sm">
-              <CreatorProfileLink userId={creatorUserId} className="flex min-w-0 items-center gap-1.5">
-                <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" />
-                <span className="truncate">{creatorName}</span>
-              </CreatorProfileLink>
-              {journeyScore !== undefined && (
-                <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
-                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                  {journeyScore}
-                </span>
-              )}
-            </div>
           </>
+        }
+        below={
+          <div className="flex items-center justify-between gap-2 text-sm">
+            <CreatorProfileLink userId={creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
+              <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" />
+              <span className="truncate">{creatorName}</span>
+            </CreatorProfileLink>
+            {journeyScore !== undefined && (
+              <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
+                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                {journeyScore}
+              </span>
+            )}
+          </div>
         }
       />
       {footer}

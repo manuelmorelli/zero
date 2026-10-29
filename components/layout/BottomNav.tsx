@@ -22,6 +22,9 @@ import { cn } from "@/lib/utils";
  * Il "+" centrale riusa lo stesso QuickUploadProvider del pulsante flottante globale
  * (components/creator/QuickUploadButton.tsx), nascosto su mobile per lasciare il posto a questo:
  * stessa azione, stesso modale, un solo punto di ingresso invece di due sullo schermo.
+ *
+ * Icona + nome sotto, come nel mockup (Manuel, 2026-10-29): non più solo icone. Il "+" centrale
+ * resta senza etichetta, è già diverso dagli altri (più grande, colorato) e si capisce da solo.
  */
 export function BottomNav() {
   const pathname = usePathname();
@@ -45,7 +48,7 @@ export function BottomNav() {
         // Sempre ferma: a differenza dell'header in alto (TopBar.dc.html ha davvero una logica di
         // nascondersi scorrendo), BottomNav.dc.html nel mockup non si nasconde mai — una sessione
         // precedente aveva applicato la stessa logica a entrambe per errore, qui tolta.
-        "fixed inset-x-6 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center justify-around rounded-full border border-border bg-glass-strong p-2 shadow-xl backdrop-blur-md md:hidden"
+        "fixed inset-x-6 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center justify-around rounded-2xl border border-border bg-glass-strong px-2 py-2 shadow-xl backdrop-blur-md md:hidden"
       )}
     >
       <NavTab href="/" label="Home" active={isHome}>
@@ -100,11 +103,11 @@ function NavTab({
   return (
     <Link
       href={href}
-      aria-label={label}
       aria-current={active ? "page" : undefined}
-      className={cn("grid h-11 w-11 shrink-0 place-items-center", active ? "text-ember" : "text-ink-faint")}
+      className={cn("flex shrink-0 flex-col items-center gap-0.5 py-1", active ? "text-ember" : "text-ink-faint")}
     >
       {children}
+      <span className="text-sm font-medium">{label}</span>
     </Link>
   );
 }

@@ -52,26 +52,28 @@ export function JourneyCard({ journey, className, badge, footer }: JourneyCardPr
         topRight={badge}
         overlay={
           <>
-            {category && <CoverChip>{category}</CoverChip>}
+            {category && <CoverChip className="mt-2 px-2 py-0.5">{category}</CoverChip>}
             <CoverTitle className="mt-2">{title}</CoverTitle>
             {episodeCount !== undefined && (
               <p className="mt-1 text-sm">
                 {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
               </p>
             )}
-            <div className="mt-2 flex items-center justify-between gap-2 text-sm">
-              <CreatorProfileLink userId={creator.userId} className="flex min-w-0 items-center gap-1.5">
-                <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="xs" />
-                <span className="truncate">{creator.displayName}</span>
-              </CreatorProfileLink>
-              {journeyScore !== undefined && (
-                <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
-                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                  {journeyScore}
-                </span>
-              )}
-            </div>
           </>
+        }
+        below={
+          <div className="flex items-center justify-between gap-2 text-sm">
+            <CreatorProfileLink userId={creator.userId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
+              <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="xs" />
+              <span className="truncate">{creator.displayName}</span>
+            </CreatorProfileLink>
+            {journeyScore !== undefined && (
+              <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
+                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                {journeyScore}
+              </span>
+            )}
+          </div>
         }
       />
       {footer}

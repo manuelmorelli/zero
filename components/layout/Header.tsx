@@ -54,16 +54,25 @@ export function Header({ inbox }: HeaderProps) {
         hiddenOnScroll && "-translate-y-full"
       )}
     >
-      <div className={cn(PAGE_WIDTH.wide, "grid h-[3.85rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 md:grid-cols-[1fr_auto_1fr]")}>
+      <div className={cn(PAGE_WIDTH.wide, "relative grid h-[3.85rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 md:grid-cols-[1fr_auto_1fr]")}>
         <div className="-ml-5 flex min-w-0 items-center gap-3 md:-ml-8">
           <SideMenu />
           <BackButton />
-          <Link href="/" className="flex min-w-0 items-center" aria-label="Zero home">
-            {/* Più grande su mobile (niente scritta ZERO nella Hero lì, vedi Hero.tsx): la
-             * identità del marchio nell'header ne porta il peso. Invariata da desktop in su. */}
-            <Logo className="h-9 md:h-7" />
+          <Link href="/" className="hidden min-w-0 items-center md:flex" aria-label="Zero home">
+            <Logo className="h-7" />
           </Link>
         </div>
+
+        {/* Su mobile la scritta Zero sta al centro esatto dell'header (posizione assoluta, non
+         * nella griglia): su richiesta di Manuel, 2026-10-29. Da desktop in su resta quella
+         * nella colonna di sinistra qui sopra, invariata. */}
+        <Link
+          href="/"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden"
+          aria-label="Zero home"
+        >
+          <Logo className="h-9" />
+        </Link>
 
         <nav className="hidden items-center gap-9 md:flex">
           {NAV_LINKS.map((link) => (

@@ -136,18 +136,6 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             </span>
           </button>
         ))}
-        {stories.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setOpenStoryIndex(0)}
-            className="flex shrink-0 flex-col items-center gap-1.5"
-          >
-            <span className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-2 text-ink-muted transition-colors hover:text-ember">
-              &rarr;
-            </span>
-            <span className="text-hero-caption text-on-photo-muted">View All</span>
-          </button>
-        )}
       </div>
     ) : (
       <div className="flex items-center gap-4">
@@ -211,10 +199,13 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         <div className="hero-grain absolute inset-0 hidden md:block" aria-hidden="true" />
         <div className="hero-scrim absolute inset-0 hidden md:block" />
         <div className="hero-side-fade absolute inset-0 hidden md:block" />
-        <div className="cover-fade absolute inset-x-0 bottom-0 h-80 hidden md:block" />
         {/* Solo sul basso, non su tutta la foto: card-scrim su inset-0 anneriva mezza foto, pensata
          * per card piccole (150-250px), non per un blocco alto 552px come questo. */}
         <div className="card-scrim absolute inset-x-0 bottom-0 h-80 md:hidden" />
+        {/* Sfumatura verso il colore di sfondo della pagina, per eliminare la riga netta dove la
+         * foto finisce e comincia il resto della pagina (Manuel, 2026-10-29). Dipinta per ultima
+         * (sopra card-scrim) così è lei a decidere il colore proprio sul bordo finale. */}
+        <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
         {/* Audio della clip, in alto a destra: parte sempre muta, si attiva solo con un clic. */}
         {video && videoMode === "play" && (
           <IconButton
@@ -229,7 +220,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         {/* Card del Journey in evidenza, solo su mobile: titolo/autore/categoria in alto a
          * sinistra + pulsante Watch, didascalia + pallini in basso al centro. Da desktop in su
          * questa stessa informazione vive nella card a destra più sotto (HeroSlideCard). */}
-        <div className="absolute inset-0 flex flex-col justify-between px-6 pt-20 pb-7 md:hidden">
+        <div className="absolute inset-0 flex flex-col justify-between px-6 pt-24 pb-7 md:hidden">
           <MobileHeroInfo slide={slide} />
           <div className="flex flex-col items-center gap-3">
             <MobileHeroCaption slide={slide} />
@@ -355,15 +346,18 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
   return (
     <div className="max-w-[78%]">
       <Link href={`/journeys/${slide.id}`} className="block">
-        <CardTitle as="h2" className="truncate !text-on-photo text-3xl leading-[1.05] font-extrabold">{slide.title}</CardTitle>
-        <p className="mt-[5px] truncate text-hero-eyebrow text-on-photo-muted">
+        <CardTitle as="h2" className="truncate !text-on-photo text-hero-mobile-title leading-[1.05] font-extrabold">{slide.title}</CardTitle>
+        <p className="mt-[5px] truncate text-hero-mobile-meta text-on-photo">
           by {slide.creatorName} · {slide.episodesCount} {slide.episodesCount === 1 ? "episode" : "episodes"}
         </p>
         {slide.category && (
-          <p className="mt-1 text-hero-tag font-bold uppercase tracking-[0.08em] text-ember">{slide.category}</p>
+          <p className="mt-1 text-hero-mobile-tag font-bold uppercase tracking-[0.08em] text-ember">{slide.category}</p>
         )}
       </Link>
-      <ButtonSecondary href={`/journeys/${slide.id}`} className="!text-on-photo mt-3 gap-1 px-3 py-1 text-sm">
+      <ButtonSecondary
+        href={`/journeys/${slide.id}`}
+        className="!border-ember !bg-ember-glass mt-3 gap-1 px-3 py-1 text-sm !text-on-photo"
+      >
         Watch
         <Play className="h-[15px] w-[15px] fill-current" aria-hidden="true" />
       </ButtonSecondary>

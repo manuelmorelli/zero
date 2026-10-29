@@ -5,8 +5,10 @@ import { Badge, PANEL_ACCENT } from "@/components/ui/panel";
 import { SailingScene } from "@/components/ui/sailing-scene";
 import { cn } from "@/lib/utils";
 
-/** Card quadrata con bordo arancione: stessa base per le due card in fondo alla Home. */
-const SQUARE_CARD = cn(PANEL_ACCENT, "relative aspect-square overflow-hidden shadow-glow");
+/** Card quadrata con bordo arancione: stessa base per le due card in fondo alla Home. Quadrata
+ * solo da tablet in su: su telefono stanno affiancate in uno spazio più strette (vedi il grid
+ * qui sotto), un quadrato ci schiaccerebbe dentro il contenuto, qui l'altezza segue il contenuto. */
+const SQUARE_CARD = cn(PANEL_ACCENT, "relative overflow-hidden shadow-glow md:aspect-square max-md:p-4");
 
 /** I tre passi di Zero in breve (versione completa in app/(site)/how-it-works/page.tsx). */
 const STEPS = [
@@ -22,7 +24,7 @@ const STEPS = [
  */
 export function HomeClosingCards({ signedIn }: { signedIn: boolean }) {
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
       <div className={cn(SQUARE_CARD, "p-0 lg:col-start-2")}>
         <SailingScene className="absolute inset-0 h-full w-full" />
         <div className="absolute inset-0 bg-gradient-to-b from-scrim-soft to-transparent to-55%" />

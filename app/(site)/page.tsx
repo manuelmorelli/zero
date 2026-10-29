@@ -189,21 +189,23 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
               }
               overlay={
                 <>
-                  {item.category && <CoverChip>{item.category}</CoverChip>}
+                  {item.category && <CoverChip className="mt-2 px-2 py-0.5">{item.category}</CoverChip>}
                   <CoverTitle className="mt-2">{item.episodeTitle ?? item.title}</CoverTitle>
-                  <div className="mt-2 flex items-center justify-between gap-2 text-sm">
-                    <CreatorProfileLink userId={item.creatorUserId} className="flex min-w-0 items-center gap-1.5">
-                      <Avatar name={item.creatorName} avatarUrl={item.creatorAvatarUrl} size="xs" />
-                      <span className="truncate">{item.creatorName}</span>
-                    </CreatorProfileLink>
-                    {item.journeyScore !== undefined && (
-                      <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
-                        <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                        {item.journeyScore}
-                      </span>
-                    )}
-                  </div>
                 </>
+              }
+              below={
+                <div className="flex items-center justify-between gap-2 text-sm">
+                  <CreatorProfileLink userId={item.creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
+                    <Avatar name={item.creatorName} avatarUrl={item.creatorAvatarUrl} size="xs" />
+                    <span className="truncate">{item.creatorName}</span>
+                  </CreatorProfileLink>
+                  {item.journeyScore !== undefined && (
+                    <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
+                      <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                      {item.journeyScore}
+                    </span>
+                  )}
+                </div>
               }
             />
           ))}

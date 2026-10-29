@@ -38,6 +38,9 @@
    * arancioni) restavano troppo pallide. */
   --color-ember-soft: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-soft-alpha));
   --color-ember-line: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-line-alpha));
+  /* Vetro arancione più carico di ember-soft: per il bottone "Watch" sopra la foto della Hero
+   * mobile (Manuel, 2026-10-29), dove ember-soft restava troppo pallido. */
+  --color-ember-glass: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-glass-alpha));
 
   /* Testo sopra le foto: sempre bianco pieno, in qualunque tema (scelta C6A). Versione attenuata
    * per il testo secondario sopra foto (es. sottotitoli della Hero): stesso bianco, mai un
@@ -57,9 +60,10 @@
   --color-overlay: oklch(1 0 0 / 20%);
   --color-overlay-soft: oklch(1 0 0 / 10%);
 
-  /* Sfondo vetro della barra in alto: appena visibile, più marcato scorrendo la pagina. */
-  --color-glass: oklch(1 0 0 / 8%);
-  --color-glass-strong: oklch(1 0 0 / 15%);
+  /* Sfondo vetro della barra in alto: grigio (non bianco puro), appena visibile, più marcato
+   * scorrendo la pagina. Tono più grigio richiesto da Manuel, 2026-10-29. */
+  --color-glass: oklch(55% 0 0 / 12%);
+  --color-glass-strong: oklch(55% 0 0 / 20%);
 
   /* Un solo bagliore arancione e una sola ombra per le card. Il bagliore forte compare solo
    * al passaggio del mouse sui bottoni dell'abbonamento Community (Subscribe, Gift, Tip). */
@@ -99,6 +103,13 @@
   --text-hero-subhead: calc(0.96rem / var(--layout-scale) * var(--text-scale));
   --text-hero-caption: calc(0.65rem / var(--layout-scale) * var(--text-scale));
   --text-hero-tag: calc(0.6rem / var(--layout-scale) * var(--text-scale));
+
+  /* Blocco titolo della Hero mobile (titolo/autore/categoria sopra la foto): +10% su richiesta
+   * di Manuel, 2026-10-29, perché si leggeva poco. Non toccano le stesse taglie usate da
+   * desktop in su (text-3xl, text-hero-eyebrow, text-hero-tag), solo questo blocco. */
+  --text-hero-mobile-title: calc(2.0625rem / var(--layout-scale) * var(--text-scale));
+  --text-hero-mobile-meta: calc(0.847rem / var(--layout-scale) * var(--text-scale));
+  --text-hero-mobile-tag: calc(0.66rem / var(--layout-scale) * var(--text-scale));
 }
 
 /* Manopole: i numeri dietro i colori sono scritti UNA volta sola qui, tutto il resto del file (e dei
@@ -146,6 +157,7 @@ html[data-theme="dark"] {
   --ember-h: 70.08;
   --ember-soft-alpha: 16%;
   --ember-line-alpha: 55%;
+  --ember-glass-alpha: 42%;
 
   /* Colore dello sfondo della pagina in forma "R G B", per la sfumatura delle copertine */
   --rgb-page: 10 10 10;
@@ -184,9 +196,10 @@ html[data-theme="dark"] {
   --color-ember: oklch(var(--ember-l) var(--ember-c) var(--ember-h));
   --color-ember-soft: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-soft-alpha));
   --color-ember-line: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-line-alpha));
+  --color-ember-glass: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-glass-alpha));
 
-  --color-glass: oklch(1 0 0 / 8%);
-  --color-glass-strong: oklch(1 0 0 / 15%);
+  --color-glass: oklch(55% 0 0 / 12%);
+  --color-glass-strong: oklch(55% 0 0 / 20%);
 
   --shadow-glow: 0 0 22px -8px oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-glow-alpha));
   --shadow-card: 0 20px 40px -22px oklch(0% 0 0 / 70%);
@@ -234,9 +247,11 @@ html[data-theme="light"] {
   /* Bordo e riempimento più carichi del Profilo (bottoni sulla copertina, tab) */
   --ember-strong-alpha: 90%;
   --ember-fill-alpha: 55%;
+  --ember-glass-alpha: 42%;
   --color-ember: oklch(var(--ember-l) var(--ember-c) var(--ember-h));
   --color-ember-soft: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-soft-alpha));
   --color-ember-line: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-line-alpha));
+  --color-ember-glass: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-glass-alpha));
 
   /* Colore dello sfondo della pagina in forma "R G B" (neutral 300 = rgb 212,212,212), per la
    * sfumatura delle copertine */
