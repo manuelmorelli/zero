@@ -96,12 +96,14 @@ scripts/              check-design.mjs (lucchetto di design), logo, script AI
 
 Dettaglio e perché in `docs/15_Design_System.md` § "Porting mobile: regole pratiche". Riassunto:
 
+- **Il desktop non si tocca mai, per nessun motivo, durante il porting mobile** — non un "attenzione", una regola assoluta. Ogni classe nuova o modificata ha il prefisso `md:` (o vive dentro un ramo `hidden md:block`/`md:hidden`), così sotto `md` cambia, sopra resta esattamente come prima. Prima di qualunque commit su file toccati per il mobile, `git diff` e controllare a occhio che non ci sia una riga cambiata senza `md:` o un ramo `hidden`/`md:` a proteggerla.
 - Confine telefono/computer sempre a `md` (768px), mai `sm` (640px).
 - Ogni card con foto passa da `CoverFrame` (`components/ui/cover-card.tsx`): misure in `RATIO`/`CARD_GRID`/`CARD_ROW_ITEM`, mai riquadri fatti a mano. `overlay` = sopra la foto, `below` = sotto/fuori dalla foto (creator+Trust Score stanno in `below`).
 - Un titolo che sta bene su una card da computer può andare a capo 4-5 volte su una card stretta da telefono e sfondare il layout: dargli sempre una grandezza ridotta per il telefono (`text-base md:text-xl`), mai una sola grandezza pensata per il computer.
 - `pb-[X%]`/`pt-[X%]` sono SEMPRE relativi alla larghezza del box, mai all'altezza (regola CSS) — funzionano per riservare spazio verticale solo su un box quadrato (`aspect-square`). Se sul telefono quel box perde il quadrato e la sua altezza segue il contenuto, usare un'altezza fissa (`h-[300px] md:h-auto`) o una percentuale di altezza (`h-[X%]`), mai un padding percentuale.
 - Mai un'opacità a mano su un colore semantico (`bg-ember/40`, bloccato dal lucchetto): serve un token nuovo in `app/globals.css` (vedi `--color-ember-glass`).
-- Prima di dire "fatto, controlla tu" su una modifica a rischio di sovrapposizioni/testo-a-capo imprevisto, verificare con uno screenshot Playwright reale (viewport telefono ~390×844), non descrivere a parole quello che dovrebbe succedere. Per ritocchi semplici (colore, pochi pixel) non serve, lì basta Manuel su localhost.
+- Prima di dire "fatto, controlla tu" su una modifica a rischio di sovrapposizioni/testo-a-capo imprevisto, verificare con uno screenshot Playwright reale (viewport telefono ~390×844), non descrivere a parole quello che dovrebbe succedere. Per ritocchi semplici (colore, pochi pixel) non serve, lì basta Manuel su localhost. **Eccezione**: se Manuel sta controllando lui stesso dal vivo (sul telefono vero, non lo so finché non lo dice) e chiede di non fare controlli automatici, fermarsi subito e aspettare il suo riscontro invece di continuare con screenshot — può dirlo esplicitamente ("non fare controlli li faccio io").
+- Una maschera CSS (`mask-image`) applicata a un contenitore sfuma TUTTO il contenuto dentro quel contenitore secondo la posizione, non solo lo sfondo/foto: se dentro c'è anche testo o un elemento che deve restare sempre visibile (es. una pillola con un messaggio vicino al bordo sfumato), va tenuto FUORI dal contenitore mascherato (un div fratello, non figlio), altrimenti sbiadisce anche lui.
 
 ## Convenzioni di naming
 
