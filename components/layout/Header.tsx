@@ -74,7 +74,7 @@ export function Header() {
           <Link
             href="/search"
             aria-label="Search"
-            className="text-ink-muted transition-colors hover:text-ink"
+            className="hidden text-ink-muted transition-colors hover:text-ink md:block"
           >
             <SearchIcon className="h-[18px] w-[18px]" />
           </Link>

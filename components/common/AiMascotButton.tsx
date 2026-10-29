@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PANEL_GLASS } from "@/components/ui/panel";
 import { EmberChatPanel } from "@/components/common/EmberChatPanel";
+import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { cn } from "@/lib/utils";
 
 const INTRO_VISIBLE_MS = 5000;
@@ -22,6 +23,11 @@ export function AiMascotButton() {
   const [justLanded, setJustLanded] = useState(true);
   const [intro, setIntro] = useState<"visible" | "leaving" | "hidden">("visible");
   const containerRef = useRef<HTMLDivElement>(null);
+  // Sotto i 768px questo bottone vive fuori dall'header (vedi className del wrapper più sotto),
+  // quindi non sparisce da solo insieme a lui scorrendo: senza questo finisce fisso sopra le card
+  // una volta che l'header stesso è già scomparso (stesso bug già risolto in passato per
+  // campanella/messaggi in basso, qui si ripresenta in alto).
+  const hiddenOnScroll = useHideOnScroll();
 
   useEffect(() => {
     const timeout = setTimeout(() => setJustLanded(false), 1000);
@@ -44,12 +50,21 @@ export function AiMascotButton() {
   }, [open]);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div
+      ref={containerRef}
+      className={cn(
+        "relative max-md:fixed max-md:top-[0.65rem] max-md:right-24 max-md:z-[51] max-md:transition-transform max-md:duration-300",
+        hiddenOnScroll && "max-md:-translate-y-16"
+      )}
+    >
       <Button
         variant="mascot"
         aria-label="Zero assistant"
         onClick={() => setOpen((value) => !value)}
-        className={cn("group", justLanded && "animate-bounce")}
+        className={cn(
+          "group max-md:h-[27px] max-md:w-[27px] max-md:border max-md:border-ember-line",
+          justLanded && "animate-bounce"
+        )}
       >
         <MascotFace />
       </Button>
@@ -113,7 +128,7 @@ function MascotFace() {
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
-        className="text-ember opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        className="text-ember opacity-0 transition-opacity duration-200 group-hover:opacity-100 max-md:opacity-100"
       />
     </svg>
   );

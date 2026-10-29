@@ -214,7 +214,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         <div className="cover-fade absolute inset-x-0 bottom-0 h-80 hidden md:block" />
         {/* Solo sul basso, non su tutta la foto: card-scrim su inset-0 anneriva mezza foto, pensata
          * per card piccole (150-250px), non per un blocco alto 552px come questo. */}
-        <div className="card-scrim absolute inset-x-0 bottom-0 h-64 md:hidden" />
+        <div className="card-scrim absolute inset-x-0 bottom-0 h-80 md:hidden" />
         {/* Audio della clip, in alto a destra: parte sempre muta, si attiva solo con un clic. */}
         {video && videoMode === "play" && (
           <IconButton
@@ -229,7 +229,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         {/* Card del Journey in evidenza, solo su mobile: titolo/autore/categoria in alto a
          * sinistra + pulsante Watch, didascalia + pallini in basso al centro. Da desktop in su
          * questa stessa informazione vive nella card a destra più sotto (HeroSlideCard). */}
-        <div className="absolute inset-0 flex flex-col justify-between p-4 pt-20 md:hidden">
+        <div className="absolute inset-0 flex flex-col justify-between px-6 pt-20 pb-7 md:hidden">
           <MobileHeroInfo slide={slide} />
           <div className="flex flex-col items-center gap-3">
             <MobileHeroCaption slide={slide} />
@@ -355,17 +355,17 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
   return (
     <div className="max-w-[78%]">
       <Link href={`/journeys/${slide.id}`} className="block">
-        <CardTitle as="h2" className="truncate !text-on-photo text-xl">{slide.title}</CardTitle>
-        <p className="mt-1 truncate text-sm text-on-photo-muted">
+        <CardTitle as="h2" className="truncate !text-on-photo text-3xl leading-[1.05] font-extrabold">{slide.title}</CardTitle>
+        <p className="mt-[5px] truncate text-hero-eyebrow text-on-photo-muted">
           by {slide.creatorName} · {slide.episodesCount} {slide.episodesCount === 1 ? "episode" : "episodes"}
         </p>
         {slide.category && (
-          <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-ember">{slide.category}</p>
+          <p className="mt-1 text-hero-tag font-bold uppercase tracking-[0.08em] text-ember">{slide.category}</p>
         )}
       </Link>
-      <ButtonSecondary href={`/journeys/${slide.id}`} className="!text-on-photo mt-3 px-4 py-1.5 text-sm">
+      <ButtonSecondary href={`/journeys/${slide.id}`} className="!text-on-photo mt-3 gap-1 px-3 py-1 text-sm">
         Watch
-        <Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
+        <Play className="h-[15px] w-[15px] fill-current" aria-hidden="true" />
       </ButtonSecondary>
     </div>
   );
@@ -378,8 +378,8 @@ function MobileHeroCaption({ slide }: { slide: HeroSlide }) {
   if (!text) return null;
 
   return (
-    <div className={cn(PANEL_GLASS, "max-w-[88%] rounded-full px-4 py-2 text-center")}>
-      <p className="truncate text-sm text-on-photo">{text}</p>
+    <div className={cn(PANEL_GLASS, "max-w-[300px] rounded-full px-6 py-2.5 text-center shadow-glow")}>
+      <p className="text-sm leading-[1.3] font-semibold text-on-photo">{text}</p>
     </div>
   );
 }

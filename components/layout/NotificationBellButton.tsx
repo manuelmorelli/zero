@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { markAllNotificationsRead, markNotificationRead } from "@/lib/actions/notification";
-import { formatRelativeDate } from "@/lib/utils";
+import { useHideOnScroll } from "@/hooks/useHideOnScroll";
+import { cn, formatRelativeDate } from "@/lib/utils";
 
 type NotificationItem = {
   id: string;
@@ -22,6 +23,10 @@ export function NotificationBellButton({ unreadCount, notifications }: Notificat
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState(notifications);
   const [unread, setUnread] = useState(unreadCount);
+  // Sotto i 768px questo bottone vive fuori dall'header (vedi className più sotto), quindi non
+  // sparisce da solo insieme a lui scorrendo: senza questo finisce fisso sopra le card una volta
+  // che l'header è già scomparso.
+  const hiddenOnScroll = useHideOnScroll();
 
   function handleMarkAllRead() {
     if (unread === 0) return;
@@ -52,7 +57,10 @@ export function NotificationBellButton({ unreadCount, notifications }: Notificat
         // Sotto i 768px: dentro l'header invece, accanto a Ember. Fluttuare in basso a destra
         // lì metteva il pulsante sopra a contenuti veri (liste, form), intercettando il tocco
         // al posto loro (trovato su Settings e sulla creazione di un nuovo Journey).
-        className="fixed right-5 bottom-[calc(max(1.5rem,env(safe-area-inset-bottom))+4.25rem+var(--mobile-bottom-nav-space))] z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95 max-md:right-[6.5rem] max-md:top-[0.65rem] max-md:bottom-auto max-md:z-[51] max-md:h-9 max-md:w-9 max-md:border-border max-md:shadow-none"
+        className={cn(
+          "fixed right-5 bottom-[calc(max(1.5rem,env(safe-area-inset-bottom))+4.25rem+var(--mobile-bottom-nav-space))] z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95 max-md:right-16 max-md:top-[0.65rem] max-md:bottom-auto max-md:z-[51] max-md:h-5 max-md:w-5 max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:shadow-none",
+          hiddenOnScroll && "max-md:-translate-y-16"
+        )}
       >
         <BellIcon className="h-5 w-5" />
         {unread > 0 && (

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { formatRelativeDate } from "@/lib/utils";
+import { useHideOnScroll } from "@/hooks/useHideOnScroll";
+import { cn, formatRelativeDate } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { InlineChat } from "./InlineChat";
 
@@ -28,6 +29,10 @@ export function MessagesButtonClient({ unreadCount, conversations, currentUserId
   // subito dalla lista invece di aspettare che la revalidation del layout radice si propaghi
   // (vedi lib/actions/message.ts:markConversationRead).
   const [locallyRead, setLocallyRead] = useState<Set<string>>(new Set());
+  // Sotto i 768px questo bottone vive fuori dall'header (vedi className più sotto), quindi non
+  // sparisce da solo insieme a lui scorrendo: senza questo finisce fisso sopra le card una volta
+  // che l'header è già scomparso.
+  const hiddenOnScroll = useHideOnScroll();
 
   const displayedUnreadCount = conversations.reduce(
     (sum, conversation) => sum + (locallyRead.has(conversation.id) ? 0 : conversation.unreadCount),
@@ -56,7 +61,10 @@ export function MessagesButtonClient({ unreadCount, conversations, currentUserId
         // components/layout/NotificationBellButton.tsx): +/campanella occupano già
         // 8.5rem di altezza totale da terra, questo si aggiunge sopra con lo stesso gap.
         // Sotto i 768px: dentro l'header come la campanella, stesso motivo (vedi lì).
-        className="fixed right-5 bottom-[calc(max(1.5rem,env(safe-area-inset-bottom))+7.75rem+var(--mobile-bottom-nav-space))] z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95 max-md:right-[10rem] max-md:top-[0.65rem] max-md:bottom-auto max-md:z-[51] max-md:h-9 max-md:w-9 max-md:border-border max-md:shadow-none"
+        className={cn(
+          "fixed right-5 bottom-[calc(max(1.5rem,env(safe-area-inset-bottom))+7.75rem+var(--mobile-bottom-nav-space))] z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95 max-md:right-5 max-md:top-[0.65rem] max-md:bottom-auto max-md:z-[51] max-md:h-5 max-md:w-5 max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:shadow-none",
+          hiddenOnScroll && "max-md:-translate-y-16"
+        )}
       >
         <MessageIcon className="h-5 w-5" />
         {displayedUnreadCount > 0 && (
