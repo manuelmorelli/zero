@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Trash2 } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { clearCommunityAiChats } from "@/lib/communityAiChatStorage";
 import { PageTitle } from "@/components/ui/heading";
@@ -21,6 +22,9 @@ export default function DeletionScheduledPage() {
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-bg px-6 text-center">
+      <span className="grid h-20 w-20 place-items-center rounded-full border border-danger-line bg-danger-soft text-danger">
+        <Trash2 className="h-8 w-8" strokeWidth={1.75} />
+      </span>
       <div className="max-w-md space-y-3">
         <PageTitle>Account Scheduled for Deletion</PageTitle>
         <p className="text-sm text-ink-muted">
