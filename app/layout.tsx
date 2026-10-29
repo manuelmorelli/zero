@@ -4,8 +4,7 @@ import { Toaster } from "sonner";
 import { Theme } from "@/generated/prisma/client";
 import { getThemeFromCookie } from "@/lib/theme";
 import { QuickUpload } from "@/components/creator/QuickUpload";
-import { NotificationBell } from "@/components/layout/NotificationBell";
-import { MessagesWidget } from "@/components/messages/MessagesWidget";
+import { Inbox } from "@/components/layout/Inbox";
 import "./globals.css";
 
 // Satoshi (Fontshare, licenza gratuita anche per uso commerciale), scelto da Manuel il
@@ -56,8 +55,7 @@ export default async function RootLayout({
       >
         <QuickUpload>
           {children}
-          <NotificationBell />
-          <MessagesWidget />
+          <Inbox />
         </QuickUpload>
         <Toaster
           theme={isLight ? "light" : "dark"}
