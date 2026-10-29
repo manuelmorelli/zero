@@ -4,7 +4,6 @@ import { Toaster } from "sonner";
 import { Theme } from "@/generated/prisma/client";
 import { getThemeFromCookie } from "@/lib/theme";
 import { QuickUpload } from "@/components/creator/QuickUpload";
-import { Inbox } from "@/components/layout/Inbox";
 import "./globals.css";
 
 // Satoshi (Fontshare, licenza gratuita anche per uso commerciale), scelto da Manuel il
@@ -53,10 +52,7 @@ export default async function RootLayout({
       <body
         className={`${satoshi.variable} font-sans bg-bg text-ink antialiased`}
       >
-        <QuickUpload>
-          {children}
-          <Inbox />
-        </QuickUpload>
+        <QuickUpload>{children}</QuickUpload>
         <Toaster
           theme={isLight ? "light" : "dark"}
           position="bottom-right"

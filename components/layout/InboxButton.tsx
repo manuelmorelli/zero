@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Bell, MessageSquare } from "lucide-react";
 import { markAllNotificationsRead, markNotificationRead } from "@/lib/actions/notification";
-import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { InlineChat } from "@/components/messages/InlineChat";
@@ -38,10 +37,6 @@ export function InboxButton({ unreadCount, items: initialItems, currentUserId }:
   const [items, setItems] = useState(initialItems);
   const [unread, setUnread] = useState(unreadCount);
   const [activeConversation, setActiveConversation] = useState<Extract<InboxItem, { kind: "message" }> | null>(null);
-  // Sotto i 768px questo bottone vive fuori dall'header (vedi className più sotto), quindi non
-  // sparisce da solo insieme a lui scorrendo: senza questo finisce fisso sopra le card una volta
-  // che l'header è già scomparso.
-  const hiddenOnScroll = useHideOnScroll();
 
   function handleMarkAllRead() {
     const unreadNotifications = items.some((item) => item.kind === "notification" && !item.read);
@@ -88,10 +83,7 @@ export function InboxButton({ unreadCount, items: initialItems, currentUserId }:
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-label="Notifications and messages"
-        className={cn(
-          "fixed right-5 bottom-[calc(max(1.5rem,env(safe-area-inset-bottom))+4.25rem+var(--mobile-bottom-nav-space))] z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95 max-md:right-14 max-md:top-[0.65rem] max-md:bottom-auto max-md:z-[51] max-md:h-5 max-md:w-5 max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:shadow-none",
-          hiddenOnScroll && "max-md:-translate-y-16"
-        )}
+        className="fixed right-5 bottom-[calc(max(1.5rem,env(safe-area-inset-bottom))+4.25rem+var(--mobile-bottom-nav-space))] z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ember-line bg-surface text-ink shadow-xl transition-transform hover:scale-105 active:scale-95 max-md:static max-md:h-[30px] max-md:w-[30px] max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:shadow-none"
       >
         <Bell className="h-5 w-5" strokeWidth={1.7} aria-hidden="true" />
         {unread > 0 && (

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
-import { AiMascotButton } from "@/components/common/AiMascotButton";
 import { Button } from "@/components/ui/button";
 
 export function AuthStatus() {
@@ -39,7 +38,6 @@ export function AuthStatus() {
         <Button variant="primary" href="/register" className="text-sm">
           Get Started
         </Button>
-        <AiMascotButton />
       </>
     );
   }
@@ -52,9 +50,6 @@ export function AuthStatus() {
       >
         Hi, {data.user.name}
       </Link>
-      {/* "Sign out" tolto da qui (2026-10-09): è già raggiungibile dal menu laterale
-          (SideMenu.tsx, sezione "You"), nessuna funzione persa. Al suo posto, l'assistente AI. */}
-      <AiMascotButton />
     </>
   );
 }

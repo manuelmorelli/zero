@@ -7,6 +7,7 @@ import { AuthStatus } from "@/components/layout/AuthStatus";
 import { BackButton } from "@/components/layout/BackButton";
 import { SideMenu } from "@/components/layout/SideMenu";
 import { SearchIcon } from "@/components/search/SearchForm";
+import { AiMascotButton } from "@/components/common/AiMascotButton";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { cn } from "@/lib/utils";
@@ -25,7 +26,13 @@ const NAV_LINKS = [
  * un mockup statico), qui a destra c'è sempre AuthStatus vero: mostra login/registrazione a un
  * visitatore senza account, nome + logout a chi è loggato, su ogni pagina indistintamente.
  */
-export function Header() {
+type HeaderProps = {
+  /** Campanella unica di notifiche+messaggi (Inbox, server component): passata da fuori perché
+   * ha bisogno della sessione/dati dal server, che questo file (client) non può leggere da solo. */
+  inbox?: React.ReactNode;
+};
+
+export function Header({ inbox }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   // Solo sotto i 768px (md): la barra si fa da parte scorrendo verso il basso, lasciando più
   // schermo al contenuto, e torna subito appena si risale anche di poco. Sopra i 768px resta
@@ -79,6 +86,20 @@ export function Header() {
             <SearchIcon className="h-[18px] w-[18px]" />
           </Link>
           <AuthStatus />
+          {/* La "mensola" delle icone personali: un solo contenitore che tiene Ember e la
+           * campanella in fila, con un solo spazio (gap) e una sola posizione per entrambe
+           * (su mobile, sotto l'header, con lo stesso nascondi/mostra scorrendo dell'header
+           * stesso). Niente più numeri di posizione calcolati a mano su ognuna — su richiesta
+           * esplicita di Manuel, 2026-10-29, da applicare così ovunque nel sito da ora in poi. */}
+          <div
+            className={cn(
+              "flex items-center gap-3 max-md:fixed max-md:top-[0.65rem] max-md:right-5 max-md:z-[51] max-md:transition-transform max-md:duration-300",
+              hiddenOnScroll && "max-md:-translate-y-16"
+            )}
+          >
+            <AiMascotButton />
+            {inbox}
+          </div>
         </div>
       </div>
     </header>
