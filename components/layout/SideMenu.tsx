@@ -3,23 +3,48 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import {
+  Home,
+  Compass,
+  Users,
+  Info,
+  BarChart3,
+  Tag,
+  ShieldCheck,
+  UserRound,
+  LayoutDashboard,
+  Megaphone,
+  Settings as SettingsIcon,
+  Flag,
+  LogOut,
+} from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { SignOutButton } from "@/components/common/SignOutButton";
 import { isCurrentUserAdmin } from "@/lib/actions/adminReports";
+import { Avatar } from "@/components/ui/avatar";
 
-type NavLink = { label: string; href: string };
+type NavLink = { label: string; href: string; icon: React.ComponentType<{ className?: string; strokeWidth?: number }> };
 
 const NAV_LINKS: NavLink[] = [
-  { label: "Home", href: "/" },
-  { label: "Journeys", href: "/journeys" },
-  { label: "Journeyers", href: "/journeyers" },
-  { label: "What is Zero", href: "/what-is-zero" },
-  { label: "Algorithm", href: "/how-it-works" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Community Guidelines", href: "/community-guidelines" },
+  { label: "Home", href: "/", icon: Home },
+  { label: "Journeys", href: "/journeys", icon: Compass },
+  { label: "Journeyers", href: "/journeyers", icon: Users },
+  { label: "What is Zero", href: "/what-is-zero", icon: Info },
+  { label: "Algorithm", href: "/how-it-works", icon: BarChart3 },
+  { label: "Pricing", href: "/pricing", icon: Tag },
+  { label: "Community Guidelines", href: "/community-guidelines", icon: ShieldCheck },
 ];
 
-const FOOTER_LINKS: NavLink[] = [
+const ACCOUNT_LINKS = (userId: string): NavLink[] => [
+  { label: "Your Profile", href: `/profile/${userId}`, icon: UserRound },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Community", href: "/dashboard/community/new", icon: Megaphone },
+  { label: "Settings", href: "/settings", icon: SettingsIcon },
+];
+
+type FooterLink = { label: string; href: string };
+
+const FOOTER_LINKS: FooterLink[] = [
   { label: "About Zero", href: "/what-is-zero" },
   { label: "Contact us", href: "/contact" },
   { label: "Terms of Service", href: "/terms" },
@@ -118,38 +143,84 @@ export function SideMenu() {
                 </button>
               </div>
 
-              {isLoggedIn && (
-                <MenuSection title="You">
-                  <MenuLink href={`/profile/${data.user.id}`} onClick={close}>
-                    Your Profile
-                  </MenuLink>
-                  <MenuLink href="/dashboard" onClick={close}>
-                    Dashboard
-                  </MenuLink>
-                  <MenuLink href="/dashboard/community/new" onClick={close}>
-                    Community
-                  </MenuLink>
-                  <MenuLink href="/settings" onClick={close}>
-                    Settings
-                  </MenuLink>
-                  {isAdmin && (
-                    <MenuLink href="/admin/reports" onClick={close}>
-                      Reports
-                    </MenuLink>
-                  )}
-                  <SignOutButton className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink">
-                    Sign out
-                  </SignOutButton>
-                </MenuSection>
-              )}
+              {/* Sotto i 768px: un'unica lista con icone, foto+nome in cima, niente titoli di
+                  sezione MAIUSCOLI — identico al menu del mockup. Da tablet in su invariato: le
+                  due sezioni "You"/"Navigate" con titolo, senza icone, di prima. */}
+              <div className="flex flex-1 flex-col md:hidden">
+                {isLoggedIn && (
+                  <Link
+                    href={`/profile/${data.user.id}`}
+                    onClick={close}
+                    className="flex items-center gap-3 border-b border-border px-5 py-4 transition-colors hover:bg-surface-2"
+                  >
+                    <Avatar name={data.user.name} avatarUrl={data.user.image ?? null} size="sm" />
+                    <span>
+                      <span className="block text-sm font-semibold text-ink">{data.user.name}</span>
+                      <span className="block text-sm text-ember">View profile</span>
+                    </span>
+                  </Link>
+                )}
 
-              <MenuSection title="Navigate">
-                {NAV_LINKS.map((link) => (
-                  <MenuLink key={link.label} href={link.href} onClick={close}>
-                    {link.label}
-                  </MenuLink>
-                ))}
-              </MenuSection>
+                <div className="flex flex-col px-3 py-3">
+                  {NAV_LINKS.map((link) => (
+                    <MobileMenuLink key={link.label} link={link} onClick={close} />
+                  ))}
+                </div>
+
+                {isLoggedIn && (
+                  <div className="flex flex-col border-t border-border px-3 py-3">
+                    {ACCOUNT_LINKS(data.user.id).map((link) => (
+                      <MobileMenuLink key={link.label} link={link} onClick={close} />
+                    ))}
+                    {isAdmin && <MobileMenuLink link={{ label: "Reports", href: "/admin/reports", icon: Flag }} onClick={close} />}
+                  </div>
+                )}
+
+                {isLoggedIn && (
+                  <div className="border-t border-border px-3 py-3">
+                    <SignOutButton className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-danger transition-colors hover:bg-surface-2">
+                      <LogOut className="h-[18px] w-[18px]" strokeWidth={1.75} />
+                      Sign out
+                    </SignOutButton>
+                  </div>
+                )}
+              </div>
+
+              {/* Da 768px in su: struttura invariata (due sezioni con titolo, senza icone). */}
+              <div className="hidden md:flex md:flex-1 md:flex-col">
+                {isLoggedIn && (
+                  <MenuSection title="You">
+                    <MenuLink href={`/profile/${data.user.id}`} onClick={close}>
+                      Your Profile
+                    </MenuLink>
+                    <MenuLink href="/dashboard" onClick={close}>
+                      Dashboard
+                    </MenuLink>
+                    <MenuLink href="/dashboard/community/new" onClick={close}>
+                      Community
+                    </MenuLink>
+                    <MenuLink href="/settings" onClick={close}>
+                      Settings
+                    </MenuLink>
+                    {isAdmin && (
+                      <MenuLink href="/admin/reports" onClick={close}>
+                        Reports
+                      </MenuLink>
+                    )}
+                    <SignOutButton className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink">
+                      Sign out
+                    </SignOutButton>
+                  </MenuSection>
+                )}
+
+                <MenuSection title="Navigate">
+                  {NAV_LINKS.map((link) => (
+                    <MenuLink key={link.label} href={link.href} onClick={close}>
+                      {link.label}
+                    </MenuLink>
+                  ))}
+                </MenuSection>
+              </div>
 
               <div className="mt-auto space-y-3 border-t border-border px-5 py-5">
                 <div className="flex flex-wrap gap-x-3 gap-y-1.5">
@@ -171,6 +242,20 @@ export function SideMenu() {
           document.body
         )}
     </>
+  );
+}
+
+function MobileMenuLink({ link, onClick }: { link: NavLink; onClick: () => void }) {
+  const Icon = link.icon;
+  return (
+    <Link
+      href={link.href}
+      onClick={onClick}
+      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-ink transition-colors hover:bg-surface-2"
+    >
+      <Icon className="h-[18px] w-[18px] shrink-0 text-ink-muted" strokeWidth={1.75} />
+      {link.label}
+    </Link>
   );
 }
 
