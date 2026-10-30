@@ -35,7 +35,6 @@ export function AiMascotButton() {
 
   useEffect(() => {
     if (!open) return;
-    setIntro("hidden");
     function onClickOutside(event: MouseEvent) {
       if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
     }
@@ -48,7 +47,12 @@ export function AiMascotButton() {
       <Button
         variant="mascot"
         aria-label="Zero assistant"
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => {
+          setOpen((value) => !value);
+          // Aprire una volta basta a non mostrare più il fumetto di presentazione, anche dopo
+          // aver richiuso il pannello (il rendering qui sotto già lo nasconde mentre è aperto).
+          setIntro("hidden");
+        }}
         className={cn(
           "group max-md:h-[27px] max-md:w-[27px] max-md:border max-md:border-ember-line",
           justLanded && "animate-bounce"

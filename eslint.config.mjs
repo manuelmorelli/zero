@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Script di terze parti delle skill di Claude Code (es. .claude/skills/impeccable/scripts/):
+    // non è codice del sito, non va corretto né segnalato qui.
+    ".claude/**",
   ]),
 ]);
 

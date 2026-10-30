@@ -39,6 +39,9 @@ export function InlineChat({
 
   useEffect(() => {
     let cancelled = false;
+    // Svuota la conversazione precedente appena cambia conversationId, prima di caricare quella
+    // nuova: senza, per un istante si vedrebbero ancora i messaggi della chat appena lasciata.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setData(null);
     setLoadError(false);
     getConversationForChat(conversationId).then((result) => {
