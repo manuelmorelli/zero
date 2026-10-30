@@ -18,10 +18,7 @@ Questo documento è scritto per Manuel, in italiano semplice, senza termini tecn
 - **Cancello d'ingresso a codice** (30 ott 2026): chi non ha il codice che dai tu non entra nel sito. Si attiva da solo quando impostiamo la parola segreta su Vercel.
 - **Registrazioni chiuse** (30 ott 2026): chi entra con il codice può solo navigare e guardare i video già pubblicati, non può crearsi un account, quindi nemmeno pubblicare o caricare video. Tu continui ad accedere normalmente con il tuo account.
 - **Controllo automatico che il codice non si rompa** (30 ott 2026): da ora, ogni volta che il codice viene modificato, un servizio gratuito di GitHub lo controlla da solo e segnala se qualcosa non va, prima che arrivi online.
-
-## In corso
-
-- **Test automatici che aprono il sito vero e controllano che funzioni davvero** (registrarsi, entrare, guardare un video, seguire, pubblicare un Journey): in lavorazione in una chat dedicata, partita il 30 ott 2026.
+- **Test automatici che aprono il sito vero e controllano che funzioni davvero** (30 ott 2026): registrarsi, entrare, guardare un video, seguire una persona, pubblicare un Journey. Girano in locale sul tuo computer con il comando `npm run test:e2e`; manca ancora collegarli al controllo automatico di GitHub (serve un database "di prova" separato da quello vero, da decidere insieme quando serve).
 
 ## Rimandato (tua scelta, non dimenticato)
 
