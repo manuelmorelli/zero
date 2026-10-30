@@ -361,7 +361,7 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
       </Link>
       <ButtonSecondary
         href={`/journeys/${slide.id}`}
-        className="!border-ember !bg-ember-glass mt-3 gap-1 px-3 py-1 text-sm !text-on-photo"
+        className="!border-ember-line !bg-ember-ash mt-3 gap-1 px-3 py-1 text-sm !text-on-photo"
       >
         Watch
         <Play className="h-[15px] w-[15px] fill-current" aria-hidden="true" />

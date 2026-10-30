@@ -413,7 +413,7 @@ function SiteFooter() {
   return (
     <footer>
       <div className={`${PAGE_WIDTH.wide} flex flex-col items-center justify-between gap-4 py-10 text-sm text-ink-muted sm:flex-row`}>
-        <Logo className="h-6" />
+        <Logo className="h-6 max-md:h-8 max-md:-translate-y-10" />
         <p>© {new Date().getFullYear()} Zero. Every journey starts from Zero.</p>
       </div>
     </footer>

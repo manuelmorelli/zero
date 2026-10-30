@@ -41,6 +41,9 @@
   /* Vetro arancione più carico di ember-soft: per il bottone "Watch" sopra la foto della Hero
    * mobile (Manuel, 2026-10-29), dove ember-soft restava troppo pallido. */
   --color-ember-glass: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-glass-alpha));
+  /* Stesso vetro, ma meno saturo (croma ridotta): arancione "grigiastro" invece di arancione
+   * pieno, per il bottone "Watch" della Hero mobile (Manuel, 2026-10-30). */
+  --color-ember-ash: oklch(var(--ember-l) calc(var(--ember-c) * 0.35) var(--ember-h) / var(--ember-ash-alpha));
 
   /* Testo sopra le foto: sempre bianco pieno, in qualunque tema (scelta C6A). Versione attenuata
    * per il testo secondario sopra foto (es. sottotitoli della Hero): stesso bianco, mai un
@@ -158,6 +161,7 @@ html[data-theme="dark"] {
   --ember-soft-alpha: 16%;
   --ember-line-alpha: 55%;
   --ember-glass-alpha: 42%;
+  --ember-ash-alpha: 55%;
 
   /* Colore dello sfondo della pagina in forma "R G B", per la sfumatura delle copertine */
   --rgb-page: 10 10 10;
@@ -197,6 +201,7 @@ html[data-theme="dark"] {
   --color-ember-soft: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-soft-alpha));
   --color-ember-line: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-line-alpha));
   --color-ember-glass: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-glass-alpha));
+  --color-ember-ash: oklch(var(--ember-l) calc(var(--ember-c) * 0.35) var(--ember-h) / var(--ember-ash-alpha));
 
   --color-glass: oklch(55% 0 0 / 12%);
   --color-glass-strong: oklch(55% 0 0 / 20%);
@@ -248,10 +253,12 @@ html[data-theme="light"] {
   --ember-strong-alpha: 90%;
   --ember-fill-alpha: 55%;
   --ember-glass-alpha: 42%;
+  --ember-ash-alpha: 55%;
   --color-ember: oklch(var(--ember-l) var(--ember-c) var(--ember-h));
   --color-ember-soft: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-soft-alpha));
   --color-ember-line: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-line-alpha));
   --color-ember-glass: oklch(var(--ember-l) var(--ember-c) var(--ember-h) / var(--ember-glass-alpha));
+  --color-ember-ash: oklch(var(--ember-l) calc(var(--ember-c) * 0.35) var(--ember-h) / var(--ember-ash-alpha));
 
   /* Colore dello sfondo della pagina in forma "R G B" (neutral 300 = rgb 212,212,212), per la
    * sfumatura delle copertine */
@@ -392,10 +399,6 @@ html {
   -webkit-tap-highlight-color: transparent;
   /* Niente ingrandimento automatico del testo quando il telefono ruota in orizzontale. */
   -webkit-text-size-adjust: 100%;
-  /* "Pull to refresh"/rimbalzo di tutta la pagina ai bordi: il sito non ha un refresh legato allo
-   * scroll, quindi è solo rumore su telefono. Le liste orizzontali interne (righe di categorie,
-   * Storie) scorrono su un asse diverso e non ne risentono. */
-  overscroll-behavior: none;
 }
 
 body {
