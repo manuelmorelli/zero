@@ -186,7 +186,7 @@ export default function WhatIsZeroPage() {
               data-story="finale"
               className={cn(PANEL, "relative overflow-hidden text-2xl font-black leading-snug tracking-tight text-ember sm:text-3xl")}
             >
-              That's why every Journey on Zero starts from Zero.
+              That&apos;s why every Journey on Zero starts from Zero.
             </p>
           </div>
 
