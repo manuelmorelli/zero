@@ -1,31 +1,33 @@
 import {
   BadgeCheck,
-  Briefcase,
+  Camera,
   Clock,
+  Code2,
   Compass,
   Eye,
   Footprints,
-  HeartPulse,
-  House,
-  Languages,
   Layers,
   ListOrdered,
-  MousePointerClick,
   Music,
-  PenLine,
+  MousePointerClick,
+  Palette,
+  PlayCircle,
+  Shirt,
   ShieldCheck,
   Sparkles,
-  Store,
+  TrendingUp,
+  UserRound,
+  Video,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { Fragment } from "react";
 import { ButtonSecondary } from "@/components/ui/button";
 import { ScrollStory } from "@/components/common/ScrollStory";
-import { DisplayTitle, SectionTitle } from "@/components/ui/heading";
-import { PANEL_ACCENT } from "@/components/ui/panel";
+import { CardTitle, DisplayTitle, ReadingTitle, SectionTitle } from "@/components/ui/heading";
+import { PANEL, PANEL_ACCENT } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
-import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
+import { PAGE_WIDTH } from "@/components/ui/page-container";
 
 export const metadata = {
   title: "What Is Zero | Journeys told as they happen",
@@ -33,37 +35,60 @@ export const metadata = {
     "Zero is built around Journeys: real paths documented from the very first day. Reputation earned over time, ranked by Trust Score instead of likes.",
 };
 
-const JOURNEY_MEANING =
-  "When we say Journey, we don't mean a trip. Not a holiday, not a suitcase, not a plane ticket. A Journey is the start of a path, and that path can be any path in life.";
-const LIFE_IS_A_JOURNEY = "Life itself is a Journey, made of many small Journeys.";
-
 // Esportati per Ember (lib/ai/siteAssistant.ts): stesso testo di questa pagina, nessuna copia a parte.
 export const paragraphs = [
-  "There are stories we only ever meet at the end. We see someone who made it. We see the result. We see the house, the project, the body, the business, the success. But we almost never see the moment it all began. The doubt. The fear of not making it. The first attempt that failed. The decision to start again. The day no one was watching.",
-  "Zero begins exactly there.",
-  "Zero is a platform built around Journeys: real paths, told as they happen. We don't want to show you only where someone ended up. We want to let you see how they got there.",
-  JOURNEY_MEANING,
-  LIFE_IS_A_JOURNEY,
-  "Some last a few weeks, others take years. Some run side by side. Some end, and the next one begins the following morning. Each one is a story worth telling, and on Zero each one has its own place, from the very first day.",
-  "On Zero you can meet a person at their starting point and decide to follow their path. You can see the attempts, the mistakes, the insights, the struggles, the small wins, and the decisions that change the direction of the story.",
-  "A Journey isn't a collection of videos. It's a story that takes shape over time. It has a Presentation. It has Chapters. It has Episodes. It has a path. And you can step inside it.",
-  "You can start today. Pause tomorrow. Come back in a week and pick up exactly where you left off. You can follow it all the way to the end.",
-  "And maybe, while you watch someone else face their own road, something shifts in you too. Because maybe that person is doing today what you've been putting off for years.",
-  "But Zero doesn't want to become another place where whoever gets the most likes wins. We don't believe millions of views necessarily mean value. We don't believe a number under a video can tell you how trustworthy a person is. And we don't want to build a platform where you have to shout louder than everyone else to be heard.",
-  "On Zero, reputation is built over time. Trust is earned. Quality proves itself. A journeyer shouldn't be followed because an algorithm decided to make them famous. They should be followed because, episode after episode, they've shown they deserve that trust.",
-  "That's why Zero looks past surface-level numbers. It looks at whether people start a Journey. Whether they continue it. Whether they finish it. Whether they come back. Whether they find value. Whether they choose to stay. Because someone who completes your Journey is telling you far more than a simple like: “I trusted you enough to make it to the end.”",
-  "And that's the relationship we want to build. Not audience. Community. Not virality. Trust. Not disposable content. Journeys that stay.",
-  "Zero wants to become the place where people can tell what they're building while they're building it. Where someone starting from zero can be seen. Where someone looking for a path can find one. Where one person's experience can become the map for someone else.",
-  "Because every great story, before it became a success story, was simply a person who decided to start. And every Journey, before arriving somewhere, starts from Zero.",
+  "Most of the time, we only see people after they've already made it. The result, the success, the finish line. We almost never see how they got there.",
+  "Zero shows the whole path, from day one: the doubts, the failed attempts, the small wins.",
+  "Life itself is made of Journeys, big and small. Learning something new. Building something. Starting over. Each one deserves its own place, from the very first day.",
+  "On Zero, you don't win by getting the most likes. You earn trust over time, by actually finishing what you start, Episode after Episode.",
+  "That's why Zero looks at whether people watch, come back, and finish a Journey, not just how many views a video gets.",
+  "Every great story starts the same way: someone decided to begin.",
 ];
 
-const highlighted = new Set([
-  "Zero begins exactly there.",
-  LIFE_IS_A_JOURNEY,
-  "And that's the relationship we want to build. Not audience. Community. Not virality. Trust. Not disposable content. Journeys that stay.",
-]);
+const highlighted = new Set([paragraphs[1], paragraphs[4]]);
 
 type Bullet = { icon: LucideIcon; text: string };
+type Definition = { icon: LucideIcon; title: string; text: string };
+
+// La definizione di Journey guida sempre le altre: è quella che le persone capiscono male
+// (pensano a un viaggio), quindi sta per prima e a tutta larghezza nel rendering sotto.
+export const quickAnswers: Definition[] = [
+  {
+    icon: TrendingUp,
+    title: "What is a Journey?",
+    text:
+      "Not a trip. Not a vacation. A Journey is a real goal someone is working toward, filmed as it actually happens: leaving a desk job to open a plant shop. Learning to DJ and playing a first real gig. Training for a first triathlon. Opening a pop-up food stand with your grandmother's recipes. If it takes time and effort, it can be a Journey.",
+  },
+  {
+    icon: Compass,
+    title: "What is Zero?",
+    text:
+      "A place to follow someone's real path in life, filmed as it happens, not polished after the fact. You don't just see the finish line, you see every step that got them there.",
+  },
+  {
+    icon: UserRound,
+    title: "What is a Journeyer?",
+    text:
+      "The person telling that story. Not an actor, not a highlight reel, just someone letting you watch the real attempt, including the parts that don't go well.",
+  },
+  {
+    icon: PlayCircle,
+    title: "How do I use it?",
+    text:
+      "Watch anything for free, from Episode one. You only need an account to follow someone, give Trusty, join the Forum, or save a Journey for later.",
+  },
+];
+
+export const journeyExamples: Bullet[] = [
+  { icon: Camera, text: "Teaching yourself photography and booking a first paid shoot." },
+  { icon: Shirt, text: "Starting a small clothing brand from your bedroom." },
+  { icon: Footprints, text: "Training for a half marathon." },
+  { icon: Music, text: "Learning to produce music and releasing a first track." },
+  { icon: Video, text: "Growing a YouTube channel with no subscribers to start." },
+  { icon: Zap, text: "Teaching yourself to skate at the park near your house." },
+  { icon: Code2, text: "Building an app and shipping the first version." },
+  { icon: Palette, text: "Teaching yourself to paint and selling a first piece." },
+];
 
 export const different: Bullet[] = [
   { icon: ListOrdered, text: "Episodes are watched in chronological order, from the very first one." },
@@ -72,24 +97,13 @@ export const different: Bullet[] = [
   { icon: Eye, text: "Every new Journey gets 15 days of guaranteed visibility to everyone." },
 ];
 
-export const journeyExamples: Bullet[] = [
-  { icon: Languages, text: "Learning a new language, one lesson at a time." },
-  { icon: Store, text: "Opening a small business from an empty room." },
-  { icon: Footprints, text: "Training for your first marathon." },
-  { icon: HeartPulse, text: "Getting back on your feet after an injury." },
-  { icon: House, text: "Renovating a house with your own hands." },
-  { icon: Music, text: "Learning to play an instrument." },
-  { icon: PenLine, text: "Writing your first book." },
-  { icon: Briefcase, text: "Changing career at forty." },
-];
-
 export const howItWorks: Bullet[] = [
   { icon: Compass, text: "A Presentation, optional Chapters, and Episodes." },
   { icon: Clock, text: "Resume any episode exactly where you left off." },
   { icon: MousePointerClick, text: "Publishing takes two clicks, maximum." },
   {
     icon: BadgeCheck,
-    text: "You can watch without an account. An account is only needed to follow, like, comment or save.",
+    text: "You can watch without an account. An account is only needed to follow, give Trusty, join the Forum, or save.",
   },
 ];
 
@@ -109,9 +123,11 @@ function BulletList({ items }: { items: Bullet[] }) {
 }
 
 export default function WhatIsZeroPage() {
+  const [journeyAnswer, ...otherAnswers] = quickAnswers;
+
   return (
     <div className="min-h-screen text-ink">
-      <main className={cn(PAGE_WIDTH.wide, "relative max-w-3xl pb-10 pt-16 md:pt-20")}>
+      <main className={cn(PAGE_WIDTH.wide, "relative max-w-3xl pb-10 pt-10 md:pt-14")}>
         <ScrollStory>
           <div data-story="title">
             <p className="inline-flex items-center gap-2 rounded-full border border-ember-line bg-ember-soft px-3 py-1 text-sm uppercase tracking-[0.32em] text-ember">
@@ -123,9 +139,36 @@ export default function WhatIsZeroPage() {
             </DisplayTitle>
           </div>
 
-          {/* Il manifesto si racconta mentre si scorre: le righe salgono una dopo l'altra, le frasi
-           * arancioni entrano di lato, l'ultima frase cresce fino a riempire lo spazio. */}
-          <div className="mt-5 space-y-3">
+          {/* Blocchi semplici e diretti, visibili senza troppo scroll: la definizione di Journey
+           * guida perché è quella che le persone capiscono male (pensano a un viaggio). */}
+          <div className="mt-4 flex flex-col gap-3">
+            <div className={cn(PANEL_ACCENT, "flex flex-col gap-3")}>
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
+                  <journeyAnswer.icon className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <CardTitle>{journeyAnswer.title}</CardTitle>
+              </div>
+              <p className="text-sm leading-relaxed text-ink-muted">{journeyAnswer.text}</p>
+            </div>
+
+            <div data-story="rise" className="grid gap-3 sm:grid-cols-3">
+              {otherAnswers.map((item) => (
+                <div key={item.title} className={cn(PANEL, "flex flex-col gap-2.5")}>
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
+                    <item.icon className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <CardTitle className="text-base">{item.title}</CardTitle>
+                  <p className="text-sm leading-relaxed text-ink-muted">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Il racconto si legge mentre si scorre: le righe salgono una dopo l'altra, le frasi
+           * arancioni entrano in riquadri, l'ultima cresce fino a riempire lo spazio. */}
+          <div className="mt-8 flex flex-col gap-3">
+            <ReadingTitle>Why Zero Exists</ReadingTitle>
             {paragraphs.map((text) =>
               highlighted.has(text) ? (
                 <div key={text.slice(0, 40)} data-story="rise">
@@ -134,28 +177,26 @@ export default function WhatIsZeroPage() {
                   </p>
                 </div>
               ) : (
-                <Fragment key={text.slice(0, 40)}>
-                  <p data-story="lines" className="text-base leading-relaxed text-ink">
-                    {text}
-                  </p>
-                  {text === JOURNEY_MEANING && (
-                    <section data-story="rise" className={PANEL_ACCENT}>
-                      <SectionTitle>A Journey Can Be</SectionTitle>
-                      <div className="grid sm:grid-cols-2 sm:gap-x-6">
-                        <BulletList items={journeyExamples.slice(0, 4)} />
-                        <BulletList items={journeyExamples.slice(4)} />
-                      </div>
-                    </section>
-                  )}
-                </Fragment>
+                <p key={text.slice(0, 40)} data-story="lines" className="text-base leading-relaxed text-ink">
+                  {text}
+                </p>
               )
             )}
             <p
               data-story="finale"
-              className={cn(PANEL_ACCENT, "relative overflow-hidden text-2xl font-black tracking-tight text-ink sm:text-3xl")}
+              className={cn(PANEL, "relative overflow-hidden text-2xl font-black leading-snug tracking-tight text-ember sm:text-3xl")}
             >
-              Every Journey Starts From <span className="text-ember">Zero.</span>
+              That's why every Journey on Zero starts from Zero.
             </p>
+          </div>
+
+          <div data-story="rise" className={cn(PANEL_ACCENT, "mt-6")}>
+            <SectionTitle>A Journey Can Be</SectionTitle>
+            <p className="mt-1 text-sm text-ink-muted">Not a trip. Not a vacation. A few more real ones:</p>
+            <div className="grid sm:grid-cols-2 sm:gap-x-6">
+              <BulletList items={journeyExamples.slice(0, 4)} />
+              <BulletList items={journeyExamples.slice(4)} />
+            </div>
           </div>
 
           <div data-story="rise" className="mt-6 grid items-start gap-4 sm:grid-cols-2">
