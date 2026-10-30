@@ -30,7 +30,7 @@ const NAV_LINKS: NavLink[] = [
   { label: "Journeys", href: "/journeys", icon: Compass },
   { label: "Journeyers", href: "/journeyers", icon: Users },
   { label: "What is Zero", href: "/what-is-zero", icon: Info },
-  { label: "Algorithm", href: "/how-it-works", icon: BarChart3 },
+  { label: "How It Works", href: "/how-it-works", icon: BarChart3 },
   { label: "Pricing", href: "/pricing", icon: Tag },
   { label: "Community Guidelines", href: "/community-guidelines", icon: ShieldCheck },
 ];

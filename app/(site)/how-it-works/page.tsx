@@ -21,9 +21,9 @@ import { cn } from "@/lib/utils";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
 export const metadata = {
-  title: "Trust First. Always. | Zero",
+  title: "How It Works | Zero",
   description:
-    "How Zero really decides what you see: why trust matters more than fame, what the Trusty button is, chronological order while Zero is new, and how the algorithm kicks in later.",
+    "Three steps to get started, the questions people ask most, how to publish and upload, and why Zero decides what you see by trust, not by fame or followers.",
 };
 
 // Esportati per Ember (lib/ai/siteAssistant.ts): stesso testo di questa pagina, nessuna copia a parte.
@@ -159,15 +159,63 @@ export default function HowItWorksPage() {
         {/* Racconto con lo scroll: il titolo si allontana, le righe salgono una dopo l'altra, le
          * due frasi arancioni entrano di lato, passi, domande e riquadri salgono uno alla volta. */}
         <ScrollStory>
-          <div data-story="title" id="algorithm" className="scroll-mt-24">
+          <div data-story="title">
             <p className="inline-flex items-center gap-2 rounded-full border border-ember-line bg-ember-soft px-3 py-1 text-sm uppercase tracking-[0.32em] text-ember">
               <Sparkles className="h-3 w-3" aria-hidden="true" />
               How Zero really works
             </p>
             <DisplayTitle className="mt-2">
-              Trust First. <span className="text-ember">Always.</span>
+              How It <span className="text-ember">Works</span>
             </DisplayTitle>
             <p className="mt-2 text-ink">
+              Three steps to get started, the questions people ask most, and why trust decides what you see.
+            </p>
+          </div>
+
+          <div data-story="lines">
+            <ReadingTitle className="mb-4 mt-8">Three Steps to Get Started</ReadingTitle>
+          </div>
+          <div data-story="rise" className="grid gap-6 md:grid-cols-3">
+            {steps.map((step) => (
+              <div key={step.number} className={PANEL}>
+                <span className="text-sm font-bold text-ink-faint">{step.number}</span>
+                <CardTitle as="h2" className="mt-2 text-ember">{step.title}</CardTitle>
+                <p className="mt-1.5 text-ink">{step.text}</p>
+              </div>
+            ))}
+          </div>
+
+          <div data-story="lines">
+            <ReadingTitle className="mb-4 mt-10">Frequently Asked Questions</ReadingTitle>
+          </div>
+          <div data-story="rise" className={cn(PANEL, "divide-y divide-border")}>
+            {questions.map((item) => (
+              <details key={item.q} className="group py-3.5">
+                <summary className="flex cursor-pointer list-none items-center justify-between text-lg font-semibold text-ember">
+                  {item.q}
+                  <span className="ml-4 text-ink transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-2 text-ink">{item.a}</p>
+              </details>
+            ))}
+          </div>
+
+          <div data-story="rise" className="mt-10 grid items-start gap-4 sm:grid-cols-2">
+            <section className={PANEL_ACCENT}>
+              <CardTitle as="h2" className="text-ember">Publishing Isn&apos;t the End</CardTitle>
+              <p className="mt-3 text-sm leading-relaxed text-ink">{publishingNote}</p>
+            </section>
+            <section className={PANEL_ACCENT}>
+              <CardTitle as="h2" className="text-ember">Before You Upload</CardTitle>
+              <BulletList items={uploadTips} />
+            </section>
+          </div>
+
+          <div data-story="lines">
+            <ReadingTitle id="algorithm" className="mb-3 mt-10 scroll-mt-24">
+              Trust First. Always.
+            </ReadingTitle>
+            <p className="text-ink">
               Not the algorithm first, not followers first.
               <br />
               Here is how Zero actually decides what you see.
@@ -262,45 +310,6 @@ export default function HowItWorksPage() {
           >
             That&apos;s why trust decides what grows on Zero, not luck and not volume.
           </p>
-
-          <div data-story="lines">
-            <ReadingTitle className="mb-4 mt-10">Three Steps to Get Started</ReadingTitle>
-          </div>
-          <div data-story="rise" className="grid gap-6 md:grid-cols-3">
-            {steps.map((step) => (
-              <div key={step.number} className={PANEL}>
-                <span className="text-sm font-bold text-ink-faint">{step.number}</span>
-                <CardTitle as="h2" className="mt-2 text-ember">{step.title}</CardTitle>
-                <p className="mt-1.5 text-ink">{step.text}</p>
-              </div>
-            ))}
-          </div>
-
-          <div data-story="lines">
-            <ReadingTitle className="mb-4 mt-10">Frequently Asked Questions</ReadingTitle>
-          </div>
-          <div data-story="rise" className={cn(PANEL, "divide-y divide-border")}>
-            {questions.map((item) => (
-              <details key={item.q} className="group py-3.5">
-                <summary className="flex cursor-pointer list-none items-center justify-between text-lg font-semibold text-ember">
-                  {item.q}
-                  <span className="ml-4 text-ink transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-2 text-ink">{item.a}</p>
-              </details>
-            ))}
-          </div>
-
-          <div data-story="rise" className="mt-10 grid items-start gap-4 sm:grid-cols-2">
-            <section className={PANEL_ACCENT}>
-              <CardTitle as="h2" className="text-ember">Publishing Isn&apos;t the End</CardTitle>
-              <p className="mt-3 text-sm leading-relaxed text-ink">{publishingNote}</p>
-            </section>
-            <section className={PANEL_ACCENT}>
-              <CardTitle as="h2" className="text-ember">Before You Upload</CardTitle>
-              <BulletList items={uploadTips} />
-            </section>
-          </div>
         </ScrollStory>
 
         <div className="mt-8 flex flex-wrap gap-3">
