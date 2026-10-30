@@ -7,7 +7,11 @@ import { sections as cookiesSections } from "@/app/(site)/cookies/page";
 import { paragraphs as whatIsZeroParagraphs, quickAnswers, different as whatMakesDifferent, howItWorks as howZeroWorksList, journeyExamples } from "@/app/(site)/what-is-zero/page";
 import {
   algorithmParagraphs,
-  algorithmHighlights,
+  trustyExplainer,
+  trustClosingLine,
+  mistakesNote,
+  orderPhases,
+  algorithmQuickAnswers,
   publishingNote,
   steps as gettingStartedSteps,
   questions as faqQuestions,
@@ -79,7 +83,11 @@ function buildKnowledgeBase(): string {
     section("How it works in practice", howZeroWorksList.map((item) => item.text)),
     section("How the algorithm decides what to show (general explanation only, see hard rules below)", [
       ...algorithmParagraphs,
-      ...algorithmHighlights,
+      trustyExplainer,
+      trustClosingLine,
+      mistakesNote,
+      ...orderPhases.map((phase) => `${phase.tag}: ${phase.title} ${phase.text}`),
+      ...algorithmQuickAnswers.map((item) => `${item.title} ${item.text}`),
     ]),
     section("Getting started", gettingStartedSteps.map((step) => `${step.title}: ${step.text}`)),
     section("Frequently asked questions", faqQuestions.map((item) => `Q: ${item.q}\nA: ${item.a}`)),
