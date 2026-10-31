@@ -211,7 +211,7 @@ export function SideMenu() {
                         Reports
                       </MenuLink>
                     )}
-                    <SignOutButton className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink">
+                    <SignOutButton className="block w-full rounded-lg px-3 py-2.5 text-left text-base text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink">
                       Sign out
                     </SignOutButton>
                   </MenuSection>
@@ -285,7 +285,7 @@ function MenuLink({
     <Link
       href={href}
       onClick={onClick}
-      className="block rounded-lg px-3 py-2.5 text-sm text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+      className="block rounded-lg px-3 py-2.5 text-base text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
     >
       {children}
     </Link>

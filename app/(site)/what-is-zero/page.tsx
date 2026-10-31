@@ -121,7 +121,7 @@ function QuickAnswersStack({ leads, rest }: { leads: Definition[]; rest: Definit
             </span>
             <CardTitle>{lead.title}</CardTitle>
           </div>
-          <p className="text-sm leading-relaxed text-ink md:text-ink-muted">{lead.text}</p>
+          <p className="text-sm leading-relaxed text-ink md:text-base md:text-ink-muted">{lead.text}</p>
         </div>
       ))}
 
@@ -132,7 +132,7 @@ function QuickAnswersStack({ leads, rest }: { leads: Definition[]; rest: Definit
               <item.icon className="h-4 w-4" aria-hidden="true" />
             </span>
             <CardTitle className="text-base">{item.title}</CardTitle>
-            <p className="text-sm leading-relaxed text-ink md:text-ink-muted">{item.text}</p>
+            <p className="text-sm leading-relaxed text-ink md:text-base md:text-ink-muted">{item.text}</p>
           </div>
         ))}
       </div>
@@ -144,7 +144,7 @@ function BulletList({ items }: { items: Bullet[] }) {
   return (
     <ul className="mt-4 space-y-3">
       {items.map(({ icon: Icon, text }) => (
-        <li key={text} className="flex gap-3 text-sm leading-relaxed text-ink">
+        <li key={text} className="flex gap-3 text-sm leading-relaxed text-ink md:text-base">
           <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
             <Icon className="h-3.5 w-3.5" aria-hidden="true" />
           </span>
@@ -164,7 +164,7 @@ export default function WhatIsZeroPage() {
 
   return (
     <div className="min-h-screen text-ink">
-      <main className={cn(PAGE_WIDTH.wide, "relative max-w-3xl pb-10 pt-10 md:pt-14")}>
+      <main className={cn(PAGE_WIDTH.wide, "relative max-w-3xl pb-10 pt-24")}>
         <ScrollStory>
           <div data-story="title">
             <p className="inline-flex items-center gap-2 rounded-full border border-ember-line bg-ember-soft px-3 py-1 text-sm uppercase tracking-[0.32em] text-ember">

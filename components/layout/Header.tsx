@@ -79,7 +79,7 @@ export function Header({ inbox }: HeaderProps) {
             <Link
               key={link.label}
               href={link.href}
-              className="text-sm text-ink transition-colors hover:text-ember"
+              className="text-base text-ink transition-colors hover:text-ember"
             >
               {link.label}
             </Link>
