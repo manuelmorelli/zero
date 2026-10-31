@@ -43,6 +43,53 @@ const VIDEO_CANVAS_BLACK_FILES = new Set([
 /** File che possono usare le taglie di testo su misura della Hero. */
 const HERO_FILES = new Set(["components/landing/Hero.tsx"]);
 
+/** Debito storico sm:/max-sm: già presente prima che questa regola esistesse (2026-10-30),
+ * mai toccato dal porting mobile: non blocca i commit di oggi, ma ogni NUOVO sm:/max-sm: (qui o
+ * altrove) sì. Da smaltire a parte, senza fretta, pagina per pagina: non è il problema di oggi. */
+const GRANDFATHERED_BREAKPOINT = new Set([
+  "app/(site)/community-guidelines/page.tsx::sm:whitespace-nowrap",
+  "app/(site)/how-it-works/page.tsx::sm:text-xl",
+  "app/(site)/how-it-works/page.tsx::sm:grid-cols-2",
+  "app/(site)/journeys/[id]/page.tsx::sm:w-44",
+  "app/(site)/page.tsx::sm:flex-row",
+  "components/common/EmberChatPanel.tsx::sm:w-96",
+  "components/common/SectionHeading.tsx::sm:flex",
+  "components/common/SectionHeading.tsx::sm:justify-between",
+  "components/community/GiftMonthPanel.tsx::sm:max-w-md",
+  "components/community/GiftMonthPanel.tsx::sm:flex-row",
+  "components/community/GiftMonthPanel.tsx::sm:items-center",
+  "components/community/GiftMonthPanel.tsx::sm:justify-between",
+  "components/community/SubscribeCard.tsx::sm:p-8",
+  "components/community/SubscribeCard.tsx::sm:flex-row",
+  "components/community/SubscribeCard.tsx::sm:items-center",
+  "components/community/SubscribeCard.tsx::sm:justify-between",
+  "components/community/TipPanel.tsx::sm:max-w-md",
+  "components/community/TipPanel.tsx::sm:flex-row",
+  "components/community/TipPanel.tsx::sm:items-center",
+  "components/community/TipPanel.tsx::sm:justify-between",
+  "components/creator/AddEpisodeCard.tsx::sm:grid",
+  "components/creator/AddEpisodeCard.tsx::sm:grid-cols-[260px_1fr]",
+  "components/creator/AddEpisodeCard.tsx::sm:gap-6",
+  "components/creator/AddEpisodeCard.tsx::sm:mt-0",
+  "components/creator/NewCommunityListingClient.tsx::sm:grid-cols-2",
+  "components/creator/QuickUploadButton.tsx::sm:grid",
+  "components/creator/QuickUploadButton.tsx::sm:grid-cols-[260px_1fr]",
+  "components/creator/QuickUploadButton.tsx::sm:gap-6",
+  "components/creator/QuickUploadButton.tsx::sm:h-full",
+  "components/creator/QuickUploadButton.tsx::sm:justify-center",
+  "components/creator/QuickUploadButton.tsx::sm:py-0",
+  "components/creator/QuickUploadButton.tsx::sm:mt-0",
+  "components/home/StoryViewer.tsx::sm:h-[92vh]",
+  "components/home/StoryViewer.tsx::sm:rounded-2xl",
+  "components/journey/NextEpisodeOverlay.tsx::sm:block",
+  "components/landing/Hero.tsx::sm:w-80",
+  "components/landing/HomeClosingCards.tsx::sm:gap-6",
+  "components/profile/EditProfileButton.tsx::sm:grid-cols-2",
+  "components/profile/ProfileHero.tsx::sm:-mt-16",
+  "components/settings/SupportLinkForm.tsx::sm:flex-row",
+  "components/settings/SupportLinkForm.tsx::sm:items-center",
+]);
+
 /** L'unico rimbalzo ammesso sul sito (scelta di Manuel, 2026-10-12): la faccina di Ember
  * nell'header rimbalza una volta al primo caricamento della pagina. Nessun altro file può usare
  * animate-bounce/animate-ping. */
@@ -74,6 +121,7 @@ const RULES = {
   heading: "Titolo fatto a mano: usa PageTitle, DisplayTitle, SectionTitle, ReadingTitle o CardTitle (components/ui/heading).",
   button: "Bottone fatto a mano: usa Button/ButtonPrimary/ButtonSecondary/ButtonDanger/IconButton (components/ui/button).",
   box: "Riquadro fatto a mano: usa Panel, Notice, PANEL o NOTICE (components/ui/panel).",
+  breakpoint: "Confine telefono/computer sbagliato: usa md:/max-md: (768px), mai sm:/max-sm: (640px) — regola fissa del progetto, causa reale di bug già visti.",
   field: "Campo fatto a mano: usa Input, Textarea, Select, PillField o FIELD (components/ui/input).",
   page: "Contenitore di pagina fatto a mano: usa PageContainer o PAGE_WIDTH (components/ui/page-container).",
   boxNoBorder: "Riquadro senza bordo: anche uno sfondo pieno va dentro Panel/Notice/PANEL/NOTICE (components/ui/panel).",
@@ -154,6 +202,7 @@ function checkClasses(classes, ctx) {
   for (const raw of list) {
     const c = stripVariants(raw);
     let m;
+    if (/(^|:)(sm|max-sm):/.test(raw) && !GRANDFATHERED_BREAKPOINT.has(`${ctx.rel}::${raw}`)) problems.push(["breakpoint", raw]);
     if ((m = c.match(/^text-(.+)$/))) {
       const v = m[1];
       if (v === "xs" || /^\[\d/.test(v) || /^\[(clamp|calc)/.test(v)) problems.push(["size", raw]);
@@ -204,7 +253,7 @@ const libFiles = TEXT_ONLY_DIRS.flatMap((d) => walk(path.join(ROOT, d), /\.tsx?$
 for (const { file, textOnly } of [...tsxFiles, ...libFiles]) {
   const rel = path.relative(ROOT, file).split(path.sep).join("/");
   if (rel.startsWith(DESIGN_SYSTEM_DIR) || APPROVED_EXCEPTIONS.has(rel)) continue;
-  const ctx = { hero: HERO_FILES.has(rel), videoCanvas: VIDEO_CANVAS_BLACK_FILES.has(rel), bounce: BOUNCE_FILES.has(rel) };
+  const ctx = { rel, hero: HERO_FILES.has(rel), videoCanvas: VIDEO_CANVAS_BLACK_FILES.has(rel), bounce: BOUNCE_FILES.has(rel) };
   const source = fs.readFileSync(file, "utf8");
   checkEasing(source, rel, errors);
   checkDuration(source, rel, errors);

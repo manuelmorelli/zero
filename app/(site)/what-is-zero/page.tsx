@@ -107,6 +107,37 @@ export const howItWorks: Bullet[] = [
   },
 ];
 
+/** Una definizione grande in cima (la "guida") + le altre tre in riga/colonna sotto. Quale
+ * definizione guida cambia tra telefono e computer (vedi sotto in WhatIsZeroPage), quindi questo
+ * blocco prende lead/rest come prop invece di leggerli direttamente da quickAnswers. */
+function QuickAnswersStack({ lead, rest }: { lead: Definition; rest: Definition[] }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className={cn(PANEL_ACCENT, "flex flex-col gap-3")}>
+        <div className="flex items-center gap-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
+            <lead.icon className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <CardTitle>{lead.title}</CardTitle>
+        </div>
+        <p className="text-sm leading-relaxed text-ink md:text-ink-muted">{lead.text}</p>
+      </div>
+
+      <div data-story="rise" className="grid gap-3 md:grid-cols-3">
+        {rest.map((item) => (
+          <div key={item.title} className={cn(PANEL, "flex flex-col gap-2.5")}>
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
+              <item.icon className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <CardTitle className="text-base">{item.title}</CardTitle>
+            <p className="text-sm leading-relaxed text-ink md:text-ink-muted">{item.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function BulletList({ items }: { items: Bullet[] }) {
   return (
     <ul className="mt-4 space-y-3">
@@ -123,7 +154,12 @@ function BulletList({ items }: { items: Bullet[] }) {
 }
 
 export default function WhatIsZeroPage() {
-  const [journeyAnswer, ...otherAnswers] = quickAnswers;
+  // Da computer la definizione di Journey guida (capita male, "pensano a un viaggio"). Da
+  // telefono Manuel vuole l'ordine inverso in testa: Zero prima, Journey seconda — il resto
+  // (Journeyer, come si usa) segue nello stesso ordine in entrambi i casi.
+  const [journeyAnswer, zeroAnswer, ...laterAnswers] = quickAnswers;
+  const otherAnswers = [zeroAnswer, ...laterAnswers];
+  const mobileOtherAnswers = [journeyAnswer, ...laterAnswers];
 
   return (
     <div className="min-h-screen text-ink">
@@ -139,29 +175,16 @@ export default function WhatIsZeroPage() {
             </DisplayTitle>
           </div>
 
-          {/* Blocchi semplici e diretti, visibili senza troppo scroll: la definizione di Journey
-           * guida perché è quella che le persone capiscono male (pensano a un viaggio). */}
-          <div className="mt-4 flex flex-col gap-3">
-            <div className={cn(PANEL_ACCENT, "flex flex-col gap-3")}>
-              <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
-                  <journeyAnswer.icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <CardTitle>{journeyAnswer.title}</CardTitle>
-              </div>
-              <p className="text-sm leading-relaxed text-ink-muted">{journeyAnswer.text}</p>
+          {/* Blocchi semplici e diretti, visibili senza troppo scroll. Da computer la definizione
+           * di Journey guida (capita male, "pensano a un viaggio"); da telefono Manuel vuole Zero
+           * in testa e Journey seconda, quindi i due blocchi non sono la stessa cosa ripetuta ma
+           * davvero un ordine diverso: guardali uno alla volta, mai insieme (hidden/md:hidden). */}
+          <div className="mt-4">
+            <div className="hidden md:block">
+              <QuickAnswersStack lead={journeyAnswer} rest={otherAnswers} />
             </div>
-
-            <div data-story="rise" className="grid gap-3 sm:grid-cols-3">
-              {otherAnswers.map((item) => (
-                <div key={item.title} className={cn(PANEL, "flex flex-col gap-2.5")}>
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
-                    <item.icon className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                  <CardTitle className="text-base">{item.title}</CardTitle>
-                  <p className="text-sm leading-relaxed text-ink-muted">{item.text}</p>
-                </div>
-              ))}
+            <div className="md:hidden">
+              <QuickAnswersStack lead={zeroAnswer} rest={mobileOtherAnswers} />
             </div>
           </div>
 
@@ -172,7 +195,7 @@ export default function WhatIsZeroPage() {
             {paragraphs.map((text) =>
               highlighted.has(text) ? (
                 <div key={text.slice(0, 40)} data-story="rise">
-                  <p className={cn(PANEL_ACCENT, "text-lg font-semibold leading-snug tracking-tight text-ember sm:text-xl")}>
+                  <p className={cn(PANEL_ACCENT, "text-lg font-semibold leading-snug tracking-tight text-ember md:text-xl")}>
                     {text}
                   </p>
                 </div>
@@ -184,7 +207,7 @@ export default function WhatIsZeroPage() {
             )}
             <p
               data-story="finale"
-              className={cn(PANEL, "relative overflow-hidden text-2xl font-black leading-snug tracking-tight text-ember sm:text-3xl")}
+              className={cn(PANEL, "relative overflow-hidden text-2xl font-black leading-snug tracking-tight text-ember md:text-3xl")}
             >
               That&apos;s why every Journey on Zero starts from Zero.
             </p>
@@ -193,13 +216,13 @@ export default function WhatIsZeroPage() {
           <div data-story="rise" className={cn(PANEL_ACCENT, "mt-6")}>
             <SectionTitle>A Journey Can Be</SectionTitle>
             <p className="mt-1 text-sm text-ink-muted">Not a trip. Not a vacation. A few more real ones:</p>
-            <div className="grid sm:grid-cols-2 sm:gap-x-6">
+            <div className="grid md:grid-cols-2 md:gap-x-6">
               <BulletList items={journeyExamples.slice(0, 4)} />
               <BulletList items={journeyExamples.slice(4)} />
             </div>
           </div>
 
-          <div data-story="rise" className="mt-6 grid items-start gap-4 sm:grid-cols-2">
+          <div data-story="rise" className="mt-6 grid items-start gap-4 md:grid-cols-2">
             <section className={PANEL_ACCENT}>
               <SectionTitle>What Makes Zero Different</SectionTitle>
               <BulletList items={different} />
@@ -218,7 +241,9 @@ export default function WhatIsZeroPage() {
           </p>
         </ScrollStory>
 
-        <div className="mt-5 flex flex-wrap gap-3">
+        {/* Solo da computer: su questa pagina Manuel sta lavorando separatamente sulla versione
+         * desktop, qui non si tocca. Su telefono i due bottoni restano tolti. */}
+        <div className="mt-5 hidden flex-wrap gap-3 md:flex">
           <ButtonSecondary href="/">Explore Journeys</ButtonSecondary>
           <ButtonSecondary href="/dashboard">Create Your Journey</ButtonSecondary>
         </div>

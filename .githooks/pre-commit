@@ -1,6 +1,12 @@
 #!/bin/sh
 # Lucchetto del design system Zero: blocca il commit se app/ o components/ contengono un
-# pezzo di stile fatto a mano invece dei mattoncini ufficiali (components/ui/). Vedi
-# scripts/check-design.mjs e docs/15_Design_System.md. Per saltarlo una volta sola (sconsigliato):
-# git commit --no-verify.
-node scripts/check-design.mjs
+# pezzo di stile fatto a mano invece dei mattoncini ufficiali (components/ui/), o un confine
+# telefono/computer sbagliato (sm: invece di md:). Vedi scripts/check-design.mjs e
+# docs/15_Design_System.md. Per saltarlo una volta sola (sconsigliato): git commit --no-verify.
+node scripts/check-design.mjs || exit 1
+
+# Lucchetto "il desktop non si tocca": blocca il commit se le modifiche non ancora committate
+# cambiano come appare il sito a schermo largo rispetto all'ultimo commit. Vedi
+# scripts/check-desktop-isolation.mjs. Se il cambiamento sul computer è voluto (confermato con
+# Manuel, non un md: dimenticato): ALLOW_DESKTOP_CHANGE=1 git commit ...
+node scripts/check-desktop-isolation.mjs || exit 1

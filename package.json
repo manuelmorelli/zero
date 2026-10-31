@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "check:design": "node scripts/check-design.mjs",
+    "check:desktop": "node scripts/check-desktop-isolation.mjs",
     "test:e2e": "playwright test",
     "postinstall": "prisma generate",
     "logo:build": "node scripts/logo/build-logo.mjs"
