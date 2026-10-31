@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Compass, Plus, Search, CircleUserRound } from "lucide-react";
@@ -39,16 +40,43 @@ export function BottomNav() {
 
   const profileHref = isLoggedIn ? `/profile/${data!.user.id}` : "/login";
 
+  // Si rimpicciolisce scorrendo verso il basso (come la tab bar di Instagram), torna alla
+  // dimensione normale scorrendo verso l'alto o in cima alla pagina (Manuel, 2026-10-31).
+  const [shrunk, setShrunk] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    lastScrollY.current = window.scrollY;
+    let ticking = false;
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        const delta = currentY - lastScrollY.current;
+        if (currentY <= 0) setShrunk(false);
+        else if (delta > 4) setShrunk(true);
+        else if (delta < -4) setShrunk(false);
+        lastScrollY.current = currentY;
+        ticking = false;
+      });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <nav
       aria-label="Primary"
       className={cn(
         // Vetro sfocato come l'header in alto (bg-glass-strong backdrop-blur-md, Header.tsx),
         // non uno sfondo pieno: prima si vedeva come un riquadro opaco, lontano dal mockup.
-        // Sempre ferma: a differenza dell'header in alto (TopBar.dc.html ha davvero una logica di
-        // nascondersi scorrendo), BottomNav.dc.html nel mockup non si nasconde mai — una sessione
-        // precedente aveva applicato la stessa logica a entrambe per errore, qui tolta.
-        "fixed inset-x-6 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center justify-around rounded-2xl border border-border bg-glass-strong px-2 py-2 shadow-xl backdrop-blur-md md:hidden"
+        // Pillola (rounded-full) invece del riquadro con angoli smussati di prima, come tutti gli
+        // altri contenitori a pillola del sito mobile (Manuel, 2026-10-31).
+        "fixed inset-x-6 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center justify-around rounded-full border border-border bg-glass-strong px-2 py-2 shadow-xl backdrop-blur-md transition-transform duration-300 md:hidden",
+        shrunk ? "scale-90 opacity-90" : "scale-100 opacity-100"
       )}
     >
       <NavTab href="/" label="Home" active={isHome}>
