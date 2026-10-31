@@ -69,7 +69,7 @@ export default async function EpisodePlayerPage({
   return (
     <main>
 
-      <div className={cn(PAGE_WIDTH.wide, "grid gap-5 pb-10 pt-24 lg:grid-cols-[minmax(0,1fr)_340px]")}>
+      <div className={cn(PAGE_WIDTH.wide, "grid gap-5 pb-10 pt-24 md:grid-cols-[minmax(0,1fr)_340px]")}>
         <EpisodePlayer
           key={episode.id}
           journeyId={journey.id}

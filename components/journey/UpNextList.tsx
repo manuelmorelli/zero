@@ -23,7 +23,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
       <p className="mt-1 text-base text-ember">
         {episodes.length} {episodes.length === 1 ? "Episode" : "Episodes"}
       </p>
-      <ul className="mt-3 space-y-2 lg:max-h-[70vh] lg:overflow-y-auto lg:pr-1">
+      <ul className="mt-3 space-y-2 md:max-h-[70vh] md:overflow-y-auto md:pr-1">
         {episodes.map((episode) => {
           const active = episode.id === activeEpisodeId;
           return (
@@ -44,7 +44,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                     Episode {episode.number}
                   </span>
                   <span
-                    className={`mt-0.5 block truncate text-base font-semibold transition-colors ${
+                    className={`mt-0.5 block truncate text-sm font-semibold transition-colors ${
                       active ? "text-ink" : "group-hover:text-ember"
                     }`}
                   >

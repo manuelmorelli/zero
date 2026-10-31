@@ -271,8 +271,9 @@ export function EpisodePlayer({
                 className="text-ember transition-opacity hover:opacity-80"
               />
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-2 pr-32">
+            <div className="flex flex-wrap items-center justify-between gap-2 pr-32 md:pr-48">
               <p className="text-sm leading-none tracking-[0.22em] text-ember uppercase">
+                {journeyTitle} ·
                 Episode {episode.number}
                 {journeyCategory ? ` · ${journeyCategory}` : ""}
               </p>
@@ -282,10 +283,6 @@ export function EpisodePlayer({
               {episode.title}
             </PageTitle>
             <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
-              <Link href={`/journeys/${journeyId}`} className="transition-colors hover:text-ember">
-                {journeyTitle}
-              </Link>
-              <span aria-hidden="true">·</span>
               <Link
                 href={`/profile/${creator.userId}`}
                 className="flex min-w-0 items-center gap-1.5 transition-colors hover:text-ember"
@@ -293,11 +290,15 @@ export function EpisodePlayer({
                 <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="sm" />
                 <span className="truncate">{creator.displayName}</span>
               </Link>
+              <span aria-hidden="true">·</span>
+              <Link href={`/journeys/${journeyId}`} className="transition-colors hover:text-ember">
+                {journeyTitle}
+              </Link>
               {trust.score !== null && <TrustScoreBadge score={trust.score} trustedByCount={trust.trustedByCount} />}
               {episode.isSponsored && <SponsoredLabel />}
             </div>
             {episode.caption && (
-              <p className="mt-1 whitespace-pre-wrap text-sm text-ember">{episode.caption}</p>
+              <p className="mt-2.5 whitespace-pre-wrap text-base text-ink">{episode.caption}</p>
             )}
           </div>
         </div>
