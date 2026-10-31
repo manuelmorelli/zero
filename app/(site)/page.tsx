@@ -368,7 +368,7 @@ function Categories({ countByCategory }: { countByCategory: Map<string, number> 
           icon={<Compass className="h-6 w-6" aria-hidden="true" />}
           title="Categories"
           subtitle="Not sure where to start? Browse by category."
-          viewAllHref="/journeys"
+          viewAllHref="/search"
         />
       </Reveal>
 
