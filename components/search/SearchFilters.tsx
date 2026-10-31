@@ -43,7 +43,7 @@ export function SearchFilters({
   }
 
   return (
-    <form className="mt-3 flex flex-wrap items-center gap-2">
+    <form className="mt-3 max-md:mt-6 flex flex-wrap items-center gap-2">
       <select
         aria-label="Filter by category"
         defaultValue={defaultCategory}
