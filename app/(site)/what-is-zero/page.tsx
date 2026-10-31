@@ -107,23 +107,25 @@ export const howItWorks: Bullet[] = [
   },
 ];
 
-/** Una definizione grande in cima (la "guida") + le altre tre in riga/colonna sotto. Quale
- * definizione guida cambia tra telefono e computer (vedi sotto in WhatIsZeroPage), quindi questo
- * blocco prende lead/rest come prop invece di leggerli direttamente da quickAnswers. */
-function QuickAnswersStack({ lead, rest }: { lead: Definition; rest: Definition[] }) {
+/** Una o più definizioni grandi in cima (le "guida", impilate) + le altre in riga/colonna sotto.
+ * Quali definizioni guidano cambia tra telefono e computer (vedi sotto in WhatIsZeroPage), quindi
+ * questo blocco prende leads/rest come prop invece di leggerli direttamente da quickAnswers. */
+function QuickAnswersStack({ leads, rest }: { leads: Definition[]; rest: Definition[] }) {
   return (
     <div className="flex flex-col gap-3">
-      <div className={cn(PANEL_ACCENT, "flex flex-col gap-3")}>
-        <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
-            <lead.icon className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <CardTitle>{lead.title}</CardTitle>
+      {leads.map((lead) => (
+        <div key={lead.title} className={cn(PANEL_ACCENT, "flex flex-col gap-3")}>
+          <div className="flex items-center gap-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
+              <lead.icon className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <CardTitle>{lead.title}</CardTitle>
+          </div>
+          <p className="text-sm leading-relaxed text-ink md:text-ink-muted">{lead.text}</p>
         </div>
-        <p className="text-sm leading-relaxed text-ink md:text-ink-muted">{lead.text}</p>
-      </div>
+      ))}
 
-      <div data-story="rise" className="grid gap-3 md:grid-cols-3">
+      <div data-story="rise" className={cn("grid gap-3", rest.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2")}>
         {rest.map((item) => (
           <div key={item.title} className={cn(PANEL, "flex flex-col gap-2.5")}>
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-ember">
@@ -154,11 +156,10 @@ function BulletList({ items }: { items: Bullet[] }) {
 }
 
 export default function WhatIsZeroPage() {
-  // Da computer la definizione di Journey guida (capita male, "pensano a un viaggio"). Da
-  // telefono Manuel vuole l'ordine inverso in testa: Zero prima, Journey seconda — il resto
-  // (Journeyer, come si usa) segue nello stesso ordine in entrambi i casi.
+  // Da computer le due definizioni grandi in testa sono Zero e Journey, impilate, stessa forma
+  // (richiesta di Manuel, 2026-10-31). Da telefono resta l'ordine di prima: solo Zero guida,
+  // Journey torna tra le piccole — il resto (Journeyer, come si usa) segue uguale in entrambi i casi.
   const [journeyAnswer, zeroAnswer, ...laterAnswers] = quickAnswers;
-  const otherAnswers = [zeroAnswer, ...laterAnswers];
   const mobileOtherAnswers = [journeyAnswer, ...laterAnswers];
 
   return (
@@ -181,10 +182,10 @@ export default function WhatIsZeroPage() {
            * davvero un ordine diverso: guardali uno alla volta, mai insieme (hidden/md:hidden). */}
           <div className="mt-4">
             <div className="hidden md:block">
-              <QuickAnswersStack lead={journeyAnswer} rest={otherAnswers} />
+              <QuickAnswersStack leads={[zeroAnswer, journeyAnswer]} rest={laterAnswers} />
             </div>
             <div className="md:hidden">
-              <QuickAnswersStack lead={zeroAnswer} rest={mobileOtherAnswers} />
+              <QuickAnswersStack leads={[zeroAnswer]} rest={mobileOtherAnswers} />
             </div>
           </div>
 
