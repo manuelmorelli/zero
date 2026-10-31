@@ -18,8 +18,9 @@ export const BUTTON_VARIANTS = {
   primary: `${BASE} border border-ember-line bg-ember-soft px-6 py-2.5 text-ink shadow-glow hover:border-ember`,
   /** Tutte le azioni secondarie: arancione tondo con bagliore. */
   secondary: `${BASE} border border-ember-line bg-ember-soft px-5 py-2.5 text-ink shadow-glow hover:border-ember`,
-  /** Solo per azioni che cancellano qualcosa: rosso, testo scuro per leggerlo bene. */
-  danger: `${BASE} bg-danger px-5 py-2.5 text-bg hover:opacity-90`,
+  /** Solo per azioni che cancellano qualcosa: rosso, testo scuro per leggerlo bene. Solo su
+   * telefono: bordo arancione come tutte le pillole, nessuna eccezione (Manuel, 2026-10-31). */
+  danger: `${BASE} bg-danger px-5 py-2.5 text-bg hover:opacity-90 max-md:border max-md:border-ember-line`,
   /** Bottone tondo con sola icona (chiudi, scorri, menu). */
   icon: "grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border bg-surface text-ink-muted transition-all hover:border-ember-line hover:text-ember active:scale-95 active:duration-150 disabled:pointer-events-none disabled:opacity-50",
   /** Bottone tondo con bordo arancione acceso sempre, non solo all'hover (icon normale):

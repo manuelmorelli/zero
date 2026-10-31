@@ -41,9 +41,10 @@ export function Badge({ className, ...rest }: React.HTMLAttributes<HTMLSpanEleme
  * neutro, arancione solo in hover). */
 export const CHIP =
   "inline-flex items-center gap-1.5 rounded-full border border-border max-md:border-ember-line bg-surface-2 px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:border-ember-line disabled:opacity-50";
-/** Stessa etichetta quando è selezionata. */
+/** Stessa etichetta quando è selezionata. Solo su telefono: bordo arancione come tutte le
+ * pillole, nessuna eccezione (Manuel, 2026-10-31). */
 export const CHIP_SELECTED =
-  "inline-flex items-center gap-1.5 rounded-full border border-ink bg-ink px-3 py-1.5 text-sm font-medium text-bg transition-colors disabled:opacity-50";
+  "inline-flex items-center gap-1.5 rounded-full border border-ink max-md:border-ember-line bg-ink px-3 py-1.5 text-sm font-medium text-bg transition-colors disabled:opacity-50";
 
 /** Riquadro di avviso importante (regole vietate, cancellazioni). */
 export const PANEL_DANGER = "rounded-2xl border border-danger-line bg-danger-soft p-5";
