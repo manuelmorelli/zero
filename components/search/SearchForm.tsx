@@ -54,7 +54,7 @@ export function SearchForm({
         name="q"
         defaultValue={defaultValue}
         placeholder={placeholder}
-        className={cn(FIELD, "rounded-full bg-surface-2")}
+        className={cn(FIELD, "rounded-full bg-surface-2 max-md:border-ember-line")}
       />
       <IconButton type="submit" aria-label="Search" className="border-transparent bg-ink text-bg hover:opacity-90">
         <SearchIcon className="h-4 w-4" />

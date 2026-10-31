@@ -9,9 +9,10 @@ import { cn } from "@/lib/utils";
 export const FIELD =
   "w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink-muted disabled:opacity-50";
 
-/** Campo tondo a pillola (ricerca, chat, filtri): contenitore con icona e testo dentro. */
+/** Campo tondo a pillola (ricerca, chat, filtri): contenitore con icona e testo dentro. Solo su
+ * telefono: bordo arancione come tutte le pillole, nessuna eccezione (Manuel, 2026-10-31). */
 export const PILL_FIELD =
-  "pill-field flex w-full items-center gap-2 rounded-full border border-border bg-surface-2 px-4 py-2 text-sm text-ink transition-colors focus-within:border-ink-muted";
+  "pill-field flex w-full items-center gap-2 rounded-full border border-border max-md:border-ember-line bg-surface-2 px-4 py-2 text-sm text-ink transition-colors focus-within:border-ink-muted";
 
 /** Il testo scritto dentro un PILL_FIELD: nessun bordo/sfondo proprio. */
 export const PILL_FIELD_INPUT = "w-full min-w-0 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint";
@@ -33,4 +34,4 @@ export { Input, Select, PillField };
 /** Campo tondo sopra una foto o un video (risposta a una domanda nel visore delle storie):
  * stesso ruolo di PILL_FIELD, ma sul vetro traslucido invece che sul grigio della pagina. */
 export const PILL_FIELD_ON_PHOTO =
-  "flex w-full items-center gap-2 rounded-full border border-border bg-overlay-soft px-4 py-2.5 text-sm text-on-photo outline-none placeholder:text-ink-muted";
+  "flex w-full items-center gap-2 rounded-full border border-border max-md:border-ember-line bg-overlay-soft px-4 py-2.5 text-sm text-on-photo outline-none placeholder:text-ink-muted";
