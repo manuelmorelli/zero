@@ -39,8 +39,9 @@ export const BUTTON_VARIANTS = {
    * ascoltando" della dettatura). */
   activeRound: "grid h-10 w-10 shrink-0 animate-pulse place-items-center rounded-full bg-ember text-bg",
   /** Pillola bianca piena sopra una foto o un video (es. il link di un Update nella Story): on-photo
-   * resta bianco in ogni tema, a differenza di ink. */
-  onPhoto: `${BASE} bg-on-photo px-4 py-2 text-bg hover:opacity-90`,
+   * resta bianco in ogni tema, a differenza di ink. Solo su telefono: bordo arancione come tutte
+   * le altre pillole (richiesta di Manuel, 2026-10-31), da computer resta senza bordo. */
+  onPhoto: `${BASE} bg-on-photo px-4 py-2 text-bg hover:opacity-90 max-md:border max-md:border-ember-line`,
 } as const;
 
 export type ButtonVariant = keyof typeof BUTTON_VARIANTS;

@@ -35,9 +35,12 @@ export function Badge({ className, ...rest }: React.HTMLAttributes<HTMLSpanEleme
   return <span className={cn(BADGE, className)} {...rest} />;
 }
 
-/** Etichetta cliccabile (categorie, interessi, filtri). */
+/** Etichetta cliccabile (categorie, interessi, filtri). Solo su telefono il bordo arancione è
+ * sempre acceso, non solo al passaggio del mouse (richiesta di Manuel, 2026-10-31: tutte le
+ * pillole mobile con lo stesso bordo delle categorie) — da computer resta come prima (bordo
+ * neutro, arancione solo in hover). */
 export const CHIP =
-  "inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:border-ember-line disabled:opacity-50";
+  "inline-flex items-center gap-1.5 rounded-full border border-border max-md:border-ember-line bg-surface-2 px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:border-ember-line disabled:opacity-50";
 /** Stessa etichetta quando è selezionata. */
 export const CHIP_SELECTED =
   "inline-flex items-center gap-1.5 rounded-full border border-ink bg-ink px-3 py-1.5 text-sm font-medium text-bg transition-colors disabled:opacity-50";
