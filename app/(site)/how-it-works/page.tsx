@@ -237,7 +237,7 @@ export default function HowItWorksPage() {
             ))}
           </div>
           <p className="mt-2 text-sm italic text-ink-faint">
-            Why 100: it's enough Journeys that &quot;the best ones&quot; actually means something, not almost the
+            Why 100: it&apos;s enough Journeys that &quot;the best ones&quot; actually means something, not almost the
             whole catalog.
           </p>
 
