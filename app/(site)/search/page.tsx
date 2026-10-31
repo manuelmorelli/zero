@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SearchForm } from "@/components/search/SearchForm";
 import { SearchFilters } from "@/components/search/SearchFilters";
 import { JourneyCard } from "@/components/journey/JourneyCard";
@@ -12,9 +13,10 @@ import { JOURNEY_CATEGORIES, type JourneyCategory } from "@/lib/constants/catego
 import { JOURNEY_DATE_PRESETS, type JourneyDatePreset } from "@/lib/constants/journeyDatePresets";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { CARD_GRID } from "@/components/ui/cover-card";
-import { NOTICE } from "@/components/ui/panel";
-import { PageTitle, SectionTitle } from "@/components/ui/heading";
+import { NOTICE, CHIP } from "@/components/ui/panel";
+import { PageTitle, SectionTitle, ChatWelcomeTitle } from "@/components/ui/heading";
 import { formatDuration } from "@/lib/format/duration";
+import { cn } from "@/lib/utils";
 
 export default async function SearchPage({
   searchParams,
@@ -55,14 +57,37 @@ export default async function SearchPage({
   return (
     <main>
       <div className={`${PAGE_WIDTH.wide} ${PAGE_SPACING}`}>
-        <PageTitle>Search</PageTitle>
-        <div className="mt-4 max-w-md">
-          <SearchForm defaultValue={query} />
-        </div>
-        <SearchFilters defaultQuery={query} defaultCategory={category} defaultDatePreset={date} />
-
-        {!query && !hasJourneyFilters && (
-          <p className="mt-10 text-sm text-ink-muted">Search for a Journey or a journeyer, or filter by category and date.</p>
+        {!query && !hasJourneyFilters ? (
+          <div className="flex flex-col items-center gap-8 py-12 text-center md:py-20">
+            <div className="flex flex-col items-center gap-3">
+              <ChatWelcomeTitle className="text-ember">What do you want to see today?</ChatWelcomeTitle>
+              <p className="max-w-md text-sm text-ink-muted">
+                Search for a Journey or a journeyer, or pick a category to start browsing.
+              </p>
+            </div>
+            <div className="w-full max-w-xl">
+              <SearchForm variant="hero" />
+            </div>
+            <div className="flex max-w-3xl flex-wrap items-center justify-center gap-2">
+              {JOURNEY_CATEGORIES.map((journeyCategory) => (
+                <Link
+                  key={journeyCategory}
+                  href={`/search?category=${encodeURIComponent(journeyCategory)}`}
+                  className={cn(CHIP, "border-ember-line bg-glass-strong text-on-photo backdrop-blur-md")}
+                >
+                  {journeyCategory}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            <PageTitle>Search</PageTitle>
+            <div className="mt-4 max-w-md">
+              <SearchForm defaultValue={query} />
+            </div>
+            <SearchFilters defaultQuery={query} defaultCategory={category} defaultDatePreset={date} />
+          </>
         )}
 
         {(query || hasJourneyFilters) &&

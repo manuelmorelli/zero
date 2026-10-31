@@ -373,15 +373,21 @@ function Categories({ countByCategory }: { countByCategory: Map<string, number> 
       </Reveal>
 
       <Reveal delayMs={60}>
-        {/* Su mobile scorre in riga invece di andare a capo (25 categorie a capo diventano un
-         * blocco enorme, lontano dalla riga compatta del mockup): da tablet in su invariato. */}
-        <div className="mt-4 flex flex-wrap gap-2 max-md:flex-nowrap max-md:overflow-x-auto max-md:pb-1 max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden">
+        {/* Stesso colore delle pillole categoria di /search ovunque (bordo arancione piatto,
+         * vetro grigio, testo bianco). L'organizzazione invece resta diversa per telefono:
+         * da tablet in su centrate e a capo come /search, sul telefono lo scorrimento in riga
+         * di sempre, mai toccato (richiesta di Manuel, 2026-10-31). */}
+        <div className="mt-4 flex flex-wrap gap-2 md:justify-center max-md:flex-nowrap max-md:overflow-x-auto max-md:pb-1 max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden">
           {JOURNEY_CATEGORIES.map((category) => {
             const count = countByCategory.get(category) ?? 0;
             return (
-              <Link key={category} href={`/journeys#${categoryToSlug(category)}`} className={cn(CHIP, "max-md:shrink-0")}>
+              <Link
+                key={category}
+                href={`/journeys#${categoryToSlug(category)}`}
+                className={cn(CHIP, "max-md:shrink-0 border-ember-line bg-glass-strong text-on-photo backdrop-blur-md")}
+              >
                 {category}
-                <span className="text-ink-faint">{count}</span>
+                <span className="text-on-photo-muted">{count}</span>
               </Link>
             );
           })}

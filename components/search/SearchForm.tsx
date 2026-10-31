@@ -2,6 +2,7 @@ import type { SVGProps } from "react";
 import Form from "next/form";
 import { IconButton } from "@/components/ui/button";
 import { FIELD } from "@/components/ui/input";
+import { ChatComposerShell } from "@/components/ui/chat";
 import { cn } from "@/lib/utils";
 
 type SearchFormProps = {
@@ -11,6 +12,9 @@ type SearchFormProps = {
    * Journey (ForumSearchForm) la punta invece alla propria pagina, stesso componente. */
   action?: string;
   placeholder?: string;
+  /** "hero": stessa barra di scrittura bordata e luminosa delle chat AI (Ember, Community),
+   * per l'ingresso principale della ricerca. Di base "default", il campo compatto di sempre. */
+  variant?: "default" | "hero";
 };
 
 /**
@@ -22,7 +26,27 @@ export function SearchForm({
   className = "",
   action = "/search",
   placeholder = "Search Journeys and journeyers",
+  variant = "default",
 }: SearchFormProps) {
+  if (variant === "hero") {
+    return (
+      <Form action={action} className={className}>
+        <ChatComposerShell className="flex items-center gap-2 px-2 py-2">
+          <input
+            type="search"
+            name="q"
+            defaultValue={defaultValue}
+            placeholder={placeholder}
+            className="w-full min-w-0 flex-1 bg-transparent px-3 py-1.5 text-base text-ink outline-none placeholder:text-ink-faint"
+          />
+          <IconButton type="submit" aria-label="Search">
+            <SearchIcon className="h-4 w-4" />
+          </IconButton>
+        </ChatComposerShell>
+      </Form>
+    );
+  }
+
   return (
     <Form action={action} className={`flex items-center gap-2 ${className}`}>
       <input
