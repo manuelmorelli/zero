@@ -22,7 +22,7 @@ export function RsvpButton({ kind, id, initialGoing, isLoggedIn }: RsvpButtonPro
 
   if (!isLoggedIn) {
     return (
-      <Button variant="secondary" href="/login" className="shrink-0">
+      <Button variant="secondary" href="/login" className="shrink-0 max-md:px-3 max-md:py-1.5">
         Log in
       </Button>
     );
@@ -40,7 +40,7 @@ export function RsvpButton({ kind, id, initialGoing, isLoggedIn }: RsvpButtonPro
   }
 
   return (
-    <Button variant="secondary" onClick={handleClick} disabled={pending} className="shrink-0 whitespace-nowrap">
+    <Button variant="secondary" onClick={handleClick} disabled={pending} className="shrink-0 whitespace-nowrap max-md:px-3 max-md:py-1.5">
       {going ? "I'm Going ✓" : "I'm Going"}
     </Button>
   );

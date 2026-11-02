@@ -170,6 +170,7 @@ export default async function PublicProfilePage({
     overviewCards.push(
       <PresentationVideoCard
         key="about-presentation"
+        profileUserId={user.id}
         videoUrl={presentationVideoUrl}
         coverUrl={presentationCoverUrl}
         isOwnProfile={isOwnProfile}
@@ -179,7 +180,9 @@ export default async function PublicProfilePage({
       />
     );
   } else {
-    overviewCards.push(<AboutCard key="about" name={user.name} bio={user.bio} interests={user.interests} />);
+    overviewCards.push(
+      <AboutCard key="about" profileUserId={user.id} name={user.name} bio={user.bio} interests={user.interests} />
+    );
   }
 
   let feedItems = null;
@@ -195,77 +198,91 @@ export default async function PublicProfilePage({
   return (
     <main>
 
-      <ProfileHero
-        profileUserId={user.id}
-        coverUrl={coverUrl}
-        avatarUrl={avatarUrl}
-        name={user.name}
-        username={user.username}
-        location={user.location}
-        joinedAt={user.createdAt}
-        trust={trust}
-        journeysCount={journeys.length}
-        viewerId={session?.user.id ?? null}
-        isLoggedIn={isLoggedIn}
-        followersCount={followersCount}
-        followingCount={followingCount}
-        isOwnProfile={isOwnProfile}
-        activeStory={activeStory}
-        actions={
-          isOwnProfile ? (
-            <>
-              <EditProfileButton
-                user={{
-                  name: user.name,
-                  username: user.username,
-                  bio: user.bio,
-                  location: user.location,
-                  interests: user.interests,
-                }}
-                avatarUrl={avatarUrl}
-                coverUrl={coverUrl}
-              />
-              <Button variant="secondary" className="profile-hero-glass text-on-photo" href="/dashboard">
-                Dashboard
-              </Button>
-              <ShareProfileButton />
-            </>
-          ) : (
-            <>
-              <FollowButton
-                userId={user.id}
-                initialIsFollowing={isFollowing}
-                isLoggedIn={isLoggedIn}
-                className="profile-hero-glass"
-              />
-              {canMessageUser && <MessageButton userId={user.id} />}
-              {isLoggedIn && <ProfileActionsMenu userId={user.id} name={user.name} />}
-            </>
-          )
-        }
-      />
+      {(() => {
+        const profileActions = isOwnProfile ? (
+          <>
+            <EditProfileButton
+              user={{
+                name: user.name,
+                username: user.username,
+                bio: user.bio,
+                location: user.location,
+                interests: user.interests,
+              }}
+              avatarUrl={avatarUrl}
+              coverUrl={coverUrl}
+            />
+            <Button variant="secondary" className="profile-hero-glass text-on-photo" href="/dashboard">
+              Dashboard
+            </Button>
+            <ShareProfileButton />
+          </>
+        ) : (
+          <>
+            <FollowButton
+              userId={user.id}
+              initialIsFollowing={isFollowing}
+              isLoggedIn={isLoggedIn}
+              className="profile-hero-glass"
+            />
+            {canMessageUser && <MessageButton userId={user.id} />}
+            {isLoggedIn && <ProfileActionsMenu userId={user.id} name={user.name} />}
+          </>
+        );
 
-      <ProfileTabs
-        basePath={`/profile/${username}`}
-        activeTab={activeTab}
-        actions={
-          isOwnProfile ? (
-            <Link
-              href="/dashboard/community"
-              className={cn(
-                BUTTON_VARIANTS.secondary,
-                "profile-hero-glass profile-tab-glass text-on-photo opacity-70 transition-all duration-300 hover:-translate-y-1 hover:opacity-100"
-              )}
-            >
-              Community
-            </Link>
-          ) : creator ? (
-            <CreatorEconomyLinks username={username} />
-          ) : undefined
-        }
-      />
+        return (
+          <>
+            <ProfileHero
+              profileUserId={user.id}
+              coverUrl={coverUrl}
+              avatarUrl={avatarUrl}
+              name={user.name}
+              username={user.username}
+              location={user.location}
+              joinedAt={user.createdAt}
+              bio={user.bio}
+              trust={trust}
+              journeysCount={journeys.length}
+              viewerId={session?.user.id ?? null}
+              isLoggedIn={isLoggedIn}
+              followersCount={followersCount}
+              followingCount={followingCount}
+              isOwnProfile={isOwnProfile}
+              activeStory={activeStory}
+              actions={profileActions}
+            />
 
-      <div className={cn(PAGE_WIDTH.wideCover, "py-4")}>
+            <ProfileTabs
+              basePath={`/profile/${username}`}
+              activeTab={activeTab}
+              actions={
+                <>
+                  {isOwnProfile ? (
+                    <Link
+                      href="/dashboard/community"
+                      className={cn(
+                        BUTTON_VARIANTS.secondary,
+                        "profile-hero-glass profile-tab-glass text-on-photo opacity-70 transition-all duration-300 hover:-translate-y-1 hover:opacity-100"
+                      )}
+                    >
+                      Community
+                    </Link>
+                  ) : creator ? (
+                    <CreatorEconomyLinks username={username} />
+                  ) : undefined}
+                  {/* Stesso stile "pillola non attiva" dei tab (Journeys/Community): opacità ridotta
+                   * finché non si interagisce, altrimenti sembravano link già aperti/attivi. */}
+                  <div className="contents md:hidden [&_a]:opacity-70 [&_a:hover]:opacity-100 [&_button]:opacity-70 [&_button:hover]:opacity-100">
+                    {profileActions}
+                  </div>
+                </>
+              }
+            />
+          </>
+        );
+      })()}
+
+      <div className={cn(PAGE_WIDTH.wideCover, "py-4 max-md:pb-36")}>
         {activeTab === "overview" && (
           <>
             {/* 1. Journey in corso + card Bio/Presentazione (unica, vedi sopra) */}
@@ -279,7 +296,7 @@ export default async function PublicProfilePage({
                 // ufficiale); la card Bio+video ha testo vero (bio, interessi) che su un telefono
                 // stretto affiancata diventerebbe illeggibile — resta a piena larghezza lì, si
                 // affianca solo quando c'è spazio.
-                <div className="grid gap-4 md:grid-cols-[minmax(0,34%)_minmax(0,50%)] md:justify-between">
+                <div className="flex gap-2.5 md:grid md:gap-4 md:grid-cols-[minmax(0,34%)_minmax(0,50%)] md:justify-between">
                   {overviewCards}
                 </div>
               )}
@@ -295,7 +312,7 @@ export default async function PublicProfilePage({
             <Reveal delayMs={40} className="mt-6 block">
               <section>
                 <div className="flex items-center justify-between gap-3">
-                  <SectionTitle>Published Journeys</SectionTitle>
+                  <SectionTitle className="max-md:text-xl max-md:uppercase">Published Journeys</SectionTitle>
                   {liveJourneys.length > PUBLISHED_JOURNEYS_PREVIEW_COUNT && (
                     <Link
                       href={`/profile/${username}?tab=journeys`}
@@ -357,7 +374,7 @@ export default async function PublicProfilePage({
                  Journeys/Journeyers). */}
             <Reveal delayMs={120} className="mt-6 block">
               {episodeFeedItems.length > 0 ? (
-                <HorizontalScrollRow title="Recent Episodes">
+                <HorizontalScrollRow title="Recent Episodes" titleClassName="max-md:text-xl max-md:uppercase">
                   {episodeFeedItems.map((item, index) => (
                     <ContentCard
                       key={item.episodeId}
@@ -398,7 +415,7 @@ export default async function PublicProfilePage({
                 </HorizontalScrollRow>
               ) : (
                 <section>
-                  <SectionTitle>Recent Episodes</SectionTitle>
+                  <SectionTitle className="max-md:text-xl max-md:uppercase">Recent Episodes</SectionTitle>
                   <p className={`mt-4 ${NOTICE}`}>
                     {isPrivateGateActive
                       ? `This account is private. Follow ${user.name} to see their Updates.`

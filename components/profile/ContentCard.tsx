@@ -66,7 +66,7 @@ export function ContentCard({
       }
       overlay={
         <>
-          {category && <CoverChip>{category}</CoverChip>}
+          {category && <CoverChip className="max-md:-ml-2 max-md:mt-4">{category}</CoverChip>}
           <div className="mt-2 flex items-end justify-between gap-2">
             <CoverTitle className="min-w-0">{title}</CoverTitle>
             {trust !== undefined && (

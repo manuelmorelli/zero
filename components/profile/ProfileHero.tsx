@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FadeImage } from "@/components/common/FadeImage";
 import { cn, formatCompactNumber } from "@/lib/utils";
 import { ProfileAvatarStory } from "@/components/profile/ProfileAvatarStory";
@@ -20,6 +21,7 @@ type ProfileHeroProps = {
   username: string | null;
   location: string | null;
   joinedAt: Date;
+  bio: string | null;
   /** null per chi non è creator: niente Trust Score né "Trusted by". */
   trust: CreatorTrust | null;
   journeysCount: number;
@@ -34,6 +36,10 @@ type ProfileHeroProps = {
   actions?: React.ReactNode;
 };
 
+/** Oltre questa lunghezza la bio non entra in una riga sola sotto il nome in Hero (mobile): si
+ * tronca e compare "altro" verso la pagina dedicata Bio & presentation. */
+const HERO_BIO_INLINE_LIMIT = 60;
+
 export function ProfileHero({
   profileUserId,
   coverUrl,
@@ -42,6 +48,7 @@ export function ProfileHero({
   username,
   location,
   joinedAt,
+  bio,
   trust,
   journeysCount,
   followersCount,
@@ -61,7 +68,7 @@ export function ProfileHero({
        * vivi, molto più alto: lontano dal mockup), da desktop in su invariata (margine laterale +
        * angoli arrotondati, come prima). Occupa davvero questa altezza nel flusso della pagina:
        * quello che viene dopo non può finire sopra la foto invece che sotto. */}
-      <div className="px-5 pt-3.5 md:px-0 md:pt-0">
+      <div className="px-5 max-md:pt-20 md:px-0 md:pt-0">
         <div className="relative aspect-4/3 overflow-hidden rounded-xl md:aspect-auto md:mx-[4.43%] md:h-[29rem] md:rounded-2xl">
           <div className="absolute inset-0 -z-10">
             {coverUrl ? (
@@ -96,16 +103,31 @@ export function ProfileHero({
           />
 
           <div className="min-w-0 pb-1">
-            <PageTitle className="truncate text-on-photo">
+            <PageTitle className="truncate text-on-photo max-md:text-3xl">
               {name}
             </PageTitle>
-            {username && <p className="text-sm text-on-photo-muted drop-shadow-sm">@{username}</p>}
+            {username && <p className="text-sm text-on-photo-muted drop-shadow-sm max-md:text-base">@{username}</p>}
             {trust && trust.trustedByCount > 0 && (
-              <p className="mt-0.5 text-sm font-semibold text-on-photo drop-shadow-sm">
+              <p className="mt-0.5 text-sm font-semibold text-on-photo drop-shadow-sm max-md:text-base max-md:text-ember">
                 {trust.trustedByCount.toLocaleString("en-US")} Trusty
               </p>
             )}
-            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-on-photo-muted drop-shadow-sm">
+            {/* Bio sotto il nome, come su Instagram: solo mobile, una riga sola. Da desktop in su
+             * resta solo nella card Bio & video più sotto nella pagina (md:hidden). */}
+            {bio && (
+              <div className="mt-1 flex min-w-0 items-baseline gap-1.5 md:hidden">
+                <p className="min-w-0 truncate text-base text-on-photo drop-shadow-sm">{bio}</p>
+                {bio.length > HERO_BIO_INLINE_LIMIT && (
+                  <Link
+                    href={`/profile/${profileUserId}/presentation`}
+                    className="shrink-0 text-base font-semibold text-on-photo drop-shadow-sm"
+                  >
+                    altro
+                  </Link>
+                )}
+              </div>
+            )}
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-on-photo-muted drop-shadow-sm max-md:hidden">
               {location && (
                 <span className="inline-flex items-center gap-1.5">
                   <LocationIcon className="h-3.5 w-3.5" />
@@ -133,7 +155,7 @@ export function ProfileHero({
             />
           </ul>
 
-          {actions && <div className="mt-[0.5cm] flex shrink-0 items-center gap-2.5">{actions}</div>}
+          {actions && <div className="mt-[0.5cm] hidden shrink-0 items-center gap-2.5 md:flex">{actions}</div>}
         </div>
       </div>
     </section>

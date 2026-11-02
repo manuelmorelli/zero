@@ -157,17 +157,25 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
             coverUrl={item.coverUrl}
             icon={item.kind === "workshop" ? Video : MapPin}
             chipLabel={`Free · ${kindLabel} · ${formatEventMeta(startsAt)}`}
+            badgeLabel="Free"
             title={item.title}
             footer={
-              <div className="flex items-center justify-between gap-2">
-                <span className="truncate text-base text-ink-muted">{item.rsvpCount} going</span>
-                <RsvpButton
-                  kind={item.kind}
-                  id={item.id}
-                  initialGoing={item.going}
-                  isLoggedIn={Boolean(session)}
-                />
-              </div>
+              <>
+                {/* Mobile: stesso trattamento delle card Activities del profilo, solo data in
+                 * chiaro, niente conteggio/bottone qui (si vede nella pagina dedicata). */}
+                <span className="truncate text-sm text-ink-faint md:hidden">
+                  {kindLabel} · {formatEventMeta(startsAt)}
+                </span>
+                <div className="hidden items-center justify-between gap-2 md:flex">
+                  <span className="truncate text-base text-ink-muted">{item.rsvpCount} going</span>
+                  <RsvpButton
+                    kind={item.kind}
+                    id={item.id}
+                    initialGoing={item.going}
+                    isLoggedIn={Boolean(session)}
+                  />
+                </div>
+              </>
             }
           />
         ),

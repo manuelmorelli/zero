@@ -23,6 +23,9 @@ import { PANEL_ACCENT } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
 
 type PresentationVideoCardProps = {
+  /** Id della persona del profilo: serve al link verso la pagina dedicata Bio & presentation
+   * (su mobile la card porta lì invece di riprodurre sul posto, vedi handlePosterClick). */
+  profileUserId: string;
   /** Link temporaneo già risolto (chiave R2 -> URL), o null se non è mai stato caricato nulla. */
   videoUrl: string | null;
   /** Copertina mostrata come fotogramma iniziale prima del play, indipendente dal video (può
@@ -45,7 +48,7 @@ type PresentationVideoCardProps = {
  * caso resta solo AboutCard, vedi sopra. Il proprietario la vede sempre, anche con video vuoto,
  * per poter caricarlo.
  */
-export function PresentationVideoCard({ videoUrl, coverUrl, isOwnProfile, name, bio, interests }: PresentationVideoCardProps) {
+export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwnProfile, name, bio, interests }: PresentationVideoCardProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -67,6 +70,17 @@ export function PresentationVideoCard({ videoUrl, coverUrl, isOwnProfile, name, 
     if (!video) return;
     if (video.paused) void video.play();
     else video.pause();
+  }
+
+  // Su mobile la card è un poster compatto (niente bio, niente controlli propri): toccarla porta
+  // alla pagina dedicata Bio & presentation invece di riprodurre il video sul posto. Da desktop
+  // in su resta il comportamento di sempre (play/pausa qui stesso).
+  function handlePosterClick() {
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches) {
+      router.push(`/profile/${profileUserId}/presentation`);
+      return;
+    }
+    togglePlay();
   }
 
   function toggleMute() {
@@ -154,7 +168,13 @@ export function PresentationVideoCard({ videoUrl, coverUrl, isOwnProfile, name, 
   if (!videoUrl && !isOwnProfile) return null;
 
   return (
-    <div className={cn(PANEL_ACCENT, "bio-card")}>
+    <div
+      className={cn(
+        PANEL_ACCENT,
+        "bio-card",
+        "max-md:min-w-0 max-md:flex-1 max-md:rounded-xl max-md:border-ember-line max-md:bg-transparent max-md:p-0"
+      )}
+    >
       {/* Card orizzontale (richiesto da Manuel, 2026-09-22): Bio a sinistra, video di
           presentazione a destra, divise da un bordo verticale. In colonna solo su mobile, dove
           affiancarle non c'entra. Su schermi larghi NON usa una propria proporzione fissa (le due
@@ -166,7 +186,7 @@ export function PresentationVideoCard({ videoUrl, coverUrl, isOwnProfile, name, 
           lg: in su, la stessa soglia in cui la griglia della pagina affianca le due card (sotto
           quella soglia sono impilate una sopra l'altra, "ereditare" un'altezza non avrebbe senso). */}
       <div className="flex flex-col gap-4 md:flex-row lg:h-full lg:overflow-hidden">
-        <div className="md:w-[55%] md:shrink-0 md:overflow-y-auto">
+        <div className="hidden md:block md:w-[55%] md:shrink-0 md:overflow-y-auto">
           <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
             <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
             Bio
@@ -193,14 +213,16 @@ export function PresentationVideoCard({ videoUrl, coverUrl, isOwnProfile, name, 
           )}
         </div>
 
-        <div className="border-t border-border pt-4 md:w-full md:overflow-y-auto md:border-l md:border-t-0 md:pl-4 md:pt-0">
+        <div className="border-t border-border pt-4 max-md:border-t-0 max-md:pt-0 md:w-full md:overflow-y-auto md:border-l md:border-t-0 md:pl-4 md:pt-0">
         {/* Con il video presente il titolo vive dentro il poster (stile ContentCard, vedi sotto):
             l'intestazione esterna resta solo per lo stato vuoto, altrimenti sarebbe doppia. */}
         {!videoUrl && (
-          <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
-            <VideoIcon className="h-3.5 w-3.5" aria-hidden="true" />
-            That&apos;s me
-          </CardTitle>
+          <div onClick={handlePosterClick} className="max-md:cursor-pointer">
+            <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
+              <VideoIcon className="h-3.5 w-3.5" aria-hidden="true" />
+              That&apos;s me
+            </CardTitle>
+          </div>
         )}
 
         {videoUrl ? (
@@ -214,8 +236,8 @@ export function PresentationVideoCard({ videoUrl, coverUrl, isOwnProfile, name, 
                 dimensione "di default" usata per i video dei Journey
                 (components/common/VideoPlayer.tsx). */}
             <div
-              className="group relative mt-3 aspect-4/3 w-full cursor-pointer overflow-hidden rounded-xl border border-border bg-surface-2"
-              onClick={togglePlay}
+              className="group relative mt-3 aspect-4/3 w-full cursor-pointer overflow-hidden rounded-xl border border-border bg-surface-2 max-md:mt-0 max-md:aspect-[112/156] max-md:border-ember-line"
+              onClick={handlePosterClick}
             >
               <video
                 ref={videoRef}
@@ -239,8 +261,10 @@ export function PresentationVideoCard({ videoUrl, coverUrl, isOwnProfile, name, 
               </div>
             </div>
 
-            {/* Tasti fuori dal riquadro del video, non più sovrapposti sopra l'immagine. */}
-            <div className="mt-2 flex items-center gap-1.5">
+            {/* Tasti fuori dal riquadro del video, non più sovrapposti sopra l'immagine. Solo
+             * desktop: su mobile la card è un poster compatto, niente controlli propri (si va
+             * sulla pagina dedicata Bio & presentation per tutto il resto). */}
+            <div className="mt-2 flex items-center gap-1.5 max-md:hidden">
               <button
                 type="button"
                 onClick={togglePlay}
@@ -278,14 +302,17 @@ export function PresentationVideoCard({ videoUrl, coverUrl, isOwnProfile, name, 
             {expanded && <ExpandedPresentationVideo videoUrl={videoUrl} onClose={() => setExpanded(false)} />}
           </>
         ) : (
-          <p className="mt-3 text-sm text-ink-faint">
+          <p onClick={handlePosterClick} className="mt-3 text-sm text-ink-faint max-md:cursor-pointer">
             {isOwnProfile ? "Add a short video so people know who you are." : "No introduction video yet."}
           </p>
         )}
 
         {isOwnProfile && (
           <>
-            <div className="mt-3 flex gap-2">
+            {/* Su mobile l'upload si fa solo dalla pagina dedicata Bio & presentation (vedi
+             * PresentationVideoView), non più qui dove la card è compatta e senza bio: evita due
+             * punti diversi per la stessa azione. Da desktop in su resta qui come sempre. */}
+            <div className="mt-3 flex gap-2 max-md:hidden">
               <Button variant="secondary" onClick={() => inputRef.current?.click()} disabled={progress !== null} className="flex-1">
                 {progress !== null ? `Uploading… ${progress}%` : videoUrl ? "Change video" : "Upload video"}
               </Button>

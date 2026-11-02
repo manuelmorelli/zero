@@ -88,6 +88,10 @@ type CoverFrameProps = {
   /** Azioni del proprietario in alto a destra, FUORI dal link (un bottone non può stare in un <a>). */
   menu?: React.ReactNode;
   className?: string;
+  /** Scarto facoltativo sul riquadro vero e proprio (bordo/foto), non sul wrapper esterno: per
+   * casi come il bordo arancione delle card Activities solo mobile, senza toccare ogni card del
+   * sito che passa da qui. */
+  frameClassName?: string;
 };
 
 export function CoverFrame({
@@ -103,6 +107,7 @@ export function CoverFrame({
   below,
   menu,
   className,
+  frameClassName,
 }: CoverFrameProps) {
   return (
     <div className={cn("group relative transition-transform duration-300 hover:-translate-y-1", className)}>
@@ -110,7 +115,9 @@ export function CoverFrame({
         <div
           className={cn(
             "relative overflow-hidden rounded-xl border border-border bg-surface-2 shadow-card transition-[border-color,box-shadow] duration-300 group-hover:border-ember-line group-hover:shadow-glow",
-            RATIO[format]
+            RATIO[format],
+            (format === "journey" || format === "episode") && "max-md:border-ember-line",
+            frameClassName
           )}
         >
           {imageUrl ? (
@@ -147,7 +154,7 @@ export function CoverFrame({
 /** Etichetta sopra la foto (categoria, stato "Discovery"/"Archived"). */
 export function CoverChip({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <span className={cn("inline-block rounded-full bg-scrim px-2.5 py-1 text-sm font-semibold text-on-photo backdrop-blur-md", className)}>
+    <span className={cn("inline-block rounded-full bg-scrim px-2.5 py-1 text-sm font-semibold text-on-photo backdrop-blur-md max-md:border max-md:border-ember-line", className)}>
       {children}
     </span>
   );

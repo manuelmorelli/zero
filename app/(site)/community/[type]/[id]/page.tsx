@@ -82,15 +82,22 @@ export default async function CommunityListingDetailPage({
           ) : (
             <div className="absolute inset-0 cover-placeholder" />
           )}
+          {/* Solo mobile: titolo sopra la foto come nelle card Activities del profilo, stesso
+           * trattamento. Da desktop in su resta sotto la foto (blocco subito dopo, invariato). */}
+          <div className="absolute left-3 right-3 top-3 md:hidden">
+            <PageTitle as="p" className="truncate text-xl text-on-photo">
+              {listing.title}
+            </PageTitle>
+          </div>
           {isFree && (
-            <span className="absolute right-3 top-3 rounded-full border border-ember-line bg-ember-soft px-2.5 py-1 text-sm font-bold uppercase tracking-wide text-ember backdrop-blur-md">
+            <span className="absolute right-3 top-3 rounded-full border border-ember-line bg-ember-soft px-2.5 py-1 text-sm font-bold uppercase tracking-wide text-ember backdrop-blur-md max-md:bottom-3 max-md:top-auto max-md:border-ember-line max-md:bg-overlay-soft max-md:font-semibold max-md:normal-case max-md:text-on-photo">
               Free
             </span>
           )}
         </div>
 
-        <div className="mt-5 flex items-start justify-between gap-3">
-          <div className="min-w-0">
+        <div className="mt-5 flex items-start justify-between gap-3 max-md:justify-end">
+          <div className="min-w-0 max-md:hidden">
             <p className="text-sm font-semibold uppercase tracking-wide text-ember">
               {COMMUNITY_LISTING_LABELS[type]}
             </p>

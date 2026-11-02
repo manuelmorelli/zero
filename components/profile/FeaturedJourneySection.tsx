@@ -23,9 +23,9 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
   return (
     <Link
       href={`/journeys/${journey.id}`}
-      className="group block self-start transition-transform duration-300 hover:-translate-y-1"
+      className="group block self-start max-md:min-w-0 max-md:flex-1 transition-transform duration-300 hover:-translate-y-1"
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-ember-line transition-[border-color,box-shadow] duration-300 group-hover:border-ember group-hover:shadow-glow">
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-ember-line transition-[border-color,box-shadow] duration-300 group-hover:border-ember group-hover:shadow-glow max-md:aspect-[112/156]">
         {journey.coverUrl ? (
           <Image
             src={journey.coverUrl}
@@ -39,20 +39,20 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
           <div className="absolute inset-0 cover-placeholder" />
         )}
         <div className="absolute inset-0 card-scrim" />
-        <span className="absolute left-3 top-3 rounded-full border border-border bg-overlay-soft px-2.5 py-1 text-sm font-semibold uppercase tracking-wider backdrop-blur-md">
+        <span className="absolute left-3 top-3 rounded-full border border-border bg-overlay-soft px-2.5 py-1 text-sm font-semibold uppercase tracking-wider backdrop-blur-md max-md:border-ember-line max-md:px-2 max-md:py-0.5">
           In Progress
         </span>
 
-        <div className="absolute inset-x-0 bottom-0 p-3.5">
+        <div className="absolute inset-x-0 bottom-0 p-3.5 max-md:p-2.5">
           {journey.category && (
-            <span className="inline-block rounded-full border border-border bg-overlay-soft px-2.5 py-1 text-sm font-semibold uppercase tracking-wider text-on-photo backdrop-blur-md">
+            <span className="inline-block rounded-full border border-border bg-overlay-soft px-2.5 py-1 text-sm font-semibold uppercase tracking-wider text-on-photo backdrop-blur-md max-md:-ml-1 max-md:mt-10 max-md:border-ember-line max-md:px-2 max-md:py-0.5 max-md:normal-case max-md:tracking-normal">
               {journey.category}
             </span>
           )}
-          <CoverTitle className="mt-2 truncate transition-colors group-hover:text-ember">
+          <CoverTitle className="mt-2 truncate transition-colors group-hover:text-ember max-md:mt-1.5 max-md:text-sm">
             {journey.title}
           </CoverTitle>
-          <div className="mt-2 flex items-center justify-between gap-2">
+          <div className="mt-2 flex items-center justify-between gap-2 max-md:hidden">
             {journey.status === "PUBLISHED" ? (
               <span className="flex shrink-0 items-center gap-1 text-sm font-bold text-ember">
                 <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />

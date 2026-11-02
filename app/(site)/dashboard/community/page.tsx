@@ -35,6 +35,7 @@ type ManagedListing = {
   typeLabel: string;
   icon: LucideIcon;
   title: string;
+  description: string | null;
   status: Status;
   coverKey: string | null;
   startsAt: Date | null;
@@ -63,6 +64,7 @@ export default async function CommunityDashboardPage() {
       typeLabel: item.isFree ? "Free workshop" : "Workshop",
       icon: Video,
       title: item.title,
+      description: item.description,
       status: item.status,
       coverKey: item.coverUrl,
       startsAt: item.startsAt,
@@ -74,6 +76,7 @@ export default async function CommunityDashboardPage() {
       typeLabel: item.isFree ? "Free activity" : "Activity",
       icon: MapPin,
       title: item.title,
+      description: item.description,
       status: item.status,
       coverKey: item.coverUrl,
       startsAt: item.startsAt,
@@ -85,6 +88,7 @@ export default async function CommunityDashboardPage() {
       typeLabel: "Digital product",
       icon: FileText,
       title: item.title,
+      description: item.description,
       status: item.status,
       coverKey: item.coverUrl,
       startsAt: null,
@@ -96,6 +100,7 @@ export default async function CommunityDashboardPage() {
       typeLabel: "1:1 Service",
       icon: MessageCircle,
       title: item.title,
+      description: item.description,
       status: item.status,
       coverKey: item.coverUrl,
       startsAt: null,
@@ -116,6 +121,8 @@ export default async function CommunityDashboardPage() {
             coverUrl={coverUrl}
             icon={listing.icon}
             chipLabel={`${listing.typeLabel}${dateText}`}
+            badgeLabel={listing.priceLabel}
+            titleClassName="max-md:mt-8"
             title={listing.title}
             menu={
               <CommunityListingMenu
@@ -125,18 +132,20 @@ export default async function CommunityDashboardPage() {
                 status={listing.status}
               />
             }
+            topRight={
+              <span
+                className={cn(
+                  "mr-0 rounded-full px-3 py-0.5 text-sm font-semibold backdrop-blur-md",
+                  listing.status === "DRAFT" ? "bg-ember text-bg" : "border border-border bg-overlay-soft text-on-photo"
+                )}
+              >
+                {STATUS_LABEL[listing.status]}
+              </span>
+            }
             footer={
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-lg font-bold text-ink">{listing.priceLabel}</span>
-                <span
-                  className={cn(
-                    "rounded-full px-3 py-1 text-sm font-semibold uppercase tracking-wide",
-                    listing.status === "DRAFT" ? "bg-ember text-bg" : "border border-border text-ink-muted"
-                  )}
-                >
-                  {STATUS_LABEL[listing.status]}
-                </span>
-              </div>
+              <p className="line-clamp-2 text-sm text-ink-muted">
+                {listing.description || "No description yet."}
+              </p>
             }
           />
         ),
