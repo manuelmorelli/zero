@@ -99,6 +99,7 @@ enum ReportTargetType {
   USER
   CREATOR
   JOURNEY
+  EPISODE
   UPDATE
   COMMENT
 }

@@ -58,4 +58,47 @@ function DropdownMenuSeparator({
   );
 }
 
-export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator };
+const DropdownMenuSub = DropdownMenuPrimitive.Sub;
+
+function DropdownMenuSubTrigger({
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger>) {
+  return (
+    <DropdownMenuPrimitive.SubTrigger
+      className={cn(
+        "flex cursor-pointer select-none items-center gap-2 rounded-md px-2.5 py-2 text-sm text-ink outline-none transition-colors data-[highlighted]:bg-surface-2 data-[state=open]:bg-surface-2",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+function DropdownMenuSubContent({
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
+  return (
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.SubContent
+        className={cn(
+          "z-50 min-w-40 overflow-hidden rounded-lg border border-border bg-surface p-1 shadow-2xl shadow-black/50 origin-[var(--radix-dropdown-menu-content-transform-origin)] data-[state=open]:animate-[panel-in_250ms_cubic-bezier(0.16,1,0.3,1)] data-[state=closed]:animate-[panel-out_180ms_cubic-bezier(0.16,1,0.3,1)]",
+          className
+        )}
+        {...props}
+      />
+    </DropdownMenuPrimitive.Portal>
+  );
+}
+
+export {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+};

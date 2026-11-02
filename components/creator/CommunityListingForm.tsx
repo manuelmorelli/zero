@@ -299,7 +299,7 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
           <>
             <div>
               <label htmlFor="startsAtDate" className="text-sm font-medium text-ink-muted">
-                Date {COMMUNITY_LISTING_LABELS[type] === "Event" ? "and time" : ""}
+                Date {type === "event" ? "and time" : ""}
               </label>
               <div className="mt-1.5 flex gap-2">
                 <input

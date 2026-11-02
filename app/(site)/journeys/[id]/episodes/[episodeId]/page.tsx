@@ -34,7 +34,7 @@ export default async function EpisodePlayerPage({
   const userId = session?.user.id;
   const isOwnContent = userId === journey.creator.userId;
 
-  const [{ flatEpisodes }, progress, likeCount, viewerLike, followersCount, manualHighlights] = await Promise.all([
+  const [{ flatEpisodes }, progress, likeCount, viewerLike, followersCount, manualHighlights, viewerFollow] = await Promise.all([
     getEpisodeTimeline(journey.id, { userId }),
     userId ? prisma.episodeProgress.findUnique({ where: { userId_episodeId: { userId, episodeId } } }) : null,
     prisma.like.count({ where: { targetType: "EPISODE", targetId: episodeId } }),
@@ -50,6 +50,12 @@ export default async function EpisodePlayerPage({
           select: { id: true, timestampSec: true },
         })
       : Promise.resolve([]),
+    // Per il Follow in riga 1 su telefono (vedi EpisodePlayer, assente dal player da computer).
+    userId && !isOwnContent
+      ? prisma.follow.findUnique({
+          where: { followerId_followingId: { followerId: userId, followingId: journey.creator.userId } },
+        })
+      : null,
   ]);
 
   const trust = await getCreatorTrust(journey.creator.id, followersCount);
@@ -69,7 +75,7 @@ export default async function EpisodePlayerPage({
   return (
     <main>
 
-      <div className={cn(PAGE_WIDTH.wide, "grid gap-5 pb-10 pt-24 md:grid-cols-[minmax(0,1fr)_340px]")}>
+      <div className={cn(PAGE_WIDTH.wide, "grid gap-5 pb-36 pt-24 md:grid-cols-[minmax(0,1fr)_340px] md:pb-10")}>
         <EpisodePlayer
           key={episode.id}
           journeyId={journey.id}
@@ -93,6 +99,7 @@ export default async function EpisodePlayerPage({
           initialIsLiked={Boolean(viewerLike)}
           isLoggedIn={Boolean(session)}
           isOwnContent={isOwnContent}
+          isFollowing={Boolean(viewerFollow)}
           manualHighlights={manualHighlights}
           nextEpisode={
             nextTimelineEpisode

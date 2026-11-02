@@ -140,7 +140,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
     <PageContainer>
       <PageTitle>Add to your Community</PageTitle>
       <p className="mt-2 text-sm text-ink-muted">
-        Create a Workshop, Event, Digital Product or 1:1 Service. It starts as a Draft that only you can see.
+        Create a Workshop, Activity, Digital Product or 1:1 Service. It starts as a Draft that only you can see.
       </p>
       <div className="mt-8">{children}</div>
     </PageContainer>

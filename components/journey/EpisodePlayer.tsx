@@ -11,7 +11,11 @@ import type { CreatorTrust } from "@/lib/profile/trustScore";
 import { TrustyButton } from "@/components/journey/TrustyButton";
 import { HighlightMarkButton } from "@/components/journey/HighlightMarkButton";
 import { HighlightList } from "@/components/journey/HighlightList";
+import { HighlightsDropdown } from "@/components/journey/HighlightsDropdown";
 import { ShareButton } from "@/components/common/ShareButton";
+import { ExpandableText } from "@/components/common/ExpandableText";
+import { CoverMenu } from "@/components/journey/CoverMenu";
+import { FollowButton } from "@/components/profile/FollowButton";
 import { VideoPlayer, type VideoPlayerHandle } from "@/components/common/VideoPlayer";
 import { PageTitle } from "@/components/ui/heading";
 import { SponsoredLabel } from "@/components/common/SponsoredLabel";
@@ -56,6 +60,8 @@ type EpisodePlayerProps = {
   initialIsLiked: boolean;
   isLoggedIn: boolean;
   isOwnContent: boolean;
+  /** Solo per il Follow in riga 1 su telefono (il player da computer non ha un bottone Follow). */
+  isFollowing: boolean;
   /** Punti già segnati a mano dal creator (stellina), vuoto per chi non è il creator. */
   manualHighlights: { id: string; timestampSec: number }[];
   /** Episodio che segue questo nel Journey; null se questo è l'ultimo. */
@@ -75,6 +81,7 @@ export function EpisodePlayer({
   initialIsLiked,
   isLoggedIn,
   isOwnContent,
+  isFollowing,
   manualHighlights,
   nextEpisode,
 }: EpisodePlayerProps) {
@@ -173,12 +180,14 @@ export function EpisodePlayer({
 
   return (
     <div className="min-w-0">
-      <div className={episode.videoSrc ? "flex justify-center" : ""}>
+      <div className={episode.videoSrc ? "md:flex md:justify-center" : ""}>
         <div className="grid gap-4">
           {episode.videoSrc ? (
+            <div className="relative -mx-5 md:mx-0">
             <VideoPlayer
               ref={playerRef}
               posterUrl={episode.posterUrl}
+              fullWidthMobile
               thresholdFraction={COMPLETION_FRACTION}
               onThreshold={() => setTrustyUnlocked(true)}
               overlay={
@@ -233,6 +242,18 @@ export function EpisodePlayer({
                 setEnded(true);
               }}
             />
+            {/* Menu a tre puntini sopra il video, solo telefono: Forum, Segnala l'episodio,
+             * Modifica episodio. Condividi resta in riga 1 qui sotto, non duplicato nel menu
+             * (diverso dalla copertina Journey). */}
+            <div className="absolute right-3 top-3 md:hidden">
+              <CoverMenu
+                forumHref={`/community/forum/${journeyId}`}
+                report={!isOwnContent && isLoggedIn ? { targetType: "EPISODE", targetId: episode.id } : undefined}
+                editHref={isOwnContent ? `/dashboard/journeys/${journeyId}?edit=${episode.id}` : undefined}
+                editLabel="Edit Episode"
+              />
+            </div>
+            </div>
           ) : (
             <div className="grid aspect-video w-full place-items-center rounded-2xl border border-border bg-black text-sm text-ink-muted">
               No video for this episode yet.
@@ -240,66 +261,135 @@ export function EpisodePlayer({
           )}
 
           <div className="relative">
-            <div className="absolute right-0 top-0 flex items-center gap-1.5 scale-125 origin-top-right">
-              <TrustyButton
-                targetType="EPISODE"
-                targetId={episode.id}
-                initialLikeCount={initialLikeCount}
-                initialIsLiked={initialIsLiked}
-                isLoggedIn={isLoggedIn}
-                unlocked={trustyUnlocked}
-                isOwnContent={isOwnContent}
-              />
-              {/* Forum del Journey a un clic dal video, accanto a Trusty (richiesto da Manuel). */}
-              <Link
-                href={`/community/forum/${journeyId}`}
-                aria-label="Open the Journey forum"
-                title="Forum"
-                className="grid h-7 w-7 place-items-center text-ember transition-opacity hover:opacity-80"
-              >
-                <MessageSquare className="h-3.5 w-3.5" aria-hidden="true" />
-              </Link>
-              <ShareButton
-                path={`/journeys/${journeyId}/episodes/${episode.id}`}
-                label={episode.title}
-                updateCaption={
-                  isOwnContent
-                    ? `New episode: ${episode.title}`
-                    : `Check out this episode by ${creator.displayName}: ${episode.title}`
-                }
-                linkedEpisodeId={episode.id}
-                className="text-ember transition-opacity hover:opacity-80"
-              />
+            {/* Da computer: icone sopra a destra (ora anche Follow, accanto a Trusty), riga
+             * Journey·Episode·categoria con Highlights in linea, titolo, riga creator, caption
+             * intera. Su telefono questo blocco non esiste, sotto c'è la sua versione a parte. */}
+            <div className="hidden md:block">
+              <div className="absolute right-0 top-0 flex items-center gap-1.5 scale-125 origin-top-right">
+                {!isOwnContent && (
+                  <FollowButton userId={creator.userId} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} className="py-1.5" />
+                )}
+                <TrustyButton
+                  targetType="EPISODE"
+                  targetId={episode.id}
+                  initialLikeCount={initialLikeCount}
+                  initialIsLiked={initialIsLiked}
+                  isLoggedIn={isLoggedIn}
+                  unlocked={trustyUnlocked}
+                  isOwnContent={isOwnContent}
+                />
+                {/* Forum del Journey a un clic dal video, accanto a Trusty (richiesto da Manuel). */}
+                <Link
+                  href={`/community/forum/${journeyId}`}
+                  aria-label="Open the Journey forum"
+                  title="Forum"
+                  className="grid h-7 w-7 place-items-center text-ember transition-opacity hover:opacity-80"
+                >
+                  <MessageSquare className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
+                <ShareButton
+                  path={`/journeys/${journeyId}/episodes/${episode.id}`}
+                  label={episode.title}
+                  updateCaption={
+                    isOwnContent
+                      ? `New episode: ${episode.title}`
+                      : `Check out this episode by ${creator.displayName}: ${episode.title}`
+                  }
+                  linkedEpisodeId={episode.id}
+                  className="text-ember transition-opacity hover:opacity-80"
+                />
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-2 pr-32 md:pr-64">
+                <p className="text-sm leading-none tracking-[0.22em] text-ember uppercase">
+                  {journeyTitle} ·
+                  Episode {episode.number}
+                  {journeyCategory ? ` · ${journeyCategory}` : ""}
+                </p>
+                {isOwnContent && <HighlightList highlights={highlights} onRemove={remove} />}
+              </div>
+              <PageTitle className="mt-1">
+                {episode.title}
+              </PageTitle>
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
+                <Link
+                  href={`/profile/${creator.userId}`}
+                  className="flex min-w-0 items-center gap-1.5 transition-colors hover:text-ember"
+                >
+                  <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="sm" />
+                  <span className="truncate">{creator.displayName}</span>
+                </Link>
+                <span aria-hidden="true">·</span>
+                <Link href={`/journeys/${journeyId}`} className="transition-colors hover:text-ember">
+                  {journeyTitle}
+                </Link>
+                {trust.score !== null && <TrustScoreBadge score={trust.score} trustedByCount={trust.trustedByCount} />}
+                {episode.isSponsored && <SponsoredLabel />}
+              </div>
+              {episode.caption && (
+                <p className="mt-2.5 whitespace-pre-wrap text-base text-ink">{episode.caption}</p>
+              )}
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-2 pr-32 md:pr-48">
-              <p className="text-sm leading-none tracking-[0.22em] text-ember uppercase">
-                {journeyTitle} ·
-                Episode {episode.number}
-                {journeyCategory ? ` · ${journeyCategory}` : ""}
-              </p>
-              {isOwnContent && <HighlightList highlights={highlights} onRemove={remove} />}
+
+            {/* Telefono: nome+Follow+Condividi e Trusty in riga 1 (al posto del titolo), numero
+             * episodio con Highlights a tendina in riga 2, titolo in riga 3, caption di una riga
+             * con "more" (vedi mockup approvato). */}
+            <div className="md:hidden">
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/profile/${creator.userId}`}
+                  className="flex min-w-0 items-center gap-2 transition-colors hover:text-ember"
+                >
+                  <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="sm" className="h-[46px] w-[46px]" />
+                  <span className="truncate text-base font-semibold text-ink">{creator.displayName}</span>
+                </Link>
+                <span className="flex-1" />
+                {!isOwnContent && (
+                  <FollowButton userId={creator.userId} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} className="py-1.5" />
+                )}
+                <TrustyButton
+                  targetType="EPISODE"
+                  targetId={episode.id}
+                  initialLikeCount={initialLikeCount}
+                  initialIsLiked={initialIsLiked}
+                  isLoggedIn={isLoggedIn}
+                  unlocked={trustyUnlocked}
+                  isOwnContent={isOwnContent}
+                  className="py-1.5"
+                />
+              </div>
+
+              <div className="mt-3.5 flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <p className="truncate text-sm font-bold leading-none tracking-[0.18em] text-ember uppercase">
+                    {journeyTitle} · Episode {episode.number}
+                  </p>
+                  {episode.isSponsored && <SponsoredLabel />}
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  {isOwnContent && <HighlightsDropdown highlights={highlights} onRemove={remove} />}
+                  <ShareButton
+                    path={`/journeys/${journeyId}/episodes/${episode.id}`}
+                    label={episode.title}
+                    updateCaption={
+                      isOwnContent
+                        ? `New episode: ${episode.title}`
+                        : `Check out this episode by ${creator.displayName}: ${episode.title}`
+                    }
+                    linkedEpisodeId={episode.id}
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ember transition-opacity hover:opacity-80"
+                    iconClassName="h-5 w-5"
+                  />
+                </div>
+              </div>
+
+              <PageTitle className="mt-2.5 text-3xl">
+                {episode.title}
+              </PageTitle>
+
+              {episode.caption && (
+                <ExpandableText text={episode.caption} clampLines={2} className="mt-2.5 text-lg text-on-photo" />
+              )}
             </div>
-            <PageTitle className="mt-1">
-              {episode.title}
-            </PageTitle>
-            <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
-              <Link
-                href={`/profile/${creator.userId}`}
-                className="flex min-w-0 items-center gap-1.5 transition-colors hover:text-ember"
-              >
-                <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="sm" />
-                <span className="truncate">{creator.displayName}</span>
-              </Link>
-              <span aria-hidden="true">·</span>
-              <Link href={`/journeys/${journeyId}`} className="transition-colors hover:text-ember">
-                {journeyTitle}
-              </Link>
-              {trust.score !== null && <TrustScoreBadge score={trust.score} trustedByCount={trust.trustedByCount} />}
-              {episode.isSponsored && <SponsoredLabel />}
-            </div>
-            {episode.caption && (
-              <p className="mt-2.5 whitespace-pre-wrap text-base text-ink">{episode.caption}</p>
-            )}
           </div>
         </div>
       </div>

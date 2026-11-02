@@ -21,7 +21,10 @@ const ROW_RATIO = "aspect-[112/156]";
 const RATIO: Record<CoverFormat, string> = {
   journey: ROW_RATIO,
   episode: ROW_RATIO,
-  event: ROW_RATIO,
+  // "event" sul computer resta orizzontale (16:9, forma originale): su richiesta di Manuel,
+  // 2026-10-30, era diventata troppo grande/alta sul computer con la proporzione uniforme sopra,
+  // pensata per il telefono. Sul telefono resta uniforme con le altre card.
+  event: `${ROW_RATIO} md:aspect-video`,
   person: ROW_RATIO,
   featured: "aspect-[16/10]",
 };
@@ -37,8 +40,8 @@ const RATIO: Record<CoverFormat, string> = {
 // fluide, numero fisso per riga).
 export const CARD_GRID: Record<Exclude<CoverFormat, "featured">, string> = {
   journey: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-3 lg:grid-cols-5",
-  episode: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 lg:grid-cols-4",
-  event: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 lg:grid-cols-4",
+  episode: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-2 lg:grid-cols-4",
+  event: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-2 lg:grid-cols-4",
   // Le card persona sono piccole: due per riga anche sul telefono.
   person: "grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-8",
 };
@@ -49,8 +52,8 @@ export const CARD_GRID: Record<Exclude<CoverFormat, "featured">, string> = {
  * confronto con il mockup). Da tablet in su invariato (fluida, come prima). */
 export const CARD_ROW_ITEM: Record<Exclude<CoverFormat, "featured">, string> = {
   journey: "w-[46.2%] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
-  episode: "w-[46.2%] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
-  event: "w-[46.2%] shrink-0 md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]",
+  episode: "w-[46.2%] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
+  event: "w-[46.2%] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
   person: "w-[46.2%] shrink-0 md:w-[calc((100%-3rem)/4)] lg:w-[calc((100%-7rem)/8)]",
 };
 

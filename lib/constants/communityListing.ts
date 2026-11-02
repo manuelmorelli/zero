@@ -9,7 +9,7 @@ export type CommunityListingType = (typeof COMMUNITY_LISTING_TYPES)[number];
 
 export const COMMUNITY_LISTING_LABELS: Record<CommunityListingType, string> = {
   workshop: "Workshop",
-  event: "Event",
+  event: "Activity",
   digital_product: "Digital Product",
   personal_service: "1:1 Service",
 };

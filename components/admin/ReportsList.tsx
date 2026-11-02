@@ -41,6 +41,7 @@ const TARGET_LABELS: Record<Report["targetType"], string> = {
   USER: "Utente",
   CREATOR: "Journeyer",
   JOURNEY: "Journey",
+  EPISODE: "Episodio",
   UPDATE: "Aggiornamento",
   COMMENT: "Commento del forum",
 };

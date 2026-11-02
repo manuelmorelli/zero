@@ -3,10 +3,15 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Maximize, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { formatDuration as formatTime } from "@/lib/format/duration";
+import { cn } from "@/lib/utils";
 
 const SKIP_BACK_SEC = 15;
 // Sotto questa larghezza del riquadro la sbarra del volume sparisce dalla barra dei comandi.
 const COMPACT_WIDTH_PX = 420;
+
+/** Metodo proprio di Safari su iPhone per lo schermo intero nativo del video, assente dal tipo
+ * HTMLVideoElement standard (vedi commento sopra il listener webkitbeginfullscreen). */
+type SafariVideoElement = HTMLVideoElement & { webkitEnterFullscreen?: () => void };
 
 export type VideoPlayerHandle = {
   video: HTMLVideoElement | null;
@@ -37,6 +42,10 @@ type VideoPlayerProps = {
   /** Contenuto che galleggia sopra il video (es. il riquadro "Up next" a fine episodio). */
   overlay?: React.ReactNode;
   className?: string;
+  /** A tutta larghezza (no bordo arrotondato) finché lo schermo è stretto, invece della misura
+   * naturale centrata di sempre: usato solo dalla pagina Episodio su telefono (stesso trattamento
+   * "a filo schermo" della copertina Journey), via cn() così non cambia nessun altro chiamante. */
+  fullWidthMobile?: boolean;
 };
 
 /**
@@ -62,6 +71,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
     extraControl,
     overlay,
     className,
+    fullWidthMobile = false,
   },
   forwardedRef
 ) {
@@ -108,6 +118,27 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
 
+  // Safari su iPhone non supporta lo schermo intero su un riquadro qualunque (solo sul tag
+  // <video> stesso, con questo metodo proprio di Apple): senza questo ramo requestFullscreen()
+  // sul riquadro falliva in silenzio e il tasto sembrava non fare niente. Questi due eventi
+  // (solo iOS) tengono la barra dei comandi coerente mentre il video è nel player nativo.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    function handleBegin() {
+      setIsFullscreen(true);
+    }
+    function handleEnd() {
+      setIsFullscreen(false);
+    }
+    video.addEventListener("webkitbeginfullscreen", handleBegin);
+    video.addEventListener("webkitendfullscreen", handleEnd);
+    return () => {
+      video.removeEventListener("webkitbeginfullscreen", handleBegin);
+      video.removeEventListener("webkitendfullscreen", handleEnd);
+    };
+  }, []);
+
   function toggle() {
     const video = videoRef.current;
     if (!video) return;
@@ -115,26 +146,49 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
     else video.pause();
   }
 
+  function enterFullscreen() {
+    const el = shellRef.current;
+    const video = videoRef.current as SafariVideoElement | null;
+    if (!el) return;
+    if (document.fullscreenEnabled) {
+      el.requestFullscreen().catch(() => video?.webkitEnterFullscreen?.());
+    } else {
+      video?.webkitEnterFullscreen?.();
+    }
+  }
+
+  // Il grande tasto play al centro (non quello piccolo nella barra comandi): sul telefono porta
+  // subito a schermo intero, come YouTube — nessuna scritta della pagina resta visibile, solo il
+  // video. Da computer invariato: parte semplicemente in riproduzione, nel riquadro normale.
+  function startFromCenterButton() {
+    if (window.matchMedia("(max-width: 767px)").matches && !document.fullscreenElement) {
+      enterFullscreen();
+    }
+    toggle();
+  }
+
   return (
     // Contenitore esterno senza ritaglio: il riquadro "Up next" può uscire dai bordi del video.
     // A schermo intero il riquadro sta dentro il player (solo quello va in fullscreen).
-    <div className="relative mx-auto block w-fit max-w-full">
+    <div className={cn("relative mx-auto block w-fit max-w-full", fullWidthMobile && "w-full md:w-fit")}>
     <div
       ref={shellRef}
-      className={`group relative overflow-hidden rounded-2xl border border-border bg-black leading-[0] ${
-        isFullscreen
-          ? "flex h-full w-full items-center justify-center border-0"
-          : "mx-auto block w-fit"
-      } ${className ?? ""}`}
+      className={cn(
+        "group relative overflow-hidden rounded-2xl border border-border bg-black leading-[0]",
+        isFullscreen ? "flex h-full w-full items-center justify-center border-0" : "mx-auto block w-fit",
+        fullWidthMobile && !isFullscreen && "w-full rounded-none md:w-fit md:rounded-2xl",
+        className
+      )}
     >
       <video
         ref={videoRef}
         poster={posterUrl ?? undefined}
         playsInline
         preload="metadata"
-        className={
-          isFullscreen ? "block h-full w-full object-contain" : "mx-auto block h-auto max-h-[70vh] w-auto max-w-full"
-        }
+        className={cn(
+          isFullscreen ? "block h-full w-full object-contain" : "mx-auto block h-auto max-h-[70vh] w-auto max-w-full",
+          fullWidthMobile && !isFullscreen && "w-full md:w-auto md:max-w-full"
+        )}
         onClick={toggle}
         onTimeUpdate={(event) => {
           const video = event.currentTarget;
@@ -173,7 +227,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
         <button
           type="button"
           aria-label="Play video"
-          onClick={toggle}
+          onClick={startFromCenterButton}
           className="absolute inset-0 grid place-items-center bg-scrim transition-opacity"
         >
           <span className="video-play-circle grid h-16 w-16 place-items-center rounded-full border border-border bg-scrim backdrop-blur-md transition-transform duration-300 hover:scale-105">
@@ -261,10 +315,8 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
               type="button"
               aria-label="Fullscreen"
               onClick={() => {
-                const el = shellRef.current;
-                if (!el) return;
                 if (document.fullscreenElement) void document.exitFullscreen();
-                else void el.requestFullscreen();
+                else enterFullscreen();
               }}
               className="text-ink"
             >

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ListVideo, Play } from "lucide-react";
+import { ListVideo, MessageSquare, Play, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getViewerSession } from "@/lib/session";
 import { getEpisodeTimeline } from "@/lib/journey/episodeTimeline";
@@ -13,15 +13,17 @@ import { formatDuration } from "@/lib/format/duration";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { ShareButton } from "@/components/common/ShareButton";
 import { ReportButton } from "@/components/common/ReportButton";
+import { ExpandableText } from "@/components/common/ExpandableText";
 import { Avatar } from "@/components/ui/avatar";
 import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
 import { ButtonPrimary, ButtonSecondary } from "@/components/ui/button";
 import { Reveal } from "@/components/common/Reveal";
+import { CoverMenu } from "@/components/journey/CoverMenu";
 import type { TimelineEpisode } from "@/lib/journey/episodeTimeline";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
-import { NOTICE, PANEL, ROW } from "@/components/ui/panel";
+import { NOTICE, ROW } from "@/components/ui/panel";
 import { PageTitle, SectionTitle } from "@/components/ui/heading";
-import { cn } from "@/lib/utils";
+import { cn, formatCompactNumber } from "@/lib/utils";
 import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
 export default async function PublicJourneyPage({
@@ -68,14 +70,26 @@ export default async function PublicJourneyPage({
       : false;
 
   const trust = await getCreatorTrust(journey.creator.id, followersCount);
+  // Trusty totali ricevuti dagli episodi di QUESTO Journey (non il Trust Score del creator): in
+  // copertina su telefono si mostrano questi, non il punteggio — si parte senza algoritmo, il
+  // punteggio può anche essere null/poco significativo ora, i Trusty sono un numero vero da subito.
+  const journeyTrustyCount =
+    flatEpisodes.length === 0
+      ? 0
+      : await prisma.like.count({
+          where: { targetType: "EPISODE", targetId: { in: flatEpisodes.map((episode) => episode.id) } },
+        });
 
   return (
     <main>
 
       <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "md:grid md:grid-cols-[minmax(0,1fr)_340px] md:items-start md:gap-5")}>
         <Reveal className="md:min-w-0">
-          <div className={cn(PANEL, "grid gap-4 md:rounded-none md:border-0 md:bg-transparent md:p-0")}>
-            <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border bg-surface-2 md:mx-auto md:w-[min(100%,calc(70vh*16/9))]">
+          <div className="grid gap-4">
+            {/* Sul telefono la foto esce dal margine laterale della pagina (-mx-5 annulla
+             * esattamente il px-5 del contenitore) ed è più alta (aspect-[40/39], il 4:3 di
+             * partenza +30%). Angoli arrotondati su tutti e quattro i lati, come da computer. */}
+            <div className="relative -mx-5 aspect-[40/39] w-auto overflow-hidden rounded-xl border border-border bg-surface-2 md:mx-auto md:aspect-video md:w-[min(100%,calc(70vh*16/9))]">
               {journeyCoverUrl ? (
                 <Image
                   src={journeyCoverUrl}
@@ -90,6 +104,10 @@ export default async function PublicJourneyPage({
                 <div className="absolute inset-0 cover-placeholder" />
               )}
               <div className="absolute inset-0 card-scrim" />
+              {/* Sfumatura in più, solo telefono: il blocco di testo sopra la foto qui è più alto
+               * (titolo, autore, conteggi, bottone Watch) di una card normale, serve più scurimento
+               * perché resti leggibile. Da computer card-scrim da sola basta già, come prima. */}
+              <div className="absolute inset-0 card-scrim-soft md:hidden" />
               {watchAction && (
                 <Link
                   href={`/journeys/${journey.id}/episodes/${watchAction.episodeId}`}
@@ -106,17 +124,89 @@ export default async function PublicJourneyPage({
                   {journey.status === "ARCHIVED" ? "Archived" : "Completed"}
                 </span>
               )}
+              {/* Menu a tre puntini sopra la copertina, solo telefono: Condividi (qui, non più
+               * un'icona a parte), Forum, Segnala, Modifica Journey (solo per chi l'ha creato). Da
+               * computer non esiste, quelle azioni restano dove sono già (riga Follow più sotto). */}
+              <div className="absolute right-3 top-3 md:hidden">
+                <CoverMenu
+                  share={{
+                    path: `/journeys/${journey.id}`,
+                    label: journey.title,
+                    updateCaption: isOwnJourney
+                      ? `New Journey: ${journey.title}`
+                      : `Check out this Journey by ${journey.creator.displayName}: ${journey.title}`,
+                    linkedJourneyId: journey.id,
+                  }}
+                  forumHref={`/community/forum/${journey.id}`}
+                  report={!isOwnJourney && session ? { targetType: "JOURNEY", targetId: journey.id } : undefined}
+                  editHref={isOwnJourney ? `/dashboard/journeys/${journey.id}` : undefined}
+                  editLabel="Edit Journey"
+                />
+              </div>
+              {/* Categoria+titolo+conteggi+Watch sopra la foto, solo telefono (come nel mockup):
+               * da computer restano sotto la foto, versione invariata più giù (hidden md:block /
+               * md:flex). Il bottone Watch sta in basso a dx, affianco al testo; se la scritta è
+               * troppo lunga ("Continue watching · Episode N") si tronca con i puntini. Foto e nome
+               * del creator non stanno più qui: sono appena sotto la copertina (vedi riga subito
+               * dopo), ingranditi, col bottone Follow a fianco. */}
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 md:hidden">
+                <div className="mb-4 min-w-0 flex-1">
+                  <p className="text-sm font-bold leading-none tracking-[0.22em] text-ember uppercase">Journey</p>
+                  {journey.category && (
+                    <p className="text-sm font-bold leading-none tracking-[0.22em] text-ember uppercase">{journey.category}</p>
+                  )}
+                  <PageTitle as="p" className="mt-1.5 truncate text-3xl text-on-photo">
+                    {journey.title}
+                  </PageTitle>
+                  <div className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-ember">
+                    <span>
+                      {flatEpisodes.length} {flatEpisodes.length === 1 ? "Episode" : "Episodes"}
+                    </span>
+                    <span aria-hidden="true">·</span>
+                    <span className="inline-flex items-center gap-1">
+                      <ShieldCheck className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true" />
+                      {formatCompactNumber(journeyTrustyCount)} Trusty
+                    </span>
+                  </div>
+                </div>
+                {watchAction && (
+                  <ButtonSecondary
+                    href={`/journeys/${journey.id}/episodes/${watchAction.episodeId}`}
+                    className="-mb-2 max-w-[42%] shrink-0 px-5 py-1.5 text-sm"
+                  >
+                    <Play className="h-3.5 w-3.5 shrink-0 fill-current" aria-hidden="true" />
+                    <span className="min-w-0 truncate">{watchAction.label}</span>
+                  </ButtonSecondary>
+                )}
+              </div>
+            </div>
+
+            {/* Foto+nome del creator, appena sotto la copertina, solo telefono: ingranditi del
+             * 15%, con Follow a destra (finisce praticamente in linea col bottone Watch sopra). */}
+            <div className="flex items-center justify-between gap-3 md:hidden">
+              <Link href={`/profile/${journey.creator.userId}`} className="flex min-w-0 items-center gap-2.5">
+                <Avatar name={journey.creator.displayName} avatarUrl={creatorAvatarUrl} size="sm" className="h-[46px] w-[46px]" />
+                <span className="truncate text-base font-semibold text-ink">{journey.creator.displayName}</span>
+              </Link>
+              {!isOwnJourney && (
+                <FollowButton
+                  userId={journey.creator.userId}
+                  initialIsFollowing={isFollowing}
+                  isLoggedIn={Boolean(session)}
+                  className="py-1.5"
+                />
+              )}
             </div>
 
             <div className="flex flex-col justify-between gap-4">
-              <div>
+              <div className="relative hidden md:block">
                 <p className="text-sm leading-none tracking-[0.22em] text-ember uppercase">
                   Journey{journey.category ? ` · ${journey.category}` : ""}
                 </p>
-                <PageTitle className="mt-1.5 md:mt-1">
+                <PageTitle className="mt-1">
                   {journey.title}
                 </PageTitle>
-                <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-ink-muted md:mt-1">
+                <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-ink-muted">
                   <Link
                     href={`/profile/${journey.creator.userId}`}
                     className="flex min-w-0 items-center gap-2 transition-colors hover:text-ember"
@@ -138,17 +228,20 @@ export default async function PublicJourneyPage({
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5">
+                {/* Da computer: Follow resta qui, come sempre. Su telefono vive accanto a
+                 * foto+nome del creator appena sotto la copertina (vedi più sopra), non qui. */}
                 {!isOwnJourney && (
                   <FollowButton
                     userId={journey.creator.userId}
                     initialIsFollowing={isFollowing}
                     isLoggedIn={Boolean(session)}
+                    className="hidden md:inline-block"
                   />
                 )}
                 {watchAction && (
                   <ButtonSecondary
                     href={`/journeys/${journey.id}/episodes/${watchAction.episodeId}`}
-                    className="px-4 py-2 text-sm"
+                    className="hidden px-4 py-2 text-sm md:inline-flex"
                   >
                     <Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
                     {watchAction.label}
@@ -163,16 +256,35 @@ export default async function PublicJourneyPage({
                       : `Check out this Journey by ${journey.creator.displayName}: ${journey.title}`
                   }
                   linkedJourneyId={journey.id}
-                  className="grid h-9 w-9 place-items-center rounded-full border border-border text-ember transition-opacity hover:opacity-80"
+                  className="hidden h-9 w-9 place-items-center rounded-full border border-border text-ember transition-opacity hover:opacity-80 md:grid"
                 />
-                {!isOwnJourney && session && <ReportButton targetType="JOURNEY" targetId={journey.id} />}
+                {!isOwnJourney && session && (
+                  <ReportButton
+                    targetType="JOURNEY"
+                    targetId={journey.id}
+                    className="hidden h-9 w-9 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-danger hover:text-danger md:grid"
+                  />
+                )}
               </div>
+              {/* Descrizione Journey, solo telefono: sopra sta già invariata da computer
+               * (dentro il blocco hidden md:block più sopra). 4 righe poi "more", stile YouTube. */}
+              {journey.description && (
+                <ExpandableText text={journey.description} clampLines={4} className="text-lg leading-relaxed text-on-photo md:hidden" />
+              )}
             </div>
           </div>
         </Reveal>
 
         <section className="mt-5 md:mt-0 md:min-w-0">
-          <SectionTitle>Episodes</SectionTitle>
+          {/* Solo telefono: stesso stile stampatello dei capitoli (maiuscolo, spaziato), ma
+           * bianca invece che arancione — resta il titolo bianco della sezione. */}
+          <div className="flex items-center justify-between gap-3">
+            <SectionTitle className="text-xl uppercase tracking-[0.08em] md:text-lg md:normal-case md:tracking-tight">Episodes</SectionTitle>
+            <ButtonSecondary href={`/community/forum/${journey.id}`} className="shrink-0 py-1.5 md:hidden">
+              <MessageSquare className="h-3.5 w-3.5" aria-hidden="true" />
+              Forum
+            </ButtonSecondary>
+          </div>
           {flatEpisodes.length === 0 ? (
             <p className={`mt-3 ${NOTICE}`}>
               This Journey doesn&apos;t have any episodes yet.
@@ -182,7 +294,7 @@ export default async function PublicJourneyPage({
               {groups.map((group) => (
                 <div key={group.chapterId ?? "loose"}>
                   {group.chapterTitle && (
-                    <p className="text-sm tracking-[0.22em] text-ink-muted uppercase">
+                    <p className="text-xl font-bold tracking-[0.08em] text-ember uppercase md:text-sm md:font-normal md:tracking-[0.22em] md:text-ink-muted">
                       {group.chapterTitle}
                     </p>
                   )}
@@ -239,7 +351,7 @@ function EpisodeRow({
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
-            <span className="block text-sm tracking-[0.18em] text-ember uppercase">
+            <span className="block text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
               Episode {episode.number}
             </span>
             {episode.progress && (

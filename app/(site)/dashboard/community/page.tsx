@@ -71,7 +71,7 @@ export default async function CommunityDashboardPage() {
     ...events.map((item) => ({
       id: item.id,
       type: "event" as const,
-      typeLabel: item.isFree ? "Free event" : "Event",
+      typeLabel: item.isFree ? "Free activity" : "Activity",
       icon: MapPin,
       title: item.title,
       status: item.status,
@@ -161,7 +161,7 @@ export default async function CommunityDashboardPage() {
               <p className="text-sm uppercase tracking-[0.18em] text-ember">Journeyer Area</p>
               <PageTitle>Community</PageTitle>
               <p className="mt-1 text-sm text-ink-muted">
-                Workshops, Events, Digital Products and 1:1 Services you offer on your Community page.
+                Workshops, Activities, Digital Products and 1:1 Services you offer on your Community page.
               </p>
             </div>
             <Button variant="primary" href="/dashboard/community/new">

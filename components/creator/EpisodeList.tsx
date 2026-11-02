@@ -35,6 +35,7 @@ export function EpisodeList({
   coverUrl,
   previewTitle,
   previewIndex,
+  autoOpenEpisodeId,
 }: {
   containerId: string;
   journeyId: string;
@@ -43,6 +44,7 @@ export function EpisodeList({
   coverUrl?: string | null;
   previewTitle?: string | null;
   previewIndex?: number | null;
+  autoOpenEpisodeId?: string | null;
 }) {
   const { setNodeRef } = useDroppable({ id: containerId });
   const hasPreview = previewTitle != null && previewIndex != null;
@@ -77,6 +79,7 @@ export function EpisodeList({
               chapters={chapters}
               coverUrl={coverUrl}
               episode={row.episode}
+              autoOpen={row.episode.id === autoOpenEpisodeId}
             />
           )
         )}

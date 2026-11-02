@@ -505,6 +505,13 @@ a {
   background-image: linear-gradient(to top, rgb(var(--rgb-black) / 85%) 0%, rgb(var(--rgb-black) / 40%) 45%, rgb(var(--rgb-black) / 0%) 75%);
 }
 
+/* Sfumatura nera leggera e più alta di .card-scrim: per le copertine dove il blocco di testo
+ * sopra la foto occupa più di una riga (es. copertina Journey da telefono: titolo, autore,
+ * conteggi, bottone). */
+.card-scrim-soft {
+  background-image: linear-gradient(to top, rgb(var(--rgb-black) / 70%) 0%, rgb(var(--rgb-black) / 0%) 72%);
+}
+
 /* Veli scuri della Hero: su telefono il testo sta sopra la foto intera, da computer solo a sinistra. */
 .hero-scrim {
   background-color: rgb(var(--rgb-night) / 65%);

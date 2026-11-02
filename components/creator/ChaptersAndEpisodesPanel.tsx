@@ -76,11 +76,15 @@ export function ChaptersAndEpisodesPanel({
   chapters,
   looseEpisodes,
   coverUrl,
+  autoOpenEpisodeId,
 }: {
   journeyId: string;
   chapters: Chapter[];
   looseEpisodes: Episode[];
   coverUrl: string | null;
+  /** Dal link diretto "Edit Episode" del player mobile (?edit=<episodeId>): apre subito il popup
+   * di modifica di quell'episodio invece di lasciare solo la lista. */
+  autoOpenEpisodeId?: string | null;
 }) {
   const [chapterItems, setChapterItems] = useState(chapters);
   const [looseItems, setLooseItems] = useState(looseEpisodes);
@@ -293,6 +297,7 @@ export function ChaptersAndEpisodesPanel({
               coverUrl={coverUrl}
               previewTitle={previewFor(LOOSE_CONTAINER_ID).title}
               previewIndex={previewFor(LOOSE_CONTAINER_ID).index}
+              autoOpenEpisodeId={autoOpenEpisodeId}
             />
           </div>
 
@@ -305,6 +310,7 @@ export function ChaptersAndEpisodesPanel({
                 chaptersList={chaptersList}
                 coverUrl={coverUrl}
                 preview={previewFor(chapterContainerId(chapter.id))}
+                autoOpenEpisodeId={autoOpenEpisodeId}
               />
             ))}
           </SortableContext>
@@ -320,12 +326,14 @@ function ChapterBlock({
   chaptersList,
   coverUrl,
   preview,
+  autoOpenEpisodeId,
 }: {
   journeyId: string;
   chapter: Chapter;
   chaptersList: { id: string; title: string }[];
   coverUrl: string | null;
   preview: { title: string | null; index: number | null };
+  autoOpenEpisodeId?: string | null;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: chapter.id,
@@ -365,6 +373,7 @@ function ChapterBlock({
         coverUrl={coverUrl}
         previewTitle={preview.title}
         previewIndex={preview.index}
+        autoOpenEpisodeId={autoOpenEpisodeId}
       />
     </div>
   );

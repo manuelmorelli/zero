@@ -38,13 +38,16 @@ type EpisodeItemProps = {
     chapterId: string | null;
     publishedAt: Date | null;
   };
+  /** Apre subito il popup di modifica al montaggio: usato dal link diretto "Edit Episode" nel
+   * player mobile (?edit=<episodeId> sulla pagina del Journey). */
+  autoOpen?: boolean;
 };
 
 /** Riga trascinabile (riordino reale, vedi moveEpisodeToIndex in lib/actions/episode.ts) che porta
  * anche modifica/eliminazione: un'unica lista, non due liste separate per le stesse righe. La
  * modifica si apre in un popup reale invece che in linea, stessa libreria della Fase 3. */
-export function EpisodeItem({ journeyId, chapters, coverUrl, episode }: EpisodeItemProps) {
-  const [editing, setEditing] = useState(false);
+export function EpisodeItem({ journeyId, chapters, coverUrl, episode, autoOpen }: EpisodeItemProps) {
+  const [editing, setEditing] = useState(autoOpen ?? false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: episode.id,

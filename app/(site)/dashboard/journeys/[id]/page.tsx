@@ -28,10 +28,13 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default async function JourneyManagePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ edit?: string }>;
 }) {
   const { id } = await params;
+  const { edit: autoOpenEpisodeId } = await searchParams;
   const { creator } = await requireCreator();
 
   const journey = await prisma.journey.findUnique({ where: { id } });
@@ -129,6 +132,7 @@ export default async function JourneyManagePage({
             chapters={chapters}
             looseEpisodes={looseEpisodes}
             coverUrl={coverUrl}
+            autoOpenEpisodeId={autoOpenEpisodeId}
           />
         </Reveal>
 

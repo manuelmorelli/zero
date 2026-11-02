@@ -17,13 +17,30 @@ type ReportButtonProps = {
   targetType: ReportTargetType;
   targetId: string;
   className?: string;
+  /** Mostra il proprio bottone trigger. False quando l'apertura è pilotata da un altro posto (es.
+   * la voce "Report" del menu a tre puntini sulla copertina mobile) — il Dialog resta lo stesso,
+   * solo senza il bottone rotondo di default. */
+  showTrigger?: boolean;
+  /** Stato di apertura pilotato dall'esterno, stessa coppia open/onOpenChange di un Dialog
+   * controllato: usato insieme a showTrigger=false. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 /** Segnala Journey o profili (non gli Update, decisione esplicita di Manuel: sono contenuti
  * effimeri che spariscono da soli entro 24h). Scrive nel modello Report già esistente
  * (prisma/schema.prisma) — nessun pannello di gestione, vedi lib/actions/report.ts. */
-export function ReportButton({ targetType, targetId, className }: ReportButtonProps) {
-  const [open, setOpen] = useState(false);
+export function ReportButton({
+  targetType,
+  targetId,
+  className,
+  showTrigger = true,
+  open: controlledOpen,
+  onOpenChange,
+}: ReportButtonProps) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = onOpenChange ?? setUncontrolledOpen;
   const [reason, setReason] = useState<(typeof REPORT_REASONS)[number]>(REPORT_REASONS[0]);
   const [detail, setDetail] = useState("");
   const [pending, setPending] = useState(false);
@@ -44,17 +61,19 @@ export function ReportButton({ targetType, targetId, className }: ReportButtonPr
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Report"
-        className={
-          className ??
-          "grid h-9 w-9 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-danger hover:text-danger"
-        }
-      >
-        <Flag className="h-3.5 w-3.5" aria-hidden="true" />
-      </button>
+      {showTrigger && (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Report"
+          className={
+            className ??
+            "grid h-9 w-9 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-danger hover:text-danger"
+          }
+        >
+          <Flag className="h-3.5 w-3.5" aria-hidden="true" />
+        </button>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-sm">

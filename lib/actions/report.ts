@@ -7,7 +7,7 @@ import { sendEmail } from "@/lib/email";
 import type { ReportTargetType } from "@/generated/prisma/client";
 
 const ReportSchema = z.object({
-  targetType: z.enum(["USER", "CREATOR", "JOURNEY", "UPDATE", "COMMENT"]),
+  targetType: z.enum(["USER", "CREATOR", "JOURNEY", "EPISODE", "UPDATE", "COMMENT"]),
   targetId: z.string().trim().min(1),
   reason: z.string().trim().min(1).max(100),
   detail: z.string().trim().max(500).optional(),

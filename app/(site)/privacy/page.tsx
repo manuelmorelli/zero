@@ -24,7 +24,7 @@ export const sections: Section[] = [
       "Account information: your name, email address, a securely hashed password (**we never store or see your actual password**), and your date of birth, collected to confirm you meet the minimum age to use Zero.",
       "Profile information you choose to share: username, bio, profile photo, cover photo, location, and the interest categories you pick. All of this is shown on your public profile.",
       "Content you create: your Journeys, Episodes, Updates, and any messages you send to other users.",
-      "Community content: the workshops, events, digital products, and 1:1 services you create, and the free events you sign up for with \"I'm going\".",
+      "Community content: the workshops, activities, digital products, and 1:1 services you create, and the free activities you sign up for with \"I'm going\".",
       "Conversations with Zero's AI assistant: the messages you write and any photos or PDFs you attach while using it to prepare a Community listing.",
       "Technical information tied to your login sessions: IP address and browser/device information, used to keep your account secure.",
     ],

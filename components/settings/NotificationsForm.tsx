@@ -32,7 +32,7 @@ const TOGGLES: Array<{ name: keyof NotificationsFormProps; label: string; descri
   {
     name: "notifyNewOffering",
     label: "New Community offerings",
-    description: "When a journeyer you follow publishes a Workshop, Event, Digital Product or 1:1 Service.",
+    description: "When a journeyer you follow publishes a Workshop, Activity, Digital Product or 1:1 Service.",
   },
   {
     name: "notifyMention",

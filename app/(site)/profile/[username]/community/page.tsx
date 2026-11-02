@@ -123,7 +123,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
       type: "event" as const,
       coverUrl: item.coverUrl ? await getImagePlaybackUrl(item.coverUrl) : null,
       title: item.title,
-      chipLabel: `Event · ${formatEventMeta(item.startsAt)}`,
+      chipLabel: `Activity · ${formatEventMeta(item.startsAt)}`,
       startsAt: item.startsAt,
       price: formatPrice(item.price),
       ctaLabel: "Reserve",
@@ -147,7 +147,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
   const activities: ActivityEntry[] = [
     ...freeEvents.map((item) => {
       const startsAt = item.startsAt ? new Date(item.startsAt) : null;
-      const kindLabel = item.kind === "workshop" ? "Workshop" : "Event";
+      const kindLabel = item.kind === "workshop" ? "Workshop" : "Activity";
       return {
         key: `free-${item.kind}-${item.id}`,
         startsAt,

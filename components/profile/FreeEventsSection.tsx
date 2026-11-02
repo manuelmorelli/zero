@@ -22,7 +22,7 @@ export function FreeEventsSection({ items, isLoggedIn }: { items: FreeEventItem[
 
   return (
     <section>
-      <SectionTitle>Upcoming Free Events</SectionTitle>
+      <SectionTitle>Upcoming Free Activities</SectionTitle>
       {/* Stesso formato "event" (fotografico, scritte sopra l'immagine) delle altre card del
           sito: mai una sola card che si allarga a metà riga quando c'è un solo evento (bug
           segnalato da Manuel il 2026-09-26). Il pulsante Partecipo sta fuori da CoverFrame (non
@@ -40,7 +40,7 @@ export function FreeEventsSection({ items, isLoggedIn }: { items: FreeEventItem[
               overlay={
                 <>
                   <CoverChip>
-                    {item.kind === "workshop" ? "Workshop" : "Event"}
+                    {item.kind === "workshop" ? "Workshop" : "Activity"}
                     {item.startsAt &&
                       ` · ${new Date(item.startsAt).toLocaleDateString(undefined, { dateStyle: "medium" })}`}
                   </CoverChip>

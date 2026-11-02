@@ -2,6 +2,7 @@
 
 import { ShieldCheck } from "lucide-react";
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { toggleLike } from "@/lib/actions/like";
 import { cn, formatCompactNumber } from "@/lib/utils";
 import type { LikeTargetType } from "@/generated/prisma/client";
@@ -22,6 +23,10 @@ type TrustyButtonProps = {
   unlocked: boolean;
   /** Il creator vede il conteggio sui propri episodi ma non può darsi il Trusty (vedi lib/actions/like.ts). */
   isOwnContent?: boolean;
+  /** Per chi lo usa accanto ad altre pillole della stessa altezza (es. Follow in riga 1 su
+   * telefono, EpisodePlayer): sovrascrive il padding sia del bottone "Log in" (chi non è loggato)
+   * sia della pillola normale, così restano sempre allineate. Facoltativo, nessun altro cambia. */
+  className?: string;
 };
 
 export function TrustyButton({
@@ -32,6 +37,7 @@ export function TrustyButton({
   isLoggedIn,
   unlocked,
   isOwnContent = false,
+  className,
 }: TrustyButtonProps) {
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
@@ -39,7 +45,7 @@ export function TrustyButton({
 
   if (!isLoggedIn) {
     return (
-      <Button variant="secondary" href="/login" aria-label="Log in to react with Trusty">
+      <Button variant="secondary" href="/login" aria-label="Log in to react with Trusty" className={className}>
         <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
         {formatCompactNumber(likeCount)}
       </Button>
@@ -47,6 +53,11 @@ export function TrustyButton({
   }
 
   function handleClick() {
+    if (!unlocked) {
+      toast.info("Watch the episode to the end to unlock Trusty.");
+      return;
+    }
+
     const wasLiked = isLiked;
     setIsLiked(!wasLiked);
     setLikeCount((count) => count + (wasLiked ? -1 : 1));
@@ -65,7 +76,7 @@ export function TrustyButton({
       <button
         type="button"
         onClick={handleClick}
-        disabled={isPending || !unlocked || isOwnContent}
+        disabled={isPending || isOwnContent}
         aria-pressed={isLiked}
         aria-label={
           isOwnContent
@@ -75,8 +86,13 @@ export function TrustyButton({
               : "Watch to the end to unlock Trusty"
         }
         className={cn(
-          isLiked ? "border-ember-line bg-ember-soft text-ember" : CHIP,
-          "transition-all duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+          isLiked
+            ? "border-ember-line bg-ember-soft text-ember"
+            : unlocked
+              ? cn(CHIP, "max-md:border-ember-line max-md:shadow-glow")
+              : CHIP,
+          "transition-all duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40",
+          className
         )}
       >
         <ShieldCheck className="h-3.5 w-3.5" fill={isLiked ? "currentColor" : "none"} aria-hidden="true" />

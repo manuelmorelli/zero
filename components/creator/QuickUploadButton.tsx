@@ -248,8 +248,8 @@ function ChoiceStep({
         onClick={onPickJourney}
         className={cn(PANEL, "w-full text-left shadow-card transition-[border-color,box-shadow] duration-300 hover:border-ember-line hover:shadow-glow")}
       >
-        <span className="block text-sm font-semibold text-ink">Add to Your Journey</span>
-        <span className="mt-1 block text-sm text-ink-muted">Upload a new episode video.</span>
+        <span className="block text-sm font-semibold text-ink">New Episode</span>
+        <span className="mt-1 block text-sm text-ink-muted">Add an episode to one of your Journeys.</span>
       </button>
       <button
         type="button"

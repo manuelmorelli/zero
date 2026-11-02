@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Send } from "lucide-react";
-import { toast } from "sonner";
-import { useSession } from "@/lib/auth-client";
-import { shareToUpdate } from "@/lib/actions/update";
+import { useShareActions } from "@/hooks/useShareActions";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +21,9 @@ type ShareButtonProps = {
   linkedJourneyId?: string;
   linkedEpisodeId?: string;
   className?: string;
+  /** Per chi vuole un'icona più grande del trigger senza toccare le altre (es. riga mobile
+   * della pagina Episodio). Facoltativo, default invariato ovunque. */
+  iconClassName?: string;
 };
 
 /**
@@ -39,46 +39,15 @@ export function ShareButton({
   linkedJourneyId,
   linkedEpisodeId,
   className,
+  iconClassName,
 }: ShareButtonProps) {
-  const { data: session } = useSession();
-  const [sharing, setSharing] = useState(false);
-  const canNativeShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
-
-  function fullUrl() {
-    return `${window.location.origin}${path}`;
-  }
-
-  async function handleAddToUpdate(event: Event) {
-    event.preventDefault();
-    if (!session) {
-      window.location.href = "/login";
-      return;
-    }
-    setSharing(true);
-    const result = await shareToUpdate({ linkedJourneyId, linkedEpisodeId, content: updateCaption });
-    setSharing(false);
-    if (result.error) toast.error(result.error);
-    else toast.success("Added to your Update");
-  }
-
-  async function handleCopyLink(event: Event) {
-    event.preventDefault();
-    try {
-      await navigator.clipboard.writeText(fullUrl());
-      toast.success("Link copied", { description: label });
-    } catch {
-      toast.error("Couldn't copy the link");
-    }
-  }
-
-  async function handleNativeShare(event: Event) {
-    event.preventDefault();
-    try {
-      await navigator.share({ title: label, url: fullUrl() });
-    } catch {
-      // L'utente ha annullato o il sistema non ha completato la condivisione: nessun errore da mostrare.
-    }
-  }
+  const { sharing, canNativeShare, handleAddToUpdate, handleCopyLink, handleNativeShare } = useShareActions({
+    path,
+    label,
+    updateCaption,
+    linkedJourneyId,
+    linkedEpisodeId,
+  });
 
   return (
     <DropdownMenu>
@@ -90,7 +59,7 @@ export function ShareButton({
           "grid h-7 w-7 place-items-center rounded-full border border-border bg-scrim text-ember backdrop-blur-md transition-colors hover:bg-scrim"
         }
       >
-        <Send className="h-3.5 w-3.5" aria-hidden="true" />
+        <Send className={iconClassName ?? "h-3.5 w-3.5"} aria-hidden="true" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48" onClick={(event) => event.stopPropagation()}>
         <DropdownMenuItem disabled={sharing} onSelect={handleAddToUpdate}>
