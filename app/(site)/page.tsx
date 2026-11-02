@@ -189,8 +189,8 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
               }
               overlay={
                 <>
-                  {item.category && <CoverChip className="mt-2 px-2 py-0.5 max-md:-ml-2 max-md:mt-6">{item.category}</CoverChip>}
-                  <CoverTitle className="mt-2">{item.episodeTitle ?? item.title}</CoverTitle>
+                  {item.category && <CoverChip className="-ml-2 mt-2 px-2 py-0.5">{item.category}</CoverChip>}
+                  <CoverTitle>{item.episodeTitle ?? item.title}</CoverTitle>
                 </>
               }
               below={

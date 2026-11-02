@@ -46,8 +46,8 @@ export function VideoCard({ video, className, footer }: VideoCardProps) {
         }
         overlay={
           <>
-            {category && <CoverChip className="mt-2 px-2 py-0.5 max-md:-ml-2 max-md:mt-6">{category}</CoverChip>}
-            <CoverTitle className="mt-2">{title}</CoverTitle>
+            {category && <CoverChip className="-ml-2 mt-2 px-2 py-0.5">{category}</CoverChip>}
+            <CoverTitle>{title}</CoverTitle>
           </>
         }
         below={

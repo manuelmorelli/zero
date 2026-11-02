@@ -151,19 +151,22 @@ export function CoverFrame({
   );
 }
 
-/** Etichetta sopra la foto (categoria, stato "Discovery"/"Archived"). */
+/** Etichetta sopra la foto (categoria, stato "Discovery"/"Archived"). Bordo arancione sempre,
+ * computer e telefono: vive qui una volta sola, ogni pillola del sito lo eredita. */
 export function CoverChip({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <span className={cn("inline-block rounded-full bg-scrim px-2.5 py-1 text-sm font-semibold text-on-photo backdrop-blur-md max-md:border max-md:border-ember-line", className)}>
+    <span className={cn("inline-block rounded-full border border-ember-line bg-scrim px-2 py-0.5 text-sm font-semibold text-on-photo backdrop-blur-md", className)}>
       {children}
     </span>
   );
 }
 
-/** Titolo sopra la foto: bianco pieno, arancione al passaggio del mouse. */
+/** Titolo sopra la foto: bianco pieno, arancione al passaggio del mouse. Lo spazio sopra
+ * (pillola categoria appena sopra, computer e telefono) vive qui una volta sola: ogni card con
+ * copertina lo eredita, non va più ripetuto/aggiustato card per card. */
 export function CoverTitle({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <h3 className={cn("truncate text-lg font-bold leading-tight text-on-photo transition-colors group-hover:text-ember", className)}>
+    <h3 className={cn("mt-0.5 truncate text-lg font-bold leading-tight text-on-photo transition-colors group-hover:text-ember", className)}>
       {children}
     </h3>
   );

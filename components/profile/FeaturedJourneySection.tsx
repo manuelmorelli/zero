@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
-import { CoverTitle } from "@/components/ui/cover-card";
+import { CoverChip, CoverTitle } from "@/components/ui/cover-card";
 import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
 type FeaturedJourneySectionProps = {
@@ -39,17 +39,17 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
           <div className="absolute inset-0 cover-placeholder" />
         )}
         <div className="absolute inset-0 card-scrim" />
-        <span className="absolute left-3 top-3 rounded-full border border-border bg-overlay-soft px-2.5 py-1 text-sm font-semibold uppercase tracking-wider backdrop-blur-md max-md:border-ember-line max-md:px-2 max-md:py-0.5">
+        <CoverChip className="absolute left-3 top-3 bg-overlay-soft uppercase tracking-wider max-md:px-2 max-md:py-0.5">
           In Progress
-        </span>
+        </CoverChip>
 
         <div className="absolute inset-x-0 bottom-0 p-3.5 max-md:p-2.5">
           {journey.category && (
-            <span className="inline-block rounded-full border border-border bg-overlay-soft px-2.5 py-1 text-sm font-semibold uppercase tracking-wider text-on-photo backdrop-blur-md max-md:-ml-1 max-md:mt-10 max-md:border-ember-line max-md:px-2 max-md:py-0.5 max-md:normal-case max-md:tracking-normal">
+            <CoverChip className="-ml-1 bg-overlay-soft uppercase tracking-wider max-md:px-2 max-md:py-0.5 max-md:normal-case max-md:tracking-normal">
               {journey.category}
-            </span>
+            </CoverChip>
           )}
-          <CoverTitle className="mt-2 truncate transition-colors group-hover:text-ember max-md:mt-1.5 max-md:text-sm">
+          <CoverTitle className="truncate transition-colors group-hover:text-ember max-md:text-sm">
             {journey.title}
           </CoverTitle>
           <div className="mt-2 flex items-center justify-between gap-2 max-md:hidden">

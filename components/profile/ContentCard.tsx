@@ -66,9 +66,9 @@ export function ContentCard({
       }
       overlay={
         <>
-          {category && <CoverChip className="max-md:-ml-2 max-md:mt-4">{category}</CoverChip>}
-          <div className="mt-2 flex items-end justify-between gap-2">
-            <CoverTitle className="min-w-0">{title}</CoverTitle>
+          {category && <CoverChip className="-ml-2">{category}</CoverChip>}
+          <div className="mt-0.5 flex items-end justify-between gap-2">
+            <CoverTitle className="mt-0 min-w-0">{title}</CoverTitle>
             {trust !== undefined && (
               <span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold text-ember">
                 <ShieldCheck className="h-4 w-4" aria-hidden="true" />

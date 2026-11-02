@@ -56,7 +56,7 @@ export function ListingCard({
             <>
               <div className="hidden md:block">
                 <CoverChip>{chipLabel}</CoverChip>
-                <CoverTitle className="mt-2">{title}</CoverTitle>
+                <CoverTitle>{title}</CoverTitle>
               </div>
               <div className="flex justify-end md:hidden">
                 <CoverChip className="max-md:border max-md:border-ember-line max-md:bg-overlay-soft max-md:py-0.5">
@@ -67,7 +67,7 @@ export function ListingCard({
           ) : (
             <>
               <CoverChip>{chipLabel}</CoverChip>
-              <CoverTitle className="mt-2">{title}</CoverTitle>
+              <CoverTitle>{title}</CoverTitle>
             </>
           )
         }
