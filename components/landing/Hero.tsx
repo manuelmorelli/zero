@@ -9,6 +9,8 @@ import { ButtonSecondary, IconButton } from "@/components/ui/button";
 import { StoryViewer } from "@/components/home/StoryViewer";
 import { HeroBackgroundVideo, useHeroVideoMode } from "@/components/landing/HeroBackgroundVideo";
 import { HeroPayoff } from "@/components/landing/HeroPayoff";
+import { FadeImage } from "@/components/common/FadeImage";
+import { CoverChip } from "@/components/ui/cover-card";
 import type { HeroSlide } from "@/lib/demo/heroSlides";
 import type { HeroVideo } from "@/lib/discovery/heroVideos";
 import type { CreatorStory } from "@/lib/discovery/stories";
@@ -164,14 +166,14 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
        * absolute). Da computer la clip della Hero copre le foto (che restano sotto come riserva). */}
       <div
         ref={mediaRef}
-        className="relative h-[70vh] max-h-[552px] min-h-[420px] overflow-hidden rounded-t-[18px] md:absolute md:inset-0 md:inset-x-[4.43%] md:h-auto md:max-h-none md:min-h-0 md:rounded-2xl"
+        className="relative h-[70vh] max-h-[552px] min-h-[420px] overflow-hidden rounded-xl shadow-card md:absolute md:inset-0 md:inset-x-[4.43%] md:h-auto md:max-h-none md:min-h-0 md:rounded-2xl md:shadow-none"
       >
         {/* Solo la foto/video e i veli scuri sono dentro questo involucro con la maschera: la
          * pillola col messaggio e i pallini più sotto NON ci stanno dentro apposta, altrimenti la
          * maschera sbiadiva anche loro (bug trovato da Manuel, 2026-10-30). */}
         <div className="hero-mobile-fade absolute inset-0">
           {slides.map((item, index) => (
-            <Image
+            <FadeImage
               key={item.alt}
               src={item.image}
               alt={item.alt}
@@ -203,13 +205,16 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
           <div className="hero-grain absolute inset-0 hidden md:block" aria-hidden="true" />
           <div className="hero-scrim absolute inset-0 hidden md:block" />
           <div className="hero-side-fade absolute inset-0 hidden md:block" />
+          {/* Velo scuro in alto, dietro al blocco titolo/categoria: senza, su foto chiare
+           * (cielo, neve) il testo bianco si legge poco (Manuel, 2026-11-03). */}
+          <div className="hero-top-scrim absolute inset-x-0 top-0 h-48 md:hidden" />
           {/* Solo sul basso, non su tutta la foto: card-scrim su inset-0 anneriva mezza foto, pensata
            * per card piccole (150-250px), non per un blocco alto 552px come questo. */}
           <div className="card-scrim absolute inset-x-0 bottom-0 h-80 md:hidden" />
           {/* Sfumatura verso il colore di sfondo della pagina, per eliminare la riga netta dove la
            * foto finisce e comincia il resto della pagina (Manuel, 2026-10-29). Dipinta per ultima
            * (sopra card-scrim) così è lei a decidere il colore proprio sul bordo finale. */}
-          <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
+          <div className="cover-fade absolute inset-x-0 bottom-0 h-48 md:h-80" />
         </div>
         {/* Audio della clip, in alto a destra: parte sempre muta, si attiva solo con un clic. */}
         {video && videoMode === "play" && (
@@ -349,15 +354,17 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
   if (slide.kind === "demo") return null;
 
   return (
-    <div className="max-w-[78%]">
+    <div className="-ml-2 max-w-[78%]">
       <Link href={`/journeys/${slide.id}`} className="block">
-        <CardTitle as="h2" className="truncate !text-on-photo text-hero-mobile-title leading-[1.05] font-extrabold">{slide.title}</CardTitle>
+        {/* Altezza riservata sempre, anche senza categoria: il titolo resta nella stessa
+         * posizione invece di salire quando manca la pillola (Manuel, 2026-11-03). */}
+        <div className="h-[25px]">
+          {slide.category && <CoverChip className="mt-4 text-hero-mobile-tag">{slide.category}</CoverChip>}
+        </div>
+        <CardTitle as="h2" className="mt-1.5 truncate !text-on-photo text-hero-mobile-title leading-[1.35] font-extrabold">{slide.title}</CardTitle>
         <p className="mt-[5px] truncate text-hero-mobile-meta text-on-photo">
           by {slide.creatorName} · {slide.episodesCount} {slide.episodesCount === 1 ? "episode" : "episodes"}
         </p>
-        {slide.category && (
-          <p className="mt-1 text-hero-mobile-tag font-bold uppercase tracking-[0.08em] text-ember">{slide.category}</p>
-        )}
       </Link>
       <ButtonSecondary
         href={`/journeys/${slide.id}`}

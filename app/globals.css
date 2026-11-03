@@ -110,9 +110,9 @@
   /* Blocco titolo della Hero mobile (titolo/autore/categoria sopra la foto): +10% su richiesta
    * di Manuel, 2026-10-29, perché si leggeva poco. Non toccano le stesse taglie usate da
    * desktop in su (text-3xl, text-hero-eyebrow, text-hero-tag), solo questo blocco. */
-  --text-hero-mobile-title: calc(2.0625rem / var(--layout-scale) * var(--text-scale));
+  --text-hero-mobile-title: calc(2.4rem / var(--layout-scale) * var(--text-scale));
   --text-hero-mobile-meta: calc(0.847rem / var(--layout-scale) * var(--text-scale));
-  --text-hero-mobile-tag: calc(0.66rem / var(--layout-scale) * var(--text-scale));
+  --text-hero-mobile-tag: calc(0.75rem / var(--layout-scale) * var(--text-scale));
 }
 
 /* Manopole: i numeri dietro i colori sono scritti UNA volta sola qui, tutto il resto del file (e dei
@@ -510,6 +510,13 @@ a {
  * conteggi, bottone). */
 .card-scrim-soft {
   background-image: linear-gradient(to top, rgb(var(--rgb-black) / 70%) 0%, rgb(var(--rgb-black) / 0%) 72%);
+}
+
+/* Velo scuro in alto, solo sul telefono: dietro al blocco titolo/categoria della Hero mobile,
+ * così il testo bianco resta leggibile anche su foto chiare (cielo, neve) — prima lì non c'era
+ * alcun velo, solo in basso (card-scrim) per la didascalia (Manuel, 2026-11-03). */
+.hero-top-scrim {
+  background-image: linear-gradient(to bottom, rgb(var(--rgb-black) / 55%) 0%, rgb(var(--rgb-black) / 0%) 60%);
 }
 
 /* Veli scuri della Hero: su telefono il testo sta sopra la foto intera, da computer solo a sinistra. */
