@@ -10,8 +10,6 @@ import type { CreatorStory, StoryUpdate } from "@/lib/discovery/stories";
 import { Button } from "@/components/ui/button";
 import { PILL_FIELD_ON_PHOTO } from "@/components/ui/input";
 
-const STORY_DURATION_MS = 5000;
-
 type StoryViewerProps = {
   stories: CreatorStory[];
   initialCreatorIndex: number;
@@ -122,6 +120,40 @@ function StorySlide({
   const [paused, setPaused] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  // Tieni premuto per fermare (solo touch da telefono, mai da mouse/computer): holdStartRef segna
+  // quando è iniziato il tocco, wasHoldRef dice al click successivo "non è un tap, non navigare".
+  const holdStartRef = useRef<number | null>(null);
+  const wasHoldRef = useRef(false);
+
+  function handleHoldStart(event: React.PointerEvent) {
+    if (event.pointerType !== "touch") return;
+    holdStartRef.current = Date.now();
+    setPaused(true);
+  }
+
+  function handleHoldEnd(event: React.PointerEvent) {
+    if (event.pointerType !== "touch") return;
+    setPaused(false);
+    const start = holdStartRef.current;
+    holdStartRef.current = null;
+    wasHoldRef.current = start !== null && Date.now() - start >= 200;
+  }
+
+  function handleHoldCancel(event: React.PointerEvent) {
+    if (event.pointerType !== "touch") return;
+    holdStartRef.current = null;
+    setPaused(false);
+  }
+
+  function handleNavClick(action: () => void) {
+    return () => {
+      if (wasHoldRef.current) {
+        wasHoldRef.current = false;
+        return;
+      }
+      action();
+    };
+  }
 
   async function handleDelete() {
     if (deleting || !window.confirm("Delete this Update? This can't be undone.")) return;
@@ -141,15 +173,18 @@ function StorySlide({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Avanzamento automatico a tempo fisso: mai per Video (avanza all'evento "ended", gestito da
-  // StoryContent) né per Domande (restano finché non si risponde o non si scorre via a mano) —
-  // "Domanda" include qui sia il tipo QUESTION puro sia un Update foto/video con isQuestion.
+  // Avanzamento automatico secondo la durata scelta dal creator alla pubblicazione (update.durationSec,
+  // max 1 minuto): per i Video è un tetto massimo, se il video naturale finisce prima avanza già
+  // l'evento "ended" gestito da StoryContent. Mai per le Domande, che restano finché non si
+  // risponde o non si scorre via a mano — "Domanda" include qui sia il tipo QUESTION puro sia un
+  // Update foto/video con isQuestion.
   useEffect(() => {
-    if (update.type === "VIDEO" || update.isQuestion || paused) return;
+    if (update.isQuestion || paused) return;
 
-    const start = Date.now() - (segmentProgress / 100) * STORY_DURATION_MS;
+    const durationMs = update.durationSec * 1000;
+    const start = Date.now() - (segmentProgress / 100) * durationMs;
     const interval = setInterval(() => {
-      const percent = Math.min(100, ((Date.now() - start) / STORY_DURATION_MS) * 100);
+      const percent = Math.min(100, ((Date.now() - start) / durationMs) * 100);
       setSegmentProgress(percent);
       if (percent >= 100) {
         clearInterval(interval);
@@ -236,8 +271,24 @@ function StorySlide({
         </div>
       </div>
 
-      <button type="button" aria-label="Previous update" onClick={onPrev} className="absolute inset-y-0 left-0 z-20 w-1/3" />
-      <button type="button" aria-label="Next update" onClick={onNext} className="absolute inset-y-0 right-0 z-20 w-2/3" />
+      <button
+        type="button"
+        aria-label="Previous update"
+        onClick={handleNavClick(onPrev)}
+        onPointerDown={handleHoldStart}
+        onPointerUp={handleHoldEnd}
+        onPointerCancel={handleHoldCancel}
+        className="absolute inset-y-0 left-0 z-20 w-1/3"
+      />
+      <button
+        type="button"
+        aria-label="Next update"
+        onClick={handleNavClick(onNext)}
+        onPointerDown={handleHoldStart}
+        onPointerUp={handleHoldEnd}
+        onPointerCancel={handleHoldCancel}
+        className="absolute inset-y-0 right-0 z-20 w-2/3"
+      />
 
       <div className="relative flex h-full w-full items-center justify-center">
         <StoryContent

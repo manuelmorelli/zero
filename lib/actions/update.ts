@@ -27,6 +27,9 @@ import {
   POLL_OPTION_MAX_LENGTH,
   REACTION_EMOJIS,
   UPDATE_ANSWER_MAX_LENGTH,
+  UPDATE_DURATION_DEFAULT_SEC,
+  UPDATE_DURATION_MAX_SEC,
+  UPDATE_DURATION_MIN_SEC,
   UPDATE_TEXT_MAX_LENGTH,
 } from "@/lib/constants/updates";
 import type { UpdateType } from "@/generated/prisma/client";
@@ -252,6 +255,11 @@ export async function publishUpdate(
   if (linkedJourneyId) await assertOwnedJourney(creator.id, linkedJourneyId);
   if (linkedEpisodeId) await assertOwnedEpisode(creator.id, linkedEpisodeId);
 
+  const rawDurationSec = Number(formData.get("durationSec"));
+  const durationSec = Number.isFinite(rawDurationSec)
+    ? Math.min(UPDATE_DURATION_MAX_SEC, Math.max(UPDATE_DURATION_MIN_SEC, Math.round(rawDurationSec)))
+    : UPDATE_DURATION_DEFAULT_SEC;
+
   await deleteExpiredUpdates();
 
   const publishedAt = new Date();
@@ -262,6 +270,7 @@ export async function publishUpdate(
       content,
       mediaKey,
       isQuestion,
+      durationSec,
       linkedJourneyId,
       linkedEpisodeId,
       publishedAt,

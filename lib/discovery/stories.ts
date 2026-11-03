@@ -19,6 +19,10 @@ export type StoryUpdate = {
   type: UpdateType;
   content: string;
   mediaUrl: string | null;
+  /** Secondi scelti dal creator alla pubblicazione (max 60), per quanto deve restare a schermo
+   * prima di avanzare — ignorato se `isQuestion` è true (StoryViewer resta finché non si
+   * risponde/si scorre via a mano). */
+  durationSec: number;
   publishedAt: Date;
   viewedByMe: boolean;
   myReaction: string | null;
@@ -95,6 +99,7 @@ async function buildStoryUpdate(
     type: update.type,
     content: update.content,
     mediaUrl,
+    durationSec: update.durationSec,
     publishedAt: update.publishedAt,
     viewedByMe: update.views.some((view) => view.userId === viewerId),
     myReaction: update.reactions.find((reaction) => reaction.userId === viewerId)?.emoji ?? null,

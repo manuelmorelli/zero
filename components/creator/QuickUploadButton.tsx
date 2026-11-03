@@ -17,7 +17,15 @@ import {
   MAX_VIDEO_SIZE_BYTES,
 } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
-import { POLL_MAX_OPTIONS, POLL_MIN_OPTIONS, POLL_OPTION_MAX_LENGTH, UPDATE_TEXT_MAX_LENGTH } from "@/lib/constants/updates";
+import {
+  POLL_MAX_OPTIONS,
+  POLL_MIN_OPTIONS,
+  POLL_OPTION_MAX_LENGTH,
+  UPDATE_DURATION_DEFAULT_SEC,
+  UPDATE_DURATION_MAX_SEC,
+  UPDATE_DURATION_MIN_SEC,
+  UPDATE_TEXT_MAX_LENGTH,
+} from "@/lib/constants/updates";
 import { FIELD } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -762,6 +770,7 @@ function UpdateFormStep({
   // Solo per Foto/Video: si può abbinare al massimo un extra interattivo, non un tipo a parte
   // (scelta fatta con Manuel per non forzare a scegliere tra "foto" e "sondaggio/domanda").
   const [extra, setExtra] = useState<"" | "POLL" | "QUESTION">("");
+  const [durationSec, setDurationSec] = useState(UPDATE_DURATION_DEFAULT_SEC);
 
   useEffect(() => {
     if (state.done) onDone();
@@ -823,10 +832,13 @@ function UpdateFormStep({
 
   const needsMedia = kind === "IMAGE" || kind === "VIDEO";
   const stillUploading = uploadProgress !== null && uploadProgress < 100;
+  // Resta a schermo finché non si risponde/si scorre via a mano: la durata scelta non si applica.
+  const isQuestion = kind === "QUESTION" || (needsMedia && extra === "QUESTION");
 
   return (
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="type" value={kind} />
+      <input type="hidden" name="durationSec" value={durationSec} />
       {mediaKey && <input type="hidden" name="mediaKey" value={mediaKey} />}
       {needsMedia && extra && <input type="hidden" name="extra" value={extra} />}
       {linkType === "journey" && <input type="hidden" name="linkedJourneyId" value={linkTargetId} />}
@@ -903,6 +915,24 @@ function UpdateFormStep({
 
       {linkableJourneys.length > 0 && (
         <LinkPickerField journeys={linkableJourneys} value={linkChoice} onChange={setLinkChoice} />
+      )}
+
+      {!isQuestion && (
+        <div>
+          <label htmlFor={`${uid}-duration`} className="mb-1.5 block text-sm font-medium text-ink-muted">
+            Show for {durationSec} {durationSec === 1 ? "second" : "seconds"}
+          </label>
+          <input
+            id={`${uid}-duration`}
+            type="range"
+            min={UPDATE_DURATION_MIN_SEC}
+            max={UPDATE_DURATION_MAX_SEC}
+            step={1}
+            value={durationSec}
+            onChange={(event) => setDurationSec(Number(event.target.value))}
+            className="w-full accent-ember"
+          />
+        </div>
       )}
 
       {(uploadError || state.error) && <p className="text-sm text-danger">{uploadError ?? state.error}</p>}

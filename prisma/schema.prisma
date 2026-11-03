@@ -565,6 +565,10 @@ model Update {
   // esclusivo con `type`, un aggiunta in più. Per gli Update di tipo QUESTION puro resta false:
   // il controllo "è una domanda?" guarda `type === QUESTION || isQuestion`, mai solo questo campo.
   isQuestion  Boolean    @default(false)
+  // Durata di visualizzazione scelta dal creator alla pubblicazione, in secondi (max 60,
+  // lib/constants/updates.ts). Per i Video è un tetto massimo: se il video naturale dura meno,
+  // avanza comunque alla fine del video (components/home/StoryViewer.tsx).
+  durationSec Int        @default(5)
   // Un Update può facoltativamente puntare a un Episodio o Journey del creator (es. "è uscito il
   // nuovo episodio"), indipendentemente dal suo `type` — non sono a vicenda esclusivi con testo/
   // foto/video/sondaggio/domanda, sono un aggancio in più.
