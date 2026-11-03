@@ -143,7 +143,7 @@ export function CoverFrame({
         {below && <div className="mt-3">{below}</div>}
       </Link>
       {menu && (
-        <div className="absolute right-2 top-2 z-10 opacity-0 transition-opacity duration-200 focus-within:opacity-100 group-hover:opacity-100">
+        <div className="absolute right-2 top-2 z-10 max-md:opacity-100 transition-opacity duration-200 md:opacity-0 md:focus-within:opacity-100 md:group-hover:opacity-100">
           {menu}
         </div>
       )}

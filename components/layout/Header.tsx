@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/layout/Logo";
 import { AuthStatus } from "@/components/layout/AuthStatus";
+import { useSession } from "@/lib/auth-client";
 import { BackButton } from "@/components/layout/BackButton";
 import { SideMenu } from "@/components/layout/SideMenu";
 import { SearchIcon } from "@/components/search/SearchForm";
@@ -38,6 +39,16 @@ export function Header({ inbox }: HeaderProps) {
   // schermo al contenuto, e torna subito appena si risale anche di poco. Sopra i 768px resta
   // sempre ferma in cima, come prima (vedi md:translate-y-0 qui sotto).
   const hiddenOnScroll = useHideOnScroll();
+  // Solo per spostare la scritta ZERO su mobile da visitatore (vedi sotto): stesso pattern
+  // hydration-safe di AuthStatus.tsx (resta "loggato" di default finché la sessione non è
+  // confermata, nessuno scatto per chi è davvero loggato).
+  const { data: session, isPending } = useSession();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+  const loggedOut = mounted && !isPending && !session;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -65,10 +76,16 @@ export function Header({ inbox }: HeaderProps) {
 
         {/* Su mobile la scritta Zero sta al centro esatto dell'header (posizione assoluta, non
          * nella griglia): su richiesta di Manuel, 2026-10-29. Da desktop in su resta quella
-         * nella colonna di sinistra qui sopra, invariata. */}
+         * nella colonna di sinistra qui sopra, invariata. Da non loggato, su schermi stretti, il
+         * centro esatto finisce troppo vicino al tasto "Get Started" (sempre tutto a destra): solo
+         * in quel caso (non da loggato, dove a destra c'è solo il saluto col nome) la scritta si
+         * sposta un po' a sinistra del centro per lasciare spazio vero tra i due. */}
         <Link
           href="/"
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden"
+          className={cn(
+            "absolute top-1/2 -translate-y-1/2 md:hidden",
+            loggedOut ? "left-[30%] -translate-x-1/2" : "left-1/2 -translate-x-1/2"
+          )}
           aria-label="Zero home"
         >
           <Logo className="h-9" />

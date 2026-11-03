@@ -35,7 +35,7 @@ export function AuthStatus() {
         >
           Sign in
         </Link>
-        <Button variant="primary" href="/register" className="text-sm">
+        <Button variant="primary" href="/register" className="text-sm max-md:mr-14">
           Get Started
         </Button>
       </>
