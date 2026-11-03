@@ -11,6 +11,11 @@ import { Switch } from "@/components/ui/switch";
 
 const MINIMUM_AGE_YEARS = 16;
 
+// Su telefono il riquadro del campo (quello che c'è già, non uno in più) diventa arancione e a
+// pillola (richiesta di Manuel, 2026-11-03: la procedura di registrazione deve risaltare di
+// più). Da computer invariato.
+const FIELD_ACCENT = "max-md:rounded-full max-md:border-ember-line max-md:text-base";
+
 function isOldEnough(dateOfBirth: Date, minimumAge: number): boolean {
   const now = new Date();
   const cutoff = new Date(now.getFullYear() - minimumAge, now.getMonth(), now.getDate());
@@ -83,7 +88,7 @@ export function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="mt-8 space-y-4">
       <Field
-        label="Name"
+        label="Name (full name)"
         id="name"
         type="text"
         value={name}
@@ -109,6 +114,7 @@ export function RegisterForm() {
         autoComplete="bday"
         max={maxDateOfBirth()}
         required
+        containerClassName="max-md:w-2/3"
       />
       <div>
         <Switch
@@ -116,8 +122,9 @@ export function RegisterForm() {
           description="Off: you can watch, follow and like. On: you can publish Journeys. You can change this anytime in Settings."
           checked={creatorMode}
           onChange={setCreatorMode}
+          className="max-md:border-ember-line"
         />
-        <Link href="/creator" className="mt-2 inline-block text-sm text-ink-muted underline underline-offset-4">
+        <Link href="/creator" className="mt-2 inline-block text-sm text-ink-muted underline underline-offset-4 max-md:text-base">
           How Journeyer mode works
         </Link>
       </div>
@@ -129,6 +136,7 @@ export function RegisterForm() {
         autoComplete="new-password"
         minLength={8}
         required
+        inputClassName={FIELD_ACCENT}
       />
       <PasswordField
         id="confirmPassword"
@@ -138,11 +146,12 @@ export function RegisterForm() {
         autoComplete="new-password"
         minLength={8}
         required
+        inputClassName={FIELD_ACCENT}
       />
 
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm text-danger max-md:text-base">{error}</p>}
 
-      <Button variant="primary" type="submit" disabled={loading} className="w-full">
+      <Button variant="primary" type="submit" disabled={loading} className="w-full max-md:text-base">
         {loading ? "Creating account…" : "Create account"}
       </Button>
     </form>
@@ -163,6 +172,9 @@ type FieldProps = {
   required?: boolean;
   minLength?: number;
   max?: string;
+  /** Scarto facoltativo sul riquadro esterno: per restringere la pillola "Date of birth" su
+   * telefono, troppo larga rispetto al contenuto (richiesta di Manuel, 2026-11-03). */
+  containerClassName?: string;
 };
 
 function Field({
@@ -175,10 +187,11 @@ function Field({
   required,
   minLength,
   max,
+  containerClassName,
 }: FieldProps) {
   return (
-    <div>
-      <label htmlFor={id} className="text-sm font-medium text-ink-muted">
+    <div className={containerClassName}>
+      <label htmlFor={id} className="text-sm font-medium text-ink-muted max-md:text-base">
         {label}
       </label>
       <input
@@ -191,7 +204,7 @@ function Field({
         required={required}
         minLength={minLength}
         max={max}
-        className={cn(FIELD, "mt-1.5")}
+        className={cn(FIELD, "mt-1.5", FIELD_ACCENT)}
       />
     </div>
   );

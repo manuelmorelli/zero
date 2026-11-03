@@ -14,6 +14,9 @@ type PasswordFieldProps = {
   required?: boolean;
   /** Contenuto accessorio accanto alla label, es. il link "Forgot password?" nel Login. */
   labelRight?: React.ReactNode;
+  /** Scarto facoltativo sul campo stesso (quello già esistente, non un riquadro in più): per il
+   * bordo arancione della Registrazione su telefono, senza toccare il Login (che non lo passa). */
+  inputClassName?: string;
 };
 
 export function PasswordField({
@@ -25,6 +28,7 @@ export function PasswordField({
   minLength,
   required,
   labelRight,
+  inputClassName,
 }: PasswordFieldProps) {
   const uid = useId();
   const inputId = id || uid;
@@ -33,7 +37,7 @@ export function PasswordField({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <label htmlFor={inputId} className="text-sm font-medium text-ink-muted">
+        <label htmlFor={inputId} className={cn("text-sm font-medium text-ink-muted", inputClassName && "max-md:text-base")}>
           {label}
         </label>
         {labelRight}
@@ -48,7 +52,7 @@ export function PasswordField({
           autoComplete={autoComplete}
           minLength={minLength}
           required={required}
-          className={cn(FIELD, "pr-11")}
+          className={cn(FIELD, "pr-11", inputClassName)}
         />
         <button
           type="button"

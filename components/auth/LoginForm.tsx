@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type SubmitEvent } from "react";
+import { useEffect, useState, type SubmitEvent } from "react";
 import { authClient } from "@/lib/auth-client";
 import { PasswordField } from "@/components/common/PasswordField";
 import { FIELD } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { clearKnownUser, readKnownUser } from "@/lib/knownUser";
 
 export function LoginForm() {
   const router = useRouter();
@@ -16,6 +17,23 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [needsVerification, setNeedsVerification] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [knownName, setKnownName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const known = readKnownUser();
+    if (known) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setEmail(known.email);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setKnownName(known.name);
+    }
+  }, []);
+
+  function switchAccount() {
+    clearKnownUser();
+    setKnownName(null);
+    setEmail("");
+  }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,6 +80,17 @@ export function LoginForm() {
         onChange={setEmail}
         autoComplete="email"
         required
+        labelRight={
+          knownName && (
+            <button
+              type="button"
+              onClick={switchAccount}
+              className="text-sm text-ink-muted hover:text-ink hover:underline"
+            >
+              Not you?
+            </button>
+          )
+        }
       />
       <PasswordField
         id="password"
@@ -106,14 +135,19 @@ type FieldProps = {
   onChange: (value: string) => void;
   autoComplete?: string;
   required?: boolean;
+  /** Contenuto accessorio accanto alla label, es. "Not you?" quando l'email è precompilata. */
+  labelRight?: React.ReactNode;
 };
 
-function Field({ label, id, type, value, onChange, autoComplete, required }: FieldProps) {
+function Field({ label, id, type, value, onChange, autoComplete, required, labelRight }: FieldProps) {
   return (
     <div>
-      <label htmlFor={id} className="text-sm font-medium text-ink-muted">
-        {label}
-      </label>
+      <div className="flex items-center justify-between">
+        <label htmlFor={id} className="text-sm font-medium text-ink-muted">
+          {label}
+        </label>
+        {labelRight}
+      </div>
       <input
         id={id}
         name={id}

@@ -11,6 +11,7 @@ import { SearchIcon } from "@/components/search/SearchForm";
 import { AiMascotButton } from "@/components/common/AiMascotButton";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
+import { writeKnownUser } from "@/lib/knownUser";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -49,6 +50,15 @@ export function Header({ inbox }: HeaderProps) {
     setMounted(true);
   }, []);
   const loggedOut = mounted && !isPending && !session;
+
+  useEffect(() => {
+    // Ogni pagina del sito vera e propria (non Login/Register, che stanno fuori da questo
+    // layout) passa da qui: è il punto giusto per "ricordare" chi ha appena avuto una sessione
+    // valida, da riconoscere alla prossima volta che arriva su Sign in disconnesso.
+    if (session?.user) {
+      writeKnownUser({ name: session.user.name, email: session.user.email });
+    }
+  }, [session]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
