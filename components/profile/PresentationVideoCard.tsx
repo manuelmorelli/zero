@@ -217,7 +217,7 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
         {/* Con il video presente il titolo vive dentro il poster (stile ContentCard, vedi sotto):
             l'intestazione esterna resta solo per lo stato vuoto, altrimenti sarebbe doppia. */}
         {!videoUrl && (
-          <div onClick={handlePosterClick} className="max-md:cursor-pointer">
+          <div onClick={handlePosterClick} className="max-md:hidden">
             <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
               <VideoIcon className="h-3.5 w-3.5" aria-hidden="true" />
               That&apos;s me
@@ -302,9 +302,25 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
             {expanded && <ExpandedPresentationVideo videoUrl={videoUrl} onClose={() => setExpanded(false)} />}
           </>
         ) : (
-          <p onClick={handlePosterClick} className="mt-3 text-sm text-ink-faint max-md:cursor-pointer">
-            {isOwnProfile ? "Add a short video so people know who you are." : "No introduction video yet."}
-          </p>
+          <>
+            {/* Su mobile il riquadro del video (bg-surface-2) non c'è ancora: senza un suo sfondo
+             * proprio la card resta trasparente e si vede lo sfondo del sito dietro (bug segnalato
+             * da Manuel, 2026-11-02). Stesso trattamento "poster vuoto" delle card gemelle nella
+             * stessa riga (AboutCard, FeaturedJourneySection): riquadro 112/156, cover-placeholder. */}
+            <div
+              onClick={handlePosterClick}
+              className="relative mt-0 hidden aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border border-ember-line cover-placeholder max-md:block"
+            >
+              <div className="absolute inset-x-0 bottom-0 p-2.5">
+                <p className="text-sm text-on-photo-muted">
+                  {isOwnProfile ? "Add a short video so people know who you are." : `${name} hasn't added an introduction video yet.`}
+                </p>
+              </div>
+            </div>
+            <p onClick={handlePosterClick} className="mt-3 text-sm text-ink-faint max-md:hidden">
+              {isOwnProfile ? "Add a short video so people know who you are." : "No introduction video yet."}
+            </p>
+          </>
         )}
 
         {isOwnProfile && (

@@ -15,18 +15,21 @@ import {
  * `trustedByCount`, se presente, apre il pannello con le persone che hanno dato Trusty al creator. */
 export function TrustScorePanel({
   className = "",
+  style,
   onClose,
   active = true,
   trustedByCount,
 }: {
   className?: string;
+  style?: React.CSSProperties;
   onClose: () => void;
   active?: boolean;
   trustedByCount?: number;
 }) {
   return (
     <span
-      className={`absolute z-20 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-surface py-2.5 pl-3 pr-7 text-left text-sm font-medium leading-relaxed text-ink-muted shadow-lg ${className}`}
+      style={style}
+      className={`absolute z-20 w-64 max-w-[calc(100vw-2rem)] max-md:overflow-y-auto rounded-lg border border-border bg-surface py-2.5 pl-3 pr-7 text-left text-sm font-medium leading-relaxed text-ink-muted shadow-lg ${className}`}
     >
       <button
         type="button"

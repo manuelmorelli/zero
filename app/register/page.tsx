@@ -1,11 +1,16 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AuthHeader } from "@/components/layout/AuthHeader";
 import { PageTitle } from "@/components/ui/heading";
 import { Notice } from "@/components/ui/panel";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { isRegistrationDisabled } from "@/lib/betaAccess";
+import { getCurrentSession } from "@/lib/session";
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const session = await getCurrentSession();
+  if (session) redirect("/");
+
   const closed = isRegistrationDisabled();
 
   return (
