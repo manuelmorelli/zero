@@ -9,6 +9,7 @@ import { JourneyerCard } from "@/components/profile/JourneyerCard";
 import { Logo } from "@/components/layout/Logo";
 import { OnboardingBanner } from "@/components/layout/OnboardingBanner";
 import { Hero } from "@/components/landing/Hero";
+import { PullToRefresh } from "@/components/home/PullToRefresh";
 import { HomeClosingCards } from "@/components/landing/HomeClosingCards";
 import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
@@ -135,27 +136,29 @@ export default async function Home() {
 
   return (
     <main>
-      {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
+      <PullToRefresh>
+        {userId && needsOnboarding && <OnboardingBanner userId={userId} />}
 
-      {/* Bagliore ambra dietro la Hero: rimosso (esperimento "design più vivo", round colori) —
-       * sporcava lo sfondo di arancio insieme a quello sitewide in globals.css. */}
-      <div className="relative md:pt-[calc(3.85rem+1cm)]">
-        <Hero slides={heroSlides} videos={heroVideos} stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
-      </div>
+        {/* Bagliore ambra dietro la Hero: rimosso (esperimento "design più vivo", round colori) —
+         * sporcava lo sfondo di arancio insieme a quello sitewide in globals.css. */}
+        <div className="relative pt-16 md:pt-[calc(3.85rem+1cm)]">
+          <Hero slides={heroSlides} videos={heroVideos} stories={userId ? displayedStories : []} ownStory={userId ? ownStory : null} />
+        </div>
 
-      {userId && continueJourneys.length > 0 && <ContinueWatching journeys={continueJourneys} />}
+        {userId && continueJourneys.length > 0 && <ContinueWatching journeys={continueJourneys} />}
 
-      <div id="discover">
-        <RecommendedJourneys journeys={displayedRecommendedJourneys} />
-        <DiscoveringNow journeys={displayedDiscoveringNow} />
-        <TopJourneys journeys={displayedTopJourneys} />
-        <LatestVideos videos={displayedLatestVideos} />
-        <WildcardsToFollow creators={displayedWildcardsToFollow} />
-      </div>
+        <div id="discover">
+          <RecommendedJourneys journeys={displayedRecommendedJourneys} />
+          <DiscoveringNow journeys={displayedDiscoveringNow} />
+          <TopJourneys journeys={displayedTopJourneys} />
+          <LatestVideos videos={displayedLatestVideos} />
+          <WildcardsToFollow creators={displayedWildcardsToFollow} />
+        </div>
 
-      <Categories countByCategory={categoryCounts} />
-      <ClosingCards signedIn={Boolean(userId)} />
-      <SiteFooter />
+        <Categories countByCategory={categoryCounts} />
+        <ClosingCards signedIn={Boolean(userId)} />
+        <SiteFooter />
+      </PullToRefresh>
     </main>
   );
 }
