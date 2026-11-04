@@ -23,15 +23,15 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
   return (
     <Link
       href={`/journeys/${journey.id}`}
-      className="group block self-start max-md:min-w-0 max-md:flex-1 transition-transform duration-300 hover:-translate-y-1"
+      className="group block self-start max-md:min-w-0 max-md:flex-1 md:w-[calc((100%-2rem)/3)] md:shrink-0 lg:w-[calc((100%-4rem)/5)] transition-transform duration-300 hover:-translate-y-1"
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-ember-line transition-[border-color,box-shadow] duration-300 group-hover:border-ember group-hover:shadow-glow max-md:aspect-[112/156]">
+      <div className="relative aspect-[112/156] w-full overflow-hidden rounded-xl border border-ember-line transition-[border-color,box-shadow] duration-300 group-hover:border-ember group-hover:shadow-glow">
         {journey.coverUrl ? (
           <Image
             src={journey.coverUrl}
             alt={journey.title}
             fill
-            sizes="(min-width: 1024px) 34vw, 100vw"
+            sizes="(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 100vw"
             quality={COVER_IMAGE_QUALITY}
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />

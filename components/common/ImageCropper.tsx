@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import Cropper, { type Area } from "react-easy-crop";
 import { getCroppedImageBlob } from "@/lib/cropImage";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,10 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
     }
   }
 
-  return (
+  // Portal diretto su document.body: annidato dentro il modale "Edit profile" (che si centra
+  // con una transform CSS), questo riquadro "fixed" veniva inquadrato rispetto a quel modale
+  // invece che allo schermo, e la parte alta finiva fuori dai bordi visibili (Manuel, 2026-11-04).
+  return createPortal(
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-scrim px-4 py-8"
       onClick={(event) => {
@@ -91,6 +95,7 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

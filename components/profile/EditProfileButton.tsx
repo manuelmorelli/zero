@@ -11,6 +11,7 @@ import { uploadFileWithProgress } from "@/lib/upload";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { JOURNEY_CATEGORIES, type JourneyCategory } from "@/lib/constants/categories";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { CoverFocalPicker } from "@/components/common/CoverFocalPicker";
 import { DeleteAccountSection } from "@/components/profile/DeleteAccountSection";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FIELD } from "@/components/ui/input";
@@ -31,9 +32,11 @@ type EditProfileButtonProps = {
   /** Link temporanei già risolti (chiave R2 -> URL): vedi app/profile/[username]/page.tsx. */
   avatarUrl: string | null;
   coverUrl: string | null;
+  /** Punto orizzontale (0-1) scelto sulla copertina attuale, 0.5 = centro. */
+  coverFocalX: number;
 };
 
-export function EditProfileButton({ user, avatarUrl, coverUrl }: EditProfileButtonProps) {
+export function EditProfileButton({ user, avatarUrl, coverUrl, coverFocalX }: EditProfileButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -47,6 +50,7 @@ export function EditProfileButton({ user, avatarUrl, coverUrl }: EditProfileButt
           user={user}
           avatarUrl={avatarUrl}
           coverUrl={coverUrl}
+          coverFocalX={coverFocalX}
           onClose={() => setOpen(false)}
         />
       )}
@@ -62,6 +66,7 @@ function EditProfileModal({
   user,
   avatarUrl,
   coverUrl,
+  coverFocalX,
   onClose,
 }: EditProfileButtonProps & { onClose: () => void }) {
   const router = useRouter();
@@ -76,6 +81,7 @@ function EditProfileModal({
   const [coverPreview, setCoverPreview] = useState(coverUrl);
   const [coverError, setCoverError] = useState<string | null>(null);
   const [coverProgress, setCoverProgress] = useState<number | null>(null);
+  const [coverFocalXValue, setCoverFocalXValue] = useState(coverFocalX);
 
   const [selected, setSelected] = useState<JourneyCategory[]>(user.interests as JourneyCategory[]);
   const [interestsOpen, setInterestsOpen] = useState(false);
@@ -92,6 +98,10 @@ function EditProfileModal({
   const [cropTarget, setCropTarget] = useState<{ kind: "avatar" | "cover"; imageSrc: string } | null>(
     null
   );
+  // Dopo il ritaglio 3:1 della copertina, prima di caricarla: dove si trova il soggetto,
+  // così telefono e computer possono restare centrati sullo stesso punto pur con riquadri
+  // di forma diversa (CoverFocalPicker).
+  const [focalTarget, setFocalTarget] = useState<{ blob: Blob; imageSrc: string } | null>(null);
 
   function toggle(category: JourneyCategory) {
     setSelected((current) =>
@@ -124,6 +134,22 @@ function EditProfileModal({
     const { kind } = cropTarget;
     setCropTarget(null);
 
+    if (kind === "cover") {
+      setFocalTarget({ blob, imageSrc: URL.createObjectURL(blob) });
+      return;
+    }
+    await uploadImage("avatar", blob);
+  }
+
+  async function handleFocalConfirm(focalX: number) {
+    if (!focalTarget) return;
+    const { blob } = focalTarget;
+    setFocalTarget(null);
+    setCoverFocalXValue(focalX);
+    await uploadImage("cover", blob);
+  }
+
+  async function uploadImage(kind: "avatar" | "cover", blob: Blob) {
     const setError = kind === "avatar" ? setAvatarError : setCoverError;
     const setProgress = kind === "avatar" ? setAvatarProgress : setCoverProgress;
     const setKey = kind === "avatar" ? setAvatarKey : setCoverKey;
@@ -171,6 +197,7 @@ function EditProfileModal({
         action={(formData) => {
           formData.set("avatarKey", avatarKey);
           formData.set("coverKey", coverKey);
+          formData.set("coverFocalX", String(coverFocalXValue));
           setSubmitted(true);
           formAction(formData);
         }}
@@ -378,6 +405,15 @@ function EditProfileModal({
           cropShape={cropTarget.kind === "avatar" ? "round" : "rect"}
           onCancel={() => setCropTarget(null)}
           onConfirm={handleCropConfirm}
+        />
+      )}
+
+      {focalTarget && (
+        <CoverFocalPicker
+          imageSrc={focalTarget.imageSrc}
+          initialFocalX={coverFocalXValue}
+          onCancel={() => setFocalTarget(null)}
+          onConfirm={handleFocalConfirm}
         />
       )}
     </DialogContent>

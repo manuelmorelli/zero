@@ -211,6 +211,7 @@ export default async function PublicProfilePage({
               }}
               avatarUrl={avatarUrl}
               coverUrl={coverUrl}
+              coverFocalX={user.coverFocalX}
             />
             <Button variant="secondary" className="profile-hero-glass text-on-photo" href="/dashboard">
               Dashboard
@@ -235,6 +236,7 @@ export default async function PublicProfilePage({
             <ProfileHero
               profileUserId={user.id}
               coverUrl={coverUrl}
+              coverFocalX={user.coverFocalX}
               avatarUrl={avatarUrl}
               name={user.name}
               username={user.username}
@@ -290,13 +292,10 @@ export default async function PublicProfilePage({
               {overviewCards.length === 1 ? (
                 <div className="max-w-md">{overviewCards}</div>
               ) : (
-                // Da tablet in su (md, non più solo lg) affiancate invece di impilate: prima il
-                // cambio scattava solo a 1024px, restando impilate (a piena larghezza, enormi)
-                // anche su tablet. Il Journey in corso resta compatto (16:10, il suo formato
-                // ufficiale); la card Bio+video ha testo vero (bio, interessi) che su un telefono
-                // stretto affiancata diventerebbe illeggibile — resta a piena larghezza lì, si
-                // affianca solo quando c'è spazio.
-                <div className="flex gap-2.5 md:grid md:gap-4 md:grid-cols-[minmax(0,34%)_minmax(0,50%)] md:justify-between">
+                // Fila libera: ogni card (Journey in corso, Bio, Video) ha la sua stessa identica
+                // larghezza fissa (CARD_ROW_ITEM.episode), nessuna colonna che le forza a dividersi
+                // lo spazio.
+                <div className="flex gap-2.5 md:items-start md:gap-4">
                   {overviewCards}
                 </div>
               )}
@@ -324,7 +323,7 @@ export default async function PublicProfilePage({
                 </div>
 
                 {liveJourneys.length > 0 ? (
-                  <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                  <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
                     {liveJourneys.slice(0, PUBLISHED_JOURNEYS_PREVIEW_COUNT).map((journey, index) => {
                       // Posizione nell'elenco completo (non nella sola anteprima): "Move" deve
                       // rispecchiare l'ordine reale, che include anche i Journey archiviati non
@@ -436,7 +435,7 @@ export default async function PublicProfilePage({
                   : `${user.name} hasn't published any Journey yet.`}
               </p>
             ) : (
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
                 {journeys.map((journey, index) => (
                   <Reveal key={journey.id} delayMs={index * 80}>
                     <ContentCard

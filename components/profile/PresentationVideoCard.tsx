@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
-import { createPortal } from "react-dom";
+import { useRef, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Maximize, Pause, PenLine, Play, Video as VideoIcon, Volume2, VolumeX, X } from "lucide-react";
+import { MoreHorizontal, PenLine, Play, Video as VideoIcon } from "lucide-react";
 import { toast } from "sonner";
 import {
   createPresentationCoverUploadUrl,
@@ -15,11 +14,15 @@ import { uploadFileWithProgress } from "@/lib/upload";
 import { ALLOWED_VIDEO_TYPES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { ImageCropper } from "@/components/common/ImageCropper";
-import { VideoPlayer, type VideoPlayerHandle } from "@/components/common/VideoPlayer";
-import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/heading";
 import { CoverTitle } from "@/components/ui/cover-card";
 import { PANEL_ACCENT } from "@/components/ui/panel";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 type PresentationVideoCardProps = {
@@ -54,13 +57,9 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
   const coverInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [expanded, setExpanded] = useState(false);
 
   const [coverProgress, setCoverProgress] = useState<number | null>(null);
-  const [coverError, setCoverError] = useState<string | null>(null);
   // File scelto per la copertina, in attesa del riquadro "sposta e zooma" prima dell'upload:
   // stesso pattern di EditProfileButton.tsx per avatar/cover.
   const [coverCropSrc, setCoverCropSrc] = useState<string | null>(null);
@@ -83,21 +82,13 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
     togglePlay();
   }
 
-  function toggleMute() {
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = !video.muted;
-    setIsMuted(video.muted);
-  }
-
   async function handleFileChosen(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
 
-    setError(null);
     if (!ALLOWED_VIDEO_TYPES.has(file.type)) {
-      setError("Unsupported video format.");
+      toast.error("Unsupported video format.");
       return;
     }
 
@@ -105,19 +96,19 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
     try {
       const result = await createPresentationVideoUploadUrl(file.type);
       if ("error" in result) {
-        setError(result.error);
+        toast.error(result.error);
         return;
       }
       await uploadFileWithProgress(result.uploadUrl, file, setProgress);
       const saveResult = await updatePresentationVideo(result.key);
       if (saveResult.error) {
-        setError(saveResult.error);
+        toast.error(saveResult.error);
       } else {
         toast.success("Introduction video updated");
         router.refresh();
       }
     } catch {
-      setError("Upload failed. Please try again.");
+      toast.error("Upload failed. Please try again.");
     } finally {
       setProgress(null);
     }
@@ -128,13 +119,12 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
     event.target.value = "";
     if (!file) return;
 
-    setCoverError(null);
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-      setCoverError("Unsupported image format (use JPG, PNG or WebP).");
+      toast.error("Unsupported image format (use JPG, PNG or WebP).");
       return;
     }
     if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      setCoverError("Image is too large.");
+      toast.error("Image is too large.");
       return;
     }
     setCoverCropSrc(URL.createObjectURL(file));
@@ -142,24 +132,23 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
 
   async function handleCoverCropConfirm(blob: Blob) {
     setCoverCropSrc(null);
-    setCoverError(null);
     setCoverProgress(0);
     try {
       const result = await createPresentationCoverUploadUrl(blob.type);
       if ("error" in result) {
-        setCoverError(result.error);
+        toast.error(result.error);
         return;
       }
       await uploadFileWithProgress(result.uploadUrl, blob, setCoverProgress);
       const saveResult = await updatePresentationCover(result.key);
       if (saveResult.error) {
-        setCoverError(saveResult.error);
+        toast.error(saveResult.error);
       } else {
         toast.success("Cover updated");
         router.refresh();
       }
     } catch {
-      setCoverError("Upload failed. Please try again.");
+      toast.error("Upload failed. Please try again.");
     } finally {
       setCoverProgress(null);
     }
@@ -167,184 +156,107 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
 
   if (!videoUrl && !isOwnProfile) return null;
 
-  return (
-    <div
-      className={cn(
-        PANEL_ACCENT,
-        "bio-card",
-        "max-md:min-w-0 max-md:flex-1 max-md:rounded-xl max-md:border-ember-line max-md:bg-transparent max-md:p-0"
-      )}
-    >
-      {/* Card orizzontale (richiesto da Manuel, 2026-09-22): Bio a sinistra, video di
-          presentazione a destra, divise da un bordo verticale. In colonna solo su mobile, dove
-          affiancarle non c'entra. Su schermi larghi NON usa una propria proporzione fissa (le due
-          colonne hanno larghezze diverse, 34% e 50%: stessa proporzione avrebbe dato altezze
-          diverse) — eredita invece l'altezza vera della card "In Progress" (FeaturedJourneySection)
-          tramite lo stretch di default della griglia che le affianca (vedi
-          app/(site)/profile/[username]/page.tsx), riempiendola con h-full. Ogni lato scorre se il
-          contenuto (bio lunga, o i tasti sotto il video) non ci sta tutto. h-full arriva solo da
-          lg: in su, la stessa soglia in cui la griglia della pagina affianca le due card (sotto
-          quella soglia sono impilate una sopra l'altra, "ereditare" un'altezza non avrebbe senso). */}
-      <div className="flex flex-col gap-4 md:flex-row lg:h-full lg:overflow-hidden">
-        <div className="hidden md:block md:w-[55%] md:shrink-0 md:overflow-y-auto">
-          <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
-            <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
-            Bio
-          </CardTitle>
-          {bio ? (
-            <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-relaxed text-ink">{bio}</p>
-          ) : (
-            <p className="mt-3 text-sm text-ink-faint">{name} hasn&apos;t written a bio yet.</p>
-          )}
-          {interests && interests.length > 0 && (
-            <div className="mt-4">
-              <p className="text-sm uppercase tracking-wider text-ink-faint">Focus</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {interests.map((interest) => (
-                  <span
-                    key={interest}
-                    className="rounded-full border border-border px-2.5 py-1 text-sm text-ink-muted"
-                  >
-                    {interest}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+  // Da tablet in su, Bio e Video sono due card separate, larghe come la copertina "In Progress"
+  // (FeaturedJourneySection) — stessa formula di CARD_ROW_ITEM.episode, vedi
+  // app/(site)/profile/[username]/page.tsx. Su mobile la Bio non compare qui (si legge dalla
+  // pagina dedicata Bio & presentation): resta solo il poster del video, come prima.
+  const cardWidth = "md:w-[calc((100%-2rem)/3)] md:shrink-0 lg:w-[calc((100%-4rem)/5)]";
 
-        <div className="border-t border-border pt-4 max-md:border-t-0 max-md:pt-0 md:w-full md:overflow-y-auto md:border-l md:border-t-0 md:pl-4 md:pt-0">
-        {/* Con il video presente il titolo vive dentro il poster (stile ContentCard, vedi sotto):
-            l'intestazione esterna resta solo per lo stato vuoto, altrimenti sarebbe doppia. */}
-        {!videoUrl && (
-          <div onClick={handlePosterClick} className="max-md:hidden">
-            <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
-              <VideoIcon className="h-3.5 w-3.5" aria-hidden="true" />
-              That&apos;s me
-            </CardTitle>
+  return (
+    <>
+      <div
+        onClick={handlePosterClick}
+        className={cn("relative aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border max-md:min-w-0 max-md:flex-1 max-md:border-ember-line md:left-[256px]", cardWidth, videoUrl ? "border-border bg-surface-2" : "border-ember-line cover-placeholder")}
+      >
+        {videoUrl ? (
+          <>
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              poster={coverUrl ?? undefined}
+              playsInline
+              className="h-full w-full object-cover"
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+            />
+            <div className="absolute inset-0 card-scrim pointer-events-none" />
+
+            {!isPlaying && (
+              <span className="pointer-events-none absolute inset-0 grid place-items-center text-on-photo">
+                <Play className="h-10 w-10" fill="currentColor" aria-hidden="true" />
+              </span>
+            )}
+
+            <div className="absolute inset-x-0 bottom-0 p-3 pointer-events-none">
+              <CoverTitle className="truncate">That&apos;s me</CoverTitle>
+            </div>
+          </>
+        ) : (
+          <div className="absolute inset-x-0 bottom-0 p-2.5">
+            <p className="text-sm text-on-photo-muted">
+              {isOwnProfile ? "Add a short video so people know who you are." : `${name} hasn't added an introduction video yet.`}
+            </p>
           </div>
         )}
 
-        {videoUrl ? (
-          <>
-            {/* Prova (2026-09-22, richiesta da Manuel): stesso stile "poster" delle card di Recent
-                Episodes (components/profile/ContentCard.tsx) — riquadro 4/3, video ritagliato per
-                riempirlo (object-cover, come le foto di copertina degli episodi), titolo "Who I am"
-                sovrapposto in basso su sfumatura scura. A differenza delle card episodio, qui il
-                video è vero e riproducibile sul posto (play/volume in alto a destra), non solo una
-                foto statica che porta altrove. Lo schermo intero (Maximize) apre la stessa
-                dimensione "di default" usata per i video dei Journey
-                (components/common/VideoPlayer.tsx). */}
-            <div
-              className="group relative mt-3 aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border border-border bg-surface-2 max-md:mt-0 max-md:border-ember-line"
-              onClick={handlePosterClick}
-            >
-              <video
-                ref={videoRef}
-                src={videoUrl}
-                poster={coverUrl ?? undefined}
-                playsInline
-                className="h-full w-full object-cover"
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
-              />
-              <div className="absolute inset-0 card-scrim" />
-
-              {!isPlaying && (
-                <span className="pointer-events-none absolute inset-0 grid place-items-center text-on-photo">
-                  <Play className="h-10 w-10" fill="currentColor" aria-hidden="true" />
-                </span>
-              )}
-
-              <div className="absolute inset-x-0 bottom-0 p-3">
-                <CoverTitle className="truncate">That&apos;s me</CoverTitle>
-              </div>
-            </div>
-
-            {/* Tasti fuori dal riquadro del video, non più sovrapposti sopra l'immagine. Solo
-             * desktop: su mobile la card è un poster compatto, niente controlli propri (si va
-             * sulla pagina dedicata Bio & presentation per tutto il resto). */}
-            <div className="mt-2 flex items-center gap-1.5 max-md:hidden">
-              <button
-                type="button"
-                onClick={togglePlay}
-                aria-label={isPlaying ? "Pause" : "Play"}
-                className="grid h-8 w-8 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
-              >
-                {isPlaying ? (
-                  <Pause className="h-4 w-4" fill="currentColor" aria-hidden="true" />
-                ) : (
-                  <Play className="h-4 w-4" fill="currentColor" aria-hidden="true" />
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={toggleMute}
-                aria-label={isMuted ? "Unmute" : "Mute"}
-                className="grid h-8 w-8 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
-              >
-                {isMuted ? (
-                  <VolumeX className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <Volume2 className="h-4 w-4" aria-hidden="true" />
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => setExpanded(true)}
-                aria-label="Watch fullscreen"
-                className="grid h-8 w-8 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
-              >
-                <Maximize className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </div>
-
-            {expanded && <ExpandedPresentationVideo videoUrl={videoUrl} onClose={() => setExpanded(false)} />}
-          </>
-        ) : (
-          <>
-            {/* Su mobile il riquadro del video (bg-surface-2) non c'è ancora: senza un suo sfondo
-             * proprio la card resta trasparente e si vede lo sfondo del sito dietro (bug segnalato
-             * da Manuel, 2026-11-02). Stesso trattamento "poster vuoto" delle card gemelle nella
-             * stessa riga (AboutCard, FeaturedJourneySection): riquadro 112/156, cover-placeholder. */}
-            <div
-              onClick={handlePosterClick}
-              className="relative mt-0 hidden aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border border-ember-line cover-placeholder max-md:block"
-            >
-              <div className="absolute inset-x-0 bottom-0 p-2.5">
-                <p className="text-sm text-on-photo-muted">
-                  {isOwnProfile ? "Add a short video so people know who you are." : `${name} hasn't added an introduction video yet.`}
-                </p>
-              </div>
-            </div>
-            <p onClick={handlePosterClick} className="mt-3 text-sm text-ink-faint max-md:hidden">
-              {isOwnProfile ? "Add a short video so people know who you are." : "No introduction video yet."}
-            </p>
-          </>
-        )}
-
         {isOwnProfile && (
-          <>
-            {/* Su mobile l'upload si fa solo dalla pagina dedicata Bio & presentation (vedi
-             * PresentationVideoView), non più qui dove la card è compatta e senza bio: evita due
-             * punti diversi per la stessa azione. Da desktop in su resta qui come sempre. */}
-            <div className="mt-3 flex gap-2 max-md:hidden">
-              <Button variant="secondary" onClick={() => inputRef.current?.click()} disabled={progress !== null} className="flex-1">
-                {progress !== null ? `Uploading… ${progress}%` : videoUrl ? "Change video" : "Upload video"}
-              </Button>
-              {videoUrl && (
-                <Button variant="secondary" onClick={() => coverInputRef.current?.click()} disabled={coverProgress !== null} className="flex-1">
-                  {coverProgress !== null ? `Uploading… ${coverProgress}%` : "Change cover"}
-                </Button>
-              )}
-            </div>
+          <div className="absolute right-2 top-2 max-md:hidden" onClick={(event) => event.stopPropagation()}>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                aria-label="Edit introduction video"
+                className="grid h-9 w-9 place-items-center rounded-full border border-border bg-scrim text-on-photo backdrop-blur-md transition-colors hover:bg-scrim"
+              >
+                <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onSelect={() => inputRef.current?.click()} disabled={progress !== null}>
+                  <VideoIcon className="h-4 w-4" aria-hidden="true" />
+                  {progress !== null ? `Uploading… ${progress}%` : videoUrl ? "Change video" : "Upload video"}
+                </DropdownMenuItem>
+                {videoUrl && (
+                  <DropdownMenuItem onSelect={() => coverInputRef.current?.click()} disabled={coverProgress !== null}>
+                    <PenLine className="h-4 w-4" aria-hidden="true" />
+                    {coverProgress !== null ? `Uploading… ${coverProgress}%` : "Change cover"}
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <input ref={inputRef} type="file" accept="video/*" onChange={handleFileChosen} className="hidden" />
             <input ref={coverInputRef} type="file" accept="image/*" onChange={handleCoverFileChosen} className="hidden" />
-            {error && <p className="mt-2 text-sm text-danger">{error}</p>}
-            {coverError && <p className="mt-2 text-sm text-danger">{coverError}</p>}
-          </>
+          </div>
         )}
-        </div>
+      </div>
+
+      <div
+        className={cn(
+          PANEL_ACCENT,
+          "bio-card relative hidden md:flex md:aspect-[224/152] md:flex-col md:overflow-y-auto md:w-[calc((100%-2rem)/3*2)] md:shrink-0 md:left-[256px] lg:w-[calc((100%-4rem)/5*2)]"
+        )}
+      >
+        <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
+          <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
+          Bio
+        </CardTitle>
+        {bio ? (
+          <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-relaxed text-ink">{bio}</p>
+        ) : (
+          <p className="mt-3 text-sm text-ink-faint">{name} hasn&apos;t written a bio yet.</p>
+        )}
+        {interests && interests.length > 0 && (
+          <div className="mt-4">
+            <p className="text-sm uppercase tracking-wider text-ink-faint">Focus</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {interests.map((interest) => (
+                <span
+                  key={interest}
+                  className="rounded-full border border-border px-2.5 py-1 text-sm text-ink-muted"
+                >
+                  {interest}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {coverCropSrc && (
@@ -357,57 +269,6 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
           onConfirm={handleCoverCropConfirm}
         />
       )}
-    </div>
-  );
-}
-
-/**
- * Vista ingrandita del video di presentazione, aperta dal tasto Maximize nella card. Usa lo
- * stesso VideoPlayer "di default" (dimensione naturale, fino al 70% dell'altezza schermo, stessa
- * barra di controllo) dei video degli episodi, richiesto esplicitamente da Manuel per coerenza in
- * tutto il sito — niente ritaglio 16/10 qui, quello resta solo per l'anteprima nella card.
- */
-function ExpandedPresentationVideo({ videoUrl, onClose }: { videoUrl: string; onClose: () => void }) {
-  const playerRef = useRef<VideoPlayerHandle>(null);
-
-  useEffect(() => {
-    const video = playerRef.current?.video;
-    if (video) video.src = videoUrl;
-  }, [videoUrl]);
-
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", handleKeyDown);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [onClose]);
-
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-scrim p-6"
-      onClick={onClose}
-    >
-      {/* La X sta sull'angolo della card del video, non della pagina intera: il video ha
-          dimensione naturale (VideoPlayer è inline-block), quindi questo riquadro relative si
-          stringe esattamente attorno ad esso, e la X assoluta lo segue. */}
-      <div className="relative" onClick={(event) => event.stopPropagation()}>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="absolute -right-3 -top-3 z-10 grid h-9 w-9 place-items-center rounded-full border border-border bg-scrim text-on-photo backdrop-blur-md transition-colors hover:bg-bg"
-        >
-          <X className="h-5 w-5" aria-hidden="true" />
-        </button>
-        <VideoPlayer ref={playerRef} showSkipBack={false} />
-      </div>
-    </div>,
-    document.body
+    </>
   );
 }

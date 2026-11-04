@@ -39,7 +39,7 @@ const RATIO: Record<CoverFormat, string> = {
 // niente colonne che si allargano ruotando lo schermo). Da tablet in su invariate (colonne
 // fluide, numero fisso per riga).
 export const CARD_GRID: Record<Exclude<CoverFormat, "featured">, string> = {
-  journey: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-3 lg:grid-cols-5",
+  journey: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-2 lg:grid-cols-4",
   episode: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-2 lg:grid-cols-4",
   // Da tablet in su stesse dimensioni delle copertine di Recent Episodes sul profilo
   // personale (CARD_ROW_ITEM.episode, 3 colonne a md e 5 a lg con lo stesso gap-4):

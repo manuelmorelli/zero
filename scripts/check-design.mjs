@@ -38,6 +38,7 @@ const VIDEO_CANVAS_BLACK_FILES = new Set([
   "components/common/ImageCropper.tsx",
   "components/common/VideoPlayer.tsx",
   "components/journey/EpisodePlayer.tsx",
+  "components/common/CoverFocalPicker.tsx",
 ]);
 
 /** File che possono usare le taglie di testo su misura della Hero. */

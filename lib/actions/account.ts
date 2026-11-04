@@ -26,6 +26,9 @@ const AccountSchema = z.object({
   // cambiamento, la foto esistente (se c'è) resta quella già salvata.
   avatarKey: z.string().trim().optional(),
   coverKey: z.string().trim().optional(),
+  // Punto orizzontale (0-1) scelto su CoverFocalPicker: arriva sempre (anche senza una nuova
+  // copertina), perché la persona può cambiarlo senza ricaricare la foto.
+  coverFocalX: z.coerce.number().min(0).max(1).optional(),
 });
 
 export async function updateAccount(
@@ -42,6 +45,7 @@ export async function updateAccount(
     interests: formData.getAll("interests"),
     avatarKey: formData.get("avatarKey") || undefined,
     coverKey: formData.get("coverKey") || undefined,
+    coverFocalX: formData.get("coverFocalX") || undefined,
   });
 
   if (!parsed.success) {
@@ -73,6 +77,7 @@ export async function updateAccount(
         interests: parsed.data.interests,
         ...(parsed.data.avatarKey ? { avatarUrl: parsed.data.avatarKey } : {}),
         ...(parsed.data.coverKey ? { coverUrl: parsed.data.coverKey } : {}),
+        ...(parsed.data.coverFocalX !== undefined ? { coverFocalX: parsed.data.coverFocalX } : {}),
       },
     });
   } catch (error) {

@@ -16,6 +16,8 @@ type ProfileHeroProps = {
    * ProfileFollowStats per caricare gli elenchi Followers/Following di questa persona. */
   profileUserId: string;
   coverUrl: string | null;
+  /** Punto orizzontale (0-1) scelto dalla persona su CoverFocalPicker: 0.5 = centro. */
+  coverFocalX: number;
   avatarUrl: string | null;
   name: string;
   username: string | null;
@@ -43,6 +45,7 @@ const HERO_BIO_INLINE_LIMIT = 60;
 export function ProfileHero({
   profileUserId,
   coverUrl,
+  coverFocalX,
   avatarUrl,
   name,
   username,
@@ -72,7 +75,19 @@ export function ProfileHero({
         <div className="relative aspect-4/3 overflow-hidden rounded-xl md:aspect-auto md:mx-[4.43%] md:h-[29rem] md:rounded-2xl">
           <div className="absolute inset-0 -z-10">
             {coverUrl ? (
-              <FadeImage src={coverUrl} alt="" fill sizes="100vw" quality={90} className="object-cover" preload />
+              <FadeImage
+                src={coverUrl}
+                alt=""
+                fill
+                sizes="100vw"
+                quality={90}
+                className="object-cover"
+                preload
+                // Stesso punto scelto una sola volta al caricamento (CoverFocalPicker): il
+                // riquadro ha una forma diversa su telefono e computer, ma resta centrato
+                // sullo stesso soggetto su entrambi invece del centro automatico della foto.
+                style={{ objectPosition: `${coverFocalX * 100}% 50%` }}
+              />
             ) : (
               <div className="absolute inset-0 cover-placeholder" />
             )}

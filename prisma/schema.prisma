@@ -143,6 +143,11 @@ model User {
   emailVerified Boolean       @default(false)
   avatarUrl     String? // mappato da Better Auth come campo "image", vedi user.fields in lib/auth.ts
   coverUrl      String? // foto di copertina del Profilo pubblico
+  // Punto orizzontale (0 = sinistra, 1 = destra) scelto dalla persona sulla foto di copertina:
+  // la stessa foto va in un riquadro largo 3:1 su computer ma più stretto e alto su telefono, e
+  // senza questo punto il ritaglio automatico (centrato) poteva tagliare via il soggetto su
+  // telefono anche se su computer si vedeva bene (Manuel, 2026-11-04: "punto riferimento").
+  coverFocalX   Float         @default(0.5)
   bio           String?
   location      String?
   // Data di nascita, richiesta in registrazione dal Punto 6 (Legale) dell'allineamento
