@@ -236,7 +236,7 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
                 dimensione "di default" usata per i video dei Journey
                 (components/common/VideoPlayer.tsx). */}
             <div
-              className="group relative mt-3 aspect-4/3 w-full cursor-pointer overflow-hidden rounded-xl border border-border bg-surface-2 max-md:mt-0 max-md:aspect-[112/156] max-md:border-ember-line"
+              className="group relative mt-3 aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border border-border bg-surface-2 max-md:mt-0 max-md:border-ember-line"
               onClick={handlePosterClick}
             >
               <video

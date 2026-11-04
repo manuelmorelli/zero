@@ -1,4 +1,3 @@
-import { RsvpButton } from "@/components/profile/RsvpButton";
 import { SectionTitle } from "@/components/ui/heading";
 import { CARD_GRID, CoverChip, CoverFrame, CoverTitle } from "@/components/ui/cover-card";
 import { cn } from "@/lib/utils";
@@ -18,7 +17,7 @@ export type FreeEventItem = {
  * Manuel): un'iniziativa gratuita è contenuto pubblico come i Journey, non un'offerta a pagamento —
  * compare solo se il creator ne ha pubblicata almeno una, altrimenti la sezione non si mostra.
  * Riusata anche nella pagina Community stessa (2026-09-26), dove diventa l'elenco completo. */
-export function FreeEventsSection({ items, isLoggedIn }: { items: FreeEventItem[]; isLoggedIn: boolean }) {
+export function FreeEventsSection({ items }: { items: FreeEventItem[] }) {
   if (items.length === 0) return null;
 
   return (
@@ -43,38 +42,32 @@ export function FreeEventsSection({ items, isLoggedIn }: { items: FreeEventItem[
                 imageUrl={item.coverUrl}
                 imageAlt={item.title}
                 frameClassName="max-md:border-ember-line"
-                // Solo mobile: titolo in alto a sinistra invece che sulla sfumatura in basso
-                // (richiesto da Manuel), Free scende in basso a destra. Da desktop in su il
-                // riquadro resta quello di sempre (invariato).
-                topLeft={
-                  <CoverTitle className="hidden max-w-[80%] max-md:block">{item.title}</CoverTitle>
-                }
-                topRight={<div className="hidden md:block"><CoverChip>Free</CoverChip></div>}
+                // Titolo in alto a sinistra (su mobile era già così, ora anche da desktop,
+                // richiesto da Manuel il 2026-11-04): Free scende in basso a destra su mobile,
+                // resta in alto a destra da desktop. In basso sulla sfumatura resta solo il tipo/data.
+                topLeft={<CoverTitle className="max-w-[60%]">{item.title}</CoverTitle>}
+                // La sfumatura sulla foto resta solo su mobile: il badge "Free" ha già il suo
+                // sfondo (CoverChip, bg-scrim) e si legge bene anche senza.
+                scrimClassName="md:hidden"
                 overlay={
                   <>
-                    <div className="hidden md:block">
-                      <CoverChip>
-                        {kindLabel}
-                        {dateLabel && ` · ${dateLabel}`}
-                      </CoverChip>
-                      <CoverTitle className="mt-2">{item.title}</CoverTitle>
-                    </div>
                     <div className="flex translate-y-2 justify-end md:hidden">
                       <CoverChip className="max-md:border max-md:border-ember-line max-md:bg-overlay-soft max-md:py-0.5">Free</CoverChip>
+                    </div>
+                    {/* Da desktop in su (richiesto da Manuel, 2026-11-04): "Free" scende in
+                     * basso a destra sulla foto, non più in alto a destra. */}
+                    <div className="hidden justify-end md:flex">
+                      <CoverChip>Free</CoverChip>
                     </div>
                   </>
                 }
                 below={
-                  <span className="block truncate text-sm text-ink-faint md:hidden">
+                  <span className="block truncate text-sm text-ink-faint">
                     {kindLabel}
                     {dateLabel && ` · ${dateLabel}`}
                   </span>
                 }
               />
-              <div className="hidden items-center justify-between gap-2 md:flex">
-                <span className="truncate text-sm text-ink-faint">{item.rsvpCount} going</span>
-                <RsvpButton kind={item.kind} id={item.id} initialGoing={item.going} isLoggedIn={isLoggedIn} />
-              </div>
             </div>
           );
         })}

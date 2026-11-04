@@ -219,7 +219,7 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
       >
         <div>
           <span className="text-sm font-medium text-ink-muted">Cover <span className="text-ink-faint">(optional)</span></span>
-          <div className="relative mt-1.5 aspect-video w-full max-w-xs overflow-hidden rounded-xl border border-border bg-surface-2">
+          <div className="relative mt-1.5 aspect-[112/156] w-full max-w-[180px] overflow-hidden rounded-xl border border-border bg-surface-2">
             {coverPreview ? (
               <Image
                 src={coverPreview}
@@ -421,7 +421,7 @@ export function CommunityListingForm({ type, listing, initialDraft, onSubmitted 
         <ImageCropper
           imageSrc={cropImageSrc}
           title={`${COMMUNITY_LISTING_LABELS[type]} cover`}
-          aspect={16 / 9}
+          aspect={112 / 156}
           cropShape="rect"
           onCancel={() => setCropImageSrc(null)}
           onConfirm={handleCropConfirm}

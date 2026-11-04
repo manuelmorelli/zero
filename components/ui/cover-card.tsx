@@ -21,10 +21,10 @@ const ROW_RATIO = "aspect-[112/156]";
 const RATIO: Record<CoverFormat, string> = {
   journey: ROW_RATIO,
   episode: ROW_RATIO,
-  // "event" sul computer resta orizzontale (16:9, forma originale): su richiesta di Manuel,
-  // 2026-10-30, era diventata troppo grande/alta sul computer con la proporzione uniforme sopra,
-  // pensata per il telefono. Sul telefono resta uniforme con le altre card.
-  event: `${ROW_RATIO} md:aspect-video`,
+  // Stessa forma verticale ovunque (2026-11-03): il ritaglio al caricamento (CommunityListingForm)
+  // è ora 112/156, quindi la foto scelta dalla persona va bene al primo colpo sia su telefono
+  // che su computer, senza bisogno di un secondo ritaglio dedicato al computer.
+  event: ROW_RATIO,
   person: ROW_RATIO,
   featured: "aspect-[16/10]",
 };
@@ -41,7 +41,10 @@ const RATIO: Record<CoverFormat, string> = {
 export const CARD_GRID: Record<Exclude<CoverFormat, "featured">, string> = {
   journey: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-3 lg:grid-cols-5",
   episode: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-2 lg:grid-cols-4",
-  event: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-2 lg:grid-cols-4",
+  // Da tablet in su stesse dimensioni delle copertine di Recent Episodes sul profilo
+  // personale (CARD_ROW_ITEM.episode, 3 colonne a md e 5 a lg con lo stesso gap-4):
+  // qui la riga equivalente in griglia, non a scorrimento (Manuel, 2026-11-04).
+  event: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-3 lg:grid-cols-5",
   // Le card persona sono piccole: due per riga anche sul telefono.
   person: "grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-8",
 };
@@ -92,6 +95,10 @@ type CoverFrameProps = {
    * casi come il bordo arancione delle card Activities solo mobile, senza toccare ogni card del
    * sito che passa da qui. */
   frameClassName?: string;
+  /** Scarto facoltativo sulla sfumatura scura dietro l'overlay: per nasconderla dove non c'è più
+   * testo sopra la foto (es. Activities da desktop, 2026-11-04) senza toglierla dove serve ancora
+   * (es. la stessa card su mobile). Di base sempre visibile quando c'è un overlay, come prima. */
+  scrimClassName?: string;
 };
 
 export function CoverFrame({
@@ -108,6 +115,7 @@ export function CoverFrame({
   menu,
   className,
   frameClassName,
+  scrimClassName,
 }: CoverFrameProps) {
   return (
     <div className={cn("group relative transition-transform duration-300 hover:-translate-y-1", className)}>
@@ -134,8 +142,11 @@ export function CoverFrame({
               {placeholder}
             </div>
           )}
-          {overlay && <div className="card-scrim absolute inset-0" />}
-          {topLeft && <div className="absolute left-2.5 top-2.5">{topLeft}</div>}
+          {overlay && <div className={cn("card-scrim absolute inset-0", scrimClassName)} />}
+          {/* right-2.5 oltre a left-2.5: senza un bordo destro il riquadro non ha una larghezza
+           * definita (si restringe al contenuto), e un max-w percentuale dentro (es. il titolo
+           * di FreeEventsSection) non si calcola su niente e tronca il testo quasi subito. */}
+          {topLeft && <div className="absolute left-2.5 right-2.5 top-2.5">{topLeft}</div>}
           {topRight && <div className="absolute right-2.5 top-2.5 z-10">{topRight}</div>}
           {center && <div className="absolute inset-0 grid place-items-center">{center}</div>}
           {overlay && <div className="absolute inset-x-0 bottom-0 p-3 text-on-photo">{overlay}</div>}
