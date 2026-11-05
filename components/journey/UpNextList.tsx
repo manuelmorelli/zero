@@ -29,10 +29,10 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
        * Journey è già scritto accanto al numero episodio sopra il player (EpisodePlayer),
        * ripeterlo qui da solo stonava (segnalato da Manuel) — resta solo il conteggio totale. */}
       <SectionTitle className="hidden md:block">{journeyTitle}</SectionTitle>
-      {/* Solo telefono: più grande e nello stesso stampatello arancione delle altre scritte
-       * (Episode N, Journey...), invece del semplice testo di prima. Da computer invariato. */}
+      {/* Stesso stampatello arancione grande delle altre scritte (Episode N, Journey...), ora
+       * identico su computer e telefono (prima da computer era piccolo e senza maiuscolo). */}
       <div className="mt-1 flex items-center justify-between gap-3">
-        <p className="text-lg font-bold tracking-[0.18em] text-ember uppercase md:text-base md:font-normal md:tracking-normal md:normal-case">
+        <p className="text-lg font-bold tracking-[0.18em] text-ember uppercase">
           {episodes.length} {episodes.length === 1 ? "Episode" : "Episodes"}
         </p>
         <ButtonSecondary href={`/community/forum/${journeyId}`} className="shrink-0 py-1.5 md:hidden">
