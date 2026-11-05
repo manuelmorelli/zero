@@ -62,7 +62,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                    * attiva, una scritta più corta al posto del titolo ripetuto. */}
                   <span
                     className={cn(
-                      "mt-0.5 block truncate text-sm font-semibold transition-colors",
+                      "mt-0.5 block truncate text-sm font-semibold transition-colors md:line-clamp-2 md:whitespace-normal",
                       active ? "text-ink max-md:hidden" : "group-hover:text-ember"
                     )}
                   >
@@ -79,7 +79,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                   {episode.isSponsored && <SponsoredLabel className="mt-1" />}
                   {episode.progress && (
                     <span className="mt-0.5 block text-sm font-semibold text-ember">
-                      {episode.progress.completedAt ? "Finished" : "Resume"}
+                      {episode.progress.completedAt ? "Watched" : "Resume"}
                     </span>
                   )}
                 </span>

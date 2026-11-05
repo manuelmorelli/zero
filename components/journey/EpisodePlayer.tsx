@@ -10,7 +10,6 @@ import { TrustScoreBadge } from "@/components/common/TrustScoreBadge";
 import type { CreatorTrust } from "@/lib/profile/trustScore";
 import { TrustyButton } from "@/components/journey/TrustyButton";
 import { HighlightMarkButton } from "@/components/journey/HighlightMarkButton";
-import { HighlightList } from "@/components/journey/HighlightList";
 import { HighlightsDropdown } from "@/components/journey/HighlightsDropdown";
 import { ShareButton } from "@/components/common/ShareButton";
 import { ExpandableText } from "@/components/common/ExpandableText";
@@ -299,18 +298,7 @@ export function EpisodePlayer({
                   className="text-ember transition-opacity hover:opacity-80"
                 />
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-2 pr-32 md:pr-64">
-                <p className="text-sm leading-none tracking-[0.22em] text-ember uppercase">
-                  {journeyTitle} ·
-                  Episode {episode.number}
-                  {journeyCategory ? ` · ${journeyCategory}` : ""}
-                </p>
-                {isOwnContent && <HighlightList highlights={highlights} onRemove={remove} />}
-              </div>
-              <PageTitle className="mt-1">
-                {episode.title}
-              </PageTitle>
-              <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-ink-muted">
                 <Link
                   href={`/profile/${creator.userId}`}
                   className="flex min-w-0 items-center gap-1.5 transition-colors hover:text-ember"
@@ -325,6 +313,17 @@ export function EpisodePlayer({
                 {trust.score !== null && <TrustScoreBadge score={trust.score} trustedByCount={trust.trustedByCount} />}
                 {episode.isSponsored && <SponsoredLabel />}
               </div>
+              <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 pr-32 md:pr-64">
+                <p className="text-sm leading-none tracking-[0.22em] text-ember uppercase">
+                  {journeyTitle} ·
+                  Episode {episode.number}
+                  {journeyCategory ? ` · ${journeyCategory}` : ""}
+                </p>
+                {isOwnContent && <HighlightsDropdown highlights={highlights} onRemove={remove} />}
+              </div>
+              <PageTitle className="mt-1">
+                {episode.title}
+              </PageTitle>
               {episode.caption && (
                 <p className="mt-2.5 whitespace-pre-wrap text-base text-ink">{episode.caption}</p>
               )}

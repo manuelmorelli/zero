@@ -181,6 +181,10 @@ export default async function PublicJourneyPage({
               </div>
             </div>
 
+            {/* Watch, Condividi e Forum appena sotto la copertina, allineati a destra: solo
+             * computer (su telefono Condividi e Forum stanno nel menu a tre puntini). Il Forum
+             * qui è nuovo: da computer prima non esisteva per il Journey, solo su telefono
+             * accanto a "Episodes". */}
             {/* Foto+nome del creator, appena sotto la copertina, solo telefono: ingranditi del
              * 15%, con Follow a destra (finisce praticamente in linea col bottone Watch sopra). */}
             <div className="flex items-center justify-between gap-3 md:hidden">
@@ -199,32 +203,67 @@ export default async function PublicJourneyPage({
             </div>
 
             <div className="flex flex-col justify-between gap-4">
-              <div className="relative hidden md:block">
-                <p className="text-sm leading-none tracking-[0.22em] text-ember uppercase">
-                  Journey{journey.category ? ` · ${journey.category}` : ""}
-                </p>
-                <PageTitle className="mt-1">
-                  {journey.title}
-                </PageTitle>
-                <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-ink-muted">
-                  <Link
-                    href={`/profile/${journey.creator.userId}`}
-                    className="flex min-w-0 items-center gap-2 transition-colors hover:text-ember"
-                  >
-                    <Avatar name={journey.creator.displayName} avatarUrl={creatorAvatarUrl} size="sm" />
-                    <span className="truncate">{journey.creator.displayName}</span>
-                  </Link>
-                  {trust.score !== null && <TrustScoreBadge score={trust.score} trustedByCount={trust.trustedByCount} />}
-                  <span className="inline-flex items-center gap-1.5">
-                    <ListVideo className="h-3.5 w-3.5" aria-hidden="true" />
-                    {flatEpisodes.length} {flatEpisodes.length === 1 ? "Episode" : "Episodes"}
-                  </span>
-                </div>
-                {journey.description && (
-                  <p className="mt-3 max-w-prose text-sm leading-relaxed text-ink-muted">
-                    {journey.description}
+              {/* Blocco scritte (Journey/categoria/titolo/creator/descrizione) e Watch+Condividi
+               * +Forum sulla stessa riga, titolo a sinistra, bottoni a destra: solo computer. */}
+              <div className="hidden items-start justify-between gap-4 md:flex">
+                <div className="relative min-w-0 md:pl-21">
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-ink-muted">
+                    <Link
+                      href={`/profile/${journey.creator.userId}`}
+                      className="flex min-w-0 items-center gap-2 transition-colors hover:text-ember"
+                    >
+                      <Avatar name={journey.creator.displayName} avatarUrl={creatorAvatarUrl} size="sm" />
+                      <span className="truncate">{journey.creator.displayName}</span>
+                    </Link>
+                    {trust.score !== null && <TrustScoreBadge score={trust.score} trustedByCount={trust.trustedByCount} />}
+                    <span className="inline-flex items-center gap-1.5">
+                      <ListVideo className="h-3.5 w-3.5" aria-hidden="true" />
+                      {flatEpisodes.length} {flatEpisodes.length === 1 ? "Episode" : "Episodes"}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 text-sm leading-none tracking-[0.22em] text-ember uppercase">
+                    Journey{journey.category ? ` · ${journey.category}` : ""}
                   </p>
-                )}
+                  <PageTitle className="mt-1">
+                    {journey.title}
+                  </PageTitle>
+                  {journey.description && (
+                    <p className="mt-3 max-w-prose text-lg leading-relaxed text-ink-muted">
+                      {journey.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex shrink-0 items-center gap-2.5 md:pr-20">
+                  {watchAction && (
+                    <ButtonSecondary
+                      href={`/journeys/${journey.id}/episodes/${watchAction.episodeId}`}
+                      className="px-4 py-2 text-sm"
+                    >
+                      <Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
+                      {watchAction.label}
+                    </ButtonSecondary>
+                  )}
+                  <ShareButton
+                    path={`/journeys/${journey.id}`}
+                    label={journey.title}
+                    updateCaption={
+                      isOwnJourney
+                        ? `New Journey: ${journey.title}`
+                        : `Check out this Journey by ${journey.creator.displayName}: ${journey.title}`
+                    }
+                    linkedJourneyId={journey.id}
+                    className="grid h-9 w-9 place-items-center rounded-full border border-border text-ember transition-opacity hover:opacity-80"
+                  />
+                  <Link
+                    href={`/community/forum/${journey.id}`}
+                    aria-label="Open the Journey forum"
+                    title="Forum"
+                    className="grid h-9 w-9 place-items-center rounded-full border border-border text-ember transition-opacity hover:opacity-80"
+                  >
+                    <MessageSquare className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5">
@@ -238,26 +277,6 @@ export default async function PublicJourneyPage({
                     className="hidden md:inline-block"
                   />
                 )}
-                {watchAction && (
-                  <ButtonSecondary
-                    href={`/journeys/${journey.id}/episodes/${watchAction.episodeId}`}
-                    className="hidden px-4 py-2 text-sm md:inline-flex"
-                  >
-                    <Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
-                    {watchAction.label}
-                  </ButtonSecondary>
-                )}
-                <ShareButton
-                  path={`/journeys/${journey.id}`}
-                  label={journey.title}
-                  updateCaption={
-                    isOwnJourney
-                      ? `New Journey: ${journey.title}`
-                      : `Check out this Journey by ${journey.creator.displayName}: ${journey.title}`
-                  }
-                  linkedJourneyId={journey.id}
-                  className="hidden h-9 w-9 place-items-center rounded-full border border-border text-ember transition-opacity hover:opacity-80 md:grid"
-                />
                 {!isOwnJourney && session && (
                   <ReportButton
                     targetType="JOURNEY"
@@ -354,17 +373,20 @@ function EpisodeRow({
             <span className="block text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
               Episode {episode.number}
             </span>
+            {episode.durationSec !== null && (
+              <span className="hidden text-sm text-ember md:inline">{formatDuration(episode.durationSec)}</span>
+            )}
             {episode.progress && (
-              <span className="text-sm font-semibold text-ember">
-                · {episode.progress.completedAt ? "Finished" : "Resume"}
+              <span className="text-sm font-semibold text-ember md:ml-4 md:text-ink-muted">
+                · {episode.progress.completedAt ? "Watched" : "Resume"}
               </span>
             )}
           </span>
-          <span className="mt-0.5 block truncate text-sm font-semibold transition-colors group-hover:text-ember">
+          <span className="mt-0.5 block truncate text-sm font-semibold transition-colors group-hover:text-ember md:line-clamp-2 md:whitespace-normal">
             {episode.title}
           </span>
           {episode.durationSec !== null && (
-            <span className="mt-0.5 block text-sm text-ink-muted">{formatDuration(episode.durationSec)}</span>
+            <span className="mt-0.5 block text-sm text-ink-muted md:hidden">{formatDuration(episode.durationSec)}</span>
           )}
         </span>
       </Link>
