@@ -52,9 +52,19 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                     <div className="absolute inset-0 cover-placeholder" />
                   )}
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
-                    Episode {episode.number}
+                <span className="-mt-9 min-w-0 flex-1">
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="shrink-0 text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
+                      Episode {episode.number}
+                    </span>
+                    {episode.durationSec !== null && (
+                      <span className="shrink-0 text-sm text-ember">{formatDuration(episode.durationSec)}</span>
+                    )}
+                    {episode.progress && (
+                      <span className="shrink-0 text-sm font-semibold text-ink-muted md:ml-4">
+                        · {episode.progress.completedAt ? "Watched" : "Resume"}
+                      </span>
+                    )}
                   </span>
                   {/* Sul telefono la colonna è una sola: ripetere qui il titolo dell'episodio attivo
                    * duplicava quello già scritto grande sopra il player (non si nota da computer,
@@ -73,15 +83,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                       Now playing
                     </span>
                   )}
-                  {episode.durationSec !== null && (
-                    <span className="mt-0.5 block text-sm text-ink-muted">{formatDuration(episode.durationSec)}</span>
-                  )}
                   {episode.isSponsored && <SponsoredLabel className="mt-1" />}
-                  {episode.progress && (
-                    <span className="mt-0.5 block text-sm font-semibold text-ember">
-                      {episode.progress.completedAt ? "Watched" : "Resume"}
-                    </span>
-                  )}
                 </span>
               </Link>
             </li>
