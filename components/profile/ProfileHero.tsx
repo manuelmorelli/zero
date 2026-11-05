@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 import { FadeImage } from "@/components/common/FadeImage";
 import { cn, formatCompactNumber } from "@/lib/utils";
 import { ProfileAvatarStory } from "@/components/profile/ProfileAvatarStory";
@@ -123,7 +124,8 @@ export function ProfileHero({
             </PageTitle>
             {username && <p className="text-sm text-on-photo-muted drop-shadow-sm max-md:text-base">@{username}</p>}
             {trust && trust.trustedByCount > 0 && (
-              <p className="mt-0.5 text-sm font-semibold text-on-photo drop-shadow-sm max-md:text-base max-md:text-ember">
+              <p className="mt-0.5 flex items-center gap-1 text-base font-semibold text-ember drop-shadow-sm max-md:text-lg">
+                <ShieldCheck className="h-4 w-4 max-md:h-5 max-md:w-5" aria-hidden="true" />
                 {trust.trustedByCount.toLocaleString("en-US")} Trusty
               </p>
             )}
