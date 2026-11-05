@@ -10,6 +10,7 @@ import { ShareButton } from "@/components/common/ShareButton";
 import { ProfileActionsMenu } from "@/components/profile/ProfileActionsMenu";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
 import { JourneyCardMenu } from "@/components/profile/JourneyCardMenu";
+import { EpisodeCardMenu } from "@/components/profile/EpisodeCardMenu";
 import { Reveal } from "@/components/common/Reveal";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileTabs, type ProfileTab } from "@/components/profile/ProfileTabs";
@@ -396,18 +397,24 @@ export default async function PublicProfilePage({
                         ) : undefined
                       }
                       menu={
-                        !isDemoFeed ? (
-                          <ShareButton
-                            path={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
-                            label={item.title}
-                            updateCaption={
-                              isOwnProfile
-                                ? `New episode: ${item.title}`
-                                : `Check out this episode by ${user.name}: ${item.title}`
-                            }
-                            linkedEpisodeId={item.episodeId}
-                          />
-                        ) : undefined
+                        isDemoFeed
+                          ? undefined
+                          : isOwnProfile ? (
+                            <EpisodeCardMenu
+                              journeyId={item.journeyId}
+                              episodeId={item.episodeId}
+                              title={item.title}
+                              path={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
+                              updateCaption={`New episode: ${item.title}`}
+                            />
+                          ) : (
+                            <ShareButton
+                              path={`/journeys/${item.journeyId}/episodes/${item.episodeId}`}
+                              label={item.title}
+                              updateCaption={`Check out this episode by ${user.name}: ${item.title}`}
+                              linkedEpisodeId={item.episodeId}
+                            />
+                          )
                       }
                     />
                   ))}
