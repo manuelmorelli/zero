@@ -11,6 +11,7 @@ import {
 } from "@/lib/constants/communityListing";
 import { RsvpButton } from "@/components/profile/RsvpButton";
 import { ShareButton } from "@/components/common/ShareButton";
+import { CommunityListingMenu } from "@/components/creator/CommunityListingMenu";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { PageTitle } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
@@ -68,6 +69,7 @@ export default async function CommunityListingDetailPage({
   const going = "rsvps" in listing && Array.isArray(listing.rsvps) && listing.rsvps.length > 0;
 
   const handle = listing.creator.user.username ?? listing.creator.userId;
+  const isOwner = session?.user.id === listing.creator.userId;
 
   return (
     <main>
@@ -103,12 +105,17 @@ export default async function CommunityListingDetailPage({
             </p>
             <PageTitle>{listing.title}</PageTitle>
           </div>
-          <ShareButton
-            path={`/community/${type}/${id}`}
-            label={listing.title}
-            updateCaption={`Check out ${listing.creator.displayName}'s ${COMMUNITY_LISTING_LABELS[type]}: ${listing.title}`}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
-          />
+          <div className="flex shrink-0 items-center gap-2">
+            <ShareButton
+              path={`/community/${type}/${id}`}
+              label={listing.title}
+              updateCaption={`Check out ${listing.creator.displayName}'s ${COMMUNITY_LISTING_LABELS[type]}: ${listing.title}`}
+              className="grid h-9 w-9 place-items-center rounded-full border border-border text-ink-muted transition-colors hover:border-ember-line hover:text-ember"
+            />
+            {isOwner && (
+              <CommunityListingMenu listingId={id} listingType={type} title={listing.title} status={listing.status} />
+            )}
+          </div>
         </div>
 
         {(startsAt || location) && (

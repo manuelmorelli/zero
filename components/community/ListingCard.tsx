@@ -17,6 +17,7 @@ export function ListingCard({
   title,
   footer,
   menu,
+  variant = "default",
 }: {
   href: string;
   coverUrl: string | null;
@@ -26,7 +27,8 @@ export function ListingCard({
    * delle card Activities (titolo sopra la foto, pillola di vetro). Senza, su mobile resta il
    * vecchio stile (chipLabel+titolo impilati in basso), invariato. */
   badgeLabel?: string;
-  /** Contenuto in alto a destra sulla foto (es. pillola di stato Draft/Published in Dashboard). */
+  /** Pillola di stato (es. Draft/Published in Dashboard): in alto a destra sulla foto in "default",
+   * in basso a sinistra (accanto a badgeLabel) in "home". */
   topRight?: React.ReactNode;
   /** Scarto facoltativo sul titolo in alto a sinistra (es. abbassarlo solo in una pagina), senza
    * toccare le altre pagine che usano badgeLabel. */
@@ -34,7 +36,50 @@ export function ListingCard({
   title: string;
   footer?: React.ReactNode;
   menu?: React.ReactNode;
+  /** "home": stesso stile delle copertine Activities della pagina personale (titolo sempre in alto
+   * a sinistra, tipo/data sotto la foto, pillola badgeLabel sempre in basso a destra sulla foto).
+   * Richiesto da Manuel solo per la Dashboard Community (2026-11-06): non cambia le altre pagine,
+   * che restano sul vecchio stile "default". */
+  variant?: "default" | "home";
 }) {
+  if (variant === "home") {
+    return (
+      <div className="flex flex-col gap-2">
+        <CoverFrame
+          format="event"
+          href={href}
+          imageUrl={coverUrl}
+          imageAlt={title}
+          placeholder={<Icon className="h-8 w-8 text-ink-faint" aria-hidden="true" />}
+          menu={menu}
+          frameClassName="max-md:border-ember-line"
+          scrimClassName="md:hidden"
+          topLeft={<CoverTitle className={cn("max-w-[60%]", titleClassName)}>{title}</CoverTitle>}
+          overlay={
+            topRight || badgeLabel ? (
+              <>
+                <div className="flex translate-y-2 items-end justify-between md:hidden">
+                  <span>{topRight}</span>
+                  {badgeLabel && (
+                    <CoverChip className="max-md:border max-md:border-ember-line max-md:bg-overlay-soft max-md:py-0.5">
+                      {badgeLabel}
+                    </CoverChip>
+                  )}
+                </div>
+                <div className="hidden items-end justify-between md:flex">
+                  <span>{topRight}</span>
+                  {badgeLabel && <CoverChip>{badgeLabel}</CoverChip>}
+                </div>
+              </>
+            ) : undefined
+          }
+          below={<span className="block truncate text-sm text-ink-faint">{chipLabel}</span>}
+        />
+        {footer}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <CoverFrame

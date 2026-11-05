@@ -10,6 +10,7 @@ import { getFreeEventItems } from "@/lib/community/freeEvents";
 import { getForumJourneys } from "@/lib/community/forumJourneys";
 import { ForumJourneyList } from "@/components/community/ForumJourneyList";
 import { ListingCard } from "@/components/community/ListingCard";
+import { CommunityListingMenu } from "@/components/creator/CommunityListingMenu";
 import { SubscribeCard } from "@/components/community/SubscribeCard";
 import { ChallengeRow } from "@/components/community/ChallengeRow";
 import { MembersRoomRow } from "@/components/community/MembersRoomRow";
@@ -65,6 +66,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
 
   const creator = await prisma.creator.findUnique({ where: { userId: user.id } });
   const session = await getViewerSession();
+  const isOwnProfile = session?.user.id === user.id;
   const community = creator ? await prisma.community.findUnique({ where: { creatorId: creator.id } }) : null;
   const priceLabel = community && !community.isFree && community.price ? `€${Number(community.price)} per month` : null;
 
@@ -159,6 +161,11 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
             chipLabel={`Free · ${kindLabel} · ${formatEventMeta(startsAt)}`}
             badgeLabel="Free"
             title={item.title}
+            menu={
+              isOwnProfile ? (
+                <CommunityListingMenu listingId={item.id} listingType={item.kind} title={item.title} status="ACTIVE" />
+              ) : undefined
+            }
             footer={
               <>
                 {/* Mobile: stesso trattamento delle card Activities del profilo, solo data in
@@ -191,6 +198,11 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
           icon={item.icon}
           chipLabel={item.chipLabel}
           title={item.title}
+          menu={
+            isOwnProfile ? (
+              <CommunityListingMenu listingId={item.id} listingType={item.type} title={item.title} status="ACTIVE" />
+            ) : undefined
+          }
           footer={
             <div className="flex items-center justify-between gap-2">
               <span className="text-lg font-bold text-ink">{item.price}</span>

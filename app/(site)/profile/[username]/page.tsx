@@ -304,7 +304,7 @@ export default async function PublicProfilePage({
 
             {freeEvents.length > 0 && (
               <Reveal delayMs={20} className="mt-6 block">
-                <FreeEventsSection items={freeEvents} />
+                <FreeEventsSection items={freeEvents} isOwner={isOwnProfile} />
               </Reveal>
             )}
 

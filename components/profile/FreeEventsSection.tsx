@@ -1,5 +1,6 @@
 import { SectionTitle } from "@/components/ui/heading";
 import { CARD_GRID, CoverChip, CoverFrame, CoverTitle } from "@/components/ui/cover-card";
+import { CommunityListingMenu } from "@/components/creator/CommunityListingMenu";
 import { cn } from "@/lib/utils";
 
 export type FreeEventItem = {
@@ -17,7 +18,7 @@ export type FreeEventItem = {
  * Manuel): un'iniziativa gratuita è contenuto pubblico come i Journey, non un'offerta a pagamento —
  * compare solo se il creator ne ha pubblicata almeno una, altrimenti la sezione non si mostra.
  * Riusata anche nella pagina Community stessa (2026-09-26), dove diventa l'elenco completo. */
-export function FreeEventsSection({ items }: { items: FreeEventItem[] }) {
+export function FreeEventsSection({ items, isOwner = false }: { items: FreeEventItem[]; isOwner?: boolean }) {
   if (items.length === 0) return null;
 
   return (
@@ -42,6 +43,11 @@ export function FreeEventsSection({ items }: { items: FreeEventItem[] }) {
                 imageUrl={item.coverUrl}
                 imageAlt={item.title}
                 frameClassName="max-md:border-ember-line"
+                menu={
+                  isOwner ? (
+                    <CommunityListingMenu listingId={item.id} listingType={item.kind} title={item.title} status="ACTIVE" />
+                  ) : undefined
+                }
                 // Titolo in alto a sinistra (su mobile era già così, ora anche da desktop,
                 // richiesto da Manuel il 2026-11-04): Free scende in basso a destra su mobile,
                 // resta in alto a destra da desktop. In basso sulla sfumatura resta solo il tipo/data.

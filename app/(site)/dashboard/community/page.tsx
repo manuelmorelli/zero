@@ -122,8 +122,8 @@ export default async function CommunityDashboardPage() {
             icon={listing.icon}
             chipLabel={`${listing.typeLabel}${dateText}`}
             badgeLabel={listing.priceLabel}
-            titleClassName="max-md:mt-8"
             title={listing.title}
+            variant="home"
             menu={
               <CommunityListingMenu
                 listingId={listing.id}
