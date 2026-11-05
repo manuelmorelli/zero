@@ -312,14 +312,14 @@ export function EpisodePlayer({
                 </Link>
                 {trust.score !== null && <TrustScoreBadge score={trust.score} trustedByCount={trust.trustedByCount} />}
                 {episode.isSponsored && <SponsoredLabel />}
+                {isOwnContent && <HighlightsDropdown highlights={highlights} onRemove={remove} />}
               </div>
-              <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 pr-32 md:pr-64">
+              <div className="mt-1.5 pr-32 md:pr-64">
                 <p className="text-sm leading-none tracking-[0.22em] text-ember uppercase">
                   {journeyTitle} ·
                   Episode {episode.number}
                   {journeyCategory ? ` · ${journeyCategory}` : ""}
                 </p>
-                {isOwnContent && <HighlightsDropdown highlights={highlights} onRemove={remove} />}
               </div>
               <PageTitle className="mt-1">
                 {episode.title}
@@ -341,6 +341,7 @@ export function EpisodePlayer({
                   <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="sm" className="h-[46px] w-[46px]" />
                   <span className="truncate text-base font-semibold text-ink">{creator.displayName}</span>
                 </Link>
+                {isOwnContent && <HighlightsDropdown highlights={highlights} onRemove={remove} />}
                 <span className="flex-1" />
                 {!isOwnContent && (
                   <FollowButton userId={creator.userId} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} className="py-1.5" />
@@ -365,7 +366,6 @@ export function EpisodePlayer({
                   {episode.isSponsored && <SponsoredLabel />}
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  {isOwnContent && <HighlightsDropdown highlights={highlights} onRemove={remove} />}
                   <ShareButton
                     path={`/journeys/${journeyId}/episodes/${episode.id}`}
                     label={episode.title}
