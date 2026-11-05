@@ -119,6 +119,8 @@ export default async function EpisodePlayerPage({
           coverUrl={journeyCoverUrl}
           episodes={flatEpisodes}
           activeEpisodeId={episode.id}
+          isOwnContent={isOwnContent}
+          isLoggedIn={Boolean(session)}
         />
       </div>
     </main>

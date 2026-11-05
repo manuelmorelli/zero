@@ -5,6 +5,7 @@ import type { TimelineEpisode } from "@/lib/journey/episodeTimeline";
 import { ButtonSecondary } from "@/components/ui/button";
 import { SectionTitle } from "@/components/ui/heading";
 import { ROW } from "@/components/ui/panel";
+import { CoverMenu } from "@/components/journey/CoverMenu";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/format/duration";
 import { SponsoredLabel } from "@/components/common/SponsoredLabel";
@@ -15,10 +16,12 @@ type UpNextListProps = {
   coverUrl: string | null;
   episodes: TimelineEpisode[];
   activeEpisodeId: string;
+  isOwnContent: boolean;
+  isLoggedIn: boolean;
 };
 
 /** Sidebar "Up next" della pagina Player: tutti gli episodi del Journey, quello attivo evidenziato. */
-export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, activeEpisodeId }: UpNextListProps) {
+export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, activeEpisodeId, isOwnContent, isLoggedIn }: UpNextListProps) {
   return (
     <aside className="min-w-0">
       {/* Da computer: titolo del Journey sopra la lista, invariato. Sul telefono il titolo del
@@ -39,20 +42,34 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
       <ul className="mt-3 space-y-2 md:max-h-[70vh] md:overflow-y-auto md:pr-1">
         {episodes.map((episode) => {
           const active = episode.id === activeEpisodeId;
+          const episodeHref = `/journeys/${journeyId}/episodes/${episode.id}`;
           return (
             <li key={episode.id}>
-              <Link
-                href={`/journeys/${journeyId}/episodes/${episode.id}`}
-                className={cn(ROW, "group flex items-center gap-3", active ? "border-ember-line bg-ember-soft" : "bg-transparent")}
-              >
-                <span className="relative aspect-4/3 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
-                  {episode.posterUrl || coverUrl ? (
-                    <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="96px" className="object-cover" />
-                  ) : (
-                    <div className="absolute inset-0 cover-placeholder" />
-                  )}
-                </span>
-                <span className="-mt-9 min-w-0 flex-1">
+              <div className={cn(ROW, "group flex items-center gap-3", active ? "border-ember-line bg-ember-soft" : "bg-transparent")}>
+                {/* Copertina piccola in un riquadro a parte (stessa proporzione 112/156 usata per
+                 * le copertine episodio in tutto il sito, non più un riquadro 4:3 fatto a mano):
+                 * quello vecchio schiacciava le foto più alte che larghe, tagliandole male (es.
+                 * "Walk" si vedeva a metà). Link separato dal titolo solo per poter mettere il
+                 * menu a tre puntini qui sopra, fuori da un <a> (un bottone non può starci dentro). */}
+                <div className="group/thumb relative aspect-[112/156] w-28 shrink-0">
+                  <Link href={episodeHref} className="absolute inset-0 block overflow-hidden rounded-lg border border-border bg-surface-2">
+                    {episode.posterUrl || coverUrl ? (
+                      <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="112px" className="object-cover" />
+                    ) : (
+                      <div className="absolute inset-0 cover-placeholder" />
+                    )}
+                  </Link>
+                  <div className="absolute right-1.5 top-1.5 z-10 max-md:opacity-100 transition-opacity duration-200 md:opacity-0 md:focus-within:opacity-100 md:group-hover/thumb:opacity-100">
+                    <CoverMenu
+                      forumHref={`/community/forum/${journeyId}`}
+                      report={!isOwnContent && isLoggedIn ? { targetType: "EPISODE", targetId: episode.id } : undefined}
+                      editHref={isOwnContent ? `/dashboard/journeys/${journeyId}?edit=${episode.id}` : undefined}
+                      editLabel="Edit Episode"
+                      className="grid h-7 w-7 place-items-center rounded-full border border-border bg-scrim text-on-photo backdrop-blur-md transition-colors hover:bg-scrim"
+                    />
+                  </div>
+                </div>
+                <Link href={episodeHref} className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="shrink-0 text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
                       Episode {episode.number}
@@ -84,8 +101,8 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                     </span>
                   )}
                   {episode.isSponsored && <SponsoredLabel className="mt-1" />}
-                </span>
-              </Link>
+                </Link>
+              </div>
             </li>
           );
         })}
