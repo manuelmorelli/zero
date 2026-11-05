@@ -6,6 +6,7 @@ import { ButtonSecondary } from "@/components/ui/button";
 import { SectionTitle } from "@/components/ui/heading";
 import { ROW } from "@/components/ui/panel";
 import { CoverMenu } from "@/components/journey/CoverMenu";
+import { ExpandableText } from "@/components/common/ExpandableText";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/format/duration";
 import { SponsoredLabel } from "@/components/common/SponsoredLabel";
@@ -23,7 +24,7 @@ type UpNextListProps = {
 /** Sidebar "Up next" della pagina Player: tutti gli episodi del Journey, quello attivo evidenziato. */
 export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, activeEpisodeId, isOwnContent, isLoggedIn }: UpNextListProps) {
   return (
-    <aside className="min-w-0">
+    <aside className="min-w-0 md:-translate-x-9">
       {/* Da computer: titolo del Journey sopra la lista, invariato. Sul telefono il titolo del
        * Journey è già scritto accanto al numero episodio sopra il player (EpisodePlayer),
        * ripeterlo qui da solo stonava (segnalato da Manuel) — resta solo il conteggio totale. */}
@@ -45,7 +46,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
           const episodeHref = `/journeys/${journeyId}/episodes/${episode.id}`;
           return (
             <li key={episode.id}>
-              <div className={cn(ROW, "group flex items-center gap-3", active ? "border-ember-line bg-ember-soft" : "bg-transparent")}>
+              <div className={cn(ROW, "group flex items-start gap-3", active ? "border-ember-line bg-ember-soft" : "bg-transparent")}>
                 {/* Copertina piccola in un riquadro a parte (stessa proporzione 112/156 usata per
                  * le copertine episodio in tutto il sito, non più un riquadro 4:3 fatto a mano):
                  * quello vecchio schiacciava le foto più alte che larghe, tagliandole male (es.
@@ -69,39 +70,46 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                     />
                   </div>
                 </div>
-                <Link href={episodeHref} className="min-w-0 flex-1">
-                  <span className="flex flex-wrap items-center gap-2">
-                    <span className="shrink-0 text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
-                      Episode {episode.number}
+                <div className="min-w-0 flex-1">
+                  <Link href={episodeHref} className="block">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="shrink-0 text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
+                        Episode {episode.number}
+                      </span>
+                      {episode.durationSec !== null && (
+                        <span className="shrink-0 text-sm text-ember">{formatDuration(episode.durationSec)}</span>
+                      )}
+                      {episode.progress && (
+                        <span className="shrink-0 text-sm font-semibold text-ink-muted md:ml-4">
+                          · {episode.progress.completedAt ? "Watched" : "Resume"}
+                        </span>
+                      )}
                     </span>
-                    {episode.durationSec !== null && (
-                      <span className="shrink-0 text-sm text-ember">{formatDuration(episode.durationSec)}</span>
-                    )}
-                    {episode.progress && (
-                      <span className="shrink-0 text-sm font-semibold text-ink-muted md:ml-4">
-                        · {episode.progress.completedAt ? "Watched" : "Resume"}
+                    {/* Sul telefono la colonna è una sola: ripetere qui il titolo dell'episodio attivo
+                     * duplicava quello già scritto grande sopra il player (non si nota da computer,
+                     * dove questa lista sta in una colonna separata). Solo sul telefono, per la riga
+                     * attiva, una scritta più corta al posto del titolo ripetuto. */}
+                    <span
+                      className={cn(
+                        "mt-0.5 block truncate text-sm font-semibold transition-colors md:line-clamp-2 md:whitespace-normal",
+                        active ? "text-ink max-md:hidden" : "group-hover:text-ember"
+                      )}
+                    >
+                      {episode.title}
+                    </span>
+                    {active && (
+                      <span className="mt-0.5 block text-sm font-semibold text-ember md:hidden">
+                        Now playing
                       </span>
                     )}
-                  </span>
-                  {/* Sul telefono la colonna è una sola: ripetere qui il titolo dell'episodio attivo
-                   * duplicava quello già scritto grande sopra il player (non si nota da computer,
-                   * dove questa lista sta in una colonna separata). Solo sul telefono, per la riga
-                   * attiva, una scritta più corta al posto del titolo ripetuto. */}
-                  <span
-                    className={cn(
-                      "mt-0.5 block truncate text-sm font-semibold transition-colors md:line-clamp-2 md:whitespace-normal",
-                      active ? "text-ink max-md:hidden" : "group-hover:text-ember"
-                    )}
-                  >
-                    {episode.title}
-                  </span>
-                  {active && (
-                    <span className="mt-0.5 block text-sm font-semibold text-ember md:hidden">
-                      Now playing
-                    </span>
+                    {episode.isSponsored && <SponsoredLabel className="mt-1" />}
+                  </Link>
+                  {/* Fuori dal Link: il tocco su "more" deve aprire la caption, non andare
+                   * all'episodio (un bottone non può stare dentro un <a>). */}
+                  {episode.caption && (
+                    <ExpandableText text={episode.caption} clampLines={2} className="mt-4 text-sm text-ink-muted" />
                   )}
-                  {episode.isSponsored && <SponsoredLabel className="mt-1" />}
-                </Link>
+                </div>
               </div>
             </li>
           );

@@ -319,7 +319,14 @@ export default async function PublicJourneyPage({
                   )}
                   <ul className="mt-2 space-y-2">
                     {group.episodes.map((episode) => (
-                      <EpisodeRow key={episode.id} episode={episode} journeyId={journey.id} coverUrl={journeyCoverUrl} />
+                      <EpisodeRow
+                        key={episode.id}
+                        episode={episode}
+                        journeyId={journey.id}
+                        coverUrl={journeyCoverUrl}
+                        isOwnContent={isOwnJourney}
+                        isLoggedIn={Boolean(session)}
+                      />
                     ))}
                   </ul>
                 </div>
@@ -336,57 +343,82 @@ function EpisodeRow({
   episode,
   journeyId,
   coverUrl,
+  isOwnContent,
+  isLoggedIn,
 }: {
   episode: TimelineEpisode;
   journeyId: string;
   coverUrl: string | null;
+  isOwnContent: boolean;
+  isLoggedIn: boolean;
 }) {
+  const episodeHref = `/journeys/${journeyId}/episodes/${episode.id}`;
   return (
     <li>
-      <Link
-        href={`/journeys/${journeyId}/episodes/${episode.id}`}
+      <div
         id={episode.id}
-        className={cn(ROW, "group flex w-full max-w-[420px] scroll-mt-24 items-center gap-3 p-2 text-left hover:-translate-y-0.5")}
+        className={cn(ROW, "group flex w-full max-w-[420px] scroll-mt-24 items-start gap-3 p-2 text-left transition-transform duration-300 hover:-translate-y-0.5")}
       >
-        <span className="relative aspect-4/3 w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:w-44 md:w-28">
-          {episode.posterUrl || coverUrl ? (
-            <Image
-              src={episode.posterUrl || coverUrl!}
-              alt=""
-              fill
-              sizes="(min-width: 768px) 112px, 176px"
-              quality={COVER_IMAGE_QUALITY}
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-          ) : (
-            <div className="absolute inset-0 cover-placeholder transition-transform duration-700 group-hover:scale-105" />
-          )}
-          <div className="absolute inset-0 card-scrim" />
-          <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-            <span className="grid h-8 w-8 place-items-center rounded-full border border-border bg-scrim backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
-              <Play className="h-3 w-3 translate-x-[1px] fill-current text-ember" aria-hidden="true" />
-            </span>
-          </span>
-        </span>
-        <span className="-mt-9 min-w-0 flex-1">
-          <span className="flex flex-wrap items-center gap-2">
-            <span className="shrink-0 text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
-              Episode {episode.number}
-            </span>
-            {episode.durationSec !== null && (
-              <span className="shrink-0 text-sm text-ember">{formatDuration(episode.durationSec)}</span>
+        {/* Stessa correzione fatta nella lista "Up Next" della pagina Episodio: proporzione
+         * 112/156 ufficiale invece del vecchio riquadro 4:3 fatto a mano (tagliava le foto più
+         * alte che larghe), più il menu a tre puntini nella stessa posizione (sopra la
+         * copertina, in alto a destra). */}
+        <div className="group/thumb relative aspect-[112/156] w-36 shrink-0 sm:w-44 md:w-28">
+          <Link href={episodeHref} className="absolute inset-0 block overflow-hidden rounded-lg border border-border bg-surface-2">
+            {episode.posterUrl || coverUrl ? (
+              <Image
+                src={episode.posterUrl || coverUrl!}
+                alt=""
+                fill
+                sizes="(min-width: 768px) 112px, 176px"
+                quality={COVER_IMAGE_QUALITY}
+                className="object-cover transition-transform duration-700 group-hover/thumb:scale-105"
+              />
+            ) : (
+              <div className="absolute inset-0 cover-placeholder transition-transform duration-700 group-hover/thumb:scale-105" />
             )}
-            {episode.progress && (
-              <span className="shrink-0 text-sm font-semibold text-ember md:ml-4 md:text-ink-muted">
-                · {episode.progress.completedAt ? "Watched" : "Resume"}
+            <div className="absolute inset-0 card-scrim" />
+            <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-300 group-hover/thumb:opacity-100">
+              <span className="grid h-8 w-8 place-items-center rounded-full border border-border bg-scrim backdrop-blur-md transition-transform duration-300 group-hover/thumb:scale-110">
+                <Play className="h-3 w-3 translate-x-[1px] fill-current text-ember" aria-hidden="true" />
               </span>
-            )}
-          </span>
-          <span className="mt-0.5 block truncate text-sm font-semibold transition-colors group-hover:text-ember md:line-clamp-2 md:whitespace-normal">
-            {episode.title}
-          </span>
-        </span>
-      </Link>
+            </span>
+          </Link>
+          <div className="absolute right-1.5 top-1.5 z-10 max-md:opacity-100 transition-opacity duration-200 md:opacity-0 md:focus-within:opacity-100 md:group-hover/thumb:opacity-100">
+            <CoverMenu
+              forumHref={`/community/forum/${journeyId}`}
+              report={!isOwnContent && isLoggedIn ? { targetType: "EPISODE", targetId: episode.id } : undefined}
+              editHref={isOwnContent ? `/dashboard/journeys/${journeyId}?edit=${episode.id}` : undefined}
+              editLabel="Edit Episode"
+              className="grid h-7 w-7 place-items-center rounded-full border border-border bg-scrim text-on-photo backdrop-blur-md transition-colors hover:bg-scrim"
+            />
+          </div>
+        </div>
+        <div className="min-w-0 flex-1">
+          <Link href={episodeHref} className="block">
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="shrink-0 text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
+                Episode {episode.number}
+              </span>
+              {episode.durationSec !== null && (
+                <span className="shrink-0 text-sm text-ember">{formatDuration(episode.durationSec)}</span>
+              )}
+              {episode.progress && (
+                <span className="shrink-0 text-sm font-semibold text-ember md:ml-4 md:text-ink-muted">
+                  · {episode.progress.completedAt ? "Watched" : "Resume"}
+                </span>
+              )}
+            </span>
+            <span className="mt-0.5 block truncate text-sm font-semibold transition-colors group-hover:text-ember md:line-clamp-2 md:whitespace-normal">
+              {episode.title}
+            </span>
+          </Link>
+          {/* Fuori dal Link: il tocco su "more" deve aprire la caption, non andare all'episodio. */}
+          {episode.caption && (
+            <ExpandableText text={episode.caption} clampLines={2} className="mt-4 text-sm text-ink-muted" />
+          )}
+        </div>
+      </div>
     </li>
   );
 }
