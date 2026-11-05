@@ -66,7 +66,7 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
                       report={!isOwnContent && isLoggedIn ? { targetType: "EPISODE", targetId: episode.id } : undefined}
                       editHref={isOwnContent ? `/dashboard/journeys/${journeyId}?edit=${episode.id}` : undefined}
                       editLabel="Edit Episode"
-                      className="grid h-7 w-7 place-items-center rounded-full border border-border bg-scrim text-on-photo backdrop-blur-md transition-colors hover:bg-scrim"
+                      className="grid h-7 w-7 place-items-center rounded-full border border-border bg-scrim text-ember backdrop-blur-md transition-colors hover:bg-scrim"
                     />
                   </div>
                 </div>

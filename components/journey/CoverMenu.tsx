@@ -53,7 +53,7 @@ export function CoverMenu({ share, forumHref, report, editHref, editLabel, class
           aria-label="More options"
           className={
             className ??
-            "grid h-9 w-9 place-items-center rounded-full border border-border bg-scrim text-on-photo backdrop-blur-md transition-colors hover:bg-scrim"
+            "grid h-9 w-9 place-items-center rounded-full border border-border bg-scrim text-ember backdrop-blur-md transition-colors hover:bg-scrim"
           }
         >
           <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
