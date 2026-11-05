@@ -368,16 +368,16 @@ function EpisodeRow({
             </span>
           </span>
         </span>
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-2">
-            <span className="block text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
+        <span className="-mt-9 min-w-0 flex-1">
+          <span className="flex flex-wrap items-center gap-2">
+            <span className="shrink-0 text-sm font-bold tracking-[0.18em] text-ember uppercase md:font-normal">
               Episode {episode.number}
             </span>
             {episode.durationSec !== null && (
-              <span className="hidden text-sm text-ember md:inline">{formatDuration(episode.durationSec)}</span>
+              <span className="shrink-0 text-sm text-ember">{formatDuration(episode.durationSec)}</span>
             )}
             {episode.progress && (
-              <span className="text-sm font-semibold text-ember md:ml-4 md:text-ink-muted">
+              <span className="shrink-0 text-sm font-semibold text-ember md:ml-4 md:text-ink-muted">
                 · {episode.progress.completedAt ? "Watched" : "Resume"}
               </span>
             )}
@@ -385,9 +385,6 @@ function EpisodeRow({
           <span className="mt-0.5 block truncate text-sm font-semibold transition-colors group-hover:text-ember md:line-clamp-2 md:whitespace-normal">
             {episode.title}
           </span>
-          {episode.durationSec !== null && (
-            <span className="mt-0.5 block text-sm text-ink-muted md:hidden">{formatDuration(episode.durationSec)}</span>
-          )}
         </span>
       </Link>
     </li>
