@@ -27,7 +27,7 @@ export function AboutCard({ profileUserId, name, bio, interests }: AboutCardProp
         href={`/profile/${profileUserId}/presentation`}
         className="relative block aspect-[112/156] w-full min-w-0 flex-1 overflow-hidden rounded-xl border border-border cover-placeholder md:hidden"
       >
-        <div className="absolute inset-x-0 bottom-0 p-2.5">
+        <div className="absolute inset-x-0 top-0 p-2.5">
           <span className="inline-flex items-center gap-1 text-sm font-semibold text-ember">
             <PenLine className="h-3 w-3" aria-hidden="true" />
             Bio
