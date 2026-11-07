@@ -156,7 +156,14 @@ export function EpisodePlayer({
     }
     if (!shouldAutoplay) return;
 
-    const start = () => video.play().catch(() => {});
+    // Il browser può rifiutare la partenza automatica con l'audio acceso se in quel preciso
+    // momento nessuno ha appena toccato/cliccato niente (regola di sicurezza di tutti i browser,
+    // più rigida su Safari iPhone). In quel caso riprova muto: la partenza muta è sempre permessa,
+    // e il video in listener onPlay toglie il segnale, quindi il video non resta mai fermo.
+    const start = () => video.play().catch(() => {
+      video.muted = true;
+      void video.play().catch(() => {});
+    });
     if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
       start();
       return;

@@ -118,6 +118,20 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(funct
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
 
+  // Tiene l'icona del volume allineata anche quando qualcun altro muta il video direttamente sul
+  // tag (es. EpisodePlayer, che riprova muto l'avvio automatico dell'episodio successivo se il
+  // browser blocca la riproduzione con audio senza un tocco diretto in quel momento).
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    function handleVolumeChange() {
+      setMuted(video!.muted);
+      setVolume(video!.volume);
+    }
+    video.addEventListener("volumechange", handleVolumeChange);
+    return () => video.removeEventListener("volumechange", handleVolumeChange);
+  }, []);
+
   // Safari su iPhone non supporta lo schermo intero su un riquadro qualunque (solo sul tag
   // <video> stesso, con questo metodo proprio di Apple): senza questo ramo requestFullscreen()
   // sul riquadro falliva in silenzio e il tasto sembrava non fare niente. Questi due eventi
