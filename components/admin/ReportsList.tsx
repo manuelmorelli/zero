@@ -5,7 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { Report } from "@/generated/prisma/client";
-import { deleteReport, setReportStatus } from "@/lib/actions/adminReports";
+import {
+  banReportedAccount,
+  deleteReport,
+  hideReportedContent,
+  setReportStatus,
+  unbanReportedAccount,
+  unhideReportedContent,
+} from "@/lib/actions/adminReports";
 import { formatRelativeDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +26,16 @@ import {
 import { Badge, CHIP, CHIP_SELECTED, Notice, Panel } from "@/components/ui/panel";
 import { CardTitle } from "@/components/ui/heading";
 
-type ReportWithUser = Report & { user: { name: string; email: string } };
+type ReportWithUser = Report & {
+  user: { name: string; email: string };
+  contentHidden: boolean;
+  ownerUserId: string | null;
+  accountBanned: boolean;
+};
+
+/** Tipi di contenuto che si possono nascondere subito da qui (vedi HIDEABLE_TARGET_TYPES in
+ * lib/actions/adminReports.ts: Utente/Journeyer restano fuori, è un'azione diversa). */
+const HIDEABLE_TARGET_TYPES: Report["targetType"][] = ["JOURNEY", "EPISODE", "COMMENT"];
 
 const FILTERS = [
   { value: "ALL", label: "Tutte" },
@@ -58,6 +74,8 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
   const [filter, setFilter] = useState<Filter>("ALL");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<ReportWithUser | null>(null);
+  const [toHide, setToHide] = useState<ReportWithUser | null>(null);
+  const [toBan, setToBan] = useState<ReportWithUser | null>(null);
 
   const visible = filter === "ALL" ? reports : reports.filter((report) => report.status === filter);
 
@@ -82,6 +100,58 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
       toast.error(result.error);
       return;
     }
+    router.refresh();
+  }
+
+  async function handleHide() {
+    if (!toHide) return;
+    setPendingId(toHide.id);
+    const result = await hideReportedContent(toHide.id);
+    setPendingId(null);
+    setToHide(null);
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success("Contenuto nascosto.");
+    router.refresh();
+  }
+
+  async function handleUnhide(reportId: string) {
+    setPendingId(reportId);
+    const result = await unhideReportedContent(reportId);
+    setPendingId(null);
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success("Contenuto di nuovo visibile.");
+    router.refresh();
+  }
+
+  async function handleBan() {
+    if (!toBan) return;
+    setPendingId(toBan.id);
+    const result = await banReportedAccount(toBan.id);
+    setPendingId(null);
+    setToBan(null);
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success("Account bannato.");
+    router.refresh();
+  }
+
+  async function handleUnban(reportId: string) {
+    setPendingId(reportId);
+    const result = await unbanReportedAccount(reportId);
+    setPendingId(null);
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success("Account riattivato.");
     router.refresh();
   }
 
@@ -112,6 +182,8 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
             <div className="flex flex-wrap items-center gap-2">
               <Badge>{STATUS_LABELS[report.status]}</Badge>
               <Badge>{TARGET_LABELS[report.targetType]}</Badge>
+              {report.contentHidden && <Badge className="border-danger-line text-danger">Contenuto nascosto</Badge>}
+              {report.accountBanned && <Badge className="border-danger-line text-danger">Account bannato</Badge>}
               <span className="text-sm text-ink-faint">{formatRelativeDate(report.createdAt)}</span>
             </div>
 
@@ -132,6 +204,26 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
             )}
 
             <div className="flex flex-wrap gap-2 pt-1">
+              {HIDEABLE_TARGET_TYPES.includes(report.targetType) && !report.contentHidden && (
+                <Button variant="danger" disabled={busy} onClick={() => setToHide(report)}>
+                  Nascondi subito
+                </Button>
+              )}
+              {HIDEABLE_TARGET_TYPES.includes(report.targetType) && report.contentHidden && (
+                <Button variant="secondary" disabled={busy} onClick={() => handleUnhide(report.id)}>
+                  Rendi di nuovo visibile
+                </Button>
+              )}
+              {report.ownerUserId && !report.accountBanned && (
+                <Button variant="danger" disabled={busy} onClick={() => setToBan(report)}>
+                  Banna l&apos;account
+                </Button>
+              )}
+              {report.ownerUserId && report.accountBanned && (
+                <Button variant="secondary" disabled={busy} onClick={() => handleUnban(report.id)}>
+                  Riattiva l&apos;account
+                </Button>
+              )}
               {report.status === "PENDING" && (
                 <Button variant="secondary" disabled={busy} onClick={() => handleStatus(report.id, "REVIEWING")}>
                   Prendi in carico
@@ -156,6 +248,45 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
           </Panel>
         );
       })}
+
+      <Dialog open={toHide !== null} onOpenChange={(open) => !open && setToHide(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Nascondere subito questo contenuto?</DialogTitle>
+            <DialogDescription>
+              Sparisce dal sito per tutti, da subito. Non è definitivo: si può far tornare visibile da qui quando vuoi.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setToHide(null)}>
+              Annulla
+            </Button>
+            <Button variant="danger" disabled={pendingId !== null} onClick={handleHide}>
+              Nascondi
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={toBan !== null} onOpenChange={(open) => !open && setToBan(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Bannare questo account?</DialogTitle>
+            <DialogDescription>
+              La persona viene disconnessa subito e non può più entrare su Zero. Non è definitivo: si
+              può riattivare da qui quando vuoi.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setToBan(null)}>
+              Annulla
+            </Button>
+            <Button variant="danger" disabled={pendingId !== null} onClick={handleBan}>
+              Banna
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={toDelete !== null} onOpenChange={(open) => !open && setToDelete(null)}>
         <DialogContent className="max-w-sm">

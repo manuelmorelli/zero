@@ -9,34 +9,37 @@ export async function getCurrentSession() {
 
 /** Controllo autoritativo (interroga il database): usarlo in ogni pagina protetta.
  * Un account con cancellazione in corso (vedi lib/account/deletion.ts) viene dirottato sulla
- * schermata di riattivazione invece di entrare normalmente nell'app. */
+ * schermata di riattivazione invece di entrare normalmente nell'app. Un account bannato da un
+ * admin (vedi lib/actions/adminReports.ts) viene dirottato su una schermata che lo dice chiaramente. */
 export async function requireSession() {
   const session = await getCurrentSession();
   if (!session) redirect("/login");
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { deletedAt: true },
+    select: { deletedAt: true, status: true },
   });
   if (user?.deletedAt) redirect("/reactivate-account");
+  if (user?.status !== "ACTIVE") redirect("/account-suspended");
 
   return session;
 }
 
 /** Come getCurrentSession(), ma per le pagine "ibride" (visibili sia a chi è loggato che a chi
  * non lo è: Home, Discovery, profilo pubblico, pagine Journey) che quindi non passano da
- * requireSession(). Se chi guarda ha un account in cancellazione, viene comunque dirottato sulla
- * schermata di riattivazione invece di entrare come se nulla fosse. Non usarla in
- * /reactivate-account o /account/deletion-scheduled: andrebbe in loop su se stessa. */
+ * requireSession(). Se chi guarda ha un account in cancellazione o bannato, viene comunque
+ * dirottato sulla schermata giusta invece di entrare come se nulla fosse. Non usarla in
+ * /reactivate-account, /account-suspended o /account/deletion-scheduled: andrebbe in loop su se stessa. */
 export async function getViewerSession() {
   const session = await getCurrentSession();
   if (!session) return session;
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { deletedAt: true },
+    select: { deletedAt: true, status: true },
   });
   if (user?.deletedAt) redirect("/reactivate-account");
+  if (user?.status !== "ACTIVE") redirect("/account-suspended");
 
   return session;
 }
