@@ -170,7 +170,7 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
         // md:ml invece di left: un margine reale sposta anche la Bio che segue nel flusso della
         // riga (non serve più ripetere lo stesso scarto anche su di lei), uno scarto "visivo"
         // via left no.
-        className={cn("relative aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border max-md:min-w-0 max-md:flex-1 max-md:border-ember-line md:ml-[126px]", cardWidth, videoUrl ? "border-border bg-surface-2" : "border-ember-line cover-placeholder")}
+        className={cn("relative aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border border-ember-line max-md:min-w-0 max-md:flex-1 md:ml-[126px]", cardWidth, videoUrl ? "bg-surface-2" : "cover-placeholder")}
       >
         {videoUrl ? (
           <>
