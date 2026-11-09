@@ -15,7 +15,7 @@ import { ALLOWED_VIDEO_TYPES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { ImageCropper } from "@/components/common/ImageCropper";
 import { CardTitle } from "@/components/ui/heading";
-import { CoverTitle } from "@/components/ui/cover-card";
+import { CoverChip, CoverTitle } from "@/components/ui/cover-card";
 import { PANEL_ACCENT } from "@/components/ui/panel";
 import { BioPreviewCard } from "@/components/profile/BioPreviewCard";
 import {
@@ -253,12 +253,7 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
             <p className="text-sm uppercase tracking-wider text-ink-faint">Focus</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {interests.map((interest) => (
-                <span
-                  key={interest}
-                  className="rounded-full border border-border px-2.5 py-1 text-sm text-ink-muted"
-                >
-                  {interest}
-                </span>
+                <CoverChip key={interest}>{interest}</CoverChip>
               ))}
             </div>
           </div>

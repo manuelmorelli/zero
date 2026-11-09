@@ -50,7 +50,7 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
               {journey.category}
             </CoverChip>
           )}
-          <CoverTitle className="truncate transition-colors group-hover:text-ember max-md:text-sm">
+          <CoverTitle className="truncate transition-colors group-hover:text-ember">
             {journey.title}
           </CoverTitle>
           <div className="mt-2 flex items-center justify-between gap-2 max-md:hidden">
