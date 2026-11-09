@@ -243,7 +243,6 @@ export default async function PublicProfilePage({
               username={user.username}
               location={user.location}
               joinedAt={user.createdAt}
-              bio={user.bio}
               trust={trust}
               journeysCount={journeys.length}
               viewerId={session?.user.id ?? null}
@@ -296,7 +295,7 @@ export default async function PublicProfilePage({
                 // Fila libera: ogni card (Journey in corso, Bio, Video) ha la sua stessa identica
                 // larghezza fissa (CARD_ROW_ITEM.episode), nessuna colonna che le forza a dividersi
                 // lo spazio.
-                <div className="flex gap-2.5 md:items-start md:gap-4">
+                <div className="flex max-md:flex-wrap gap-2.5 md:items-start md:gap-4">
                   {overviewCards}
                 </div>
               )}

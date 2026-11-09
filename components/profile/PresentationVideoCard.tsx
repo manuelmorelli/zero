@@ -17,6 +17,7 @@ import { ImageCropper } from "@/components/common/ImageCropper";
 import { CardTitle } from "@/components/ui/heading";
 import { CoverTitle } from "@/components/ui/cover-card";
 import { PANEL_ACCENT } from "@/components/ui/panel";
+import { BioPreviewCard } from "@/components/profile/BioPreviewCard";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -226,6 +227,11 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
           </div>
         )}
       </div>
+
+      {/* Su mobile la Bio non è più solo nella pagina dedicata (prima raggiungibile con "altro"
+       * sotto il nome in Hero, ora rimosso): compare qui, accanto al video, come card a sé. Da
+       * tablet in su resta invece il riquadro pieno subito sotto (hidden md:flex). */}
+      <BioPreviewCard profileUserId={profileUserId} name={name} bio={bio} interests={interests} />
 
       <div
         className={cn(

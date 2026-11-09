@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { PenLine } from "lucide-react";
 import { CardTitle } from "@/components/ui/heading";
 import { PANEL_ACCENT } from "@/components/ui/panel";
+import { BioPreviewCard } from "@/components/profile/BioPreviewCard";
 import { cn } from "@/lib/utils";
 
 type AboutCardProps = {
@@ -21,22 +21,9 @@ export function AboutCard({ profileUserId, name, bio, interests }: AboutCardProp
       {/* Su mobile questa card si affianca a "In Progress" (FeaturedJourneySection) nella stessa
        * riga: stesso formato compatto 112/156 di quella, altrimenti la riga si rompe (segnalato
        * da Manuel su un profilo senza ancora un video di presentazione, dove PresentationVideoCard
-       * non compare e questa prende il suo posto). Tocca porta alla pagina dedicata, come l'altra
-       * card. Da desktop in su resta il riquadro pieno con bio e interessi, invariato. */}
-      <Link
-        href={`/profile/${profileUserId}/presentation`}
-        className="relative block aspect-[112/156] w-full min-w-0 flex-1 overflow-hidden rounded-xl border border-border cover-placeholder md:hidden"
-      >
-        <div className="absolute inset-x-0 top-0 p-2.5">
-          <span className="inline-flex items-center gap-1 text-sm font-semibold text-ember">
-            <PenLine className="h-3 w-3" aria-hidden="true" />
-            Bio
-          </span>
-          <p className="mt-1 line-clamp-4 text-sm text-on-photo-muted">
-            {bio ?? `${name} hasn't written a bio yet.`}
-          </p>
-        </div>
-      </Link>
+       * non compare e questa prende il suo posto). Da desktop in su resta il riquadro pieno con
+       * bio e interessi, invariato. */}
+      <BioPreviewCard profileUserId={profileUserId} name={name} bio={bio} interests={interests} />
 
       <div
         className={cn(

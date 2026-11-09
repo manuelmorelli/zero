@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { FadeImage } from "@/components/common/FadeImage";
 import { cn, formatCompactNumber } from "@/lib/utils";
@@ -24,7 +23,6 @@ type ProfileHeroProps = {
   username: string | null;
   location: string | null;
   joinedAt: Date;
-  bio: string | null;
   /** null per chi non è creator: niente Trust Score né "Trusted by". */
   trust: CreatorTrust | null;
   journeysCount: number;
@@ -39,10 +37,6 @@ type ProfileHeroProps = {
   actions?: React.ReactNode;
 };
 
-/** Oltre questa lunghezza la bio non entra in una riga sola sotto il nome in Hero (mobile): si
- * tronca e compare "altro" verso la pagina dedicata Bio & presentation. */
-const HERO_BIO_INLINE_LIMIT = 60;
-
 export function ProfileHero({
   profileUserId,
   coverUrl,
@@ -52,7 +46,6 @@ export function ProfileHero({
   username,
   location,
   joinedAt,
-  bio,
   trust,
   journeysCount,
   followersCount,
@@ -128,21 +121,6 @@ export function ProfileHero({
                 <ShieldCheck className="h-4 w-4 max-md:h-5 max-md:w-5" aria-hidden="true" />
                 {trust.trustedByCount.toLocaleString("en-US")} Trusty
               </p>
-            )}
-            {/* Bio sotto il nome, come su Instagram: solo mobile, una riga sola. Da desktop in su
-             * resta solo nella card Bio & video più sotto nella pagina (md:hidden). */}
-            {bio && (
-              <div className="mt-1 flex min-w-0 items-baseline gap-1.5 md:hidden">
-                <p className="min-w-0 truncate text-base text-on-photo drop-shadow-sm">{bio}</p>
-                {bio.length > HERO_BIO_INLINE_LIMIT && (
-                  <Link
-                    href={`/profile/${profileUserId}/presentation`}
-                    className="shrink-0 text-base font-semibold text-on-photo drop-shadow-sm"
-                  >
-                    altro
-                  </Link>
-                )}
-              </div>
             )}
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-on-photo-muted drop-shadow-sm max-md:hidden">
               {location && (
