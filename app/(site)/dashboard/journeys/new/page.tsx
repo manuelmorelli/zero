@@ -7,7 +7,7 @@ export default async function NewJourneyPage() {
 
   return (
     <main>
-      <div className="flex min-h-screen items-center justify-center px-6 pb-16 pt-24">
+      <div className="flex min-h-screen items-center justify-center px-6 pb-36 pt-24 md:pb-16">
         <div className="w-full max-w-lg">
           <PageTitle>
             Create Your Journey

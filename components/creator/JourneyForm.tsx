@@ -135,7 +135,9 @@ export function JourneyForm({ journey }: JourneyFormProps) {
       >
         {journey && <input type="hidden" name="journeyId" value={journey.id} />}
 
-        <div className="grid gap-4 md:grid-cols-[1fr_minmax(0,220px)]">
+        {!journey && <FirstEpisodeSection onBusyChange={setEpisodeBusy} />}
+
+        <div className="mt-6 grid gap-4 md:grid-cols-[1fr_minmax(0,220px)]">
           <div className="space-y-4">
             <div>
               <label htmlFor="title" className="text-sm font-medium text-ink-muted">
@@ -276,8 +278,6 @@ export function JourneyForm({ journey }: JourneyFormProps) {
             </div>
           )}
         </div>
-
-        {!journey && <FirstEpisodeSection onBusyChange={setEpisodeBusy} />}
 
         {state.error && <p className="mt-4 text-sm text-danger">{state.error}</p>}
 

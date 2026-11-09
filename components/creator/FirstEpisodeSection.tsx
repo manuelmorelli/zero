@@ -23,7 +23,7 @@ export function FirstEpisodeSection({ onBusyChange }: { onBusyChange: (busy: boo
   }
 
   return (
-    <section className="mt-6 border-t border-border pt-5">
+    <section className="border-b border-border pb-5">
       <SectionTitle>
         First Episode <span className="text-sm font-medium text-ink-faint">(optional)</span>
       </SectionTitle>
