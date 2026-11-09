@@ -200,6 +200,137 @@ marcato "già accettato" retroattivamente per nessuno.
 
 ---
 
+## 8. Moderazione: chi controlla le segnalazioni e cosa fare in caso di materiale di abuso su minori
+
+**Deciso l'8 nov 2026 (Punto 6 dell'allineamento, S35).** Prima di questa decisione il pannello
+`/admin/reports` permetteva solo di chiudere una segnalazione (`setReportStatus`), senza mai
+nascondere il contenuto segnalato né l'account che lo ha pubblicato: un contenuto grave poteva
+restare visibile per ore. Aggiunte due azioni nuove in `lib/actions/adminReports.ts`:
+
+- **`hideReportedContent`** — nasconde subito il contenuto (Journey/Episodio/Commento,
+  stesso campo `deletedAt` già usato ovunque un contenuto viene nascosto nel sito). Reversibile
+  (`unhideReportedContent`). Non cancella nulla: il contenuto resta nel database/su R2, solo non
+  più visibile al pubblico.
+- **`banReportedAccount`** — risale all'account che ha pubblicato il contenuto segnalato (qualunque
+  sia il tipo di segnalazione) e lo banna (`User.status = BANNED`): la persona viene disconnessa e
+  non può più accedere (`lib/session.ts` la rimanda su `/account-suspended` a ogni tentativo).
+  Reversibile (`unbanReportedAccount`). Il campo `AccountStatus` esisteva già nello schema dal primo
+  audit ma non era mai stato collegato a nessuna azione reale fino a oggi.
+
+### Chi controlla le segnalazioni ogni giorno
+
+**Oggi: solo Manuel**, una volta al giorno, da `/admin/reports` (accessibile da computer e da
+telefono, stesso account). Non c'è nessun altro admin. Quando si aggiungerà una seconda persona al
+team, va deciso chi controlla quali giorni e aggiunta la sua email a `ADMIN_EMAILS`.
+
+### Protocollo specifico — materiale di abuso su minori (CSAM)
+
+Questo è il caso più grave possibile su una piattaforma con contenuti video: va trattato diverso da
+una segnalazione normale.
+
+1. **Non scaricare, non salvare, non condividere, non reinviare il contenuto a nessuno** (nemmeno
+   per "farlo vedere a qualcuno per conferma") e guardarlo il minimo indispensabile solo per capire
+   di cosa si tratta.
+2. **Nascondere subito** il contenuto con il tasto "Nascondi subito": sparisce dal sito, ma resta
+   salvato (non va cancellato definitivamente: può servire come prova all'autorità).
+3. **Bannare subito l'account** con il tasto "Banna l'account".
+4. **Segnalare alla Polizia Postale — Centro Nazionale per il Contrasto alla Pedopornografia Online
+   (CNCPO)**: online su `commissariatodips.it` (sezione dedicata alla pedopornografia online), o di
+   persona in un qualsiasi commissariato. Se c'è un rischio immediato e in corso per un minore,
+   chiamare anche il 114 (Emergenza Infanzia) o il 112.
+5. **Annotare un log privato** (data, ID della segnalazione, azioni fatte, se e quando segnalato
+   alla Polizia Postale), conservato fuori dal sito — mai descrivere il contenuto stesso nel log.
+
+**Nota legale aperta:** oggi Zero non ha un'entità legale registrata (vedi `100_Verso_Online.md`),
+quindi l'obbligo di segnalazione previsto dalla legge italiana (L. 269/1998) grava su Manuel come
+persona fisica che gestisce il sito. Da rivedere quando si registrerà una società.
+
+---
+
+## 9. Piano scritto per una fuga di dati (data breach)
+
+**Scritto l'8 nov 2026 (Punto 6 dell'allineamento, S35).** Il GDPR (Art. 33 e 34) obbliga chi
+gestisce dati personali ad avere un piano pronto *prima* che succeda un incidente, non da
+inventare al momento. Oggi questo piano non esisteva in nessuna forma scritta: questa sezione lo
+crea.
+
+### Cos'è una "fuga di dati" per Zero
+
+Qualsiasi evento che porta alla distruzione, perdita, modifica, divulgazione o accesso non
+autorizzato ai dati personali degli utenti (vedi tabella al punto 1). Esempi concreti per
+l'infrastruttura reale di Zero:
+
+- Accesso non autorizzato al database Neon (es. credenziali `DATABASE_URL` rubate o esposte).
+- Accesso non autorizzato al bucket Cloudflare R2 (foto profilo/copertina, video episodi, media
+  degli Update diventano scaricabili da chi non dovrebbe).
+- Falla in Better Auth o in `lib/session.ts` che permette di entrare nell'account di un altro
+  utente, o furto di sessioni (`sessions.token`).
+- Chiave API di Resend o di Google Gemini compromessa, usata per leggere email o conversazioni
+  non proprie.
+- Un bug nel codice che mostra dati privati di un utente a un altro (es. email, data di nascita)
+  invece che solo i dati pubblici previsti.
+
+### Chi è responsabile di questo piano
+
+**Oggi: solo Manuel**, stessa situazione del punto 8. Zero non ha ancora un'entità legale
+registrata (vedi `100_Verso_Online.md`): gli obblighi GDPR gravano su Manuel come persona fisica
+che gestisce il trattamento dei dati. Da rivedere quando si registrerà una società (a quel punto
+andrà anche nominato se serve un DPO, improbabile per le dimensioni attuali di Zero).
+
+### I passi da seguire quando si scopre una possibile fuga di dati
+
+1. **Contenere subito.** In base a cosa è stato compromesso:
+   - Credenziali database/API esposte → ruotarle immediatamente (rigenerare `DATABASE_URL` su
+     Neon, le chiavi R2, la API key Resend o Gemini, a seconda del caso) e invalidare quelle
+     vecchie.
+   - Bug nel codice che espone dati → disabilitare la funzione o pagina coinvolta (es. tramite
+     variabile d'ambiente, come già si fa per `MOMENTS_LIBRARY_ENABLED`) finché non è corretta.
+   - Sessioni compromesse → forzare il logout di tutte le sessioni dell'utente coinvolto
+     cancellando le sue righe in `sessions`.
+2. **Capire cosa è successo**, prima di scrivere qualsiasi comunicazione:
+   - Quali dati sono coinvolti (solo email? anche password/foto/video? dati di minori?).
+   - Quanti utenti sono coinvolti (uno, un gruppo, tutti).
+   - Da quando è in corso l'esposizione (log di Neon/R2/Resend/Vercel, se disponibili).
+   - Il problema è già stato chiuso o è ancora attivo.
+3. **Annotare tutto in un log privato** (data e ora della scoperta, cosa è successo, dati
+   coinvolti, numero di utenti, azioni di contenimento fatte, con orari) conservato fuori dal
+   sito. **Questo log va tenuto sempre**, anche per gli incidenti che poi si decide di non
+   notificare al Garante: l'Art. 33(5) del GDPR obbliga a documentare ogni fuga di dati, non solo
+   quelle notificate.
+4. **Decidere se notificare il Garante Privacy, entro 72 ore dalla scoperta** (non dall'inizio
+   dell'incidente). Obbligatorio **a meno che** sia improbabile che la fuga comporti un rischio
+   per i diritti e le libertà delle persone coinvolte (es. un file già pubblico, o dati cifrati
+   dove la chiave non è stata compromessa). In caso di dubbio, notificare: il rischio di non
+   notificare quando serviva è molto peggiore. Si fa online su `gpdp.it` (sezione "Violazioni di
+   dati personali / Data breach"), con un modulo che chiede: natura della violazione, categorie e
+   numero approssimativo di persone/dati coinvolti, conseguenze probabili, misure adottate o
+   proposte.
+5. **Decidere se avvisare anche gli utenti coinvolti direttamente** (Art. 34), obbligatorio
+   quando il rischio per loro è **alto** (es. password o dati di minori esposti, non solo
+   nome/bio già pubblici). Canale: email via Resend agli utenti coinvolti (non un annuncio
+   generico sul sito, a meno che l'email non sia disponibile o servirebbe uno sforzo
+   sproporzionato). Il messaggio deve dire, in linguaggio semplice: cosa è successo, quali dati
+   sono coinvolti, cosa rischiano, cosa hanno già fatto per risolvere, cosa possono fare loro
+   (es. "cambia la password" se le password sono a rischio anche se sono hashate).
+6. **Dopo la chiusura dell'incidente**: capire la causa reale e correggerla nel codice (non solo
+   tamponare), e aggiornare questa sezione se l'incidente rivela che il piano aveva un buco.
+
+### Cosa NON fare
+
+- Non aspettare di avere "tutte le informazioni" prima di notificare: il modulo del Garante
+  accetta anche notifiche parziali da completare dopo, le 72 ore partono dalla scoperta
+  dell'incidente, non da quando si ha il quadro completo.
+- Non minimizzare nelle comunicazioni agli utenti: devono poter valutare da soli il rischio.
+- Non cancellare log o prove dell'incidente per "pulizia": servono per la notifica e per capire
+  la causa.
+
+**Nota:** questo piano è interno (processo operativo per Manuel), non una pagina pubblica. La
+Privacy Policy pubblica (`app/(site)/privacy/page.tsx`) non descrive oggi questo impegno in modo
+esplicito: valutare se aggiungere una riga breve ("in caso di violazione dei dati, vi avviseremo
+come richiesto dalla legge") prima del lancio pubblico — vedi roadmap sotto.
+
+---
+
 ## Roadmap — cosa manca prima del lancio pubblico
 
 Da tracciare e aggiornare man mano che si decide/implementa:
@@ -244,6 +375,12 @@ Da tracciare e aggiornare man mano che si decide/implementa:
 - [x] Requisiti per diventare journeyer (profilo compilato, video di
       presentazione, Community Guidelines accettate) — implementato
       2026-09-22 (Punto 6), vedi sezione 7 sopra.
+- [x] Piano scritto per una fuga di dati (data breach), richiesto dal
+      GDPR — scritto l'8 nov 2026 (Punto 6), vedi sezione 9 sopra.
+      Aggiunta anche una riga breve nella Privacy Policy pubblica
+      (`app/(site)/privacy/page.tsx`, sezione "If something goes
+      wrong") sull'impegno a notificare entro 72 ore / gli utenti in
+      caso di rischio alto.
 
 ---
 
@@ -294,3 +431,24 @@ Da tracciare e aggiornare man mano che si decide/implementa:
   che vuole spendere il meno possibile su tutti i fronti all'apertura
   del sito. Il passaggio a pagamento resta nel backlog (S7), senza più
   una scadenza legata al lancio.
+- 2026-11-08 — Punto 6 dell'allineamento (S35): deciso che per ora
+  controlla le segnalazioni solo Manuel, ogni giorno. Scritto il
+  protocollo per il materiale di abuso su minori (sezione 8 sopra).
+  Costruite le due azioni che il protocollo richiede e che prima non
+  esistevano: nascondere subito un contenuto segnalato
+  (`hideReportedContent`/`unhideReportedContent`, reversibile) e
+  bannare l'account collegato (`banReportedAccount`/
+  `unbanReportedAccount`, reversibile) — quest'ultima usa il campo
+  `User.status` che esisteva già nello schema ma non era mai collegato
+  a nessuna azione reale. Nuova pagina `/account-suspended` e controllo
+  in `lib/session.ts` per bloccare l'accesso a un account bannato.
+- 2026-11-08 — Punto 6 dell'allineamento (S35), stessa sessione: scritto
+  il piano interno per una fuga di dati richiesto dal GDPR (sezione 9
+  sopra) — procedura passo per passo per contenere l'incidente, capire
+  cosa è successo, tenere un log privato obbligatorio (Art. 33(5)),
+  decidere se notificare il Garante entro 72 ore (Art. 33) e se avvisare
+  direttamente gli utenti coinvolti in caso di rischio alto (Art. 34),
+  specifica per l'infrastruttura reale di Zero (Neon, R2, Resend,
+  Gemini, Better Auth). Aggiunta anche una riga breve nella Privacy
+  Policy pubblica (sezione "If something goes wrong") sull'impegno a
+  notificare entro 72 ore / gli utenti in caso di rischio alto.
