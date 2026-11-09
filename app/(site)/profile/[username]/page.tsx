@@ -166,7 +166,14 @@ export default async function PublicProfilePage({
   // AboutCard resta usata da sola solo quando il video non compare affatto (visitatore su un
   // profilo senza ancora un video di presentazione).
   const overviewCards: ReactNode[] = [];
-  if (featuredJourney) overviewCards.push(<FeaturedJourneySection key="featured" journey={featuredJourney} />);
+  if (featuredJourney)
+    overviewCards.push(
+      <FeaturedJourneySection
+        key="featured"
+        journey={featuredJourney}
+        episodeCount={episodeCounts.get(featuredJourney.id) ?? 0}
+      />
+    );
   if (showPresentationCard) {
     overviewCards.push(
       <PresentationVideoCard

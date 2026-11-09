@@ -1,8 +1,4 @@
-import Image from "next/image";
-import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
-import { CoverChip, CoverTitle } from "@/components/ui/cover-card";
-import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
+import { CoverChip, CoverFrame, CoverTitle } from "@/components/ui/cover-card";
 
 type FeaturedJourneySectionProps = {
   journey: {
@@ -13,61 +9,41 @@ type FeaturedJourneySectionProps = {
     journeyScore: number;
     status: string;
   };
+  episodeCount?: number;
 };
 
 // Il Journey "in evidenza": tra i Journey pubblicati del creator, quello che ha ricevuto
 // l'episodio più recente (vedi lib/profile/featuredJourney.ts). Con un solo Journey pubblicato
-// coincide semplicemente con quello. Categoria/titolo sovrapposti alla foto, stesso "poster
-// style" di JourneyCard/VideoCard/ContentCard.
-export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps) {
+// coincide semplicemente con quello. Stesso CoverFrame (format "journey") di JourneyCard, per
+// restare sempre alle stesse misure del resto del sito.
+export function FeaturedJourneySection({ journey, episodeCount }: FeaturedJourneySectionProps) {
   return (
-    <Link
+    <CoverFrame
+      format="journey"
       href={`/journeys/${journey.id}`}
-      className="group block self-start max-md:w-full md:w-[calc((100%-2rem)/2)] md:shrink-0 lg:w-[calc((100%-4rem)/3)] transition-transform duration-300 hover:-translate-y-1"
-    >
-      {/* Stessa proporzione 16:9 delle altre copertine Journey/Episode, telefono e computer. */}
-      <div className="relative max-md:aspect-video w-full overflow-hidden rounded-xl border border-ember-line transition-[border-color,box-shadow] duration-300 group-hover:border-ember group-hover:shadow-glow md:aspect-video">
-        {journey.coverUrl ? (
-          <Image
-            src={journey.coverUrl}
-            alt={journey.title}
-            fill
-            sizes="(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 100vw"
-            quality={COVER_IMAGE_QUALITY}
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          />
-        ) : (
-          <div className="absolute inset-0 cover-placeholder" />
-        )}
-        <div className="absolute inset-0 card-scrim" />
-        <CoverChip className="absolute left-3 top-3 bg-overlay-soft uppercase tracking-wider max-md:px-2 max-md:py-0.5">
+      imageUrl={journey.coverUrl}
+      imageAlt={journey.title}
+      className="self-start max-md:w-full md:w-[calc((100%-2rem)/2)] md:shrink-0 lg:w-[calc((100%-4rem)/3)]"
+      topLeft={
+        <CoverChip className="bg-overlay-soft uppercase tracking-wider max-md:px-2 max-md:py-0.5">
           In Progress
         </CoverChip>
-
-        <div className="absolute inset-x-0 bottom-0 p-3.5 max-md:p-2.5">
+      }
+      overlay={
+        <>
           {journey.category && (
-            <CoverChip className="-ml-1 bg-overlay-soft uppercase tracking-wider max-md:px-2 max-md:py-0.5 max-md:normal-case max-md:tracking-normal">
+            <CoverChip className="-ml-2 mt-2 px-2 py-0.5 bg-overlay-soft uppercase tracking-wider max-md:px-2 max-md:py-0.5 max-md:normal-case max-md:tracking-normal">
               {journey.category}
             </CoverChip>
           )}
-          <CoverTitle className="truncate transition-colors group-hover:text-ember">
-            {journey.title}
-          </CoverTitle>
-          <div className="mt-2 flex items-center justify-between gap-2 max-md:hidden">
-            {journey.status === "PUBLISHED" ? (
-              <span className="flex shrink-0 items-center gap-1 text-sm font-bold text-ember">
-                <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-                {journey.journeyScore}
-              </span>
-            ) : (
-              <span />
-            )}
-            <span className="inline-flex w-fit shrink-0 items-center justify-center rounded-full border border-ember-line bg-ember-soft px-4 py-1.5 text-sm font-semibold text-ember backdrop-blur-md transition-colors group-hover:border-ember">
-              View Journey
-            </span>
-          </div>
-        </div>
-      </div>
-    </Link>
+          <CoverTitle>{journey.title}</CoverTitle>
+          {episodeCount !== undefined && (
+            <p className="mt-1 text-sm">
+              {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
+            </p>
+          )}
+        </>
+      }
+    />
   );
 }

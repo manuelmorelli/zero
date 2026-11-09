@@ -42,7 +42,7 @@ export function AboutCard({ profileUserId, name, bio, interests }: AboutCardProp
           <p className="mt-3 text-sm text-ink-faint">{name} hasn&apos;t written a bio yet.</p>
         )}
         {interests && interests.length > 0 && (
-          <div className="mt-4">
+          <div className="mt-4 md:mt-auto">
             <p className="text-sm uppercase tracking-wider text-ink-faint">Focus</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {interests.map((interest) => (

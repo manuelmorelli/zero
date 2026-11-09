@@ -59,14 +59,20 @@ export function ProfileHero({
   const joinedLabel = joinedAt.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
   return (
-    <section className="relative isolate w-full md:mt-[calc(3.85rem+0.5cm)]">
+    <section
+      className="relative isolate w-full md:mt-[calc(3.85rem+0.5cm)] md:[--profile-cover-h:29rem] md:[--profile-avatar-y:calc(12rem+0.9cm)]"
+    >
       {/* Foto di copertina: su mobile una card con margine e angoli arrotondati (come la copertina
        * di Presentation.dc.html nel mockup — prima era un rettangolo a piena larghezza, angoli
        * vivi, molto più alto: lontano dal mockup), da desktop in su invariata (margine laterale +
        * angoli arrotondati, come prima). Occupa davvero questa altezza nel flusso della pagina:
-       * quello che viene dopo non può finire sopra la foto invece che sotto. */}
+       * quello che viene dopo non può finire sopra la foto invece che sotto.
+       * Da desktop, l'altezza della copertina (--profile-cover-h) e la posizione della riga
+       * avatar/nome dentro la foto (--profile-avatar-y, distanza dal bordo alto) sono due valori
+       * separati e nominati: cambiare l'altezza della copertina non richiede più ricalcolare a
+       * mano la risalita dell'avatar, che resta ancorata alla stessa posizione nella foto. */}
       <div className="px-5 max-md:pt-20 md:px-0 md:pt-0">
-        <div className="relative aspect-4/3 overflow-hidden rounded-xl md:aspect-auto md:mx-[4.43%] md:h-[29rem] md:rounded-2xl">
+        <div className="relative aspect-4/3 overflow-hidden rounded-xl md:aspect-auto md:mx-[4.43%] md:h-[var(--profile-cover-h)] md:rounded-2xl">
           <div className="absolute inset-0 -z-10">
             {coverUrl ? (
               <FadeImage
@@ -99,7 +105,7 @@ export function ProfileHero({
        * coprirla quasi tutta. Da desktop in su invariata. */}
       <div
         className={cn(
-          "relative z-10 -mt-14 sm:-mt-16 md:-mt-[calc(17rem-0.9cm)]",
+          "relative z-10 -mt-14 sm:-mt-16 md:mt-[calc(var(--profile-avatar-y)-var(--profile-cover-h))]",
           PAGE_WIDTH.wideCover
         )}
       >

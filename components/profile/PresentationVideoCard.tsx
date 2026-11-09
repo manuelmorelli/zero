@@ -167,7 +167,10 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
     <>
       <div
         onClick={handlePosterClick}
-        className={cn("relative aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border max-md:min-w-0 max-md:flex-1 max-md:border-ember-line md:left-[126px]", cardWidth, videoUrl ? "border-border bg-surface-2" : "border-ember-line cover-placeholder")}
+        // md:ml invece di left: un margine reale sposta anche la Bio che segue nel flusso della
+        // riga (non serve più ripetere lo stesso scarto anche su di lei), uno scarto "visivo"
+        // via left no.
+        className={cn("relative aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border max-md:min-w-0 max-md:flex-1 max-md:border-ember-line md:ml-[126px]", cardWidth, videoUrl ? "border-border bg-surface-2" : "border-ember-line cover-placeholder")}
       >
         {videoUrl ? (
           <>
@@ -236,7 +239,7 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
       <div
         className={cn(
           PANEL_ACCENT,
-          "bio-card relative hidden md:flex md:aspect-[224/152] md:flex-col md:overflow-y-auto md:w-[calc((100%-2rem)/3*2)] md:shrink-0 md:left-[126px] lg:w-[calc((100%-4rem)/5*2)]"
+          "bio-card relative hidden md:flex md:aspect-[224/152] md:flex-col md:overflow-y-auto md:w-[calc((100%-2rem)/3*2)] md:shrink-0 lg:w-[calc((100%-4rem)/5*2)]"
         )}
       >
         <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
@@ -249,7 +252,7 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
           <p className="mt-3 text-sm text-ink-faint">{name} hasn&apos;t written a bio yet.</p>
         )}
         {interests && interests.length > 0 && (
-          <div className="mt-4">
+          <div className="mt-4 md:mt-auto">
             <p className="text-sm uppercase tracking-wider text-ink-faint">Focus</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {interests.map((interest) => (
