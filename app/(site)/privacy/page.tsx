@@ -53,6 +53,12 @@ export const sections: Section[] = [
     ],
   },
   {
+    title: "If something goes wrong",
+    body: [
+      "If a data breach ever puts your information at risk, we'll notify the relevant data protection authority within 72 hours as required by law, and we'll contact you directly if the risk to you is high.",
+    ],
+  },
+  {
     title: "Your rights",
     body: [
       "You can access and correct most of your information directly in Settings. You can request a copy of your data or ask us to delete it by writing to team.zero@gmail.com.",

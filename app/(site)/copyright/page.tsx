@@ -14,6 +14,7 @@ export const sections: Section[] = [
     title: "Your content, your rights",
     body: [
       "Only upload video, photos, or other material you own or have the rights to use. That includes footage of other people appearing in your Journey. **Get their consent before you publish.**",
+      "This also applies to music. **You're responsible for any song or soundtrack in your videos**: only use music you own, that's royalty-free, or that you're licensed to use. Zero isn't responsible for unlicensed music in uploaded content.",
     ],
   },
   {
