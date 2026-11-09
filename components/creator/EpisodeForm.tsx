@@ -11,7 +11,6 @@ import {
 } from "@/lib/actions/episode";
 import { ALLOWED_VIDEO_TYPES, MAX_EPISODE_DURATION_SEC, MAX_VIDEO_SIZE_BYTES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
-import { compressImageIfNeeded } from "@/lib/compressImage";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { readVideoDuration } from "@/lib/media/readVideoDuration";
 import { formatDuration } from "@/lib/format/duration";
@@ -19,6 +18,7 @@ import { FIELD } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { ImageCropper } from "@/components/common/ImageCropper";
 
 type EpisodeFormProps = {
   journeyId: string;
@@ -66,10 +66,11 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
   const [posterPreview, setPosterPreview] = useState<string | null>(episode?.posterUrl ?? null);
   const [posterError, setPosterError] = useState<string | null>(null);
   const [posterProgress, setPosterProgress] = useState<number | null>(null);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const posterInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
-  async function handlePosterChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handlePosterChosen(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
@@ -85,22 +86,29 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
       return;
     }
 
+    setCropImageSrc(URL.createObjectURL(file));
+  }
+
+  async function handlePosterCropConfirm(blob: Blob) {
+    setCropImageSrc(null);
+    setPosterError(null);
     setPosterProgress(0);
     try {
-      const uploadFile = await compressImageIfNeeded(file);
+      // getCroppedImageBlob (dentro ImageCropper) ridimensiona e comprime già il ritaglio:
+      // nessun passaggio aggiuntivo di compressImageIfNeeded, come per la copertina Journey.
       const result = await createEpisodePosterUploadUrl(
         episode ? episode.id : journeyId,
         episode ? "episode" : "journey",
-        uploadFile.type
+        blob.type
       );
       if ("error" in result) {
         setPosterError(result.error);
         setPosterProgress(null);
         return;
       }
-      await uploadFileWithProgress(result.uploadUrl, uploadFile, setPosterProgress);
+      await uploadFileWithProgress(result.uploadUrl, blob, setPosterProgress);
       setPosterKey(result.key);
-      setPosterPreview(URL.createObjectURL(uploadFile));
+      setPosterPreview(URL.createObjectURL(blob));
     } catch {
       setPosterError("Upload failed. Please try again.");
     } finally {
@@ -152,16 +160,17 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
   }
 
   return (
-    <form action={formAction} className="space-y-2.5">
-      <input type="hidden" name={episode ? "episodeId" : "journeyId"} value={episode ? episode.id : journeyId} />
+    <>
+      <form action={formAction} className="space-y-2.5">
+        <input type="hidden" name={episode ? "episodeId" : "journeyId"} value={episode ? episode.id : journeyId} />
       <input type="hidden" name="videoKey" value={videoKey ?? ""} />
       <input type="hidden" name="durationSec" value={durationSec ?? ""} />
       <input type="hidden" name="posterKey" value={posterKey} />
 
       <div className="flex gap-3">
-        <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
+        <div className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
           {posterPreview ? (
-            <Image src={posterPreview} alt="" fill sizes="96px" className="object-cover" />
+            <Image src={posterPreview} alt="" fill sizes="112px" className="object-cover" />
           ) : (
             <div className="absolute inset-0 cover-placeholder" />
           )}
@@ -180,7 +189,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
             ref={posterInputRef}
             type="file"
             accept="image/*"
-            onChange={handlePosterChange}
+            onChange={handlePosterChosen}
             className="hidden"
           />
         </div>
@@ -320,6 +329,18 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
       <Button variant="primary" type="submit" disabled={pending || uploadProgress !== null} className="w-full">
         {pending ? "Saving…" : episode ? "Save changes" : "Add episode"}
       </Button>
-    </form>
+      </form>
+
+      {cropImageSrc && (
+        <ImageCropper
+          imageSrc={cropImageSrc}
+          title="Episode cover"
+          aspect={16 / 9}
+          cropShape="rect"
+          onCancel={() => setCropImageSrc(null)}
+          onConfirm={handlePosterCropConfirm}
+        />
+      )}
+    </>
   );
 }

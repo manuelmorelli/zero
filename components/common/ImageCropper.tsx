@@ -57,13 +57,25 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
           <p className="mt-1 text-sm text-ink-muted">Drag to move, use the slider to zoom.</p>
         </div>
 
-        <div className="relative h-72 w-full bg-black">
+        <div className="relative h-72 w-full overflow-hidden bg-surface-2">
+          {/* Anteprima del margine: stessa foto, allargata e sfocata, dietro al riquadro di
+              ritaglio. Statica (non segue pan/zoom), basta a far vedere il colore prima di confermare. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 scale-110 bg-cover bg-center"
+            style={{ backgroundImage: `url(${imageSrc})`, filter: "blur(24px) saturate(1.6) brightness(1.05)" }}
+          />
           <Cropper
             image={imageSrc}
             crop={crop}
             zoom={zoom}
             minZoom={0.5}
             maxZoom={3}
+            // Sotto zoom 1 la foto è più piccola del riquadro: il blocco normale della posizione
+            // (pensato solo per foto più grandi del riquadro) andava in conflitto e il drag
+            // si inceppava. Disattivato: a zoom basso il margine vuoto è voluto (sfondo pieno
+            // dietro, riempito in lib/cropImage.ts), quindi non serve nessun blocco.
+            restrictPosition={false}
             aspect={aspect}
             cropShape={cropShape}
             showGrid={cropShape === "rect"}
