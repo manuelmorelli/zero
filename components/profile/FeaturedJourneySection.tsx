@@ -23,9 +23,12 @@ export function FeaturedJourneySection({ journey }: FeaturedJourneySectionProps)
   return (
     <Link
       href={`/journeys/${journey.id}`}
-      className="group block self-start max-md:min-w-0 max-md:flex-1 md:w-[calc((100%-2rem)/3)] md:shrink-0 lg:w-[calc((100%-4rem)/5)] transition-transform duration-300 hover:-translate-y-1"
+      className="group block self-start max-md:min-w-0 max-md:flex-1 md:w-[calc((100%-2rem)/2)] md:shrink-0 lg:w-[calc((100%-4rem)/3)] transition-transform duration-300 hover:-translate-y-1"
     >
-      <div className="relative aspect-[112/156] w-full overflow-hidden rounded-xl border border-ember-line transition-[border-color,box-shadow] duration-300 group-hover:border-ember group-hover:shadow-glow">
+      {/* Da computer in su, stessa proporzione 16:9 delle altre copertine Journey del sito.
+       * Sul telefono resta verticale (112/156): condivide la riga con la card Bio/Video di
+       * presentazione, che è esclusa dalla conversione 16:9 e lì deve restare com'era. */}
+      <div className="relative aspect-[112/156] w-full overflow-hidden rounded-xl border border-ember-line transition-[border-color,box-shadow] duration-300 group-hover:border-ember group-hover:shadow-glow md:aspect-video">
         {journey.coverUrl ? (
           <Image
             src={journey.coverUrl}

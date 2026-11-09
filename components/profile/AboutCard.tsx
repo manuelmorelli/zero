@@ -41,7 +41,7 @@ export function AboutCard({ profileUserId, name, bio, interests }: AboutCardProp
       <div
         className={cn(
           PANEL_ACCENT,
-          "bio-card relative hidden md:flex md:aspect-[224/152] md:flex-col md:overflow-y-auto md:w-[calc((100%-2rem)/3*2)] md:shrink-0 md:left-[502px] lg:w-[calc((100%-4rem)/5*2)]"
+          "bio-card relative hidden md:flex md:aspect-[224/152] md:flex-col md:overflow-y-auto md:w-[calc((100%-2rem)/3*2)] md:shrink-0 md:left-[372px] lg:w-[calc((100%-4rem)/5*2)]"
         )}
       >
         <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
