@@ -351,7 +351,10 @@ function HeroDot({ label, current, onClick }: { label: string; current: boolean;
  * pulsante Watch — tutto ciò che la Hero mobile mostra di un Journey (vedi la nota su mediaRef più
  * sopra). Niente per la citazione demo: senza un Journey vero non c'è nulla da guardare. */
 function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
-  if (slide.kind === "demo") return null;
+  // Un div vuoto (non null): deve restare comunque il primo dei due elementi flex del contenitore
+  // sopra (justify-between), altrimenti con un solo figlio la pillola in basso sale in cima
+  // invece di restare in fondo.
+  if (slide.kind === "demo") return <div aria-hidden="true" />;
 
   return (
     <div className="-ml-2 max-w-[78%]">
