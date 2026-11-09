@@ -37,7 +37,7 @@ import { NOTICE } from "@/components/ui/panel";
 import { Button, BUTTON_VARIANTS } from "@/components/ui/button";
 import { PageTitle, SectionTitle } from "@/components/ui/heading";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
-import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
+import { CARD_GRID, CARD_ROW_ITEM } from "@/components/ui/cover-card";
 import { cn } from "@/lib/utils";
 
 /** Quante Published Journeys mostrare in anteprima nell'Overview prima del link "View all"
@@ -324,7 +324,7 @@ export default async function PublicProfilePage({
                 </div>
 
                 {liveJourneys.length > 0 ? (
-                  <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+                  <div className={`mt-4 ${CARD_GRID.journey}`}>
                     {liveJourneys.slice(0, PUBLISHED_JOURNEYS_PREVIEW_COUNT).map((journey, index) => {
                       // Posizione nell'elenco completo (non nella sola anteprima): "Move" deve
                       // rispecchiare l'ordine reale, che include anche i Journey archiviati non
@@ -442,7 +442,7 @@ export default async function PublicProfilePage({
                   : `${user.name} hasn't published any Journey yet.`}
               </p>
             ) : (
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+              <div className={CARD_GRID.journey}>
                 {journeys.map((journey, index) => (
                   <Reveal key={journey.id} delayMs={index * 80}>
                     <ContentCard

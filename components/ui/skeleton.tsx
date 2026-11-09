@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
+import { CARD_GRID, CARD_ROW_ITEM } from "@/components/ui/cover-card";
 
 /*
  * Sagoma di caricamento ufficiale (scelta di Manuel, punto D2 della lista design): un blocco
@@ -19,8 +19,8 @@ export function SkeletonText({ className }: { className?: string }) {
 export type SkeletonCardFormat = "journey" | "episode" | "person";
 
 const CARD_RATIO: Record<SkeletonCardFormat, string> = {
-  journey: "aspect-4/5",
-  episode: "aspect-4/3",
+  journey: "aspect-video",
+  episode: "aspect-video",
   person: "aspect-4/5 rounded-full",
 };
 
@@ -41,8 +41,8 @@ export function SkeletonCard({
   );
 }
 
-/** Griglia di card (Dashboard, Profilo): stessa densità di JourneyGrid/"Published Journeys",
- * due per riga anche sul telefono. */
+/** Griglia di card (Dashboard, Profilo): stessa densità della griglia vera dello stesso formato
+ * (CARD_GRID), journey/episode (16:9, più larghe) incluse. */
 export function SkeletonCardRow({
   count = 5,
   format = "journey",
@@ -51,9 +51,7 @@ export function SkeletonCardRow({
   format?: SkeletonCardFormat;
 }) {
   return (
-    // md, non sm: stesso confine telefono/computer del resto (vedi components/ui/cover-card.tsx),
-    // così il placeholder di caricamento ha sempre la stessa densità della griglia vera sotto.
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+    <div className={CARD_GRID[format]}>
       {Array.from({ length: count }).map((_, index) => (
         <SkeletonCard key={index} format={format} />
       ))}

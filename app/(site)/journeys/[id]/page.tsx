@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { ListVideo, MessageSquare, Play, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getViewerSession } from "@/lib/session";
@@ -25,6 +26,42 @@ import { NOTICE, ROW } from "@/components/ui/panel";
 import { PageTitle, SectionTitle } from "@/components/ui/heading";
 import { cn, formatCompactNumber } from "@/lib/utils";
 import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
+
+/** Anteprima quando si condivide il link del Journey (WhatsApp, iMessage, ecc.): stesso principio
+ * della copertina già risolta per la pagina stessa più sotto, qui in una query separata e più
+ * leggera perché generateMetadata gira indipendente dal componente della pagina. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const journey = await prisma.journey.findUnique({
+    where: { id },
+    select: { title: true, description: true, coverUrl: true, status: true, deletedAt: true },
+  });
+  if (!journey || journey.deletedAt || !isPubliclyReachableJourneyStatus(journey.status)) return {};
+
+  const coverUrl = await resolveCoverUrl(journey.coverUrl);
+  const description = journey.description ?? undefined;
+
+  return {
+    title: `${journey.title} | Zero`,
+    description,
+    openGraph: {
+      title: journey.title,
+      description,
+      type: "website",
+      images: coverUrl ? [{ url: coverUrl }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: journey.title,
+      description,
+      images: coverUrl ? [coverUrl] : undefined,
+    },
+  };
+}
 
 export default async function PublicJourneyPage({
   params,
@@ -87,9 +124,9 @@ export default async function PublicJourneyPage({
         <Reveal className="md:min-w-0">
           <div className="grid gap-4">
             {/* Sul telefono la foto esce dal margine laterale della pagina (-mx-5 annulla
-             * esattamente il px-5 del contenitore) ed è più alta (aspect-[40/39], il 4:3 di
-             * partenza +30%). Angoli arrotondati su tutti e quattro i lati, come da computer. */}
-            <div className="relative -mx-5 aspect-[40/39] w-auto overflow-hidden rounded-xl border border-border bg-surface-2 md:mx-auto md:aspect-video md:w-[min(100%,calc(70vh*16/9))]">
+             * esattamente il px-5 del contenitore). Stessa proporzione 16:9 di computer e
+             * telefono. Angoli arrotondati su tutti e quattro i lati, come da computer. */}
+            <div className="relative -mx-5 aspect-video w-auto overflow-hidden rounded-xl border border-border bg-surface-2 md:mx-auto md:w-[min(100%,calc(70vh*16/9))]">
               {journeyCoverUrl ? (
                 <Image
                   src={journeyCoverUrl}
@@ -359,11 +396,10 @@ function EpisodeRow({
         id={episode.id}
         className={cn(ROW, "group flex w-full max-w-[420px] scroll-mt-24 items-start gap-3 p-2 text-left transition-transform duration-300 hover:-translate-y-0.5")}
       >
-        {/* Stessa correzione fatta nella lista "Up Next" della pagina Episodio: proporzione
-         * 112/156 ufficiale invece del vecchio riquadro 4:3 fatto a mano (tagliava le foto più
-         * alte che larghe), più il menu a tre puntini nella stessa posizione (sopra la
-         * copertina, in alto a destra). */}
-        <div className="group/thumb relative aspect-[112/156] w-36 shrink-0 sm:w-44 md:w-28">
+        {/* Copertina piccola, stessa proporzione 16:9 delle copertine episodio in tutto il
+         * sito, più il menu a tre puntini nella stessa posizione (sopra la copertina, in alto
+         * a destra). */}
+        <div className="group/thumb relative aspect-video w-36 shrink-0 sm:w-44 md:w-28">
           <Link href={episodeHref} className="absolute inset-0 block overflow-hidden rounded-lg border border-border bg-surface-2">
             {episode.posterUrl || coverUrl ? (
               <Image

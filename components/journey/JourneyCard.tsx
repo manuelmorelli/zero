@@ -37,7 +37,7 @@ type JourneyCardProps = {
 // avvolgere la card in un <Link> è una classe di bug già capitata più volte. Per mostrare altro
 // sotto la card si usa `footer`, mai un secondo <Link> attorno (sarebbe un <a> annidato).
 //
-// Formato ufficiale delle card Journey (scelta 20C): verticale 4:5, cinque per riga.
+// Formato ufficiale delle card Journey (2026-11-09): orizzontale 16:9, come i video di YouTube.
 export function JourneyCard({ journey, className, badge, footer }: JourneyCardProps) {
   const { id, title, coverUrl, category, creator, journeyScore, episodeCount } = journey;
 

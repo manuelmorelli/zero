@@ -70,8 +70,8 @@ export function NextEpisodeOverlay({ journeyId, next, onWatchAgain }: NextEpisod
       {next ? (
         <div className={cn(PANEL, CARD_WIDTH, "relative flex items-center gap-4 p-4")}>
           {next.posterUrl && (
-            <span className="relative hidden aspect-4/3 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:block">
-              <Image src={next.posterUrl} alt="" fill sizes="112px" className="object-cover" />
+            <span className="relative hidden aspect-video w-32 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:block">
+              <Image src={next.posterUrl} alt="" fill sizes="128px" className="object-cover" />
             </span>
           )}
           <div className="min-w-0 flex-1 text-left">

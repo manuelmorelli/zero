@@ -12,15 +12,19 @@ import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
 export type CoverFormat = "journey" | "episode" | "event" | "person" | "featured";
 
-// Stessa identica proporzione per journey/episode/event/person (112x156 nel mockup,
-// ContinueCard.dc.html e PosterCard.dc.html: la stessa scatola per ogni tipo di card),
-// su richiesta esplicita di Manuel, 2026-10-29: card di forma diversa tra loro nella stessa
-// pagina (Continue Watching più "quadrata" dell'4:3, Recommended più alta col 4:5) non erano
-// accettabili. "featured" resta diversa: è una card singola in bella mostra, non una riga.
+// Stessa identica proporzione per event/person (112x156 nel mockup, ContinueCard.dc.html e
+// PosterCard.dc.html), su richiesta esplicita di Manuel, 2026-10-29: card di forma diversa tra
+// loro nella stessa pagina non erano accettabili. "featured" resta diversa: è una card singola
+// in bella mostra, non una riga.
 const ROW_RATIO = "aspect-[112/156]";
+// Journey/episode passano a 16:9 (2026-11-09, scelta di Manuel): stesso formato dei video di
+// YouTube, per rendere facile a un creator che arriva da lì portare le sue copertine su Zero.
+// Esplicitamente ESCLUSE da questo cambio: la card del video di presentazione (player a parte),
+// le copertine di eventi/Activities ed event/person qui sotto, e le card persona/wildcard.
+const VIDEO_RATIO = "aspect-video";
 const RATIO: Record<CoverFormat, string> = {
-  journey: ROW_RATIO,
-  episode: ROW_RATIO,
+  journey: VIDEO_RATIO,
+  episode: VIDEO_RATIO,
   // Stessa forma verticale ovunque (2026-11-03): il ritaglio al caricamento (CommunityListingForm)
   // è ora 112/156, quindi la foto scelta dalla persona va bene al primo colpo sia su telefono
   // che su computer, senza bisogno di un secondo ritaglio dedicato al computer.
@@ -38,9 +42,13 @@ const RATIO: Record<CoverFormat, string> = {
 // Sul telefono colonne a larghezza fissa (112px, come le card nelle righe — stesso motivo:
 // niente colonne che si allargano ruotando lo schermo). Da tablet in su invariate (colonne
 // fluide, numero fisso per riga).
+// Journey/episode (16:9) una sola card per riga sul telefono (larghezza piena, non più 112px
+// fissi: troppo piccola per un formato orizzontale), 2 a tablet e 3 a computer, come nelle
+// righe a scorrimento (CARD_ROW_ITEM, stessa larghezza finale).
+const VIDEO_GRID = "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3";
 export const CARD_GRID: Record<Exclude<CoverFormat, "featured">, string> = {
-  journey: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-2 lg:grid-cols-4",
-  episode: "grid grid-cols-[repeat(auto-fill,112px)] gap-4 md:grid-cols-2 lg:grid-cols-4",
+  journey: VIDEO_GRID,
+  episode: VIDEO_GRID,
   // Da tablet in su stesse dimensioni delle copertine di Recent Episodes sul profilo
   // personale (CARD_ROW_ITEM.episode, 3 colonne a md e 5 a lg con lo stesso gap-4):
   // qui la riga equivalente in griglia, non a scorrimento (Manuel, 2026-11-04).
@@ -53,16 +61,20 @@ export const CARD_GRID: Record<Exclude<CoverFormat, "featured">, string> = {
  * quella della griglia dello stesso formato, così la card non cambia misura tra pagine. Sul
  * telefono, 46.2% (prima 42%, +10% su richiesta di Manuel, 2026-10-29: ancora troppo piccole nel
  * confronto con il mockup). Da tablet in su invariato (fluida, come prima). */
+// Journey/episode (16:9) sono più larghe delle altre card verticali, altrimenti la stessa
+// percentuale le farebbe uscire come una striscia sottile (misura già vista e approvata da
+// Manuel nel test su Home, 2026-11-09).
+const VIDEO_ROW_ITEM = "w-[78%] shrink-0 md:w-[calc((100%-2rem)/2)] lg:w-[calc((100%-4rem)/3)]";
 export const CARD_ROW_ITEM: Record<Exclude<CoverFormat, "featured">, string> = {
-  journey: "w-[46.2%] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
-  episode: "w-[46.2%] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
+  journey: VIDEO_ROW_ITEM,
+  episode: VIDEO_ROW_ITEM,
   event: "w-[46.2%] shrink-0 md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)]",
   person: "w-[46.2%] shrink-0 md:w-[calc((100%-3rem)/4)] lg:w-[calc((100%-7rem)/8)]",
 };
 
 const SIZES: Record<CoverFormat, string> = {
-  journey: "(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 100vw",
-  episode: "(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw",
+  journey: "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 78vw",
+  episode: "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 78vw",
   event: "(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw",
   person: "(min-width: 1024px) 12vw, (min-width: 640px) 25vw, 50vw",
   featured: "(min-width: 1024px) 34vw, 100vw",

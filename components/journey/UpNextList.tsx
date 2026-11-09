@@ -47,12 +47,10 @@ export function UpNextList({ journeyId, journeyTitle, coverUrl, episodes, active
           return (
             <li key={episode.id}>
               <div className={cn(ROW, "group flex items-start gap-3", active ? "border-ember-line bg-ember-soft" : "bg-transparent")}>
-                {/* Copertina piccola in un riquadro a parte (stessa proporzione 112/156 usata per
-                 * le copertine episodio in tutto il sito, non più un riquadro 4:3 fatto a mano):
-                 * quello vecchio schiacciava le foto più alte che larghe, tagliandole male (es.
-                 * "Walk" si vedeva a metà). Link separato dal titolo solo per poter mettere il
+                {/* Copertina piccola in un riquadro a parte, stessa proporzione 16:9 delle copertine
+                 * episodio in tutto il sito. Link separato dal titolo solo per poter mettere il
                  * menu a tre puntini qui sopra, fuori da un <a> (un bottone non può starci dentro). */}
-                <div className="group/thumb relative aspect-[112/156] w-28 shrink-0">
+                <div className="group/thumb relative aspect-video w-28 shrink-0">
                   <Link href={episodeHref} className="absolute inset-0 block overflow-hidden rounded-lg border border-border bg-surface-2">
                     {episode.posterUrl || coverUrl ? (
                       <Image src={episode.posterUrl || coverUrl!} alt="" fill sizes="112px" className="object-cover" />

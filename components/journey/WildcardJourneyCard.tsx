@@ -16,7 +16,7 @@ export function WildcardJourneyCard({ journeyId, className }: WildcardJourneyCar
       href={`/journeys/${journeyId}`}
       className={cn(
         PANEL_DASHED,
-        "group relative flex aspect-4/3 flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border-ember-line bg-surface-2 p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-ember hover:shadow-glow",
+        "group relative flex aspect-video flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border-ember-line bg-surface-2 p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-ember hover:shadow-glow",
         className
       )}
     >

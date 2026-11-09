@@ -37,7 +37,7 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
   return (
     // md, non sm (640px): stesso confine telefono/computer di Header/BottomNav/Hero, vedi la nota
     // in components/ui/cover-card.tsx.
-    <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {journeys.map((journey) => {
         const reachableIndex = reachable.findIndex((item) => item.id === journey.id);
         const isReachable = reachableIndex !== -1;
@@ -56,14 +56,14 @@ export function JourneyGrid({ journeys }: { journeys: GridJourney[] }) {
             >
               <Link
                 href={`/dashboard/journeys/${journey.id}`}
-                className="relative block aspect-4/3 overflow-hidden"
+                className="relative block aspect-video overflow-hidden"
               >
                 {journey.coverUrl ? (
                   <Image
                     src={journey.coverUrl}
                     alt={journey.title}
                     fill
-                    sizes="(min-width: 1024px) 20vw, 33vw"
+                    sizes="(min-width: 1024px) 25vw, 50vw"
                     quality={COVER_IMAGE_QUALITY}
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />

@@ -177,9 +177,9 @@ export function EpisodeVideoField({
           <div className="relative w-56">
             {posterPreviewUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={posterPreviewUrl} alt="" className="aspect-4/3 w-56 rounded-lg object-cover" />
+              <img src={posterPreviewUrl} alt="" className="aspect-video w-56 rounded-lg object-cover" />
             ) : (
-              <div className="flex aspect-4/3 w-56 items-center justify-center rounded-lg bg-surface-2">
+              <div className="flex aspect-video w-56 items-center justify-center rounded-lg bg-surface-2">
                 <VideoIcon className="h-6 w-6 text-ink-muted" aria-hidden="true" />
               </div>
             )}
