@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { getViewerSession } from "@/lib/session";
 import { getImagePlaybackUrl, getVideoPlaybackUrl } from "@/lib/r2";
@@ -10,6 +11,51 @@ import { EpisodePlayer } from "@/components/journey/EpisodePlayer";
 import { UpNextList } from "@/components/journey/UpNextList";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { cn } from "@/lib/utils";
+
+/** Anteprima quando si condivide il link dell'episodio: stesso principio di generateMetadata
+ * nella pagina Journey, copertina dell'episodio se c'è, altrimenti quella del Journey. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; episodeId: string }>;
+}): Promise<Metadata> {
+  const { id, episodeId } = await params;
+  const journey = await prisma.journey.findUnique({
+    where: { id },
+    select: { title: true, status: true, deletedAt: true, coverUrl: true },
+  });
+  if (!journey || journey.deletedAt || !isPubliclyReachableJourneyStatus(journey.status)) return {};
+
+  const episode = await prisma.episode.findFirst({
+    where: { id: episodeId, journeyId: id, deletedAt: null, publishedAt: { not: null } },
+    select: { title: true, caption: true, posterKey: true },
+  });
+  if (!episode) return {};
+
+  const [episodePosterUrl, journeyCoverUrl] = await Promise.all([
+    episode.posterKey ? getImagePlaybackUrl(episode.posterKey) : Promise.resolve(null),
+    resolveCoverUrl(journey.coverUrl),
+  ]);
+  const imageUrl = episodePosterUrl ?? journeyCoverUrl;
+  const description = episode.caption ?? undefined;
+
+  return {
+    title: `${episode.title} · ${journey.title} | Zero`,
+    description,
+    openGraph: {
+      title: episode.title,
+      description,
+      type: "video.other",
+      images: imageUrl ? [{ url: imageUrl }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: episode.title,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
+  };
+}
 
 export default async function EpisodePlayerPage({
   params,
