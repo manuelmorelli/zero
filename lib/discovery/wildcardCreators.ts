@@ -1,7 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
-import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
-import { getStableWildcardPicks } from "@/lib/discovery/wildcard";
+import { getWildcardJourneyIds } from "@/lib/discovery/wildcard";
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 
@@ -11,25 +9,12 @@ import type { CreatorSearchResult } from "@/lib/search/searchCreators";
  * creator da seguire invece che come singolo Journey. Un creator già mostrato non si ripete
  * anche se il suo Journey vince la Wildcard in più categorie.
  */
-export async function getWildcardsToFollow(limit = 10): Promise<CreatorSearchResult[]> {
-  const journeys = await prisma.journey.findMany({
-    where: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null, category: { not: null } },
-    select: { id: true, category: true },
-  });
-
-  const byCategory = new Map<string, { id: string }[]>();
-  for (const journey of journeys) {
-    if (!journey.category) continue;
-    const list = byCategory.get(journey.category) ?? [];
-    list.push({ id: journey.id });
-    byCategory.set(journey.category, list);
-  }
-
-  const picks = await getStableWildcardPicks(byCategory);
-  if (picks.size === 0) return [];
+export async function getWildcardsToFollow(limit = 10, wildcardJourneyIds?: string[]): Promise<CreatorSearchResult[]> {
+  const journeyIds = wildcardJourneyIds ?? (await getWildcardJourneyIds());
+  if (journeyIds.length === 0) return [];
 
   const pickedJourneys = await prisma.journey.findMany({
-    where: { id: { in: Array.from(picks.values()) } },
+    where: { id: { in: journeyIds } },
     include: { creator: { include: { user: { include: { _count: { select: { followers: true } } } } } } },
   });
   const journeyById = new Map(pickedJourneys.map((journey) => [journey.id, journey]));
@@ -37,10 +22,9 @@ export async function getWildcardsToFollow(limit = 10): Promise<CreatorSearchRes
   const seenCreatorIds = new Set<string>();
   const creators: CreatorSearchResult[] = [];
 
-  for (const category of JOURNEY_CATEGORIES) {
+  for (const journeyId of journeyIds) {
     if (creators.length >= limit) break;
-    const journeyId = picks.get(category);
-    const journey = journeyId ? journeyById.get(journeyId) : undefined;
+    const journey = journeyById.get(journeyId);
     if (!journey || seenCreatorIds.has(journey.creator.id)) continue;
     seenCreatorIds.add(journey.creator.id);
 

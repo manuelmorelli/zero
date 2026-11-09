@@ -24,9 +24,9 @@ export type DiscoveringNowItem = {
  * in Home, separata di proposito da Recommended (che resta mirata per interessi) — il Journey
  * Score non entra mai in gioco qui, coerente con "sezioni base garantite a tutti dal primo secondo".
  */
-export async function getDiscoveringNowJourneys(limit = 10): Promise<DiscoveringNowItem[]> {
+export async function getDiscoveringNowJourneys(limit = 10, excludeJourneyIds: string[] = []): Promise<DiscoveringNowItem[]> {
   const journeys = await prisma.journey.findMany({
-    where: { status: "DISCOVERY", deletedAt: null },
+    where: { status: "DISCOVERY", deletedAt: null, id: { notIn: excludeJourneyIds } },
     orderBy: { publishedAt: "desc" },
     take: limit,
     include: { creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } } },

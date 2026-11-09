@@ -35,7 +35,8 @@ export type TopJourneyItem = {
 export async function getTopJourneys({
   limit = 10,
   interests = [],
-}: { limit?: number; interests?: string[] } = {}): Promise<TopJourneyItem[]> {
+  excludeJourneyIds = [],
+}: { limit?: number; interests?: string[]; excludeJourneyIds?: string[] } = {}): Promise<TopJourneyItem[]> {
   const rankingUnlocked = await isAlgorithmicRankingUnlocked();
 
   // I candidati sono i migliori per punteggio già salvato (o i più recenti, prima dello sblocco),
@@ -44,7 +45,12 @@ export async function getTopJourneys({
   // altrimenti potrebbero restare fuori dal gruppo generale.
   const findCandidates = (categories?: string[]) =>
     prisma.journey.findMany({
-      where: { status: "PUBLISHED", deletedAt: null, ...(categories ? { category: { in: categories } } : {}) },
+      where: {
+        status: "PUBLISHED",
+        deletedAt: null,
+        id: { notIn: excludeJourneyIds },
+        ...(categories ? { category: { in: categories } } : {}),
+      },
       take: TOP_CANDIDATES,
       orderBy: rankingUnlocked ? [{ journeyScore: "desc" }, { publishedAt: "desc" }] : { publishedAt: "desc" },
       include: {

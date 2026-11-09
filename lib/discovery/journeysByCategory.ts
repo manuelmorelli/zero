@@ -55,12 +55,15 @@ export async function getJourneysByCategory(): Promise<JourneyCategoryRow[]> {
   for (const category of JOURNEY_CATEGORIES) {
     const list = byCategory.get(category);
     if (!list || list.length === 0) continue;
+    // Il Journey pescato come Wildcard non va ripetuto subito dopo nella stessa riga.
+    const wildcardJourneyId = wildcardPicks.get(category) ?? null;
+    const rowJourneys = wildcardJourneyId ? list.filter((journey) => journey.id !== wildcardJourneyId) : list;
 
     rows.push({
       category,
       slug: categoryToSlug(category),
       journeys: await Promise.all(
-        list.slice(0, JOURNEYS_PER_ROW).map(async (journey) => ({
+        rowJourneys.slice(0, JOURNEYS_PER_ROW).map(async (journey) => ({
           id: journey.id,
           title: journey.title,
           coverUrl: journey.coverUrl,
@@ -74,7 +77,7 @@ export async function getJourneysByCategory(): Promise<JourneyCategoryRow[]> {
           },
         }))
       ),
-      wildcardJourneyId: wildcardPicks.get(category) ?? null,
+      wildcardJourneyId,
     });
   }
   return rows;

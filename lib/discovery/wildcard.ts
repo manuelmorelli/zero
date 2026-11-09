@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 
 /** Un pick più vecchio di 24 ore va ricalcolato alla prossima lettura (nessun cron job) — stesso
  * principio già in uso per il Journey Score, vedi lib/scoring/journeyScore.ts. */
@@ -46,4 +48,27 @@ export async function getStableWildcardPicks(
   );
 
   return result;
+}
+
+/**
+ * Id del pick Wildcard di ciascuna categoria, nell'ordine di JOURNEY_CATEGORIES: un Journey per
+ * categoria, stesso pick stabile di getStableWildcardPicks(). Usata dalla card Wildcard di
+ * /journeys e dalla riga "Wildcard Journeys" della Home.
+ */
+export async function getWildcardJourneyIds(): Promise<string[]> {
+  const journeys = await prisma.journey.findMany({
+    where: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null, category: { not: null } },
+    select: { id: true, category: true },
+  });
+
+  const byCategory = new Map<string, { id: string }[]>();
+  for (const journey of journeys) {
+    if (!journey.category) continue;
+    const list = byCategory.get(journey.category) ?? [];
+    list.push({ id: journey.id });
+    byCategory.set(journey.category, list);
+  }
+
+  const picks = await getStableWildcardPicks(byCategory);
+  return JOURNEY_CATEGORIES.filter((category) => picks.has(category)).map((category) => picks.get(category)!);
 }

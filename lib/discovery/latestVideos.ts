@@ -29,7 +29,8 @@ export type LatestVideoItem = {
 export async function getLatestVideos({
   limit = 10,
   interests = [],
-}: { limit?: number; interests?: string[] } = {}): Promise<LatestVideoItem[]> {
+  excludeJourneyIds = [],
+}: { limit?: number; interests?: string[]; excludeJourneyIds?: string[] } = {}): Promise<LatestVideoItem[]> {
   const pool = interests.length > 0 ? Math.max(limit * 4, 20) : limit;
 
   const episodes = await prisma.episode.findMany({
@@ -38,7 +39,7 @@ export async function getLatestVideos({
       deletedAt: null,
       publishedAt: { not: null },
       OR: [{ chapterId: null }, { chapter: { deletedAt: null } }],
-      journey: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null },
+      journey: { status: { in: LIVE_JOURNEY_STATUSES }, deletedAt: null, id: { notIn: excludeJourneyIds } },
     },
     orderBy: { createdAt: "desc" },
     take: pool,

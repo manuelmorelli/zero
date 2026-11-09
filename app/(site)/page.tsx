@@ -29,6 +29,8 @@ import {
 } from "@/lib/demo/demoContent";
 import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { getWildcardsToFollow } from "@/lib/discovery/wildcardCreators";
+import { getWildcardJourneyIds } from "@/lib/discovery/wildcard";
+import { WildcardJourneyCard } from "@/components/journey/WildcardJourneyCard";
 import { getFollowedCreatorsStories, getOwnStory } from "@/lib/discovery/stories";
 import { getLatestVideos } from "@/lib/discovery/latestVideos";
 import { getTopJourneys } from "@/lib/discovery/topJourneys";
@@ -83,6 +85,11 @@ export default async function Home() {
   const continueJourneys = await getContinueJourneys(session);
   const excludeFromDiscovery = continueJourneys.map((item) => item.journeyId);
 
+  // Pescato prima del Promise.all perché serve come esclusione alle altre righe sotto: un Journey
+  // già mostrato come Wildcard non deve ripetersi uguale in Recommended/Most Trusted/Discovering
+  // Now/Latest Videos nella stessa visita alla Home.
+  const wildcardJourneyIds = await getWildcardJourneyIds();
+
   const [
     creatorStories,
     ownStory,
@@ -97,14 +104,19 @@ export default async function Home() {
   ] = await Promise.all([
     getFollowedCreatorsStories({ userId }),
     getOwnStory({ userId }),
-    getRecommendedJourneys({ userId, excludeJourneyIds: excludeFromDiscovery, limit: HOME_ROW_LIMIT, interests: userInterests }),
-    getWildcardsToFollow(PEOPLE_PER_ROW),
+    getRecommendedJourneys({
+      userId,
+      excludeJourneyIds: [...excludeFromDiscovery, ...wildcardJourneyIds],
+      limit: HOME_ROW_LIMIT,
+      interests: userInterests,
+    }),
+    getWildcardsToFollow(PEOPLE_PER_ROW, wildcardJourneyIds),
     getJourneyCountsByCategory(),
-    getLatestVideos({ limit: HOME_ROW_LIMIT, interests: userInterests }),
-    getTopJourneys({ limit: HOME_ROW_LIMIT, interests: userInterests }),
+    getLatestVideos({ limit: HOME_ROW_LIMIT, interests: userInterests, excludeJourneyIds: wildcardJourneyIds }),
+    getTopJourneys({ limit: HOME_ROW_LIMIT, interests: userInterests, excludeJourneyIds: wildcardJourneyIds }),
     // Nessuna personalizzazione: "Discovering Now" mostra tutti i Journey in Discovery Phase a
     // chiunque, loggato o no, indipendentemente da interessi o creator seguiti (08_Algorithm.md).
-    getDiscoveringNowJourneys(HOME_ROW_LIMIT),
+    getDiscoveringNowJourneys(HOME_ROW_LIMIT, wildcardJourneyIds),
     getHeroJourneys(4),
     getHeroVideos(),
   ]);
@@ -156,6 +168,7 @@ export default async function Home() {
           <DiscoveringNow journeys={displayedDiscoveringNow} />
           <TopJourneys journeys={displayedTopJourneys} />
           <LatestVideos videos={displayedLatestVideos} />
+          {wildcardJourneyIds.length > 0 && <WildcardJourneys journeyIds={wildcardJourneyIds} />}
           <WildcardsToFollow creators={displayedWildcardsToFollow} />
         </div>
 
@@ -339,6 +352,29 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
 }
 
 /* ------------------------------------------------------------------ */
+/* WILDCARD JOURNEYS — stessa card "sorpresa" già usata su /journeys,   */
+/* un pick per categoria (lib/discovery/wildcard.ts)                    */
+/* ------------------------------------------------------------------ */
+
+function WildcardJourneys({ journeyIds }: { journeyIds: string[] }) {
+  return (
+    <section className={HOME_SECTION}>
+      <Reveal>
+        <HorizontalScrollRow
+          icon={<Shuffle className="h-6 w-6" aria-hidden="true" />}
+          title="Wildcard Journeys"
+          subtitle="A random pick from each category, refreshed daily. Don't peek, just press play."
+        >
+          {journeyIds.map((journeyId) => (
+            <WildcardJourneyCard key={journeyId} journeyId={journeyId} className={CARD_ROW_ITEM.journey} />
+          ))}
+        </HorizontalScrollRow>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* WILDCARDS TO FOLLOW — creator dietro il pick Wildcard stabile di      */
 /* ogni categoria (lib/discovery/wildcardCreators.ts)                   */
 /* ------------------------------------------------------------------ */
@@ -351,7 +387,7 @@ function WildcardsToFollow({ creators }: { creators: CreatorSearchResult[] }) {
          * andava a capo, diversa da ogni altra riga qui sopra e dal mockup, dove scorre). */}
         <HorizontalScrollRow
           icon={<Shuffle className="h-6 w-6" aria-hidden="true" />}
-          title="Wildcards to Follow"
+          title="Wildcard Journeyers"
           subtitle="A random pick from each category, refreshed daily."
         >
           {creators.map((creator) => (
