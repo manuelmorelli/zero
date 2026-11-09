@@ -609,6 +609,11 @@ export async function updateEpisode(
   revalidatePath(`/dashboard/journeys/${episode.journeyId}`);
   if (episode.chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${episode.chapterId}`);
   if (chapterId) revalidatePath(`/dashboard/journeys/${episode.journeyId}/chapters/${chapterId}`);
+  // La pagina pubblica del Journey e quella del singolo episodio mostrano questi stessi dati
+  // (titolo, caption, copertina...): senza rivalidarle restano con la versione in cache fino al
+  // prossimo cambiamento che le tocchi per conto suo.
+  revalidatePath(`/journeys/${episode.journeyId}`);
+  revalidatePath(`/journeys/${episode.journeyId}/episodes/${episode.id}`);
   redirect(`/dashboard/journeys/${episode.journeyId}`);
 }
 
