@@ -96,7 +96,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             className="flex shrink-0 flex-col items-center gap-1.5"
           >
             <span
-              className={`flex h-11 w-11 items-center justify-center rounded-full p-[2px] ${
+              className={`flex h-14 w-14 items-center justify-center rounded-full p-[2px] md:h-11 md:w-11 ${
                 ownStory.hasUnseen ? "bg-ember" : "bg-border"
               }`}
             >
@@ -120,7 +120,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             className="flex shrink-0 flex-col items-center gap-1.5"
           >
             <span
-              className={`flex h-11 w-11 items-center justify-center rounded-full p-[2px] ${
+              className={`flex h-14 w-14 items-center justify-center rounded-full p-[2px] md:h-11 md:w-11 ${
                 story.hasUnseen ? "bg-ember" : "bg-border"
               }`}
             >
@@ -166,7 +166,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
        * absolute). Da computer la clip della Hero copre le foto (che restano sotto come riserva). */}
       <div
         ref={mediaRef}
-        className="relative h-[70vh] max-h-[552px] min-h-[420px] overflow-hidden rounded-xl shadow-card md:absolute md:inset-0 md:inset-x-[4.43%] md:h-auto md:max-h-none md:min-h-0 md:rounded-2xl md:shadow-none"
+        className="relative mt-5 aspect-[4/3] overflow-hidden rounded-xl shadow-card md:absolute md:inset-0 md:mt-0 md:inset-x-[4.43%] md:aspect-auto md:rounded-2xl md:shadow-none"
       >
         {/* Solo la foto/video e i veli scuri sono dentro questo involucro con la maschera: la
          * pillola col messaggio e i pallini più sotto NON ci stanno dentro apposta, altrimenti la
@@ -205,16 +205,10 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
           <div className="hero-grain absolute inset-0 hidden md:block" aria-hidden="true" />
           <div className="hero-scrim absolute inset-0 hidden md:block" />
           <div className="hero-side-fade absolute inset-0 hidden md:block" />
-          {/* Velo scuro in alto, dietro al blocco titolo/categoria: senza, su foto chiare
-           * (cielo, neve) il testo bianco si legge poco (Manuel, 2026-11-03). */}
-          <div className="hero-top-scrim absolute inset-x-0 top-0 h-48 md:hidden" />
-          {/* Solo sul basso, non su tutta la foto: card-scrim su inset-0 anneriva mezza foto, pensata
-           * per card piccole (150-250px), non per un blocco alto 552px come questo. */}
-          <div className="card-scrim absolute inset-x-0 bottom-0 h-80 md:hidden" />
           {/* Sfumatura verso il colore di sfondo della pagina, per eliminare la riga netta dove la
            * foto finisce e comincia il resto della pagina (Manuel, 2026-10-29). Dipinta per ultima
            * (sopra card-scrim) così è lei a decidere il colore proprio sul bordo finale. */}
-          <div className="cover-fade absolute inset-x-0 bottom-0 h-48 md:h-80" />
+          <div className="cover-fade absolute inset-x-0 bottom-0 hidden h-48 md:block md:h-80" />
         </div>
         {/* Audio della clip, in alto a destra: parte sempre muta, si attiva solo con un clic. */}
         {video && videoMode === "play" && (

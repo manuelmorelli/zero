@@ -119,19 +119,23 @@ export default async function Home() {
   const displayedStories = creatorStories.length > 0 ? creatorStories : DEMO_STORIES;
   const displayedRecommendedJourneys = padWithDemo(recommendedJourneys, DEMO_JOURNEYS, HOME_ROW_LIMIT);
   const displayedWildcardsToFollow = wildcardsToFollow.length > 0 ? wildcardsToFollow : DEMO_CREATORS;
+  const pianoHeroSlide = demoHeroSlidesWithKind.find((slide) => slide.image === "/images/hero-demo-piano.png")!;
   const heroSlides: HeroSlide[] =
     heroJourneys.length > 0
-      ? heroJourneys.map((journey) => ({
-          kind: "journey" as const,
-          id: journey.id,
-          image: journey.coverUrl!,
-          alt: journey.title,
-          title: journey.title,
-          category: journey.category,
-          creatorName: journey.creatorName,
-          description: journey.description,
-          episodesCount: journey.episodesCount,
-        }))
+      ? [
+          pianoHeroSlide,
+          ...heroJourneys.map((journey) => ({
+            kind: "journey" as const,
+            id: journey.id,
+            image: journey.coverUrl!,
+            alt: journey.title,
+            title: journey.title,
+            category: journey.category,
+            creatorName: journey.creatorName,
+            description: journey.description,
+            episodesCount: journey.episodesCount,
+          })),
+        ]
       : demoHeroSlidesWithKind;
 
   return (

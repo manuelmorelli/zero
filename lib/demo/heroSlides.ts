@@ -51,6 +51,12 @@ const demoHeroSlides: Omit<DemoHeroSlide, "kind">[] = [
     quote: "Six months in, my journey has become the calmest part of my day.",
     author: "Olivia H.",
   },
+  {
+    image: "/images/hero-demo-piano.png",
+    alt: "Man with headphones playing piano at sunset",
+    quote: "Consistency builds credibility.",
+    author: "Zero",
+  },
 ];
 
 export const demoHeroSlidesWithKind: DemoHeroSlide[] = demoHeroSlides.map((slide) => ({
