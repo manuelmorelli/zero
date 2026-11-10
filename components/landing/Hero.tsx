@@ -166,7 +166,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
        * absolute). Da computer la clip della Hero copre le foto (che restano sotto come riserva). */}
       <div
         ref={mediaRef}
-        className="relative mt-5 aspect-[4/3] overflow-hidden rounded-xl shadow-card md:absolute md:inset-0 md:mt-0 md:inset-x-[4.43%] md:aspect-auto md:rounded-2xl md:shadow-none"
+        className="relative mt-5 aspect-[4/3] overflow-hidden rounded-xl shadow-card md:absolute md:inset-x-0 md:top-0 md:mx-auto md:mt-0 md:translate-x-50 md:translate-y-7 md:w-[min(calc(100vw_-_340px_-_5.25rem),calc(1060px_-_5.25rem),calc(70vh*16/9))] md:h-[min(calc((100vw_-_340px_-_5.25rem)*9/16),calc((1060px_-_5.25rem)*9/16),70vh)] md:aspect-auto md:rounded-2xl md:shadow-none"
       >
         {/* Solo la foto/video e i veli scuri sono dentro questo involucro con la maschera: la
          * pillola col messaggio e i pallini più sotto NON ci stanno dentro apposta, altrimenti la
@@ -237,8 +237,9 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         </div>
       </div>
 
-      {/* Margine laterale allineato alla foto rientrata della Hero (md:inset-x-[4.43%]): scritta
-       * ZERO, frase, pulsanti e storie, solo da desktop in su (vedi nota sopra). */}
+      {/* Margine laterale della pagina (PAGE_WIDTH.wideCover): scritta ZERO, frase, pulsanti e
+       * storie, solo da desktop in su (vedi nota sopra). La foto/video sopra è rientrata di più
+       * (stessa larghezza del player episodio: colonna video della pagina episodio, mai più di 70vh×16/9, Manuel 2026-11-11). */}
       <div
         ref={contentRef}
         className={cn(
