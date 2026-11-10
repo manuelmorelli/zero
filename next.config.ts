@@ -13,6 +13,20 @@ const mobileTestOrigin = process.env.MOBILE_TEST_URL ? new URL(process.env.MOBIL
 
 const nextConfig: NextConfig = {
   ...(mobileTestOrigin ? { allowedDevOrigins: [mobileTestOrigin] } : {}),
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+    ];
+  },
   images: {
     // Da Next.js 16 le qualità vanno dichiarate esplicitamente (altrimenti l'unica concessa è
     // 75, vedi node_modules/next/dist/docs/.../image.md#qualities): 90 serve alla copertina
