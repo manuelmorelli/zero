@@ -15,21 +15,21 @@ Questo documento è scritto per Manuel, in italiano semplice, senza termini tecn
 ## Fatto
 
 - **Controllo di sicurezza di tutto il sito** (30 ott 2026): nessuna falla seria. Nessuno può leggere o modificare dati di un altro utente, i lavori automatici del sito sono protetti da password segrete, il pannello di amministrazione è blindato, gli upload controllano tipo e dimensione del file. Tre piccole cose da migliorare con calma, non urgenti, elencate in `94_Product_Backlog.md` (voce S22).
-- **Cancello d'ingresso a codice** (30 ott 2026): chi non ha il codice che dai tu non entra nel sito. Si attiva da solo quando impostiamo la parola segreta su Vercel.
-- **Registrazioni chiuse** (30 ott 2026): chi entra con il codice può solo navigare e guardare i video già pubblicati, non può crearsi un account, quindi nemmeno pubblicare o caricare video. Tu continui ad accedere normalmente con il tuo account.
+- **Cancello d'ingresso a codice, attivo sul sito vero** (pronto nel codice dal 30 ott 2026, acceso su Vercel l'11 nov 2026): chi non ha il codice che dai tu non entra nel sito.
+- **Registrazioni chiuse sul sito vero** (acceso su Vercel l'11 nov 2026): chi entra con il codice può solo navigare e guardare i video già pubblicati, non può crearsi un account, quindi nemmeno pubblicare o caricare video. Tu continui ad accedere normalmente con il tuo account.
 - **Controllo automatico che il codice non si rompa** (30 ott 2026): da ora, ogni volta che il codice viene modificato, un servizio gratuito di GitHub lo controlla da solo e segnala se qualcosa non va, prima che arrivi online.
 - **Test automatici che aprono il sito vero e controllano che funzioni davvero** (30 ott 2026): registrarsi, entrare, guardare un video, seguire una persona, pubblicare un Journey. Girano in locale sul tuo computer con il comando `npm run test:e2e`; manca ancora collegarli al controllo automatico di GitHub (serve un database "di prova" separato da quello vero, da decidere insieme quando serve).
 - **Pannello segnalazioni che nasconde davvero** (8 nov 2026): "Nascondi subito" (contenuto) e "Banna l'account" (persona), entrambi reversibili, da computer e da telefono. Deciso chi controlla (solo tu, per ora) e scritto cosa fare nel caso più grave (materiale di abuso su minori).
 - **Frase sulla musica nella pagina Copyright** (8 nov 2026).
 - **Accordi sul trattamento dati con i fornitori** (8 nov 2026): controllati Neon, Cloudflare, Resend; già inclusi nei loro termini di servizio, nulla da firmare a parte. Google si sistema da sé quando Gemini passa al piano a pagamento.
 - **Piano scritto per una fuga di dati** (8 nov 2026): procedura passo per passo, in `91_Legal_Audit_And_Roadmap.md`.
-- **Avviso automatico se il sito va giù** (confermato l'8 nov 2026): endpoint `/api/health` più un servizio esterno che lo controlla ogni 5 minuti e avvisa via email/telefono, direttamente a te.
+- **Avviso automatico se il sito va giù** (riconfermato sul dominio vero l'11 nov 2026): UptimeRobot attivo su `https://www.zerojourneys.com/api/health`, avviso via email, piano gratuito.
 
-## Da fare, ultimo passaggio tecnico
+## Fatto (dominio online)
 
-- **Collegare il dominio** zerojourneys.com (già tuo, comprato su Cloudflare) al servizio che farà girare il sito online (Vercel).
-- **Spostare le chiavi vere** (database, foto/video, email, AI) dal tuo computer a Vercel, nel suo pannello protetto.
-- Fatto questo, si può invitare la prima persona.
+- **Dominio collegato** (10 nov 2026): zerojourneys.com è online su Vercel.
+- **Chiavi vere spostate** (database, foto/video, email, AI) dal computer a Vercel, nel suo pannello protetto.
+- Ora si può invitare la prima persona (cancello a codice già attivo, vedi sopra).
 
 ## Cose note, lasciate così per scelta
 
@@ -39,9 +39,10 @@ Questo documento è scritto per Manuel, in italiano semplice, senza termini tecn
 
 Hai chiesto un controllo completo, non solo tecnico: sicurezza informatica, sicurezza delle persone (minori/contenuti), legale (musica nei video), infrastruttura, costi, prodotto. Dettaglio per punto in `94_Product_Backlog.md` (voci S33-S42). Riassunto:
 
-- **Due librerie di sicurezza da aggiornare** (`better-auth` ha una falla pubblica critica, `prisma` e `zod` falle "alte"): poche ore di lavoro, prima del lancio pubblico (sezione "Per accendere il sito"). Rischio concreto oggi basso (non usiamo login social), ma da chiudere comunque.
+- **Librerie di sicurezza**: aggiornate il 10 nov 2026 (`better-auth` 1.7.20, `prisma` 7.10.1), riverificato con `npm audit` l'11 nov 2026, nessuna vulnerabilità critica o alta.
+- **Intestazioni di sicurezza** (HSTS, anti-clickjacking, ecc.): aggiunte il 10 nov 2026. Manca ancora una vera CSP, da valutare con calma, non urgente.
 - **Tutti e sei i punti "prima di invitare qualcuno fuori dagli amici più stretti" sono risolti l'8 nov 2026** (pannello segnalazioni, chi controlla, musica, avviso sito giù, piano fuga dati, accordi fornitori): dettaglio nella sezione "Fatto" sopra.
-- **Email**: funzionano (verificato con un invio reale arrivato su Yahoo, voce sopra), ma vanno controllate di nuovo una volta spostate le chiavi vere su Vercel (stesso passaggio di "Da fare, ultimo passaggio tecnico").
+- **Email**: funzionano anche sul sito vero con il dominio collegato, riverificato l'11 nov 2026 con un reset password reale arrivato a destinazione. (Attenzione se si ritesta la registrazione con un'email già usata, anche solo in locale: per sicurezza anti-enumerazione Better Auth finge un successo senza mandare nulla, non è un guasto.)
 - **Il resto** (analytics, indirizzamento Google/SEO, cache per velocità, indici del database) riguarda la crescita dopo il lancio, non accendere il sito: nessuna di queste cose impedisce di iniziare con un piccolo gruppo di persone fidate.
 
 ## Confronto mobile vs computer (8 nov 2026)
