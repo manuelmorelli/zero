@@ -24,8 +24,10 @@ const RIVER_VERTEX = /* glsl */ `
   varying vec3 vColor;
   varying float vAlpha;
 
+  // Percorso specchiato (segni meno, Manuel 2026-11-11): a inizio pagina il fiume parte da
+  // sinistra, dietro la scritta ZERO della Hero, invece che da destra.
   float center(float yd) {
-    return 0.5 * uW + sin(yd / (uH * 1.15) * 3.14159 + 0.4) * 0.30 * uW + sin(yd / (uH * 0.37) + 1.3) * 0.05 * uW;
+    return 0.5 * uW - sin(yd / (uH * 1.15) * 3.14159 + 0.4) * 0.30 * uW - sin(yd / (uH * 0.37) + 1.3) * 0.05 * uW;
   }
   float thick(float yd) {
     return uWidth * uW * (0.6 + 0.4 * sin(yd / (uH * 0.5) + uTime * 0.2));

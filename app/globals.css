@@ -535,6 +535,17 @@ a {
   }
 }
 
+/* Luce ambiente della Hero (stile Ambient Mode di YouTube), solo da computer: dietro a tutta la
+ * Hero c'è una copia della foto in evidenza (o del poster della clip) ingrandita e molto sfocata,
+ * così lo sfondo prende i colori della foto e cambia con lei. L'ingrandimento serve a nascondere
+ * i bordi chiari che la sfocatura lascerebbe lungo il perimetro. La dissolvenza tra una luce e
+ * l'altra sta sul contenitore (classi transition-opacity in Hero.tsx), non qui. */
+.hero-ambient {
+  opacity: 0.6;
+  transform: scale(1.35);
+  filter: blur(70px) saturate(1.5);
+}
+
 /* Copertina senza foto: sfuma verso lo sfondo della pagina (var(--color-bg), non più un nero
  * fisso): nel tema chiaro creava un angolo nero posticcio sulle card senza copertina, lo stesso
  * effetto di un'ombra indesiderata (corretto 2026-10-10). */

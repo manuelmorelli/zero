@@ -33,6 +33,16 @@ const nextConfig: NextConfig = {
     // dell'hero del Profilo (components/profile/ProfileHero.tsx).
     // 85 = copertine di Journey/episodi (COVER_IMAGE_QUALITY in lib/constants/image.ts).
     qualities: [75, 85, 90],
+    // Da Next.js 16 ogni immagine locale va autorizzata esplicitamente (altrimenti risponde
+    // 400): tutte le immagini in public/ restano permesse come prima. Le clip della Hero
+    // portano in più "?v=<data modifica file>" nell'indirizzo per forzare il browser a
+    // scaricarle di nuovo quando vengono rifatte (lib/discovery/heroVideos.ts), quindi qui
+    // niente restrizione sui parametri.
+    localPatterns: [
+      {
+        pathname: "/**",
+      },
+    ],
     remotePatterns: [
       {
         protocol: "https",

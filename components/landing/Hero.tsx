@@ -157,7 +157,34 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
 
   return (
     <>
-    <section ref={sectionRef} className="relative overflow-hidden">
+    <section ref={sectionRef} className="relative overflow-hidden md:overflow-visible">
+      {/* Luce ambiente, solo da computer (stile Ambient Mode di YouTube): dietro a tutta la Hero
+       * una copia sfocata della foto in evidenza (classe hero-ambient in app/globals.css), una per
+       * slide, sovrapposte: si accende solo quella attiva con una dissolvenza, come le foto nitide
+       * più sotto. Quando c'è il video la luce usa il poster della clip attiva (non un secondo
+       * video, troppo pesante) e cambia insieme alla clip. Sopra: il velo scuro a sinistra per
+       * leggere scritta/frase/pulsanti anche su foto chiare, e in basso la sfumatura verso il
+       * colore della pagina (cover-fade) così non c'è una riga netta prima delle card. Vive fuori
+       * da mediaRef/contentRef apposta: il racconto con lo scroll non la tocca. Su telefono non
+       * esiste (hidden), la Hero mobile resta com'è. Sale fin sotto il bordo alto dello schermo
+       * (top negativo = lo spazio lasciato all'header dal contenitore in app/(site)/page.tsx,
+       * stesso valore), così la luce si vede anche attraverso il vetro della barra in alto: per
+       * questo da computer la sezione non taglia più ciò che sporge (overflow visibile), e a
+       * tagliare la copia ingrandita ci pensa questo contenitore. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 hidden overflow-hidden md:top-[calc(-3.85rem-1cm)] md:block"
+        aria-hidden="true"
+      >
+        {slides.map((item, index) => (
+          <HeroAmbientLight key={item.alt} src={item.image} on={!video && index === active} />
+        ))}
+        {videos.map((item, index) => (
+          <HeroAmbientLight key={item.src} src={item.poster} on={!!video && index === videoIndex} />
+        ))}
+        <div className="hero-side-fade absolute inset-0" />
+        <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
+      </div>
+
       {/* Foto cinematografica: su mobile un blocco alto a sé (stile Netflix, solo foto + card del
        * Journey in evidenza sopra, niente scritta ZERO/frase/pulsanti/storie qui — quelli restano
        * solo da desktop in su, vedi contentRef più sotto; la scritta ZERO vive ora più grande
@@ -328,6 +355,20 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         {StoriesRow()}
       </div>
     </>
+  );
+}
+
+/** Una copia sfocata di una foto della Hero, per la luce ambiente (vedi la nota nella sezione).
+ * La dissolvenza (stessa durata delle foto nitide) sta sul contenitore, la sfocatura e
+ * l'opacità fissa della luce sulla classe hero-ambient dentro: così le due opacità non si
+ * pestano i piedi. Immagine piccola (sizes): sfocata a 70px il dettaglio non si vede comunque. */
+function HeroAmbientLight({ src, on }: { src: string; on: boolean }) {
+  return (
+    <div className={`absolute inset-0 transition-opacity duration-1000 ${on ? "opacity-100" : "opacity-0"}`}>
+      <div className="hero-ambient absolute inset-0">
+        <Image src={src} alt="" fill sizes="25vw" className="object-cover" />
+      </div>
+    </div>
   );
 }
 
