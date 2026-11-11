@@ -224,7 +224,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         {/* Card del Journey in evidenza, solo su mobile: titolo/autore/categoria in alto a
          * sinistra + pulsante Watch, didascalia + pallini in basso al centro. Da desktop in su
          * questa stessa informazione vive nella card a destra più sotto (HeroSlideCard). */}
-        <div className="absolute inset-0 flex flex-col justify-between px-6 pt-24 pb-7 md:hidden">
+        <div className="absolute inset-0 flex flex-col justify-between px-4 pt-4 pb-7 md:hidden">
           <MobileHeroInfo slide={slide} />
           <div className="flex flex-col items-center gap-3">
             <MobileHeroCaption slide={slide} />
@@ -351,7 +351,7 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
   if (slide.kind === "demo") return <div aria-hidden="true" />;
 
   return (
-    <div className="-ml-2 max-w-[78%]">
+    <div className="md:-ml-2 max-w-[78%]">
       <Link href={`/journeys/${slide.id}`} className="block">
         {/* Altezza riservata sempre, anche senza categoria: il titolo resta nella stessa
          * posizione invece di salire quando manca la pillola (Manuel, 2026-11-03). */}
