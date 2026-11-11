@@ -18,9 +18,11 @@ export function proxy(request: NextRequest) {
   // Cancello della beta privata su invito: attivo solo quando BETA_ACCESS_CODE è impostata
   // su Vercel (in locale, senza quella variabile, il sito resta aperto come sempre). Il
   // valore del cookie è il codice stesso: cambiare la variabile invalida subito tutti i
-  // cookie già distribuiti, senza bisogno di una lista di inviti da gestire.
+  // cookie già distribuiti, senza bisogno di una lista di inviti da gestire. /api/health resta
+  // fuori dal cancello: il servizio esterno di uptime monitoring (S32) non ha il cookie e deve
+  // poter controllare il vero stato del database, non solo che /beta-access risponda.
   const betaCode = process.env.BETA_ACCESS_CODE;
-  if (betaCode && pathname !== "/beta-access") {
+  if (betaCode && pathname !== "/beta-access" && pathname !== "/api/health") {
     const cookie = request.cookies.get(BETA_ACCESS_COOKIE)?.value;
     if (cookie !== betaCode) {
       return NextResponse.redirect(new URL("/beta-access", request.url));
