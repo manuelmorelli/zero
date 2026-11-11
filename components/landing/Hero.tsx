@@ -314,8 +314,8 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
 
         {/* Card sopra la foto, allineata alla riga degli Update: Journey reale se disponibile
          * (cliccabile, porta alla sua pagina), altrimenti la citazione demo. */}
-        <div className="relative flex md:col-start-2 md:row-start-3 md:justify-end md:self-start">
-          <div className="w-full md:max-w-[22rem]">
+        <div className="relative flex md:col-start-2 md:row-start-3 md:justify-end md:self-start md:-translate-x-5 md:-translate-y-5">
+          <div className="w-full md:max-w-[14rem]">
             {video ? <HeroVideoCard video={video} /> : <HeroSlideCard slide={slide} />}
             <div className="mt-2.5 flex items-center gap-2 md:justify-end">
               {video
@@ -435,7 +435,7 @@ function HeroVideoCard({ video }: { video: HeroVideo }) {
   return (
     <Link
       href={`/journeys/${video.journeyId}/episodes/${video.episodeId}`}
-      className={cn(PANEL_GLASS, "block rounded-xl p-3.5 shadow-glow transition-colors duration-300 hover:border-ember")}
+      className={cn(PANEL_GLASS, "block rounded-[2rem] p-2.5 shadow-glow transition-colors duration-300 hover:border-ember")}
     >
       {video.category && <p className="text-hero-tag uppercase tracking-[0.2em] text-ember">{video.category}</p>}
       <p className="mt-1.5 text-sm leading-snug font-semibold text-on-photo">{video.episodeTitle}</p>
@@ -450,7 +450,7 @@ function HeroVideoCard({ video }: { video: HeroVideo }) {
 function HeroSlideCard({ slide }: { slide: HeroSlide }) {
   if (slide.kind === "demo") {
     return (
-      <div className={cn(PANEL_GLASS, "rounded-xl p-3.5 shadow-glow")}>
+      <div className={cn(PANEL_GLASS, "rounded-[2rem] p-2.5 shadow-glow")}>
         <Quote className="h-3.5 w-3.5 text-ember" aria-hidden="true" />
         <p className="mt-2 text-sm leading-relaxed text-on-photo">{slide.quote}</p>
         <p className="mt-2 text-hero-caption text-on-photo-muted">{slide.author}</p>
@@ -461,7 +461,7 @@ function HeroSlideCard({ slide }: { slide: HeroSlide }) {
   return (
     <Link
       href={`/journeys/${slide.id}`}
-      className={cn(PANEL_GLASS, "block rounded-xl p-3.5 shadow-glow transition-colors duration-300 hover:border-ember")}
+      className={cn(PANEL_GLASS, "block rounded-[2rem] p-2.5 shadow-glow transition-colors duration-300 hover:border-ember")}
     >
       {slide.category && (
         <p className="text-hero-tag uppercase tracking-[0.2em] text-ember">{slide.category}</p>
