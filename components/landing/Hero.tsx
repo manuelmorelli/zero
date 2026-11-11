@@ -10,7 +10,6 @@ import { StoryViewer } from "@/components/home/StoryViewer";
 import { HeroBackgroundVideo, useHeroVideoMode } from "@/components/landing/HeroBackgroundVideo";
 import { HeroPayoff } from "@/components/landing/HeroPayoff";
 import { FadeImage } from "@/components/common/FadeImage";
-import { CoverChip } from "@/components/ui/cover-card";
 import type { HeroSlide } from "@/lib/demo/heroSlides";
 import type { HeroVideo } from "@/lib/discovery/heroVideos";
 import type { CreatorStory } from "@/lib/discovery/stories";
@@ -251,7 +250,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         {/* Card del Journey in evidenza, solo su mobile: titolo/autore/categoria in alto a
          * sinistra + pulsante Watch, didascalia + pallini in basso al centro. Da desktop in su
          * questa stessa informazione vive nella card a destra più sotto (HeroSlideCard). */}
-        <div className="absolute inset-0 flex flex-col justify-between px-6 pt-24 pb-7 md:hidden">
+        <div className="absolute inset-0 flex flex-col justify-between px-4 pt-0 pb-7 md:hidden">
           <MobileHeroInfo slide={slide} />
           <div className="flex flex-col items-center gap-3">
             <MobileHeroCaption slide={slide} />
@@ -395,12 +394,7 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
   return (
     <div className="-ml-2 max-w-[78%]">
       <Link href={`/journeys/${slide.id}`} className="block">
-        {/* Altezza riservata sempre, anche senza categoria: il titolo resta nella stessa
-         * posizione invece di salire quando manca la pillola (Manuel, 2026-11-03). */}
-        <div className="h-[25px]">
-          {slide.category && <CoverChip className="mt-4 text-hero-mobile-tag">{slide.category}</CoverChip>}
-        </div>
-        <CardTitle as="h2" className="mt-1.5 truncate !text-on-photo text-hero-mobile-title leading-[1.35] font-extrabold">{slide.title}</CardTitle>
+        <CardTitle as="h2" className="truncate !text-on-photo text-hero-mobile-title leading-[1.35] font-extrabold">{slide.title}</CardTitle>
         <p className="mt-[5px] truncate text-hero-mobile-meta text-on-photo">
           by {slide.creatorName} · {slide.episodesCount} {slide.episodesCount === 1 ? "episode" : "episodes"}
         </p>

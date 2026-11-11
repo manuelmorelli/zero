@@ -136,7 +136,7 @@ export function CoverFrame({
           className={cn(
             "relative overflow-hidden rounded-xl border border-border bg-surface-2 shadow-card transition-[border-color,box-shadow] duration-300 group-hover:border-ember-line group-hover:shadow-glow",
             RATIO[format],
-            (format === "journey" || format === "episode") && "max-md:border-ember-line",
+            (format === "journey" || format === "episode") && "max-md:border-ember-line md:border-transparent",
             frameClassName
           )}
         >
