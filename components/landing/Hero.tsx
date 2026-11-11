@@ -249,7 +249,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
 
         {/* Card del Journey in evidenza, solo su mobile: titolo/autore/categoria in alto a
          * sinistra + pulsante Watch, didascalia + pallini in basso al centro. Da desktop in su
-         * questa stessa informazione vive nella card a destra più sotto (HeroSlideCard). */}
+         * questa stessa informazione vive nella card a destra più sotto (HeroCard). */}
         <div className="absolute inset-0 flex flex-col justify-between px-4 pt-0 pb-7 md:hidden">
           <MobileHeroInfo slide={slide} />
           <div className="flex flex-col items-center gap-3">
@@ -313,10 +313,27 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
 
         {/* Card sopra la foto, allineata alla riga degli Update: Journey reale se disponibile
          * (cliccabile, porta alla sua pagina), altrimenti la citazione demo. */}
-        <div className="relative flex md:col-start-2 md:row-start-3 md:justify-end md:self-start md:-translate-x-5 md:-translate-y-5">
+        <div className="relative flex md:col-start-2 md:row-start-3 md:justify-end md:self-start md:translate-y-5 md:-translate-x-5">
           <div className="w-full md:max-w-[14rem]">
-            {video ? <HeroVideoCard video={video} /> : <HeroSlideCard slide={slide} />}
-            <div className="mt-2.5 flex items-center gap-2 md:justify-end">
+            {video ? (
+              <HeroCard
+                kind="content"
+                href={`/journeys/${video.journeyId}/episodes/${video.episodeId}`}
+                title={video.episodeTitle}
+                creatorName={video.creatorName}
+                caption={video.caption}
+              />
+            ) : slide.kind === "demo" ? (
+              <HeroCard kind="demo" quote={slide.quote} author={slide.author} />
+            ) : (
+              <HeroCard
+                kind="content"
+                href={`/journeys/${slide.id}`}
+                title={slide.title}
+                creatorName={slide.creatorName}
+              />
+            )}
+            <div className="mt-2.5 flex items-center gap-2 md:justify-center">
               {video
                 ? videos.length > 1 &&
                   videos.map((item, index) => (
@@ -373,12 +390,11 @@ function HeroAmbientLight({ src, on }: { src: string; on: boolean }) {
 
 function HeroDot({ label, current, onClick }: { label: string; current: boolean; onClick: () => void }) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className={`h-1.5 rounded-full transition-all duration-500 ${current ? "w-7 bg-ember" : "w-1.5 bg-overlay hover:bg-on-photo-muted"}`}
-    />
+    <button type="button" aria-label={label} onClick={onClick} className="group p-2 -m-2">
+      <span
+        className={`block h-1.5 rounded-full transition-all duration-500 group-hover:scale-125 ${current ? "w-7 bg-ember" : "w-1.5 bg-overlay group-hover:bg-on-photo-muted"}`}
+      />
+    </button>
   );
 }
 
@@ -423,45 +439,32 @@ function MobileHeroCaption({ slide }: { slide: HeroSlide }) {
   );
 }
 
-/** Card del video in corso: quello che il creator ha scritto sull'episodio da cui viene la clip
- * (categoria del Journey, titolo e didascalia dell'episodio), cliccabile verso l'episodio. */
-function HeroVideoCard({ video }: { video: HeroVideo }) {
-  return (
-    <Link
-      href={`/journeys/${video.journeyId}/episodes/${video.episodeId}`}
-      className={cn(PANEL_GLASS, "block rounded-[2rem] p-2.5 shadow-glow transition-colors duration-300 hover:border-ember")}
-    >
-      {video.category && <p className="text-hero-tag uppercase tracking-[0.2em] text-ember">{video.category}</p>}
-      <p className="mt-1.5 text-sm leading-snug font-semibold text-on-photo">{video.episodeTitle}</p>
-      {video.caption && <p className="mt-1 line-clamp-2 text-sm leading-snug text-on-photo-muted">{video.caption}</p>}
-      <p className="mt-1.5 text-hero-caption text-on-photo-muted">by {video.creatorName}</p>
-    </Link>
-  );
-}
-
-/** Contenuto testuale sopra la foto in Hero: un vero Journey (cliccabile) quando disponibile,
- * altrimenti la citazione demo di fallback (vedi lib/demo/heroSlides.ts). */
-function HeroSlideCard({ slide }: { slide: HeroSlide }) {
-  if (slide.kind === "demo") {
+/** Card testuale sopra la foto in Hero: unica per ogni contenuto possibile (clip video in corso,
+ * Journey reale senza video, o citazione demo di fallback senza Journey — vedi lib/demo/heroSlides.ts
+ * e lib/discovery/heroVideos.ts). Titolo, didascalia e creator ciascuno sulla propria riga. */
+function HeroCard(
+  props:
+    | { kind: "demo"; quote: string; author: string }
+    | { kind: "content"; href: string; title: string; creatorName: string; caption?: string | null }
+) {
+  if (props.kind === "demo") {
     return (
       <div className={cn(PANEL_GLASS, "rounded-[2rem] p-2.5 shadow-glow")}>
         <Quote className="h-3.5 w-3.5 text-ember" aria-hidden="true" />
-        <p className="mt-2 text-sm leading-relaxed text-on-photo">{slide.quote}</p>
-        <p className="mt-2 text-hero-caption text-on-photo-muted">{slide.author}</p>
+        <p className="mt-2 text-sm leading-relaxed text-on-photo">{props.quote}</p>
+        <p className="mt-2 text-hero-caption text-on-photo-muted">{props.author}</p>
       </div>
     );
   }
 
   return (
     <Link
-      href={`/journeys/${slide.id}`}
-      className={cn(PANEL_GLASS, "block rounded-[2rem] p-2.5 shadow-glow transition-colors duration-300 hover:border-ember")}
+      href={props.href}
+      className={cn(PANEL_GLASS, "block rounded-[2rem] px-2.5 py-0 shadow-glow transition-colors duration-300 hover:border-ember")}
     >
-      {slide.category && (
-        <p className="text-hero-tag uppercase tracking-[0.2em] text-ember">{slide.category}</p>
-      )}
-      <p className="mt-1.5 text-sm leading-snug font-semibold text-on-photo">{slide.title}</p>
-      <p className="mt-1.5 text-hero-caption text-on-photo-muted">by {slide.creatorName}</p>
+      <p className="mt-1.5 truncate pl-2 text-sm leading-snug font-semibold text-on-photo">{props.title}</p>
+      {props.caption && <p className="mt-1 line-clamp-2 pl-2 text-sm leading-snug text-on-photo-muted">{props.caption}</p>}
+      <p className="mt-1.5 text-center text-hero-caption text-on-photo-muted">by {props.creatorName}</p>
     </Link>
   );
 }
