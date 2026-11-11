@@ -163,4 +163,15 @@ Non presentare piani e non aspettare un "vai" prima di agire: Manuel chiede il p
 ## Gestione del contesto
 - Usa target di file specifici (es. @nomefile) invece di fare ricerche generiche nel repository.
 - Non leggere file interi se hai bisogno solo di una funzione specifica; usa grep o letture mirate.
-- Esegui i comandi del terminale con i flag per renderli silenziosi (es. `npm test -- --silent`) per evitare di intasare la finestra di contesto con log inutili.
+- Esegui i comandi del terminale con i flag per renderli silenziosi (es. `npm test -- --silent`) per evitare di intasare la finestra di contesto con log inutili## Mobile e computer: la parola di Manuel decide l'ambito (2026-11-12)
+
+Manuel specifica sempre se un lavoro è per **mobile** (telefono) o per **computer** (desktop), e in una stessa chat può fare lavori su entrambi, uno alla volta.
+
+- Parola **mobile**/telefono nella richiesta: si cambia solo il telefono. Ogni classe nuova o modificata ha il prefisso `md:` o sta in un ramo `hidden md:`/`md:hidden`, il computer resta identico.
+- Parola **computer**/desktop: si cambia solo il computer. Le classi nuove hanno `md:` (o più), il telefono resta identico.
+- Entrambe le parole nella stessa richiesta: si fanno entrambi, ma ciascuno per la sua parte.
+- Nessuna delle due parole: chiedere prima, non indovinare.
+- L'ambito vale per quel lavoro, non per tutta la chat: il lavoro successivo ha il suo.
+- Mai toccare l'altra versione "già che ci sono", nemmeno per un ritocco (esempio: il commit `bf8d5e7` ha tolto la categoria dal titolo mobile durante un lavoro sul computer).
+
+Rete di sicurezza automatica prima di ogni commit: `check:desktop` (1440px) e `check:mobile` (390px). Mai usare `ALLOW_DESKTOP_CHANGE=1` o `ALLOW_MOBILE_CHANGE=1` senza aver mostrato l'elenco a Manuel e avuto il suo ok esplicito. Limite: guardano solo i file `.tsx`, non `app/globals.css` né `lib/` (es. `lib/sand/sandScene.ts` vale per entrambi): lì il controllo è a mano.

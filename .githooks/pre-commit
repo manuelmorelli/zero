@@ -10,3 +10,9 @@ node scripts/check-design.mjs || exit 1
 # scripts/check-desktop-isolation.mjs. Se il cambiamento sul computer è voluto (confermato con
 # Manuel, non un md: dimenticato): ALLOW_DESKTOP_CHANGE=1 git commit ...
 node scripts/check-desktop-isolation.mjs || exit 1
+
+# Lucchetto "il mobile non si tocca" (gemello del precedente): blocca il commit se le modifiche
+# cambiano come appare il sito a schermo da telefono (390px). Serve quando il lavoro è sul
+# computer: il telefono non deve cambiare. Vedi scripts/check-mobile-isolation.mjs.
+# Se il cambiamento sul telefono è voluto (confermato con Manuel): ALLOW_MOBILE_CHANGE=1 git commit ...
+node scripts/check-mobile-isolation.mjs || exit 1

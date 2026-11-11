@@ -16,6 +16,7 @@ import type { CreatorStory } from "@/lib/discovery/stories";
 import { HERO_PAYOFF_MS, HERO_PAYOFFS } from "@/lib/landing/heroPayoffs";
 import { getGsapScrollTrigger, prefersLightMotion } from "@/lib/gsapClient";
 import { PANEL_GLASS } from "@/components/ui/panel";
+import { CoverChip } from "@/components/ui/cover-card";
 import { CardTitle } from "@/components/ui/heading";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { cn } from "@/lib/utils";
@@ -95,7 +96,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             className="flex shrink-0 flex-col items-center gap-1.5"
           >
             <span
-              className={`flex h-14 w-14 items-center justify-center rounded-full p-[2px] md:h-11 md:w-11 ${
+              className={`flex h-19 w-19 items-center justify-center rounded-full p-[2px] md:h-11 md:w-11 ${
                 ownStory.hasUnseen ? "bg-ember" : "bg-border"
               }`}
             >
@@ -108,7 +109,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
                 )}
               </span>
             </span>
-            <span className="max-w-11 truncate text-hero-caption text-on-photo-muted">You</span>
+            <span className="max-w-11 truncate text-hero-caption text-on-photo-muted max-md:max-w-19 max-md:text-base">You</span>
           </button>
         )}
         {stories.slice(0, 6).map((story, index) => (
@@ -119,7 +120,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             className="flex shrink-0 flex-col items-center gap-1.5"
           >
             <span
-              className={`flex h-14 w-14 items-center justify-center rounded-full p-[2px] md:h-11 md:w-11 ${
+              className={`flex h-19 w-19 items-center justify-center rounded-full p-[2px] md:h-11 md:w-11 ${
                 story.hasUnseen ? "bg-ember" : "bg-border"
               }`}
             >
@@ -132,7 +133,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
                 )}
               </span>
             </span>
-            <span className="max-w-11 truncate text-hero-caption text-on-photo-muted">
+            <span className="max-w-11 truncate text-hero-caption text-on-photo-muted max-md:max-w-19 max-md:text-base">
               {story.creatorName}
             </span>
           </button>
@@ -250,15 +251,10 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         {/* Card del Journey in evidenza, solo su mobile: titolo/autore/categoria in alto a
          * sinistra + pulsante Watch, didascalia + pallini in basso al centro. Da desktop in su
          * questa stessa informazione vive nella card a destra più sotto (HeroCard). */}
-        <div className="absolute inset-0 flex flex-col justify-between px-4 pt-0 pb-7 md:hidden">
+        <div className="absolute inset-0 flex flex-col justify-between px-4 pt-4 pb-0 md:hidden">
           <MobileHeroInfo slide={slide} />
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center">
             <MobileHeroCaption slide={slide} />
-            <div className="flex items-center gap-2">
-              {slides.map((item, index) => (
-                <HeroDot key={item.alt} label={`Show journey ${index + 1}`} current={index === active} onClick={() => setActive(index)} />
-              ))}
-            </div>
           </div>
         </div>
       </div>
@@ -367,8 +363,15 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
     </section>
       {/* Storie, solo su mobile: sopra vivono dentro la Hero (da desktop in su), qui sotto perché
        * la Hero mobile mostra solo foto + card del Journey (vedi sopra). */}
-      <div className={cn(PAGE_WIDTH.wideCover, "pt-4 md:hidden")}>
-        {StoriesRow()}
+      <div className={cn(PAGE_WIDTH.wideCover, "pt-2 md:hidden")}>
+        {/* Pallini del Journey in evidenza: fuori dalla foto (che taglierebbe ciò che esce dal bordo),
+         * nello spazio libero sotto, allineati a destra come la pillola del messaggio. */}
+        <div className="flex items-center justify-end gap-2 pr-3">
+          {slides.map((item, index) => (
+            <HeroDot key={item.alt} label={`Show journey ${index + 1}`} current={index === active} onClick={() => setActive(index)} />
+          ))}
+        </div>
+        <div className="mt-4">{StoriesRow()}</div>
       </div>
     </>
   );
@@ -390,9 +393,9 @@ function HeroAmbientLight({ src, on }: { src: string; on: boolean }) {
 
 function HeroDot({ label, current, onClick }: { label: string; current: boolean; onClick: () => void }) {
   return (
-    <button type="button" aria-label={label} onClick={onClick} className="group p-2 -m-2">
+    <button type="button" aria-label={label} onClick={onClick} className="group p-2 -m-2 max-md:p-3 max-md:-m-3">
       <span
-        className={`block h-1.5 rounded-full transition-all duration-500 group-hover:scale-125 ${current ? "w-7 bg-ember" : "w-1.5 bg-overlay group-hover:bg-on-photo-muted"}`}
+        className={`block h-1.5 rounded-full transition-all duration-500 group-hover:scale-125 ${current ? "w-7 bg-ember max-md:w-9" : "w-1.5 bg-overlay group-hover:bg-on-photo-muted max-md:w-2"} max-md:h-2`}
       />
     </button>
   );
@@ -408,16 +411,15 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
   if (slide.kind === "demo") return <div aria-hidden="true" />;
 
   return (
-    <div className="-ml-2 max-w-[78%]">
+    <div className="relative -top-2 -left-2 max-w-[78%]">
       <Link href={`/journeys/${slide.id}`} className="block">
-        <CardTitle as="h2" className="truncate !text-on-photo text-hero-mobile-title leading-[1.35] font-extrabold">{slide.title}</CardTitle>
-        <p className="mt-[5px] truncate text-hero-mobile-meta text-on-photo">
-          by {slide.creatorName} · {slide.episodesCount} {slide.episodesCount === 1 ? "episode" : "episodes"}
-        </p>
+        {slide.category && <CoverChip className="px-1.5 py-0 text-hero-mobile-tag">{slide.category}</CoverChip>}
+        <CardTitle as="h2" className="relative top-1 -mt-2 truncate !text-on-photo text-hero-mobile-title leading-[1.35] font-extrabold">{slide.title}</CardTitle>
+        <p className="-mt-1 truncate text-hero-mobile-meta text-on-photo">by {slide.creatorName}</p>
       </Link>
       <ButtonSecondary
         href={`/journeys/${slide.id}`}
-        className="!border-ember-line !bg-ember-ash mt-3 gap-1 px-3 py-1 text-sm !text-on-photo"
+        className="!border-ember-line !bg-ember-ash backdrop-saturate-50 mt-1 gap-1 px-3 py-0 text-sm !text-on-photo"
       >
         Watch
         <Play className="h-[15px] w-[15px] fill-current" aria-hidden="true" />
@@ -426,15 +428,15 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
   );
 }
 
-/** Pillola in basso al centro della foto, solo su mobile: solo la didascalia (la descrizione del
+/** Pillola in basso a destra dentro la foto, a filo col bordo, solo su mobile: solo la didascalia (la descrizione del
  * Journey, o la citazione demo di fallback) — mai categoria/titolo, già mostrati sopra. */
 function MobileHeroCaption({ slide }: { slide: HeroSlide }) {
   const text = slide.kind === "demo" ? slide.quote : slide.description;
   if (!text) return null;
 
   return (
-    <div className={cn(PANEL_GLASS, "max-w-[300px] rounded-full px-6 py-2.5 text-center shadow-glow")}>
-      <p className="text-sm leading-[1.3] font-semibold text-on-photo">{text}</p>
+    <div className={cn(PANEL_GLASS, "max-w-[300px] self-end rounded-full px-6 py-1.5 text-center shadow-glow")}>
+      <p className="truncate text-sm leading-[1.3] font-semibold text-on-photo">{text}</p>
     </div>
   );
 }
