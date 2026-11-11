@@ -2,6 +2,7 @@ import { statSync } from "fs";
 import path from "path";
 import { prisma } from "@/lib/prisma";
 import { LIVE_JOURNEY_STATUSES } from "@/lib/constants/journeyStatus";
+import { resolveAvatarUrl } from "@/lib/media/resolveCoverUrl";
 
 /** Data dell'ultima modifica del file, come numero: aggiunta come "?v=" all'indirizzo del video e
  * della copertina così il browser scarica di nuovo il file quando viene rifatto (scripts/make-hero-clip.ts),
@@ -43,6 +44,8 @@ export type HeroVideo = {
   caption: string | null;
   category: string | null;
   creatorName: string;
+  creatorAvatarUrl: string | null;
+  creatorUserId: string;
 };
 
 /** Solo le clip il cui episodio è ancora pubblicato in un Journey visibile: se il creator lo
@@ -59,15 +62,21 @@ export async function getHeroVideos(): Promise<HeroVideo[]> {
       id: true,
       title: true,
       caption: true,
-      journey: { select: { id: true, category: true, creator: { select: { displayName: true } } } },
+      journey: {
+        select: {
+          id: true,
+          category: true,
+          creator: { select: { userId: true, displayName: true, user: { select: { avatarUrl: true } } } },
+        },
+      },
     },
   });
 
-  return HERO_VIDEO_CLIPS.flatMap((clip) => {
-    const episode = episodes.find((item) => item.id === clip.episodeId);
-    if (!episode) return [];
-    return [
-      {
+  const results = await Promise.all(
+    HERO_VIDEO_CLIPS.map(async (clip) => {
+      const episode = episodes.find((item) => item.id === clip.episodeId);
+      if (!episode) return null;
+      return {
         src: `${clip.src}?v=${fileVersion(clip.src)}`,
         poster: `${clip.poster}?v=${fileVersion(clip.poster)}`,
         journeyId: episode.journey.id,
@@ -76,7 +85,11 @@ export async function getHeroVideos(): Promise<HeroVideo[]> {
         caption: episode.caption,
         category: episode.journey.category,
         creatorName: episode.journey.creator.displayName,
-      },
-    ];
-  });
+        creatorAvatarUrl: await resolveAvatarUrl(episode.journey.creator.user.avatarUrl),
+        creatorUserId: episode.journey.creator.userId,
+      };
+    })
+  );
+
+  return results.filter((item): item is HeroVideo => item !== null);
 }

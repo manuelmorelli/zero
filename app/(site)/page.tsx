@@ -144,6 +144,8 @@ export default async function Home() {
             title: journey.title,
             category: journey.category,
             creatorName: journey.creatorName,
+            creatorAvatarUrl: journey.creatorAvatarUrl,
+            creatorUserId: journey.creatorUserId,
             description: journey.description,
             episodesCount: journey.episodesCount,
           })),

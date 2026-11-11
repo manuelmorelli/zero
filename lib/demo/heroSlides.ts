@@ -14,6 +14,8 @@ export type JourneyHeroSlide = {
   title: string;
   category: string | null;
   creatorName: string;
+  creatorAvatarUrl: string | null;
+  creatorUserId: string;
   description: string | null;
   episodesCount: number;
 };

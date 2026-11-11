@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Play, Quote, Volume2, VolumeX } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
+import { CreatorProfileLink } from "@/components/journey/CreatorProfileLink";
 import { ButtonSecondary, IconButton } from "@/components/ui/button";
 import { StoryViewer } from "@/components/home/StoryViewer";
 import { HeroBackgroundVideo, useHeroVideoMode } from "@/components/landing/HeroBackgroundVideo";
@@ -16,7 +17,7 @@ import type { CreatorStory } from "@/lib/discovery/stories";
 import { HERO_PAYOFF_MS, HERO_PAYOFFS } from "@/lib/landing/heroPayoffs";
 import { getGsapScrollTrigger, prefersLightMotion } from "@/lib/gsapClient";
 import { PANEL_GLASS } from "@/components/ui/panel";
-import { CoverChip } from "@/components/ui/cover-card";
+import { CoverChip, CoverTitle } from "@/components/ui/cover-card";
 import { CardTitle } from "@/components/ui/heading";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { cn } from "@/lib/utils";
@@ -257,6 +258,13 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             <MobileHeroCaption slide={slide} />
           </div>
         </div>
+
+        {/* Blocco titolo in alto a sinistra sulla foto, solo da computer: stesso formato
+         * (categoria + titolo) delle card Journey/episodio altrove nel sito (JourneyCard.tsx).
+         * Solo per guardare, non è un link: quello vive già nella pillola più sotto (HeroCard). */}
+        <div className="absolute left-4 top-4 hidden md:block">
+          <DesktopHeroTitle slide={slide} video={video} />
+        </div>
       </div>
 
       {/* Margine laterale della pagina (PAGE_WIDTH.wideCover): scritta ZERO, frase, pulsanti e
@@ -424,6 +432,30 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
         Watch
         <Play className="h-[15px] w-[15px] fill-current" aria-hidden="true" />
       </ButtonSecondary>
+    </div>
+  );
+}
+
+/** Blocco categoria + titolo in alto a sinistra sulla foto, solo da computer. Niente per la
+ * citazione demo: senza un Journey vero non c'è un titolo da mostrare. */
+function DesktopHeroTitle({ slide, video }: { slide: HeroSlide; video: HeroVideo | null }) {
+  const category = video ? video.category : slide.kind === "journey" ? slide.category : null;
+  const title = video ? video.episodeTitle : slide.kind === "journey" ? slide.title : null;
+  const creatorName = video ? video.creatorName : slide.kind === "journey" ? slide.creatorName : null;
+  const creatorAvatarUrl = video ? video.creatorAvatarUrl : slide.kind === "journey" ? slide.creatorAvatarUrl : null;
+  const creatorUserId = video ? video.creatorUserId : slide.kind === "journey" ? slide.creatorUserId : undefined;
+  if (!title) return null;
+
+  return (
+    <div className="max-w-xs">
+      {category && <CoverChip className="mb-1">{category}</CoverChip>}
+      <CoverTitle>{title}</CoverTitle>
+      {creatorName && (
+        <CreatorProfileLink userId={creatorUserId} className="mt-1.5 flex items-center gap-1.5">
+          <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" />
+          <span className="truncate text-sm text-on-photo-muted">{creatorName}</span>
+        </CreatorProfileLink>
+      )}
     </div>
   );
 }
