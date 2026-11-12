@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ShieldCheck } from "lucide-react";
 import { FadeImage } from "@/components/common/FadeImage";
 import { cn, formatCompactNumber } from "@/lib/utils";
@@ -78,6 +79,21 @@ export function ProfileHero({
        * avatar/nome dentro la foto (--profile-avatar-y, distanza dal bordo alto) sono due valori
        * separati e nominati: cambiare l'altezza della copertina non richiede più ricalcolare a
        * mano la risalita dell'avatar, che resta ancorata alla stessa posizione nella foto. */}
+      {/* Luce ambiente come nella Hero della Home (solo da computer): copia sfocata della copertina
+       * dietro a tutta la sezione, che sale sotto l'header (stesso spazio del margine della sezione). */}
+      {coverUrl && (
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 hidden overflow-hidden md:top-[calc(-3.85rem-0.5cm)] md:block"
+          aria-hidden="true"
+        >
+          <div className="hero-ambient absolute inset-0">
+            <Image src={coverUrl} alt="" fill sizes="25vw" className="object-cover" />
+          </div>
+          <div className="hero-side-fade absolute inset-0" />
+          <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
+        </div>
+      )}
+
       <div className="px-5 max-md:pt-20 md:px-0 md:pt-0">
         <div className="relative aspect-4/3 overflow-hidden rounded-xl md:aspect-auto md:ml-[var(--profile-cover-x)] md:mr-0 md:w-[var(--profile-cover-w)] md:h-[var(--profile-cover-h)] md:rounded-2xl">
           <div className="absolute inset-0 -z-10">
@@ -101,7 +117,11 @@ export function ProfileHero({
             {/* Sfumatura ampia con curva "ad S" (vedi .cover-fade in globals.css): copre la parte
              * bassa della foto, dove poggia anche l'avatar che vi si sovrappone, così quell'angolo
              * si trova su uno sfondo già naturalmente scurito invece che sulla foto a piena luce. */}
-            <div className="cover-fade absolute inset-x-0 bottom-0 h-24 md:h-48" />
+            <div className="cover-fade absolute inset-x-0 bottom-0 h-24 md:h-80" />
+            {/* Stesso trattamento della Hero della Home, solo da computer: grana, velo e velo laterale. */}
+            <div className="hero-grain absolute inset-0 hidden md:block" aria-hidden="true" />
+            <div className="hero-scrim absolute inset-0 hidden md:block" />
+            <div className="hero-side-fade absolute inset-0 hidden md:block" />
           </div>
         </div>
       </div>
