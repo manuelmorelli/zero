@@ -166,14 +166,6 @@ export default async function PublicProfilePage({
   // AboutCard resta usata da sola solo quando il video non compare affatto (visitatore su un
   // profilo senza ancora un video di presentazione).
   const overviewCards: ReactNode[] = [];
-  if (featuredJourney)
-    overviewCards.push(
-      <FeaturedJourneySection
-        key="featured"
-        journey={featuredJourney}
-        episodeCount={episodeCounts.get(featuredJourney.id) ?? 0}
-      />
-    );
   if (showPresentationCard) {
     overviewCards.push(
       <PresentationVideoCard
@@ -192,6 +184,15 @@ export default async function PublicProfilePage({
       <AboutCard key="about" profileUserId={user.id} name={user.name} bio={user.bio} interests={user.interests} />
     );
   }
+  // Su telefono Bio/Video vengono prima, il Journey in corso (In Progress) dopo.
+  if (featuredJourney)
+    overviewCards.push(
+      <FeaturedJourneySection
+        key="featured"
+        journey={featuredJourney}
+        episodeCount={episodeCounts.get(featuredJourney.id) ?? 0}
+      />
+    );
 
   let feedItems = null;
   let isDemoFeed = false;
