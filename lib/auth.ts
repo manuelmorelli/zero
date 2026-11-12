@@ -22,6 +22,12 @@ export const auth = betterAuth({
   trustedOrigins: [process.env.BETTER_AUTH_URL, process.env.MOBILE_TEST_URL].filter(
     (origin): origin is string => Boolean(origin),
   ),
+  // Conteggio del freno anti-abuso sul database (tabella RateLimit) invece che in memoria: su
+  // Vercel ogni richiesta può capitare su un'istanza diversa, in memoria il conteggio si
+  // perderebbe (S47, 11 nov 2026).
+  rateLimit: {
+    storage: "database",
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,

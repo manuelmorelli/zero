@@ -286,6 +286,18 @@ model Verification {
   @@map("verifications")
 }
 
+// Conteggio del freno anti-abuso di Better Auth (login, reset password, ecc.) su database
+// invece che in memoria: su Vercel ogni richiesta può capitare su un'istanza diversa, quindi un
+// conteggio in memoria del programma non è affidabile (S47, 11 nov 2026).
+model RateLimit {
+  id          String @id @default(uuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rate_limits")
+}
+
 // ------------------------------------------------------------
 // CREATOR
 // ------------------------------------------------------------
