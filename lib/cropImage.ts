@@ -12,11 +12,28 @@ function drawBlurredBackground(ctx: CanvasRenderingContext2D, image: HTMLImageEl
   const drawWidth = image.naturalWidth * coverScale;
   const drawHeight = image.naturalHeight * coverScale;
 
-  // Una sfocatura troppo forte media tutta la foto in un unico colore quasi grigio: resta più
-  // leggera (3.5% del lato) e con più saturazione, così si vedono ancora le macchie di colore.
+  // La sfocatura NON usa ctx.filter: Safari/iPhone non lo supporta e la foto di sfondo restava
+  // nitida, come un doppione accanto all'originale. Si rimpicciolisce la foto e la si riallarga
+  // con interpolazione morbida: stesso effetto su tutti i browser.
+  const blurDivisor = 24;
+  const small = document.createElement("canvas");
+  small.width = Math.max(2, Math.round(width / blurDivisor));
+  small.height = Math.max(2, Math.round(height / blurDivisor));
+  const smallCtx = small.getContext("2d");
+  if (!smallCtx) return;
+  smallCtx.imageSmoothingQuality = "high";
+  smallCtx.drawImage(
+    image,
+    ((width - drawWidth) / 2) * (small.width / width),
+    ((height - drawHeight) / 2) * (small.height / height),
+    drawWidth * (small.width / width),
+    drawHeight * (small.height / height)
+  );
+
   ctx.save();
-  ctx.filter = `blur(${Math.round(Math.max(width, height) * 0.035)}px) saturate(1.6) brightness(1.05)`;
-  ctx.drawImage(image, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(small, 0, 0, width, height);
   ctx.restore();
 }
 
