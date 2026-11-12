@@ -38,9 +38,12 @@ type EditProfileButtonProps = {
 
 export function EditProfileButton({ user, avatarUrl, coverUrl, coverFocalX }: EditProfileButtonProps) {
   const [open, setOpen] = useState(false);
+  // Mentre il riquadro di ritaglio è aperto (portale su body, fuori dal dialogo) il dialogo non
+  // deve essere modale: il blocco tocchi/scroll di Radix impediva slider, trascinamento e tasti.
+  const [cropping, setCropping] = useState(false);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen} modal={!cropping}>
       <Button variant="secondary" className="profile-hero-glass text-on-photo" onClick={() => setOpen(true)}>
         Edit Profile
       </Button>
@@ -52,6 +55,7 @@ export function EditProfileButton({ user, avatarUrl, coverUrl, coverFocalX }: Ed
           coverUrl={coverUrl}
           coverFocalX={coverFocalX}
           onClose={() => setOpen(false)}
+          onCroppingChange={setCropping}
         />
       )}
     </Dialog>
@@ -68,7 +72,8 @@ function EditProfileModal({
   coverUrl,
   coverFocalX,
   onClose,
-}: EditProfileButtonProps & { onClose: () => void }) {
+  onCroppingChange,
+}: EditProfileButtonProps & { onClose: () => void; onCroppingChange: (cropping: boolean) => void }) {
   const router = useRouter();
   const [state, formAction, pending] = useActionState(updateAccount, { error: null });
 
@@ -102,6 +107,12 @@ function EditProfileModal({
   // così telefono e computer possono restare centrati sullo stesso punto pur con riquadri
   // di forma diversa (CoverFocalPicker).
   const [focalTarget, setFocalTarget] = useState<{ blob: Blob; imageSrc: string } | null>(null);
+
+  const isCropping = cropTarget !== null || focalTarget !== null;
+  useEffect(() => {
+    onCroppingChange(isCropping);
+    return () => onCroppingChange(false);
+  }, [isCropping, onCroppingChange]);
 
   function toggle(category: JourneyCategory) {
     setSelected((current) =>
@@ -188,7 +199,12 @@ function EditProfileModal({
   }, [submitted, pending, state.error, router, onClose]);
 
   return (
-    <DialogContent className="max-h-[92vh] max-w-3xl p-0">
+    <DialogContent
+      className="max-h-[92vh] max-w-3xl p-0"
+      onInteractOutside={(event) => {
+        if (isCropping) event.preventDefault();
+      }}
+    >
       <DialogHeader className="sr-only">
         <DialogTitle>Edit Profile</DialogTitle>
       </DialogHeader>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { X } from "lucide-react";
 import Cropper, { type Area } from "react-easy-crop";
 import { getCroppedImageBlob } from "@/lib/cropImage";
 import { Button } from "@/components/ui/button";
@@ -41,18 +42,16 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
   return createPortal(
     <div
       className="pointer-events-auto fixed inset-0 z-[60] flex items-center justify-center bg-scrim px-4 py-8"
-      onClick={(event) => {
-        // Il riquadro può comparire annidato dentro un altro overlay (es. "Edit profile"):
-        // ferma la propagazione, altrimenti il click sullo sfondo chiuderebbe anche quello.
-        event.stopPropagation();
-        onCancel();
-      }}
+      onClick={(event) => event.stopPropagation()}
     >
       <div
         className="flex w-full max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-surface"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="border-b border-border px-5 py-4">
+        <div className="max-md:relative border-b border-border px-5 py-4 max-md:pr-14">
+          <button type="button" onClick={onCancel} aria-label="Close" className="absolute right-3 top-3 grid md:hidden h-9 w-9 place-items-center rounded-full border border-border text-ink-muted hover:text-ink">
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
           <CardTitle as="h2">{title}</CardTitle>
           <p className="mt-1 text-sm text-ink-muted">Drag to move, use the slider to zoom.</p>
         </div>

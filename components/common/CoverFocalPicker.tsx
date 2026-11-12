@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/heading";
 
@@ -34,16 +35,16 @@ export function CoverFocalPicker({ imageSrc, initialFocalX, onCancel, onConfirm 
   return createPortal(
     <div
       className="pointer-events-auto fixed inset-0 z-[60] flex items-center justify-center bg-scrim px-4 py-8"
-      onClick={(event) => {
-        event.stopPropagation();
-        onCancel();
-      }}
+      onClick={(event) => event.stopPropagation()}
     >
       <div
         className="flex w-full max-w-md flex-col overflow-hidden rounded-xl border border-border bg-surface"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="border-b border-border px-5 py-4">
+        <div className="max-md:relative border-b border-border px-5 py-4 max-md:pr-14">
+          <button type="button" onClick={onCancel} aria-label="Close" className="absolute right-3 top-3 grid md:hidden h-9 w-9 place-items-center rounded-full border border-border text-ink-muted hover:text-ink">
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
           <CardTitle as="h2">Dov&apos;è il soggetto?</CardTitle>
           <p className="mt-1 text-sm text-ink-muted">
             Tocca o trascina sul punto più importante: su telefono resterà sempre visibile.
