@@ -48,8 +48,8 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
         className="flex w-full max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-surface"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="max-md:relative border-b border-border px-5 py-4 max-md:pr-14">
-          <button type="button" onClick={onCancel} aria-label="Close" className="absolute right-3 top-3 grid md:hidden h-9 w-9 place-items-center rounded-full border border-border text-ink-muted hover:text-ink">
+        <div className="relative border-b border-border px-5 py-4 md:pr-14 max-md:pr-14">
+          <button type="button" onClick={onCancel} aria-label="Close" className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-border text-ink-muted hover:text-ink">
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
           <CardTitle as="h2">{title}</CardTitle>
