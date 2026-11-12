@@ -28,7 +28,7 @@ export function ProfileTabs({ basePath, activeTab, actions }: ProfileTabsProps) 
        * Journeys/Community (opacità ridotta) il taglio si notava meno. pt-5 riserva spazio
        * sufficiente al bagliore, -mt-5 sul contenitore esterno lo compensa così l'impaginazione
        * non si sposta (stessa tecnica di HorizontalScrollRow, qui con margine maggiore). */}
-      <div className={cn("no-scrollbar flex items-center gap-2.5 overflow-x-auto pt-5", PAGE_WIDTH.wideCover)}>
+      <div className={cn("no-scrollbar flex items-center gap-2.5 overflow-x-auto pt-5 md:-translate-x-5", PAGE_WIDTH.wideCover)}>
         {TABS.map((tab) => {
           const isActive = tab.key === activeTab;
           const href = tab.key === "overview" ? basePath : `${basePath}?tab=${tab.key}`;

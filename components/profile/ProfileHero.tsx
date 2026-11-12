@@ -68,7 +68,7 @@ export function ProfileHero({
 
   return (
     <section
-      className="relative isolate w-full md:mt-[calc(3.85rem+0.5cm)] md:[--profile-cover-x:calc(4.43%_-_2.5rem)] md:[--profile-cover-w:min(calc(100vw_-_340px_-_5.25rem),calc(1060px_-_5.25rem),calc(70vh*16/9))] md:[--profile-cover-h:min(calc((100vw_-_340px_-_5.25rem)*9/16),calc((1060px_-_5.25rem)*9/16),70vh)] md:[--profile-avatar-y:calc(var(--profile-cover-h)_-_17rem_+_0.9cm)]"
+      className="relative isolate w-full md:mt-[calc(3.85rem+0.5cm)] md:[--profile-cover-x:calc(4.43%_-_2.5rem)] md:[--profile-cover-w:min(calc(100vw_-_340px_-_5.25rem),calc(1060px_-_5.25rem),calc(70vh*16/9))] md:[--profile-cover-h:min(calc((100vw_-_340px_-_5.25rem)*9/16),calc((1060px_-_5.25rem)*9/16),70vh)] md:[--profile-avatar-y:calc(var(--profile-cover-h)_-_17rem_+_2.4cm)]"
     >
       {/* Foto di copertina: su mobile una card con margine e angoli arrotondati (come la copertina
        * di Presentation.dc.html nel mockup — prima era un rettangolo a piena larghezza, angoli
@@ -143,7 +143,7 @@ export function ProfileHero({
        * coprirla quasi tutta. Da desktop in su invariata. */}
       <div
         className={cn(
-          "relative z-10 -mt-14 sm:-mt-16 md:mt-[calc(var(--profile-avatar-y)-var(--profile-cover-h))]",
+          "relative z-10 -mt-14 sm:-mt-16 md:mt-[calc(var(--profile-avatar-y)-var(--profile-cover-h))] md:-translate-x-5",
           PAGE_WIDTH.profileCover
         )}
       >
