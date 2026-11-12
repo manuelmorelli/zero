@@ -10,20 +10,27 @@ type FeaturedJourneySectionProps = {
     status: string;
   };
   episodeCount?: number;
+  /** Dentro la griglia dei Journey pubblicati (computer): riempie la sua cella invece della
+   * larghezza fissa pensata per la riga dell'Overview. */
+  inGrid?: boolean;
 };
 
 // Il Journey "in evidenza": tra i Journey pubblicati del creator, quello che ha ricevuto
 // l'episodio più recente (vedi lib/profile/featuredJourney.ts). Con un solo Journey pubblicato
 // coincide semplicemente con quello. Stesso CoverFrame (format "journey") di JourneyCard, per
 // restare sempre alle stesse misure del resto del sito.
-export function FeaturedJourneySection({ journey, episodeCount }: FeaturedJourneySectionProps) {
+export function FeaturedJourneySection({ journey, episodeCount, inGrid = false }: FeaturedJourneySectionProps) {
   return (
     <CoverFrame
       format="journey"
       href={`/journeys/${journey.id}`}
       imageUrl={journey.coverUrl}
       imageAlt={journey.title}
-      className="self-start max-md:w-full md:w-[calc((100%-2rem)/2)] md:shrink-0 lg:w-[calc((100%-4rem)/3)]"
+      className={
+        inGrid
+          ? "w-full"
+          : "self-start max-md:w-full md:w-[calc((100%-2rem)/2)] md:shrink-0 lg:w-[calc((100%-4rem)/3)]"
+      }
       topLeft={
         <CoverChip className="bg-overlay-soft uppercase tracking-wider max-md:px-2 max-md:py-0.5">
           In Progress

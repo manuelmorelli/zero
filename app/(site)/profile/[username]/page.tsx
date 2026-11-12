@@ -248,6 +248,22 @@ export default async function PublicProfilePage({
               avatarUrl={avatarUrl}
               name={user.name}
               username={user.username}
+              bio={user.bio}
+              interests={user.interests}
+              presentationCard={
+                showPresentationCard ? (
+                  <PresentationVideoCard
+                    placement="hero"
+                    profileUserId={user.id}
+                    videoUrl={presentationVideoUrl}
+                    coverUrl={presentationCoverUrl}
+                    isOwnProfile={isOwnProfile}
+                    name={user.name}
+                    bio={user.bio}
+                    interests={user.interests}
+                  />
+                ) : undefined
+              }
               location={user.location}
               joinedAt={user.createdAt}
               trust={trust}
@@ -258,7 +274,6 @@ export default async function PublicProfilePage({
               followingCount={followingCount}
               isOwnProfile={isOwnProfile}
               activeStory={activeStory}
-              actions={profileActions}
             />
 
             <ProfileTabs
@@ -281,7 +296,7 @@ export default async function PublicProfilePage({
                   ) : undefined}
                   {/* Stesso stile "pillola non attiva" dei tab (Journeys/Community): opacità ridotta
                    * finché non si interagisce, altrimenti sembravano link già aperti/attivi. */}
-                  <div className="contents md:hidden [&_a]:opacity-70 [&_a:hover]:opacity-100 [&_button]:opacity-70 [&_button:hover]:opacity-100">
+                  <div className="contents [&_a]:opacity-70 [&_a:hover]:opacity-100 [&_button]:opacity-70 [&_button:hover]:opacity-100">
                     {profileActions}
                   </div>
                 </>
@@ -295,7 +310,9 @@ export default async function PublicProfilePage({
         {activeTab === "overview" && (
           <>
             {/* 1. Journey in corso + card Bio/Presentazione (unica, vedi sopra) */}
-            <Reveal>
+            {/* Da computer questa riga non c'è: In Progress è la prima card dei Journey pubblicati
+                (più sotto) e il suo posto è preso da Upcoming Activities. Su telefono resta così. */}
+            <Reveal className="md:hidden">
               {overviewCards.length === 1 ? (
                 <div className="max-w-md">{overviewCards}</div>
               ) : (
@@ -309,8 +326,8 @@ export default async function PublicProfilePage({
             </Reveal>
 
             {freeEvents.length > 0 && (
-              <Reveal delayMs={20} className="mt-6 block">
-                <FreeEventsSection items={freeEvents} isOwner={isOwnProfile} />
+              <Reveal delayMs={20} className="mt-6 block md:mt-0">
+                <FreeEventsSection items={freeEvents} isOwner={isOwnProfile} compact />
               </Reveal>
             )}
 
@@ -331,13 +348,27 @@ export default async function PublicProfilePage({
 
                 {liveJourneys.length > 0 ? (
                   <div className={`mt-4 ${CARD_GRID.journey}`}>
+                    {featuredJourney && (
+                      <Reveal className="hidden md:block">
+                        <FeaturedJourneySection
+                          inGrid
+                          journey={featuredJourney}
+                          episodeCount={episodeCounts.get(featuredJourney.id) ?? 0}
+                        />
+                      </Reveal>
+                    )}
                     {liveJourneys.slice(0, PUBLISHED_JOURNEYS_PREVIEW_COUNT).map((journey, index) => {
                       // Posizione nell'elenco completo (non nella sola anteprima): "Move" deve
                       // rispecchiare l'ordine reale, che include anche i Journey archiviati non
                       // mostrati qui.
                       const globalIndex = journeys.findIndex((item) => item.id === journey.id);
                       return (
-                        <Reveal key={journey.id} delayMs={index * 60}>
+                        <Reveal
+                          key={journey.id}
+                          delayMs={index * 60}
+                          // Da computer il Journey in evidenza è già la prima card (In Progress): qui non si ripete.
+                          className={journey.id === featuredJourney?.id ? "md:hidden" : undefined}
+                        >
                           <ContentCard
                             href={`/journeys/${journey.id}`}
                             imageUrl={journey.coverUrl}

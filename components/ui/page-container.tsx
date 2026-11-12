@@ -17,6 +17,9 @@ export const PAGE_WIDTH = {
   /** Colonna delle chat AI a schermo intero (Community, Ember): più stretta di "narrow" e senza
    * la distanza standard dalla barra in alto, perché qui lo spazio verticale lo gestisce la chat
    * stessa (barra di scrittura fissa in fondo), non PAGE_SPACING. */
+  /** Come "wideCover", ma per la copertina del profilo da computer, larga quanto la foto della Hero
+   * Home (variabile --profile-cover-w, definita su ProfileHero): il testo parte dal bordo di quella foto. */
+  profileCover: "mx-auto w-full max-w-[1400px] px-5 md:ml-[var(--profile-cover-x)] md:mr-0 md:w-[var(--profile-cover-w)] md:max-w-none md:px-8",
   chat: "mx-auto w-full max-w-3xl px-4",
 } as const;
 

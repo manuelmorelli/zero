@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { updateAccount } from "@/lib/actions/account";
 import { createProfileImageUploadUrl } from "@/lib/actions/profileMedia";
 import { uploadFileWithProgress } from "@/lib/upload";
-import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
+import { ALLOWED_IMAGE_TYPES, COVER_ASPECT, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { JOURNEY_CATEGORIES, type JourneyCategory } from "@/lib/constants/categories";
 import { ImageCropper } from "@/components/common/ImageCropper";
 import { CoverFocalPicker } from "@/components/common/CoverFocalPicker";
@@ -98,7 +98,7 @@ function EditProfileModal({
   const [cropTarget, setCropTarget] = useState<{ kind: "avatar" | "cover"; imageSrc: string } | null>(
     null
   );
-  // Dopo il ritaglio 3:1 della copertina, prima di caricarla: dove si trova il soggetto,
+  // Dopo il ritaglio 16:9 della copertina, prima di caricarla: dove si trova il soggetto,
   // così telefono e computer possono restare centrati sullo stesso punto pur con riquadri
   // di forma diversa (CoverFocalPicker).
   const [focalTarget, setFocalTarget] = useState<{ blob: Blob; imageSrc: string } | null>(null);
@@ -207,7 +207,7 @@ function EditProfileModal({
           <div className="space-y-3">
             <div>
               <span className="text-sm font-medium text-ink-muted">Cover</span>
-              <div className="relative mt-1.5 aspect-[3/1] w-full overflow-hidden rounded-xl border border-border bg-surface-2">
+              <div className="relative mt-1.5 aspect-video w-full overflow-hidden rounded-xl border border-border bg-surface-2">
                 {coverPreview ? (
                   <Image src={coverPreview} alt="" fill sizes="280px" className="object-cover" />
                 ) : (
@@ -401,7 +401,7 @@ function EditProfileModal({
         <ImageCropper
           imageSrc={cropTarget.imageSrc}
           title={cropTarget.kind === "avatar" ? "Adjust your profile photo" : "Adjust your cover photo"}
-          aspect={cropTarget.kind === "avatar" ? 1 : 3}
+          aspect={cropTarget.kind === "avatar" ? 1 : COVER_ASPECT}
           cropShape={cropTarget.kind === "avatar" ? "round" : "rect"}
           onCancel={() => setCropTarget(null)}
           onConfirm={handleCropConfirm}

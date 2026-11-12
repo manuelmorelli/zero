@@ -23,3 +23,8 @@ export const IMAGE_EXTENSIONS: Record<string, string> = {
 };
 
 export const ALLOWED_IMAGE_TYPES = new Set(Object.keys(IMAGE_EXTENSIONS));
+
+/** Forma del ritaglio della copertina del profilo: 16:9, la stessa della foto in cima al profilo da
+ * computer (components/profile/ProfileHero.tsx); il telefono (4:3) ne mostra una parte centrata sul
+ * punto scelto in CoverFocalPicker. */
+export const COVER_ASPECT = 16 / 9;

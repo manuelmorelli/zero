@@ -14,7 +14,7 @@ import { CommunityListingMenu } from "@/components/creator/CommunityListingMenu"
 import { SubscribeCard } from "@/components/community/SubscribeCard";
 import { ChallengeRow } from "@/components/community/ChallengeRow";
 import { MembersRoomRow } from "@/components/community/MembersRoomRow";
-import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
+import { ACTIVITY_ROW_ITEM } from "@/components/ui/cover-card";
 import { cn } from "@/lib/utils";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 
@@ -250,7 +250,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ user
           <div className="mt-12">
             <HorizontalScrollRow title="Activities" subtitle={`Everything ${firstName} organizes, in one place.`}>
               {activities.map((activity) => (
-                <div key={activity.key} className={CARD_ROW_ITEM.event}>
+                <div key={activity.key} className={ACTIVITY_ROW_ITEM}>
                   {activity.element}
                 </div>
               ))}

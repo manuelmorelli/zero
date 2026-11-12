@@ -14,9 +14,7 @@ import { uploadFileWithProgress } from "@/lib/upload";
 import { ALLOWED_VIDEO_TYPES } from "@/lib/constants/video";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { ImageCropper } from "@/components/common/ImageCropper";
-import { CardTitle } from "@/components/ui/heading";
-import { CoverChip, CoverTitle } from "@/components/ui/cover-card";
-import { PANEL_ACCENT } from "@/components/ui/panel";
+import { CoverTitle } from "@/components/ui/cover-card";
 import { BioPreviewCard } from "@/components/profile/BioPreviewCard";
 import {
   DropdownMenu,
@@ -43,6 +41,10 @@ type PresentationVideoCardProps = {
   name: string;
   bio: string | null;
   interests?: string[];
+  /** "row" (default): nella riga dell'Overview, da computer nascosta (da lì in su il video sta in
+   * Hero accanto alla Bio). "hero": la versione da computer accanto alla copertina, nascosta su
+   * telefono (lì c'è già quella della riga). */
+  placement?: "row" | "hero";
 };
 
 /**
@@ -52,7 +54,7 @@ type PresentationVideoCardProps = {
  * caso resta solo AboutCard, vedi sopra. Il proprietario la vede sempre, anche con video vuoto,
  * per poter caricarlo.
  */
-export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwnProfile, name, bio, interests }: PresentationVideoCardProps) {
+export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwnProfile, name, bio, interests, placement = "row" }: PresentationVideoCardProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -161,8 +163,6 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
   // (FeaturedJourneySection) — stessa formula di CARD_ROW_ITEM.episode, vedi
   // app/(site)/profile/[username]/page.tsx. Su mobile la Bio non compare qui (si legge dalla
   // pagina dedicata Bio & presentation): resta solo il poster del video, come prima.
-  const cardWidth = "md:w-[calc((100%-2rem)/3)] md:shrink-0 lg:w-[calc((100%-4rem)/5)]";
-
   return (
     <>
       <div
@@ -170,7 +170,7 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
         // md:ml invece di left: un margine reale sposta anche la Bio che segue nel flusso della
         // riga (non serve più ripetere lo stesso scarto anche su di lei), uno scarto "visivo"
         // via left no.
-        className={cn("relative aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border border-ember-line max-md:min-w-0 max-md:flex-1 md:ml-[126px]", cardWidth, videoUrl ? "bg-surface-2" : "cover-placeholder")}
+        className={cn("relative aspect-[112/156] w-full cursor-pointer overflow-hidden rounded-xl border border-ember-line max-md:min-w-0 max-md:flex-1", placement === "hero" ? "max-md:hidden md:aspect-video md:w-full md:shrink-0" : "md:hidden", videoUrl ? "bg-surface-2" : "cover-placeholder")}
       >
         {videoUrl ? (
           <>
@@ -234,34 +234,9 @@ export function PresentationVideoCard({ profileUserId, videoUrl, coverUrl, isOwn
       {/* Su mobile la Bio non è più solo nella pagina dedicata (prima raggiungibile con "altro"
        * sotto il nome in Hero, ora rimosso): compare qui, accanto al video, come card a sé. Da
        * tablet in su resta invece il riquadro pieno subito sotto (hidden md:flex). */}
-      <BioPreviewCard profileUserId={profileUserId} name={name} bio={bio} interests={interests} />
-
-      <div
-        className={cn(
-          PANEL_ACCENT,
-          "bio-card relative hidden md:flex md:aspect-[224/152] md:flex-col md:overflow-y-auto md:w-[calc((100%-2rem)/3*2)] md:shrink-0 lg:w-[calc((100%-4rem)/5*2)]"
-        )}
-      >
-        <CardTitle as="h2" className="inline-flex items-center gap-1.5 text-ember">
-          <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
-          Bio
-        </CardTitle>
-        {bio ? (
-          <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-relaxed text-ink">{bio}</p>
-        ) : (
-          <p className="mt-3 text-sm text-ink-faint">{name} hasn&apos;t written a bio yet.</p>
-        )}
-        {interests && interests.length > 0 && (
-          <div className="mt-4 md:mt-auto">
-            <p className="text-sm uppercase tracking-wider text-ink-faint">Focus</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {interests.map((interest) => (
-                <CoverChip key={interest}>{interest}</CoverChip>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      {placement === "row" && (
+        <BioPreviewCard profileUserId={profileUserId} name={name} bio={bio} interests={interests} />
+      )}
 
       {coverCropSrc && (
         <ImageCropper

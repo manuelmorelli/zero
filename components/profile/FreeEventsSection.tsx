@@ -18,7 +18,17 @@ export type FreeEventItem = {
  * Manuel): un'iniziativa gratuita è contenuto pubblico come i Journey, non un'offerta a pagamento —
  * compare solo se il creator ne ha pubblicata almeno una, altrimenti la sezione non si mostra.
  * Riusata anche nella pagina Community stessa (2026-09-26), dove diventa l'elenco completo. */
-export function FreeEventsSection({ items, isOwner = false }: { items: FreeEventItem[]; isOwner?: boolean }) {
+export function FreeEventsSection({
+  items,
+  isOwner = false,
+  compact = false,
+}: {
+  items: FreeEventItem[];
+  isOwner?: boolean;
+  /** Da computer le card sono larghe 2/3 del normale (profilo personale): stesse proporzioni,
+   * più card per riga. Telefono invariato. */
+  compact?: boolean;
+}) {
   if (items.length === 0) return null;
 
   return (
@@ -29,7 +39,15 @@ export function FreeEventsSection({ items, isOwner = false }: { items: FreeEvent
           segnalato da Manuel il 2026-09-26). Il pulsante Partecipo sta fuori da CoverFrame (non
           annidato nel suo Link): bordo/annidamento <a> non validi rompono click e layout, stesso
           principio già seguito da JourneyGrid per il suo menu "···". */}
-      <div className={cn("mt-4", CARD_GRID.event, "max-md:grid-cols-[repeat(auto-fill,140px)]")}>
+      <div
+        className={cn(
+          "mt-4",
+          CARD_GRID.event,
+          "max-md:grid-cols-[repeat(auto-fill,140px)]",
+          compact &&
+            "md:grid-cols-[repeat(auto-fill,calc((100%_-_2rem)*2/9))] lg:grid-cols-[repeat(auto-fill,calc((100%_-_4rem)*2/15))]"
+        )}
+      >
         {items.map((item) => {
           const kindLabel = item.kind === "workshop" ? "Workshop" : "Activity";
           const dateLabel = item.startsAt

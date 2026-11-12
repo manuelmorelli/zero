@@ -10,7 +10,7 @@ import { CardTitle } from "@/components/ui/heading";
 type ImageCropperProps = {
   imageSrc: string;
   title: string;
-  /** Larghezza/altezza dell'area di ritaglio: 1 per l'avatar tondo, 3 per la copertina. */
+  /** Larghezza/altezza dell'area di ritaglio: 1 per l'avatar tondo, 16/9 per la copertina del profilo. */
   aspect: number;
   cropShape: "round" | "rect";
   onCancel: () => void;
@@ -40,7 +40,7 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
   // invece che allo schermo, e la parte alta finiva fuori dai bordi visibili (Manuel, 2026-11-04).
   return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-scrim px-4 py-8"
+      className="pointer-events-auto fixed inset-0 z-[60] flex items-center justify-center bg-scrim px-4 py-8"
       onClick={(event) => {
         // Il riquadro può comparire annidato dentro un altro overlay (es. "Edit profile"):
         // ferma la propagazione, altrimenti il click sullo sfondo chiuderebbe anche quello.

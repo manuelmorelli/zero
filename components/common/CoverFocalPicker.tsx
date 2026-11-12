@@ -13,7 +13,7 @@ type CoverFocalPickerProps = {
   onConfirm: (focalX: number) => void;
 };
 
-/** Dopo il ritaglio 3:1 della copertina, chiede di segnare dove si trova il soggetto
+/** Dopo il ritaglio 16:9 della copertina, chiede di segnare dove si trova il soggetto
  * principale: su telefono il riquadro è più stretto, quindi senza questo punto il centro
  * automatico della foto può tagliare via quello che conta (Manuel, 2026-11-04). */
 export function CoverFocalPicker({ imageSrc, initialFocalX, onCancel, onConfirm }: CoverFocalPickerProps) {
@@ -33,7 +33,7 @@ export function CoverFocalPicker({ imageSrc, initialFocalX, onCancel, onConfirm 
   // finiva fuori dai bordi visibili (segnalato da Manuel, 2026-11-04).
   return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-scrim px-4 py-8"
+      className="pointer-events-auto fixed inset-0 z-[60] flex items-center justify-center bg-scrim px-4 py-8"
       onClick={(event) => {
         event.stopPropagation();
         onCancel();
@@ -52,7 +52,7 @@ export function CoverFocalPicker({ imageSrc, initialFocalX, onCancel, onConfirm 
 
         <div
           ref={trackRef}
-          className="relative aspect-[3/1] w-full cursor-crosshair select-none bg-black"
+          className="relative aspect-video w-full cursor-crosshair select-none bg-black"
           onPointerDown={(event) => {
             event.currentTarget.setPointerCapture(event.pointerId);
             updateFromClientX(event.clientX);
@@ -87,7 +87,7 @@ export function CoverFocalPicker({ imageSrc, initialFocalX, onCancel, onConfirm 
           </div>
           <div className="flex-[2]">
             <p className="text-sm font-semibold text-ink-muted">Computer</p>
-            <div className="relative mt-1.5 aspect-[12/5] w-full overflow-hidden rounded-lg border border-border bg-black">
+            <div className="relative mt-1.5 aspect-video w-full overflow-hidden rounded-lg border border-border bg-black">
               <img
                 src={imageSrc}
                 alt=""

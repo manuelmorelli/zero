@@ -8,7 +8,7 @@ import { CommunityListingMenu } from "@/components/creator/CommunityListingMenu"
 import { ForumJourneyList } from "@/components/community/ForumJourneyList";
 import { ListingCard } from "@/components/community/ListingCard";
 import { Reveal } from "@/components/common/Reveal";
-import { CARD_ROW_ITEM } from "@/components/ui/cover-card";
+import { ACTIVITY_ROW_ITEM } from "@/components/ui/cover-card";
 import { PageTitle } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
@@ -184,7 +184,7 @@ export default async function CommunityDashboardPage() {
           <Reveal delayMs={40}>
             <HorizontalScrollRow title="Activities" subtitle="Drafts and published activities, in one place.">
               {entries.map((entry) => (
-                <div key={entry.key} className={CARD_ROW_ITEM.event}>
+                <div key={entry.key} className={ACTIVITY_ROW_ITEM}>
                   {entry.element}
                 </div>
               ))}

@@ -72,6 +72,11 @@ export const CARD_ROW_ITEM: Record<Exclude<CoverFormat, "featured">, string> = {
   person: "w-[46.2%] shrink-0 md:w-[calc((100%-3rem)/4)] lg:w-[calc((100%-7rem)/8)]",
 };
 
+/** Card delle Activities (Upcoming Activities, righe Activities di Community): da computer larghe
+ * 2/3 di CARD_ROW_ITEM.event, stesse proporzioni; telefono invariato (Manuel, 2026-11-12). */
+export const ACTIVITY_ROW_ITEM =
+  "w-[46.2%] shrink-0 md:w-[calc((100%-2rem)/3*2/3)] lg:w-[calc((100%-4rem)/5*2/3)]";
+
 const SIZES: Record<CoverFormat, string> = {
   journey: "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 78vw",
   episode: "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 78vw",

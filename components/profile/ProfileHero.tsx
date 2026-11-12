@@ -4,6 +4,7 @@ import { cn, formatCompactNumber } from "@/lib/utils";
 import { ProfileAvatarStory } from "@/components/profile/ProfileAvatarStory";
 import { ProfileFollowStats } from "@/components/profile/ProfileFollowStats";
 import { ProfileTrustStat } from "@/components/profile/ProfileTrustStat";
+import { BioPanel } from "@/components/profile/BioPanel";
 import { Stat } from "@/components/profile/ProfileStat";
 import type { CreatorStory } from "@/lib/discovery/stories";
 import type { CreatorTrust } from "@/lib/profile/trustScore";
@@ -21,6 +22,11 @@ type ProfileHeroProps = {
   avatarUrl: string | null;
   name: string;
   username: string | null;
+  bio: string | null;
+  /** Interessi (Focus) mostrati nel riquadro Bio accanto alla copertina, solo da computer. */
+  interests?: string[];
+  /** Card del video di presentazione, in fondo al riquadro Bio accanto alla copertina (solo computer). */
+  presentationCard?: React.ReactNode;
   location: string | null;
   joinedAt: Date;
   /** null per chi non è creator: niente Trust Score né "Trusted by". */
@@ -34,7 +40,6 @@ type ProfileHeroProps = {
   /** Id di chi guarda la pagina, null per un ospite non loggato. */
   viewerId: string | null;
   isLoggedIn: boolean;
-  actions?: React.ReactNode;
 };
 
 export function ProfileHero({
@@ -44,6 +49,9 @@ export function ProfileHero({
   avatarUrl,
   name,
   username,
+  bio,
+  interests,
+  presentationCard,
   location,
   joinedAt,
   trust,
@@ -54,13 +62,12 @@ export function ProfileHero({
   activeStory,
   viewerId,
   isLoggedIn,
-  actions,
 }: ProfileHeroProps) {
   const joinedLabel = joinedAt.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
   return (
     <section
-      className="relative isolate w-full md:mt-[calc(3.85rem+0.5cm)] md:[--profile-cover-h:29rem] md:[--profile-avatar-y:calc(12rem+0.9cm)]"
+      className="relative isolate w-full md:mt-[calc(3.85rem+0.5cm)] md:[--profile-cover-x:calc(4.43%_-_2.5rem)] md:[--profile-cover-w:min(calc(100vw_-_340px_-_5.25rem),calc(1060px_-_5.25rem),calc(70vh*16/9))] md:[--profile-cover-h:min(calc((100vw_-_340px_-_5.25rem)*9/16),calc((1060px_-_5.25rem)*9/16),70vh)] md:[--profile-avatar-y:calc(var(--profile-cover-h)_-_17rem_+_0.9cm)]"
     >
       {/* Foto di copertina: su mobile una card con margine e angoli arrotondati (come la copertina
        * di Presentation.dc.html nel mockup — prima era un rettangolo a piena larghezza, angoli
@@ -72,7 +79,7 @@ export function ProfileHero({
        * separati e nominati: cambiare l'altezza della copertina non richiede più ricalcolare a
        * mano la risalita dell'avatar, che resta ancorata alla stessa posizione nella foto. */}
       <div className="px-5 max-md:pt-20 md:px-0 md:pt-0">
-        <div className="relative aspect-4/3 overflow-hidden rounded-xl md:aspect-auto md:mx-[4.43%] md:h-[var(--profile-cover-h)] md:rounded-2xl">
+        <div className="relative aspect-4/3 overflow-hidden rounded-xl md:aspect-auto md:ml-[var(--profile-cover-x)] md:mr-0 md:w-[var(--profile-cover-w)] md:h-[var(--profile-cover-h)] md:rounded-2xl">
           <div className="absolute inset-0 -z-10">
             {coverUrl ? (
               <FadeImage
@@ -99,6 +106,17 @@ export function ProfileHero({
         </div>
       </div>
 
+      {/* Riquadro Bio a destra della foto, in alto, alto quanto la foto: parte dal suo bordo destro
+       * più uno spazio e si ferma al margine destro della pagina. Il video di presentazione sta
+       * dentro, accanto al testo. Solo da computer. */}
+      <BioPanel
+        name={name}
+        bio={bio}
+        interests={interests}
+        media={presentationCard}
+        className="md:absolute md:top-0 md:right-[4.43%] md:left-[calc(var(--profile-cover-x)+var(--profile-cover-w)+1.25rem)] md:h-[var(--profile-cover-h)] md:max-w-sm md:pb-3"
+      />
+
       {/* Risalita dell'avatar sopra il bordo della card qui sopra: su mobile la card è più corta
        * di prima (aspect-4/3, non più un rettangolo h-[22rem]), quindi la risalita è molto minore
        * — tarata sulla metà dell'avatar (h-28=112px) così si sovrappone al bordo della foto senza
@@ -106,7 +124,7 @@ export function ProfileHero({
       <div
         className={cn(
           "relative z-10 -mt-14 sm:-mt-16 md:mt-[calc(var(--profile-avatar-y)-var(--profile-cover-h))]",
-          PAGE_WIDTH.wideCover
+          PAGE_WIDTH.profileCover
         )}
       >
         <div className="flex items-end gap-4">
@@ -155,8 +173,6 @@ export function ProfileHero({
               isLoggedIn={isLoggedIn}
             />
           </ul>
-
-          {actions && <div className="mt-[0.5cm] hidden shrink-0 items-center gap-2.5 md:flex">{actions}</div>}
         </div>
       </div>
     </section>
