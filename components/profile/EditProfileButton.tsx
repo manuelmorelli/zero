@@ -419,6 +419,7 @@ function EditProfileModal({
           title={cropTarget.kind === "avatar" ? "Adjust your profile photo" : "Adjust your cover photo"}
           aspect={cropTarget.kind === "avatar" ? 1 : COVER_ASPECT}
           cropShape={cropTarget.kind === "avatar" ? "round" : "rect"}
+          fillFrame={cropTarget.kind === "cover"}
           onCancel={() => setCropTarget(null)}
           onConfirm={handleCropConfirm}
         />

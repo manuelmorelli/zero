@@ -83,19 +83,19 @@ export function ProfileHero({
        * dietro a tutta la sezione, che sale sotto l'header (stesso spazio del margine della sezione). */}
       {coverUrl && (
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 hidden overflow-hidden md:top-[calc(-3.85rem-0.5cm)] md:block"
+          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 hidden overflow-hidden max-md:top-0 max-md:block md:top-[calc(-3.85rem-0.5cm)] md:block"
           aria-hidden="true"
         >
-          <div className="hero-ambient absolute inset-0">
+          <div className="hero-ambient absolute inset-0 max-md:opacity-100!">
             <Image src={coverUrl} alt="" fill sizes="25vw" className="object-cover" />
           </div>
-          <div className="hero-side-fade absolute inset-0" />
+          <div className="hero-side-fade absolute inset-0 max-md:hidden" />
           <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
         </div>
       )}
 
       <div className="px-5 max-md:pt-20 md:px-0 md:pt-0">
-        <div className="relative aspect-4/3 overflow-hidden rounded-xl md:aspect-auto md:ml-[var(--profile-cover-x)] md:mr-0 md:w-[var(--profile-cover-w)] md:h-[var(--profile-cover-h)] md:rounded-2xl">
+        <div className="relative max-md:aspect-video aspect-4/3 overflow-hidden rounded-xl md:aspect-auto md:ml-[var(--profile-cover-x)] md:mr-0 md:w-[var(--profile-cover-w)] md:h-[var(--profile-cover-h)] md:rounded-2xl">
           <div className="absolute inset-0 -z-10">
             {coverUrl ? (
               <FadeImage

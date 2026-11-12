@@ -14,12 +14,15 @@ type ImageCropperProps = {
   /** Larghezza/altezza dell'area di ritaglio: 1 per l'avatar tondo, 16/9 per la copertina del profilo. */
   aspect: number;
   cropShape: "round" | "rect";
+  /** true: la foto riempie sempre il riquadro (niente zoom indietro, niente margini vuoti). */
+  fillFrame?: boolean;
   onCancel: () => void;
   onConfirm: (blob: Blob) => void;
 };
 
 /** Riquadro "sposta e zooma" mostrato subito dopo aver scelto una foto, prima di caricarla. */
-export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onConfirm }: ImageCropperProps) {
+export function ImageCropper({ imageSrc, title, aspect, cropShape, fillFrame = false, onCancel, onConfirm }: ImageCropperProps) {
+  const minZoom = fillFrame ? 1 : 0.5;
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -59,22 +62,25 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
         <div className="relative h-72 w-full overflow-hidden bg-surface-2">
           {/* Anteprima del margine: stessa foto, allargata e sfocata, dietro al riquadro di
               ritaglio. Statica (non segue pan/zoom), basta a far vedere il colore prima di confermare. */}
+          {!fillFrame && (
           <div
             aria-hidden="true"
             className="absolute inset-0 scale-110 bg-cover bg-center"
             style={{ backgroundImage: `url(${imageSrc})`, filter: "blur(24px) saturate(1.6) brightness(1.05)" }}
           />
+          )}
           <Cropper
             image={imageSrc}
             crop={crop}
             zoom={zoom}
-            minZoom={0.5}
+            minZoom={minZoom}
             maxZoom={3}
             // Sotto zoom 1 la foto è più piccola del riquadro: il blocco normale della posizione
             // (pensato solo per foto più grandi del riquadro) andava in conflitto e il drag
             // si inceppava. Disattivato: a zoom basso il margine vuoto è voluto (sfondo pieno
             // dietro, riempito in lib/cropImage.ts), quindi non serve nessun blocco.
-            restrictPosition={false}
+            restrictPosition={fillFrame}
+            objectFit={fillFrame ? "cover" : "contain"}
             aspect={aspect}
             cropShape={cropShape}
             showGrid={cropShape === "rect"}
@@ -87,7 +93,7 @@ export function ImageCropper({ imageSrc, title, aspect, cropShape, onCancel, onC
         <div className="space-y-4 p-5">
           <input
             type="range"
-            min={0.5}
+            min={minZoom}
             max={3}
             step={0.01}
             value={zoom}
