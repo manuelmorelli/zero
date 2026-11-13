@@ -1,5 +1,6 @@
 "use client";
 
+import type { EpisodeMusicInfo } from "@/lib/music/constants";
 import Image from "next/image";
 import { useActionState, useId, useRef, useState } from "react";
 import { ImagePlus } from "lucide-react";
@@ -19,6 +20,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { MusicPicker } from "@/components/creator/MusicPicker";
+import { MUSIC_DEFAULT_VOLUME } from "@/lib/music/constants";
 
 type EpisodeFormProps = {
   journeyId: string;
@@ -37,7 +40,7 @@ type EpisodeFormProps = {
     occurredAt: Date;
     chapterId: string | null;
     publishedAt: Date | null;
-  };
+  } & EpisodeMusicInfo;
 };
 
 function toDateInputValue(date: Date): string {
@@ -271,7 +274,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
           </span>
         </label>
         <div className="mt-1 flex items-center gap-3">
-          <Button variant="primary" onClick={() => videoInputRef.current?.click()} className="shrink-0">
+          <Button variant="primary" onClick={() => videoInputRef.current?.click()} className="shrink-0 px-4 py-1.5">
             {videoKey ? "Replace video" : "Choose video"}
           </Button>
           {uploadProgress !== null && <p className="text-sm text-ink-muted">Uploading… {uploadProgress}%</p>}
@@ -294,6 +297,23 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
           className="hidden"
         />
       </div>
+
+      {videoKey && (
+        <MusicPicker
+          showCopyrightNotice={!episode?.musicTrackId}
+          initial={
+            episode?.musicTrackId && episode.musicTrack
+              ? {
+                  trackId: episode.musicTrackId,
+                  title: episode.musicTrack.title,
+                  artist: episode.musicTrack.artist,
+                  volume: episode.musicVolume ?? MUSIC_DEFAULT_VOLUME,
+                  fade: episode.musicFade ?? true,
+                }
+              : null
+          }
+        />
+      )}
 
       <Switch
         name="isSponsored"

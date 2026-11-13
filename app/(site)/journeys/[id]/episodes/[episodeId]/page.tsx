@@ -138,6 +138,9 @@ export default async function EpisodePlayerPage({
             videoSrc,
             lightVideoSrc,
             posterUrl: episodePosterUrl ?? journeyCoverUrl,
+            music: episode.musicTrackId
+              ? { trackId: episode.musicTrackId, volume: episode.musicVolume, fade: episode.musicFade }
+              : null,
           }}
           initialPositionSec={progress?.positionSec ?? 0}
           initialCompleted={Boolean(progress?.completedAt)}

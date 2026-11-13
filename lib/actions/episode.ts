@@ -27,6 +27,7 @@ import { notifyNewEpisode } from "@/lib/notifications";
 import { autoPublishDraftJourney, createJourney, nextJourneyOrder } from "@/lib/actions/journey";
 import { JourneySchema, parseTags } from "@/lib/journeyFields";
 import { extractEpisodeMoments, isMomentsLibraryEnabled } from "@/lib/ai/episodeMoments";
+import { readMusicFields, type EpisodeMusicFields } from "@/lib/music/fields";
 
 const EpisodeSchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters long.").max(100),
@@ -211,7 +212,8 @@ async function insertEpisode(
   journey: Awaited<ReturnType<typeof requireOwnedJourney>>,
   chapterId: string | null,
   data: z.infer<typeof EpisodeSchema>,
-  published: boolean
+  published: boolean,
+  music?: EpisodeMusicFields
 ): Promise<{ error: string | null }> {
   // Un episodio non può diventare Published senza un video reale caricato (una caption da sola
   // non basta): niente pubblicazioni silenziose di contenuto vuoto.
@@ -256,6 +258,7 @@ async function insertEpisode(
       posterKey: data.posterKey || undefined,
       durationSec: data.durationSec,
       occurredAt: data.occurredAt,
+      ...(music ?? {}),
       order: (lastEpisode?.order ?? 0) + 1,
       publishedAt: published ? new Date() : null,
     },
@@ -323,7 +326,7 @@ export async function createEpisode(
   // Un episodio nasce in Bozza a meno che il creator non spunti esplicitamente "Published" nel
   // form: passaggio esplicito voluto, mai una pubblicazione automatica silenziosa.
   const published = formData.get("published") === "on";
-  const result = await insertEpisode(journey, chapterId, parsed.data, published);
+  const result = await insertEpisode(journey, chapterId, parsed.data, published, await readMusicFields(formData));
   if (result.error) return result;
 
   // Il creator viene riportato alla pagina del Journey (hub di gestione di Capitoli ed
@@ -394,7 +397,13 @@ ${parsedJourney.data.description ?? ""}`);
   // tornare a ricaricarlo.
   const readiness = await getPublishReadiness();
   const journey = await requireOwnedJourney(created.id);
-  const result = await insertEpisode(journey, null, parsedEpisode.data, readiness.ready);
+  const result = await insertEpisode(
+    journey,
+    null,
+    parsedEpisode.data,
+    readiness.ready,
+    await readMusicFields(formData)
+  );
   if (result.error) {
     // Il Journey appena creato è vuoto: lo si toglie, così un nuovo tentativo non lascia doppioni.
     await prisma.journey.delete({ where: { id: created.id } });
@@ -492,7 +501,8 @@ export async function quickComposeEpisode(
       durationSec: parsed.data.durationSec,
       occurredAt: parsed.data.occurredAt,
     },
-    true
+    true,
+    await readMusicFields(formData)
   );
   if (result.error) return { error: result.error, done: false };
 
@@ -576,6 +586,7 @@ export async function updateEpisode(
       ...(replacesPoster ? { posterKey: newPosterKeyValue } : {}),
       durationSec: replacesVideo ? parsed.data.durationSec : (parsed.data.durationSec ?? episode.durationSec),
       occurredAt: parsed.data.occurredAt,
+      ...(await readMusicFields(formData)),
       publishedAt: published ? (episode.publishedAt ?? new Date()) : null,
     },
   });

@@ -1,3 +1,4 @@
+import type { EpisodeMusicInfo } from "@/lib/music/constants";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { EpisodeItem } from "@/components/creator/EpisodeItem";
@@ -15,7 +16,7 @@ type EpisodeListItem = {
   occurredAt: Date;
   chapterId: string | null;
   publishedAt: Date | null;
-};
+} & EpisodeMusicInfo;
 
 /** Lista trascinabile (solo la parte "sortable": il DndContext che la governa vive nel genitore,
  * ChaptersAndEpisodesPanel — un DndContext annidato dentro un altro rompeva il trascinamento degli

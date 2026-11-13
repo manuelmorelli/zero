@@ -130,6 +130,24 @@ export async function getFilePlaybackUrl(key: string): Promise<string> {
   return getSignedUrl(s3, command, { expiresIn: 3600 });
 }
 
+/** Carica su R2 un file audio della Libreria musicale (script locale, non dal browser). */
+export async function putAudio(key: string, body: Buffer, contentType: string): Promise<void> {
+  await s3.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body, ContentType: contentType }));
+}
+
+/** Contenuto di un brano della Libreria musicale, servito da /api/music/[id] (stessa origine del
+ * sito, così il player può mixarlo senza problemi di CORS). */
+export async function getAudioBytes(key: string): Promise<{ data: Buffer; contentType: string } | null> {
+  try {
+    const result = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    if (!result.Body) return null;
+    const bytes = await result.Body.transformToByteArray();
+    return { data: Buffer.from(bytes), contentType: result.ContentType ?? "audio/mpeg" };
+  } catch {
+    return null;
+  }
+}
+
 export async function deleteFile(key: string): Promise<void> {
   await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key })).catch(() => {});
 }

@@ -46,6 +46,14 @@ export const CHIP =
 export const CHIP_SELECTED =
   "inline-flex items-center gap-1.5 rounded-full border border-ink max-md:border-ember-line bg-ink px-3 py-1.5 text-sm font-medium text-bg transition-colors disabled:opacity-50";
 
+/** Pillola filtro con il bordo arancione sempre acceso anche da computer (finestra della Libreria
+ * musicale), a differenza di CHIP che da computer è neutra finché non ci si passa sopra. */
+export const CHIP_EMBER =
+  "inline-flex items-center gap-1.5 rounded-full border border-ember-line bg-surface-2 px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:border-ember disabled:opacity-50";
+/** Stessa pillola quando è selezionata: vetro arancione come il bottone secondario. */
+export const CHIP_EMBER_SELECTED =
+  "inline-flex items-center gap-1.5 rounded-full border border-ember bg-ember-soft px-3 py-1.5 text-sm font-medium text-ink shadow-glow transition-colors disabled:opacity-50";
+
 /** Riquadro di avviso importante (regole vietate, cancellazioni). */
 export const PANEL_DANGER = "rounded-2xl border border-danger-line bg-danger-soft p-5";
 /** Riquadro tratteggiato: spazi vuoti da riempire (carica un file, aggiungi qualcosa). */

@@ -466,8 +466,31 @@ model Episode {
   linkedByUpdates Update[]
   moments     EpisodeMoment[]
 
+  // Musica di sottofondo scelta dalla Libreria Zero (MusicTrack). Il video originale non viene mai
+  // toccato: il player fa partire il brano insieme al video (components/journey/EpisodeMusic.tsx).
+  musicTrackId String?
+  musicTrack   MusicTrack? @relation(fields: [musicTrackId], references: [id])
+  musicVolume  Int         @default(30) // 0-100, volume del brano
+  musicFade    Boolean     @default(true) // dissolvenza in entrata e in uscita
+
   @@index([journeyId, chapterId, order])
   @@map("episodes")
+}
+
+// Libreria musicale di Zero: brani con licenza libera, caricati da noi (scripts/import-music.ts).
+// I creator li scelgono per i loro episodi invece di usare musica con copyright.
+model MusicTrack {
+  id          String    @id @default(uuid())
+  title       String
+  artist      String
+  mood        String // etichetta per il filtro, es. "Calm", "Energetic"
+  durationSec Int
+  audioKey    String // chiave del file audio su R2
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  episodes    Episode[]
+
+  @@map("music_tracks")
 }
 
 // Chi ha scritto il momento: l'AI guardando il video (MOMENTS_LIBRARY_ENABLED, oggi spenta), oppure

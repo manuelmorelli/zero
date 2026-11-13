@@ -1,5 +1,6 @@
 "use client";
 
+import type { EpisodeMusicInfo } from "@/lib/music/constants";
 import { useState, useTransition } from "react";
 import { GripVertical } from "lucide-react";
 import {
@@ -41,7 +42,7 @@ type Episode = {
   occurredAt: Date;
   chapterId: string | null;
   publishedAt: Date | null;
-};
+} & EpisodeMusicInfo;
 
 type Chapter = {
   id: string;

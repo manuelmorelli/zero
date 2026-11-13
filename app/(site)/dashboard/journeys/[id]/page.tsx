@@ -48,6 +48,7 @@ export default async function JourneyManagePage({
       episodes: {
         where: { deletedAt: null },
         orderBy: { order: "asc" },
+        include: { musicTrack: { select: { title: true, artist: true } } },
       },
     },
   });
@@ -55,6 +56,7 @@ export default async function JourneyManagePage({
   const rawLooseEpisodes = await prisma.episode.findMany({
     where: { journeyId: journey.id, chapterId: null, deletedAt: null },
     orderBy: { order: "asc" },
+    include: { musicTrack: { select: { title: true, artist: true } } },
   });
 
   // posterKey -> link temporaneo di sola lettura, stesso principio di resolveCoverUrl ma per la

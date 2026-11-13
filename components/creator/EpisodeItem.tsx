@@ -1,5 +1,6 @@
 "use client";
 
+import type { EpisodeMusicInfo } from "@/lib/music/constants";
 import { useState } from "react";
 import Image from "next/image";
 import { GripVertical, Pencil } from "lucide-react";
@@ -37,7 +38,7 @@ type EpisodeItemProps = {
     occurredAt: Date;
     chapterId: string | null;
     publishedAt: Date | null;
-  };
+  } & EpisodeMusicInfo;
   /** Apre subito il popup di modifica al montaggio: usato dal link diretto "Edit Episode" nel
    * player mobile (?edit=<episodeId> sulla pagina del Journey). */
   autoOpen?: boolean;

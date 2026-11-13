@@ -26,6 +26,8 @@ import {
   UPDATE_DURATION_MIN_SEC,
   UPDATE_TEXT_MAX_LENGTH,
 } from "@/lib/constants/updates";
+import { MUSIC_DEFAULT_VOLUME } from "@/lib/music/constants";
+import { MusicPicker } from "@/components/creator/MusicPicker";
 import { FIELD } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -279,6 +281,9 @@ function ChoiceStep({
 // da Manuel ("deve avvenire in due click come su Instagram"). Non usa useActionState perché tra un
 // click e l'altro servono passaggi asincroni intermedi lato client (estrarre il fotogramma di
 // copertina dal video, caricare la copertina scelta) prima di chiamare l'azione server finale.
+type MusicChoice = { trackId: string | null; volume: number; fade: boolean };
+const NO_MUSIC: MusicChoice = { trackId: null, volume: MUSIC_DEFAULT_VOLUME, fade: true };
+
 function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => void }) {
   const uid = useId();
 
@@ -302,6 +307,7 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
   const [chapterId, setChapterId] = useState("");
   const [occurredAt, setOccurredAt] = useState(todayInputValue());
   const [isSponsored, setIsSponsored] = useState(false);
+  const [music, setMusic] = useState<MusicChoice>(NO_MUSIC);
 
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -376,6 +382,7 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
   }
 
   function handleRemoveVideo() {
+    setMusic(NO_MUSIC);
     setVideoFile(null);
     setVideoKey(null);
     setDurationSec(null);
@@ -471,6 +478,11 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
       if (chapterId) formData.set("chapterId", chapterId);
       formData.set("occurredAt", occurredAt);
       if (isSponsored) formData.set("isSponsored", "on");
+      if (music.trackId) {
+        formData.set("musicTrackId", music.trackId);
+        formData.set("musicVolume", String(music.volume));
+        formData.set("musicFade", music.fade ? "1" : "0");
+      }
 
       const result = await quickComposeEpisode({ error: null, done: false }, formData);
       if (result.error) {
@@ -558,6 +570,8 @@ function ComposeStep({ journeys, onDone }: { journeys: Journey[]; onDone: () => 
             >
               Or Upload Your Own Cover Photo
             </button>
+
+            <MusicPicker showCopyrightNotice onChange={setMusic} />
           </>
         )}
 

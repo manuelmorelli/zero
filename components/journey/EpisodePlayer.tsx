@@ -16,6 +16,7 @@ import { ExpandableText } from "@/components/common/ExpandableText";
 import { CoverMenu } from "@/components/journey/CoverMenu";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { VideoPlayer, type VideoPlayerHandle } from "@/components/common/VideoPlayer";
+import { EpisodeMusic } from "@/components/journey/EpisodeMusic";
 import { PageTitle } from "@/components/ui/heading";
 import { SponsoredLabel } from "@/components/common/SponsoredLabel";
 import { useHighlightMarker } from "@/hooks/useHighlightMarker";
@@ -52,6 +53,8 @@ type EpisodePlayerProps = {
     // fissa per tutti. L'originale (videoSrc) resta sempre il fallback finché non è pronta.
     lightVideoSrc: string | null;
     posterUrl: string | null;
+    /** Musica di sottofondo dalla Libreria Zero, null se l'episodio non ne ha. */
+    music: { trackId: string; volume: number; fade: boolean } | null;
   };
   initialPositionSec: number;
   initialCompleted: boolean;
@@ -190,6 +193,14 @@ export function EpisodePlayer({
         <div className="grid gap-4">
           {episode.videoSrc ? (
             <div className="relative -mx-5 md:mx-0">
+            {episode.music && (
+              <EpisodeMusic
+                playerRef={playerRef}
+                trackId={episode.music.trackId}
+                volume={episode.music.volume}
+                fade={episode.music.fade}
+              />
+            )}
             <VideoPlayer
               ref={playerRef}
               posterUrl={episode.posterUrl}

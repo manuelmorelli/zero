@@ -22,8 +22,12 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
 function DialogContent({
   className,
   children,
+  plainClose = false,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content>) {
+}: React.ComponentProps<typeof DialogPrimitive.Content> & {
+  /** X semplice senza cerchio, come nelle finestre del "+" (QuickUploadButton). */
+  plainClose?: boolean;
+}) {
   return (
     <DialogPrimitive.Portal>
       <DialogOverlay />
@@ -35,7 +39,13 @@ function DialogContent({
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-full bg-scrim-soft text-on-photo backdrop-blur-md transition-colors hover:bg-scrim focus:outline-none">
+        <DialogPrimitive.Close
+          className={
+            plainClose
+              ? "absolute right-5 top-4 z-20 text-ink-muted transition-colors hover:text-ink focus:outline-none"
+              : "absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-full bg-scrim-soft text-on-photo backdrop-blur-md transition-colors hover:bg-scrim focus:outline-none"
+          }
+        >
           <X className="h-4 w-4" aria-hidden="true" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>

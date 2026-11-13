@@ -9,6 +9,7 @@ import { readVideoDuration } from "@/lib/media/readVideoDuration";
 import { captureVideoFrame } from "@/lib/media/captureVideoFrame";
 import { cn } from "@/lib/utils";
 import { PANEL_DASHED, PANEL } from "@/components/ui/panel";
+import { MusicPicker } from "@/components/creator/MusicPicker";
 
 export type EpisodeVideoStatus = {
   hasVideo: boolean;
@@ -210,6 +211,8 @@ export function EpisodeVideoField({
               />
             </div>
           )}
+
+          <MusicPicker showCopyrightNotice />
         </>
       )}
 
