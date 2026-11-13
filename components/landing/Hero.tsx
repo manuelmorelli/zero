@@ -158,7 +158,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
 
   return (
     <>
-    <section ref={sectionRef} className="relative overflow-hidden md:overflow-visible">
+    <section ref={sectionRef} className="relative">
       {/* Luce ambiente, solo da computer (stile Ambient Mode di YouTube): dietro a tutta la Hero
        * una copia sfocata della foto in evidenza (classe hero-ambient in app/globals.css), una per
        * slide, sovrapposte: si accende solo quella attiva con una dissolvenza, come le foto nitide
@@ -173,7 +173,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
        * questo da computer la sezione non taglia più ciò che sporge (overflow visibile), e a
        * tagliare la copia ingrandita ci pensa questo contenitore. */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 hidden overflow-hidden md:top-[calc(-3.85rem-1cm)] md:block"
+        className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden max-md:-top-24 max-md:-bottom-10 max-md:[&_.hero-ambient]:opacity-100! max-md:[&_.hero-ambient]:[transform:scale(1.15)]! max-md:[&_.hero-ambient]:[filter:blur(45px)_saturate(1.7)_brightness(1.2)]! md:top-[calc(-3.85rem-1cm)] md:block"
         aria-hidden="true"
       >
         {slides.map((item, index) => (
@@ -182,8 +182,8 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         {videos.map((item, index) => (
           <HeroAmbientLight key={item.src} src={item.poster} on={!!video && index === videoIndex} />
         ))}
-        <div className="hero-side-fade absolute inset-0" />
-        <div className="cover-fade absolute inset-x-0 bottom-0 h-80" />
+        <div className="hero-side-fade absolute inset-0 max-md:hidden" />
+        <div className="cover-fade absolute inset-x-0 bottom-0 h-80 max-md:h-36" />
       </div>
 
       {/* Foto cinematografica: su mobile un blocco alto a sé (stile Netflix, solo foto + card del
@@ -194,7 +194,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
        * absolute). Da computer la clip della Hero copre le foto (che restano sotto come riserva). */}
       <div
         ref={mediaRef}
-        className="relative mt-5 aspect-[4/3] overflow-hidden rounded-xl shadow-card md:absolute md:inset-x-0 md:top-0 md:mx-auto md:mt-0 md:translate-x-50 md:translate-y-7 md:w-[min(calc(100vw_-_340px_-_5.25rem),calc(1060px_-_5.25rem),calc(70vh*16/9))] md:h-[min(calc((100vw_-_340px_-_5.25rem)*9/16),calc((1060px_-_5.25rem)*9/16),70vh)] md:aspect-auto md:rounded-2xl md:shadow-none"
+        className="relative mt-4 aspect-video overflow-hidden rounded-xl md:absolute md:inset-x-0 md:top-0 md:mx-auto md:mt-0 md:translate-x-50 md:translate-y-7 md:w-[min(calc(100vw_-_340px_-_5.25rem),calc(1060px_-_5.25rem),calc(70vh*16/9))] md:h-[min(calc((100vw_-_340px_-_5.25rem)*9/16),calc((1060px_-_5.25rem)*9/16),70vh)] md:aspect-auto md:rounded-2xl md:shadow-none"
       >
         {/* Solo la foto/video e i veli scuri sono dentro questo involucro con la maschera: la
          * pillola col messaggio e i pallini più sotto NON ci stanno dentro apposta, altrimenti la
@@ -371,7 +371,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
     </section>
       {/* Storie, solo su mobile: sopra vivono dentro la Hero (da desktop in su), qui sotto perché
        * la Hero mobile mostra solo foto + card del Journey (vedi sopra). */}
-      <div className={cn(PAGE_WIDTH.wideCover, "pt-2 md:hidden")}>
+      <div className={cn(PAGE_WIDTH.wideCover, "relative pt-2 md:hidden")}>
         {/* Pallini del Journey in evidenza: fuori dalla foto (che taglierebbe ciò che esce dal bordo),
          * nello spazio libero sotto, allineati a destra come la pillola del messaggio. */}
         <div className="flex items-center justify-end gap-2 pr-3">

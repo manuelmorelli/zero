@@ -494,8 +494,16 @@ a {
  * vede quindi quello che c'è davvero dietro, qualunque cosa sia. Solo sul telefono. */
 @media (max-width: 767px) {
   .hero-mobile-fade {
-    -webkit-mask-image: linear-gradient(to top, transparent 0%, black 4%);
-    mask-image: linear-gradient(to top, transparent 0%, black 4%);
+    /* Foto 16:9 che "galleggia": sfumatura minima sopra e sotto (linea) incrociata con una
+     * vignettatura ovale che ammorbidisce soprattutto gli angoli (il centro resta pieno). */
+    -webkit-mask-image:
+      linear-gradient(to top, transparent 0%, rgb(0 0 0 / 50%) 0.8%, black 2.2%, black 97.8%, rgb(0 0 0 / 50%) 99.2%, transparent 100%),
+      radial-gradient(ellipse 72% 72% at 50% 50%, black 0%, black 82%, rgb(0 0 0 / 60%) 92%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to top, transparent 0%, rgb(0 0 0 / 50%) 0.8%, black 2.2%, black 97.8%, rgb(0 0 0 / 50%) 99.2%, transparent 100%),
+      radial-gradient(ellipse 72% 72% at 50% 50%, black 0%, black 82%, rgb(0 0 0 / 60%) 92%, transparent 100%);
+    mask-composite: intersect;
   }
 }
 
