@@ -423,7 +423,7 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
       <Link href={`/journeys/${slide.id}`} className="block">
         {slide.category && <CoverChip className="px-1.5 py-0 text-hero-mobile-tag">{slide.category}</CoverChip>}
         <CardTitle as="h2" className="relative top-1 -mt-2 truncate !text-on-photo text-hero-mobile-title leading-[1.35] font-extrabold">{slide.title}</CardTitle>
-        <p className="-mt-1 truncate text-hero-mobile-meta text-on-photo">by {slide.creatorName}</p>
+        <p className="-mt-1 truncate text-hero-mobile-meta text-on-photo max-md:font-semibold max-md:drop-shadow-md">by {slide.creatorName}</p>
       </Link>
       <ButtonSecondary
         href={`/journeys/${slide.id}`}
