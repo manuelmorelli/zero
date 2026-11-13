@@ -15,6 +15,7 @@ import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
 import { CARD_ROW_ITEM, CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
+import { CardTitle } from "@/components/ui/heading";
 import { CHIP } from "@/components/ui/panel";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { getViewerSession } from "@/lib/session";
@@ -203,23 +204,26 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
               href={item.episodeId ? `/journeys/${item.journeyId}/episodes/${item.episodeId}` : `/journeys/${item.journeyId}`}
               imageUrl={item.coverUrl}
               imageAlt={item.title}
-              topLeft={<CoverChip className="text-ember">Continue Watching</CoverChip>}
+              topLeft={<CoverChip className="text-ember max-md:hidden">Continue Watching</CoverChip>}
               center={
-                <CoverPlay>
-                  <Play className="h-4 w-4 translate-x-px fill-current" aria-hidden="true" />
-                </CoverPlay>
+                <span className="contents max-md:hidden">
+                  <CoverPlay>
+                    <Play className="h-4 w-4 translate-x-px fill-current" aria-hidden="true" />
+                  </CoverPlay>
+                </span>
               }
               overlay={
                 <>
-                  {item.category && <CoverChip className="-ml-2 mt-2 px-2 py-0.5">{item.category}</CoverChip>}
-                  <CoverTitle>{item.episodeTitle ?? item.title}</CoverTitle>
+                  {item.category && <CoverChip className="-ml-2 mt-2 px-2 py-0.5 max-md:hidden">{item.category}</CoverChip>}
+                  <CoverTitle className="max-md:hidden">{item.episodeTitle ?? item.title}</CoverTitle>
                 </>
               }
               below={
-                <div className="flex items-center justify-between gap-2 text-sm">
+                <div className="flex items-center justify-between gap-2 text-sm max-md:-mt-2.5">
+                  <CardTitle className="min-w-0 flex-1 truncate text-base max-md:self-start md:hidden">{item.episodeTitle ?? item.title}</CardTitle>
                   <CreatorProfileLink userId={item.creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-                    <Avatar name={item.creatorName} avatarUrl={item.creatorAvatarUrl} size="xs" />
-                    <span className="truncate">{item.creatorName}</span>
+                    <Avatar name={item.creatorName} avatarUrl={item.creatorAvatarUrl} size="xs" className="max-md:h-10 max-md:w-10" />
+                    <span className="truncate max-md:sr-only">{item.creatorName}</span>
                   </CreatorProfileLink>
                   {item.journeyScore !== undefined && (
                     <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
@@ -254,6 +258,7 @@ function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
             <JourneyCard
               key={journey.id}
               className={CARD_ROW_ITEM.journey}
+              titleBelowOnMobile
               journey={{
                 id: journey.id,
                 title: journey.title,
@@ -289,7 +294,7 @@ function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestV
           subtitle="New episodes just published across Zero."
         >
           {videos.map((video) => (
-            <VideoCard key={video.episodeId} video={video} className={CARD_ROW_ITEM.episode} />
+            <VideoCard key={video.episodeId} video={video} className={CARD_ROW_ITEM.episode} titleBelowOnMobile />
           ))}
         </HorizontalScrollRow>
       </Reveal>
@@ -314,6 +319,7 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
             <JourneyCard
               key={journey.id}
               className={CARD_ROW_ITEM.journey}
+              titleBelowOnMobile
               journey={{
                 id: journey.id,
                 title: journey.title,
@@ -345,7 +351,7 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
           subtitle="Picked based on who you follow."
         >
           {journeys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} className={CARD_ROW_ITEM.journey} />
+            <JourneyCard key={journey.id} journey={journey} className={CARD_ROW_ITEM.journey} titleBelowOnMobile />
           ))}
         </HorizontalScrollRow>
       </Reveal>

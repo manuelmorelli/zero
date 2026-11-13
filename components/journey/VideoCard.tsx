@@ -1,7 +1,9 @@
 import { Play, ShieldCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
 import { CreatorProfileLink } from "@/components/journey/CreatorProfileLink";
+import { CardTitle } from "@/components/ui/heading";
 import { CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
 
 /** Solo i campi che la card usa davvero: così può mostrare sia un LatestVideoItem
@@ -24,11 +26,13 @@ type VideoCardProps = {
   className?: string;
   /** Contenuto extra sotto la card (es. il minuto e il motivo di un risultato della ricerca per senso). */
   footer?: React.ReactNode;
+  /** Solo telefono: pillola categoria e titolo escono dalla foto e il titolo va sotto, accanto al creator. */
+  titleBelowOnMobile?: boolean;
 };
 
 /** Card di un episodio (formato ufficiale 21A: orizzontale 4:3, quattro per riga): copertina
  * del Journey come anteprima, link diretto all'episodio. */
-export function VideoCard({ video, className, footer }: VideoCardProps) {
+export function VideoCard({ video, className, footer, titleBelowOnMobile }: VideoCardProps) {
   const { journeyId, episodeId, title, coverUrl, category, creatorName, creatorAvatarUrl, creatorUserId, journeyScore } = video;
 
   return (
@@ -46,15 +50,16 @@ export function VideoCard({ video, className, footer }: VideoCardProps) {
         }
         overlay={
           <>
-            {category && <CoverChip className="-ml-2 mt-2 px-2 py-0.5">{category}</CoverChip>}
-            <CoverTitle>{title}</CoverTitle>
+            {category && <CoverChip className={cn("-ml-2 mt-2 px-2 py-0.5", titleBelowOnMobile && "max-md:hidden")}>{category}</CoverChip>}
+            <CoverTitle className={titleBelowOnMobile ? "max-md:hidden" : undefined}>{title}</CoverTitle>
           </>
         }
         below={
-          <div className="flex items-center justify-between gap-2 text-sm">
+          <div className={cn("flex items-center justify-between gap-2 text-sm", titleBelowOnMobile && "max-md:-mt-2.5")}>
+            {titleBelowOnMobile && <CardTitle className="min-w-0 flex-1 truncate text-base max-md:self-start md:hidden">{title}</CardTitle>}
             <CreatorProfileLink userId={creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-              <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" />
-              <span className="truncate">{creatorName}</span>
+              <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" className={titleBelowOnMobile ? "max-md:h-10 max-md:w-10" : undefined} />
+              <span className={cn("truncate", titleBelowOnMobile && "max-md:sr-only")}>{creatorName}</span>
             </CreatorProfileLink>
             {journeyScore !== undefined && (
               <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
