@@ -26,13 +26,13 @@ type VideoCardProps = {
   className?: string;
   /** Contenuto extra sotto la card (es. il minuto e il motivo di un risultato della ricerca per senso). */
   footer?: React.ReactNode;
-  /** Solo telefono: pillola categoria e titolo escono dalla foto e il titolo va sotto, accanto al creator. */
-  titleBelowOnMobile?: boolean;
+  /** Pillola categoria e titolo escono dalla foto e il titolo va sotto, accanto al creator. */
+  titleBelow?: boolean;
 };
 
 /** Card di un episodio (formato ufficiale 21A: orizzontale 4:3, quattro per riga): copertina
  * del Journey come anteprima, link diretto all'episodio. */
-export function VideoCard({ video, className, footer, titleBelowOnMobile }: VideoCardProps) {
+export function VideoCard({ video, className, footer, titleBelow }: VideoCardProps) {
   const { journeyId, episodeId, title, coverUrl, category, creatorName, creatorAvatarUrl, creatorUserId, journeyScore } = video;
 
   return (
@@ -50,16 +50,16 @@ export function VideoCard({ video, className, footer, titleBelowOnMobile }: Vide
         }
         overlay={
           <>
-            {category && <CoverChip className={cn("-ml-2 mt-2 px-2 py-0.5", titleBelowOnMobile && "max-md:hidden")}>{category}</CoverChip>}
-            <CoverTitle className={titleBelowOnMobile ? "max-md:hidden" : undefined}>{title}</CoverTitle>
+            {category && !titleBelow && <CoverChip className="-ml-2 mt-2 px-2 py-0.5">{category}</CoverChip>}
+            <CoverTitle className={titleBelow ? "hidden" : undefined}>{title}</CoverTitle>
           </>
         }
         below={
-          <div className={cn("flex items-center justify-between gap-2 text-sm", titleBelowOnMobile && "max-md:-mt-2.5")}>
-            {titleBelowOnMobile && <CardTitle className="min-w-0 flex-1 truncate text-base max-md:self-start md:hidden">{title}</CardTitle>}
+          <div className={cn("flex items-center justify-between gap-2 text-sm", titleBelow && "-mt-2.5")}>
+            {titleBelow && <CardTitle className="min-w-0 flex-1 truncate text-base self-start">{title}</CardTitle>}
             <CreatorProfileLink userId={creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-              <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" className={titleBelowOnMobile ? "max-md:h-10 max-md:w-10" : undefined} />
-              <span className={cn("truncate", titleBelowOnMobile && "max-md:sr-only")}>{creatorName}</span>
+              <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" className={titleBelow ? "h-10 w-10" : undefined} />
+              <span className={cn("truncate", titleBelow && "sr-only")}>{creatorName}</span>
             </CreatorProfileLink>
             {journeyScore !== undefined && (
               <span className="flex shrink-0 items-center gap-1 font-bold text-ember">

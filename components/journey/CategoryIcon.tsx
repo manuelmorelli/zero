@@ -72,9 +72,14 @@ export function CategoryIcon({
 
   return (
     <span
-      className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-scrim backdrop-blur-md ${className ?? ""}`}
+      className={`group/cat relative grid h-8 w-8 shrink-0 place-items-center rounded-full bg-scrim backdrop-blur-md ${className ?? ""}`}
     >
       <Icon className="h-4 w-4 text-ember" aria-hidden="true" />
+      {category && (
+        <span className="pointer-events-none absolute left-full top-1/2 ml-2 hidden -translate-y-1/2 whitespace-nowrap rounded-full border border-ember-line bg-scrim px-2 py-0.5 text-sm font-semibold text-on-photo backdrop-blur-md md:group-hover/cat:block">
+          {category}
+        </span>
+      )}
     </span>
   );
 }

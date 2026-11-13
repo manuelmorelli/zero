@@ -33,8 +33,8 @@ type JourneyCardProps = {
   badge?: React.ReactNode;
   /** Contenuto extra sotto la card (es. conteggio episodi in "Most Trusted", giorni rimasti in Discovery). */
   footer?: React.ReactNode;
-  /** Solo telefono: pillola categoria e titolo escono dalla foto e il titolo va sotto, accanto al creator. */
-  titleBelowOnMobile?: boolean;
+  /** Pillola categoria e titolo escono dalla foto e il titolo va sotto, accanto al creator. */
+  titleBelow?: boolean;
 };
 
 // Il link fa parte del componente stesso (dentro CoverFrame): un punto della UI che dimentica di
@@ -42,7 +42,7 @@ type JourneyCardProps = {
 // sotto la card si usa `footer`, mai un secondo <Link> attorno (sarebbe un <a> annidato).
 //
 // Formato ufficiale delle card Journey (2026-11-09): orizzontale 16:9, come i video di YouTube.
-export function JourneyCard({ journey, className, badge, footer, titleBelowOnMobile }: JourneyCardProps) {
+export function JourneyCard({ journey, className, badge, footer, titleBelow }: JourneyCardProps) {
   const { id, title, coverUrl, category, creator, journeyScore, episodeCount } = journey;
 
   return (
@@ -56,19 +56,19 @@ export function JourneyCard({ journey, className, badge, footer, titleBelowOnMob
         topRight={badge}
         overlay={
           <>
-            {category && <CoverChip className={cn("-ml-2 mt-2 px-2 py-0.5", titleBelowOnMobile && "max-md:hidden")}>{category}</CoverChip>}
-            <CoverTitle className={titleBelowOnMobile ? "max-md:hidden" : undefined}>{title}</CoverTitle>
+            {category && !titleBelow && <CoverChip className="-ml-2 mt-2 px-2 py-0.5">{category}</CoverChip>}
+            <CoverTitle className={titleBelow ? "hidden" : undefined}>{title}</CoverTitle>
             {episodeCount !== undefined && (
-              <p className={cn("mt-1 text-sm", titleBelowOnMobile && "max-md:hidden")}>
+              <p className={cn("mt-1 text-sm", titleBelow && "hidden")}>
                 {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
               </p>
             )}
           </>
         }
         below={
-          <div className={cn("flex items-center justify-between gap-2 text-sm", titleBelowOnMobile && "max-md:-mt-2.5")}>
-            {titleBelowOnMobile && (
-              <div className="min-w-0 flex-1 max-md:self-start md:hidden">
+          <div className={cn("flex items-center justify-between gap-2 text-sm", titleBelow && "-mt-2.5")}>
+            {titleBelow && (
+              <div className="min-w-0 flex-1 self-start">
                 <CardTitle className="truncate text-base">{title}</CardTitle>
                 {episodeCount !== undefined && (
                   <p className="text-sm leading-tight text-ink-muted">
@@ -78,8 +78,8 @@ export function JourneyCard({ journey, className, badge, footer, titleBelowOnMob
               </div>
             )}
             <CreatorProfileLink userId={creator.userId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-              <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="xs" className={titleBelowOnMobile ? "max-md:h-10 max-md:w-10" : undefined} />
-              <span className={cn("truncate", titleBelowOnMobile && "max-md:sr-only")}>{creator.displayName}</span>
+              <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="xs" className={titleBelow ? "h-10 w-10" : undefined} />
+              <span className={cn("truncate", titleBelow && "sr-only")}>{creator.displayName}</span>
             </CreatorProfileLink>
             {journeyScore !== undefined && (
               <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
