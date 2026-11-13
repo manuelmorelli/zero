@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState, useRef, useState } from "react";
+import { startTransition, useActionState, useRef, useState } from "react";
 import { ChevronDown, ImagePlus, Trash2 } from "lucide-react";
 import {
   createJourneyCoverUploadUrl,
@@ -13,6 +13,7 @@ import { JOURNEY_CATEGORIES } from "@/lib/constants/categories";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/constants/image";
 import { uploadFileWithProgress } from "@/lib/upload";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { useReportDirty } from "@/components/creator/JourneyEditGuard";
 import { FirstEpisodeSection } from "@/components/creator/FirstEpisodeSection";
 import {
   Dialog,
@@ -62,26 +63,29 @@ export function JourneyForm({ journey }: JourneyFormProps) {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [episodeBusy, setEpisodeBusy] = useState(false);
 
-  const [coverKey, setCoverKey] = useState("");
+  // La nuova copertina resta in memoria finché non si preme "Save changes": solo allora viene
+  // caricata su R2. Così una foto scelta e poi abbandonata non resta mai sul server.
+  const [pendingCover, setPendingCover] = useState<Blob | null>(null);
   const [coverPreview, setCoverPreview] = useState(journey?.coverUrl ?? null);
 
-  // Dopo il salvataggio la pagina ricarica la stessa form: confrontare con coverUrl evita che la copertina appena salvata risulti ancora "modificata".
-  const coverChanged = coverKey !== "" && coverKey !== journey?.coverUrl;
+  const coverChanged = pendingCover !== null;
   const dirty =
     draft.title !== initialDraft.title ||
     draft.description !== initialDraft.description ||
     draft.category !== initialDraft.category ||
     draft.tags !== initialDraft.tags ||
     coverChanged;
+  useReportDirty(dirty);
 
   function handleCancel() {
     setDraft(initialDraft);
-    setCoverKey("");
+    setPendingCover(null);
     setCoverPreview(journey?.coverUrl ?? null);
   }
   const [coverError, setCoverError] = useState<string | null>(null);
   const [coverProgress, setCoverProgress] = useState<number | null>(null);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [cropAspect, setCropAspect] = useState(4 / 5);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -99,27 +103,37 @@ export function JourneyForm({ journey }: JourneyFormProps) {
       setCoverError(`Image is too large (max ${formatMB(MAX_IMAGE_SIZE_BYTES)}).`);
       return;
     }
+    // Telefono (sotto md, 768px): ritaglio 16:9 come gli episodi. Computer: invariato (4:5).
+    setCropAspect(window.matchMedia("(min-width: 768px)").matches ? 4 / 5 : 16 / 9);
     setCropImageSrc(URL.createObjectURL(file));
   }
 
-  async function handleCropConfirm(blob: Blob) {
+  function handleCropConfirm(blob: Blob) {
     setCropImageSrc(null);
     if (!journey) return;
 
     setCoverError(null);
+    setPendingCover(blob);
+    setCoverPreview(URL.createObjectURL(blob));
+  }
+
+  // Carica su R2 la copertina in attesa (se c'è) e restituisce la sua chiave, "" se non c'è
+  // nulla da caricare, null se il caricamento è fallito (l'errore è già mostrato).
+  async function uploadPendingCover(): Promise<string | null> {
+    if (!journey || !pendingCover) return "";
+    setCoverError(null);
     setCoverProgress(0);
     try {
-      const result = await createJourneyCoverUploadUrl(journey.id, blob.type);
+      const result = await createJourneyCoverUploadUrl(journey.id, pendingCover.type);
       if ("error" in result) {
         setCoverError(result.error);
-        setCoverProgress(null);
-        return;
+        return null;
       }
-      await uploadFileWithProgress(result.uploadUrl, blob, setCoverProgress);
-      setCoverKey(result.key);
-      setCoverPreview(URL.createObjectURL(blob));
+      await uploadFileWithProgress(result.uploadUrl, pendingCover, setCoverProgress);
+      return result.key;
     } catch {
       setCoverError("Upload failed. Please try again.");
+      return null;
     } finally {
       setCoverProgress(null);
     }
@@ -128,9 +142,13 @@ export function JourneyForm({ journey }: JourneyFormProps) {
   return (
     <>
       <form
-        action={(formData) => {
+        action={async (formData) => {
+          const coverKey = await uploadPendingCover();
+          if (coverKey === null) return;
           formData.set("coverKey", coverKey);
-          formAction(formData);
+          // Telefono: dopo il salvataggio si va al proprio profilo (sul computer si resta qui).
+          if (!window.matchMedia("(min-width: 768px)").matches) formData.set("afterSave", "profile");
+          startTransition(() => formAction(formData));
         }}
       >
         {journey && <input type="hidden" name="journeyId" value={journey.id} />}
@@ -248,7 +266,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
           {journey && (
             <div>
               <span className="text-sm font-medium text-ink-muted">Cover</span>
-              <div className="relative mt-1.5 aspect-4/3 w-full overflow-hidden rounded-xl border border-border bg-surface-2">
+              <div className="relative mt-1.5 max-md:aspect-video md:aspect-4/3 w-full overflow-hidden rounded-xl border border-border bg-surface-2">
                 {coverPreview ? (
                   <Image src={coverPreview} alt="" fill sizes="220px" className="object-cover" />
                 ) : (
@@ -281,9 +299,9 @@ export function JourneyForm({ journey }: JourneyFormProps) {
 
         {state.error && <p className="mt-4 text-sm text-danger">{state.error}</p>}
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 max-md:flex-col-reverse max-md:items-stretch border-t border-border pt-4">
           {journey ? (
-            <Button variant="danger" onClick={() => setDeleteOpen(true)}>
+            <Button variant="danger" onClick={() => setDeleteOpen(true)} className="max-md:w-1/2">
               <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
               Delete Journey
             </Button>
@@ -307,7 +325,7 @@ export function JourneyForm({ journey }: JourneyFormProps) {
         <ImageCropper
           imageSrc={cropImageSrc}
           title="Journey cover"
-          aspect={4 / 5}
+          aspect={cropAspect}
           cropShape="rect"
           onCancel={() => setCropImageSrc(null)}
           onConfirm={handleCropConfirm}

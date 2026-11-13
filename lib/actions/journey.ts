@@ -146,6 +146,11 @@ export async function updateJourney(
   }
 
   revalidatePath(`/dashboard/journeys/${journey.id}`);
+  const profileUsername = journey.creator.user.username;
+  if (formData.get("afterSave") === "profile" && profileUsername) {
+    revalidatePath(`/profile/${profileUsername}`);
+    redirect(`/profile/${profileUsername}`);
+  }
   redirect(`/dashboard/journeys/${journey.id}`);
 }
 

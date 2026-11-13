@@ -4,6 +4,7 @@ import { requireCreator } from "@/lib/creator";
 import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import { getImagePlaybackUrl } from "@/lib/r2";
 import { getJourneyPrivateStats } from "@/lib/dashboard/journeyStats";
+import { JourneyEditGuard, JourneyExitButton } from "@/components/creator/JourneyEditGuard";
 import { JourneyForm } from "@/components/creator/JourneyForm";
 import { JourneyPublishControl } from "@/components/creator/JourneyPublishControl";
 import { JourneyHeaderMenu } from "@/components/creator/JourneyHeaderMenu";
@@ -12,7 +13,6 @@ import { ChaptersAndEpisodesPanel } from "@/components/creator/ChaptersAndEpisod
 import { PrivateStatsPanel } from "@/components/creator/PrivateStatsPanel";
 import { JourneyCompletionControl } from "@/components/creator/JourneyCompletionControl";
 import { Reveal } from "@/components/common/Reveal";
-import Link from "next/link";
 import { PageTitle } from "@/components/ui/heading";
 import { NOTICE } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
@@ -35,15 +35,21 @@ export default async function JourneyManagePage({
 }) {
   const { id } = await params;
   const { edit: autoOpenEpisodeId } = await searchParams;
-  const { creator } = await requireCreator();
+  const { user, creator } = await requireCreator();
 
   const journey = await prisma.journey.findUnique({ where: { id } });
   if (!journey || journey.creatorId !== creator.id || journey.deletedAt) notFound();
+  const owner = await prisma.user.findUnique({ where: { id: user.id }, select: { username: true } });
 
   const rawChapters = await prisma.chapter.findMany({
     where: { journeyId: journey.id, deletedAt: null },
     orderBy: { order: "asc" },
-    include: { episodes: { where: { deletedAt: null }, orderBy: { order: "asc" } } },
+    include: {
+      episodes: {
+        where: { deletedAt: null },
+        orderBy: { order: "asc" },
+      },
+    },
   });
 
   const rawLooseEpisodes = await prisma.episode.findMany({
@@ -72,31 +78,34 @@ export default async function JourneyManagePage({
     getJourneyPrivateStats(journey.id, journey.viewsCount),
   ]);
 
+  // Stato del Journey: da computer sta nell'intestazione della pagina, da telefono dentro il riquadro "Journey details".
+  const statusBadge = (className?: string) => (
+    <span className={cn("inline-flex items-center gap-1.5 text-sm font-semibold text-ink-muted", className)}>
+      <span
+        className={`h-1.5 w-1.5 rounded-full ${
+          journey.status === "PUBLISHED" || journey.status === "DISCOVERY" ? "bg-ember" : "bg-ink-faint"
+        }`}
+        aria-hidden="true"
+      />
+      {STATUS_LABEL[journey.status] ?? journey.status}
+      {journey.completedAt && journey.status !== "ARCHIVED" && " · Completed"}
+    </span>
+  );
+
   return (
     <main>
 
       <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "space-y-4")}>
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
+            <div className="max-md:ml-4">
               <PageTitle>{journey.title}</PageTitle>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink-muted">
-                <span
-                  className={`h-1.5 w-1.5 rounded-full ${
-                    journey.status === "PUBLISHED" || journey.status === "DISCOVERY"
-                      ? "bg-ember"
-                      : "bg-ink-faint"
-                  }`}
-                  aria-hidden="true"
-                />
-                {STATUS_LABEL[journey.status] ?? journey.status}
-                {journey.completedAt && journey.status !== "ARCHIVED" && " · Completed"}
-              </span>
+              {statusBadge("max-md:hidden")}
               <JourneyPublishControl journeyId={journey.id} status={journey.status} />
               {journey.status !== "DRAFT" && (
-                <Button variant="primary" href={`/journeys/${journey.id}`}>
+                <Button variant="primary" href={`/journeys/${journey.id}`} className="max-md:py-1">
                   View Public Page →
                 </Button>
               )}
@@ -112,7 +121,17 @@ export default async function JourneyManagePage({
         </Reveal>
 
         <Reveal delayMs={90}>
-          <DashboardPanel title="Journey details" className="max-w-3xl">
+          <JourneyEditGuard>
+          <DashboardPanel
+            title="Journey details"
+            className="max-w-3xl"
+            action={
+              <div className="flex items-center gap-3 md:hidden">
+                {statusBadge()}
+                <JourneyExitButton href={owner?.username ? `/profile/${owner.username}` : "/dashboard"} />
+              </div>
+            }
+          >
             <JourneyForm
               journey={{
                 id: journey.id,
@@ -124,6 +143,7 @@ export default async function JourneyManagePage({
               }}
             />
           </DashboardPanel>
+          </JourneyEditGuard>
         </Reveal>
 
         <Reveal delayMs={120}>
