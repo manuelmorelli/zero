@@ -110,7 +110,7 @@
   /* Blocco titolo della Hero mobile (titolo/autore/categoria sopra la foto): +10% su richiesta
    * di Manuel, 2026-10-29, perché si leggeva poco. Non toccano le stesse taglie usate da
    * desktop in su (text-3xl, text-hero-eyebrow, text-hero-tag), solo questo blocco. */
-  --text-hero-mobile-title: calc(2.4rem / var(--layout-scale) * var(--text-scale));
+  --text-hero-mobile-title: calc(1.875rem / var(--layout-scale) * var(--text-scale));
   --text-hero-mobile-meta: calc(0.847rem / var(--layout-scale) * var(--text-scale));
   --text-hero-mobile-tag: calc(0.75rem / var(--layout-scale) * var(--text-scale));
 }
@@ -498,11 +498,11 @@ a {
      * vignettatura ovale che ammorbidisce soprattutto gli angoli (il centro resta pieno). */
     -webkit-mask-image:
       linear-gradient(to top, transparent 0%, rgb(0 0 0 / 50%) 0.8%, black 2.2%, black 97.8%, rgb(0 0 0 / 50%) 99.2%, transparent 100%),
-      radial-gradient(ellipse 72% 72% at 50% 50%, black 0%, black 82%, rgb(0 0 0 / 60%) 92%, transparent 100%);
+      radial-gradient(ellipse 100% 100% at 50% 50%, black 0%, black 115%, rgb(0 0 0 / 60%) 128%, transparent 142%);
     -webkit-mask-composite: source-in;
     mask-image:
       linear-gradient(to top, transparent 0%, rgb(0 0 0 / 50%) 0.8%, black 2.2%, black 97.8%, rgb(0 0 0 / 50%) 99.2%, transparent 100%),
-      radial-gradient(ellipse 72% 72% at 50% 50%, black 0%, black 82%, rgb(0 0 0 / 60%) 92%, transparent 100%);
+      radial-gradient(ellipse 100% 100% at 50% 50%, black 0%, black 115%, rgb(0 0 0 / 60%) 128%, transparent 142%);
     mask-composite: intersect;
   }
 }

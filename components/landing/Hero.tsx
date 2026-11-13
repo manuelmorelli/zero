@@ -194,29 +194,31 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
        * absolute). Da computer la clip della Hero copre le foto (che restano sotto come riserva). */}
       <div
         ref={mediaRef}
-        className="relative mt-4 aspect-video overflow-hidden rounded-xl md:absolute md:inset-x-0 md:top-0 md:mx-auto md:mt-0 md:translate-x-50 md:translate-y-7 md:w-[min(calc(100vw_-_340px_-_5.25rem),calc(1060px_-_5.25rem),calc(70vh*16/9))] md:h-[min(calc((100vw_-_340px_-_5.25rem)*9/16),calc((1060px_-_5.25rem)*9/16),70vh)] md:aspect-auto md:rounded-2xl md:shadow-none"
+        className="relative mt-9 aspect-video overflow-hidden rounded-xl md:absolute md:inset-x-0 md:top-0 md:mx-auto md:mt-0 md:translate-x-50 md:translate-y-7 md:w-[min(calc(100vw_-_340px_-_5.25rem),calc(1060px_-_5.25rem),calc(70vh*16/9))] md:h-[min(calc((100vw_-_340px_-_5.25rem)*9/16),calc((1060px_-_5.25rem)*9/16),70vh)] md:aspect-auto md:rounded-2xl md:shadow-none"
       >
         {/* Solo la foto/video e i veli scuri sono dentro questo involucro con la maschera: la
          * pillola col messaggio e i pallini più sotto NON ci stanno dentro apposta, altrimenti la
          * maschera sbiadiva anche loro (bug trovato da Manuel, 2026-10-30). */}
         <div className="hero-mobile-fade absolute inset-0">
-          {slides.map((item, index) => (
-            <FadeImage
-              key={item.alt}
-              src={item.image}
-              alt={item.alt}
-              fill
-              sizes="100vw"
-              quality={COVER_IMAGE_QUALITY}
-              preload={index === 0}
-              className={`animate-[kenburns_14s_ease-in-out_infinite_alternate] object-cover transition-opacity duration-1000 ${
-                // Spente del tutto quando c'è un video (non solo "sotto" di lui): se il video avesse
-                // mai un vuoto momentaneo durante il cambio clip, sotto non deve comparire la foto di
-                // un altro Journey che non c'entra, meglio restasse nero.
-                video ? "opacity-0" : index === active ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          ))}
+          {slides.map((item, index) => {
+            // Spente del tutto quando c'è un video (non solo "sotto" di lui): se il video avesse
+            // mai un vuoto momentaneo durante il cambio clip, sotto non deve comparire la foto di
+            // un altro Journey che non c'entra, meglio restasse nero.
+            const visibility = video ? "opacity-0" : index === active ? "opacity-100" : "opacity-0";
+            return (
+              <div key={item.alt} className="contents">
+                <FadeImage
+                  src={item.image}
+                  alt={item.alt}
+                  fill
+                  sizes="100vw"
+                  quality={COVER_IMAGE_QUALITY}
+                  preload={index === 0}
+                  className={`animate-[kenburns_14s_ease-in-out_infinite_alternate] max-md:animate-none object-cover transition-opacity duration-1000 ${visibility}`}
+                />
+              </div>
+            );
+          })}
           {video && videoMode !== "none" && (
             <HeroBackgroundVideo
               clips={videos}
@@ -422,15 +424,15 @@ function MobileHeroInfo({ slide }: { slide: HeroSlide }) {
     <div className="relative -top-2 -left-2 max-w-[78%]">
       <Link href={`/journeys/${slide.id}`} className="block">
         {slide.category && <CoverChip className="px-1.5 py-0 text-hero-mobile-tag">{slide.category}</CoverChip>}
-        <CardTitle as="h2" className="relative top-1 -mt-2 truncate !text-on-photo text-hero-mobile-title leading-[1.35] font-extrabold">{slide.title}</CardTitle>
+        <CardTitle as="h2" className="relative top-1 -mt-2 truncate !text-on-photo text-hero-mobile-title leading-[1.35] font-extrabold [word-spacing:-0.15em]">{slide.title}</CardTitle>
         <p className="-mt-1 truncate text-hero-mobile-meta text-on-photo max-md:font-semibold max-md:drop-shadow-md">by {slide.creatorName}</p>
       </Link>
       <ButtonSecondary
         href={`/journeys/${slide.id}`}
-        className="!border-ember-line !bg-ember-ash backdrop-saturate-50 mt-1 gap-1 px-3 py-0 text-sm !text-on-photo"
+        className="!border-ember-line !bg-ember-ash backdrop-saturate-50 mt-1 gap-1 px-1.5 py-0 text-sm leading-none !text-on-photo"
       >
         Watch
-        <Play className="h-[15px] w-[15px] fill-current" aria-hidden="true" />
+        <Play className="h-3 w-3 fill-current" aria-hidden="true" />
       </ButtonSecondary>
     </div>
   );
