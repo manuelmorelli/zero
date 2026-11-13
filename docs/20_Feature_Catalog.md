@@ -86,6 +86,8 @@ Per creare una di queste offerte può scrivere una semplice descrizione a un ass
 
 Ogni episodio ha un interruttore "Sponsored content": se il journeyer lo accende (perché un brand l'ha pagato o gli ha regalato qualcosa per mostrarlo), l'episodio riporta in bella vista l'etichetta, in linea con le Linee guida. L'etichetta serve solo a informare chi guarda e non cambia in alcun modo la posizione del Journey nelle classifiche.
 
+Ogni episodio può avere una **musica di sottofondo** scelta dalla **Libreria musicale di Zero**: brani liberi da diritti, con ascolto in anteprima e filtro per categoria. Il journeyer regola il volume del brano e può attivare una dissolvenza in entrata e in uscita. Il video originale non viene mai modificato: il brano parte insieme al video durante la riproduzione. Al caricamento di un video compare un avviso che consiglia di usare la musica di Zero invece di quella con copyright.
+
 Un pulsante dedicato permette al journeyer di avvisare manualmente i propri follower quando pubblica una nuova offerta Community, sempre per sua scelta esplicita, mai in automatico.
 
 ## Sicurezza e privacy
