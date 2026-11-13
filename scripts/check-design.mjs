@@ -132,6 +132,9 @@ const RULES = {
   back: "Niente frecce \"Back\" dentro la pagina: l'unica è quella arancione in alto (BackButton).",
   bounce: "Rimbalzo o elastico vietato dalla Regola di Movimento (docs/21): usa una comparsa con dissolvenza, non animate-bounce/animate-ping.",
   easing: `Curva di movimento diversa da quella approvata: usa sempre ${APPROVED_EASE} (vedi docs/21_Motion_Guidelines.md).`,
+  buttonRaw: "Bottone <button> scritto a mano fuori da components/ui: usa Button/IconButton/TextButton. Se serve un pezzo nuovo (es. Trusty, Follow), costruiscilo DENTRO components/ui con Button, mai con un <button> proprio.",
+  sharedOverride: "Una pagina cambia da sola la misura o la forma di un pezzo condiviso (padding, altezza, larghezza, testo, angoli): la misura sta nel pezzo, non nella pagina. Se serve una misura diversa, aggiungi una variante al pezzo stesso, così vale ovunque.",
+  cardNew: "Nuovo componente card: le card sono poche e fisse (JourneyCard, VideoCard, ContentCard...). Estendi una esistente invece di crearne un’altra; se è davvero nuova, chiedi a Manuel e aggiungila a scripts/design-debt.json.",
   duration: `Durata fuori dalle fasce della Regola di Movimento (${DURATION_BANDS.map((b) => `${b.name} ${b.min}-${b.max}ms`).join(", ")}): vedi docs/21_Motion_Guidelines.md.`,
 };
 
@@ -248,6 +251,18 @@ function checkText(text, report, node) {
   if (/←|&larr;/.test(text)) report("back", node, text);
 }
 
+// Debito storico: file già fuori regola prima del lucchetto severo. Non cresce mai: un file nuovo
+// o un file non in elenco che sbaglia blocca il commit. Rigenerato solo con --write-debt (ok di Manuel).
+const DEBT_PATH = path.join(ROOT, "scripts/design-debt.json");
+const DEBT = fs.existsSync(DEBT_PATH) ? JSON.parse(fs.readFileSync(DEBT_PATH, "utf8")) : {};
+const WRITE_DEBT = process.argv.includes("--write-debt");
+const debtFound = { buttonRaw: new Set(), sharedOverride: new Set(), cardNew: new Set() };
+const SHARED_SIZED = new Set(["Button", "ButtonPrimary", "ButtonSecondary", "ButtonDanger", "IconButton", "TextButton", "FollowButton", "TrustyButton", "CoverFrame"]);
+const SIZE_OVERRIDE = /^((p|px|py|pt|pb|pl|pr|h|w|min-h|min-w|max-h|max-w|size)-.+|rounded(-.+)?|text-(sm|base|lg|xl|dxl)|font-(medium|semibold|bold|extrabold|black))$/;
+const reportDebt = (rule, rel, node, detail, report) => {
+  debtFound[rule].add(rel);
+  if (!(DEBT[rule] ?? []).includes(rel)) report(rule, node, detail);
+};
 const errors = [];
 const tsxFiles = SCAN_DIRS.flatMap((d) => walk(path.join(ROOT, d), /\.tsx$/).map((file) => ({ file, textOnly: false })));
 const libFiles = TEXT_ONLY_DIRS.flatMap((d) => walk(path.join(ROOT, d), /\.tsx?$/).map((file) => ({ file, textOnly: true })));
@@ -256,6 +271,10 @@ for (const { file, textOnly } of [...tsxFiles, ...libFiles]) {
   if (rel.startsWith(DESIGN_SYSTEM_DIR) || APPROVED_EXCEPTIONS.has(rel)) continue;
   const ctx = { rel, hero: HERO_FILES.has(rel), videoCanvas: VIDEO_CANVAS_BLACK_FILES.has(rel), bounce: BOUNCE_FILES.has(rel) };
   const source = fs.readFileSync(file, "utf8");
+  if (!textOnly && /Card.tsx$/.test(rel) && !rel.startsWith("app/")) {
+    debtFound.cardNew.add(rel);
+    if (!(DEBT.cardNew ?? []).includes(rel)) errors.push({ file: rel, line: 1, rule: "cardNew", detail: "componente card non in elenco" });
+  }
   checkEasing(source, rel, errors);
   checkDuration(source, rel, errors);
   // lib/ non ha JSX: letto come .ts normale, non forzato in modalità TSX (evita di confondere
@@ -287,6 +306,8 @@ for (const { file, textOnly } of [...tsxFiles, ...libFiles]) {
         }
       }
       for (const [rule, detail] of checkClasses(cls, ctx)) report(rule, node, detail);
+      if (tag === "button") reportDebt("buttonRaw", rel, node, `<button> ${cls}`, report);
+      if (SHARED_SIZED.has(tag) && cls.split(/s+/).some((c) => c && SIZE_OVERRIDE.test(stripVariants(c)))) reportDebt("sharedOverride", rel, node, `<${tag}> ${cls}`, report);
 
       const looksStyled = has(cls, /^(text-(sm|base|lg|xl|\dxl|\[)|font-(bold|semibold|extrabold|black|medium))/);
       if (/^h[1-3]$/.test(tag) && looksStyled) report("heading", node, `<${tag}> ${cls}`);
@@ -335,6 +356,13 @@ for (const { file, textOnly } of [...tsxFiles, ...libFiles]) {
 const globalsCss = fs.readFileSync(path.join(ROOT, "app/globals.css"), "utf8");
 checkEasing(globalsCss, "app/globals.css", errors);
 checkDuration(globalsCss, "app/globals.css", errors);
+
+if (WRITE_DEBT) {
+  const out = Object.fromEntries(Object.entries(debtFound).map(([k, v]) => [k, [...v].sort()]));
+  fs.writeFileSync(DEBT_PATH, JSON.stringify(out, null, 2) + String.fromCharCode(10));
+  console.log("design-debt.json scritto:", Object.entries(out).map(([k, v]) => k + "=" + v.length).join(", "));
+  process.exit(0);
+}
 
 if (errors.length === 0) {
   console.log("check-design: nessun problema, il sito rispetta il design system.");
