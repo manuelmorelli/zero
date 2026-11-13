@@ -261,7 +261,7 @@ export function EpisodeForm({ journeyId, chapters, defaultChapterId, episode }: 
             type="date"
             required
             defaultValue={toDateInputValue(episode?.occurredAt ?? new Date())}
-            className={cn(FIELD, "mt-1")}
+            className={cn(FIELD, "mt-1 max-md:h-10 max-md:min-w-0 max-md:appearance-none max-md:py-0 max-md:text-left")}
           />
         </div>
       </div>

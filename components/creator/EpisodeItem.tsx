@@ -119,7 +119,7 @@ export function EpisodeItem({ journeyId, chapters, coverUrl, episode, autoOpen }
       </button>
 
       <Dialog open={editing} onOpenChange={setEditing}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-sm max-md:touch-pan-y max-md:overflow-x-hidden max-md:overscroll-contain">
           <DialogHeader>
             <DialogTitle>Edit Episode</DialogTitle>
           </DialogHeader>
