@@ -13,5 +13,13 @@ type AboutCardProps = {
  * di presentazione non compare. Da computer la bio vive accanto alla copertina (BioPanel, in
  * ProfileHero). */
 export function AboutCard({ profileUserId, name, bio, interests }: AboutCardProps) {
-  return <BioPreviewCard profileUserId={profileUserId} name={name} bio={bio} interests={interests} />;
+  return (
+    <BioPreviewCard
+      profileUserId={profileUserId}
+      name={name}
+      bio={bio}
+      interests={interests}
+      className="max-md:w-[calc(50%-0.3125rem)] max-md:flex-none"
+    />
+  );
 }

@@ -314,8 +314,10 @@ export default async function PublicProfilePage({
             {/* Da computer questa riga non c'è: In Progress è la prima card dei Journey pubblicati
                 (più sotto) e il suo posto è preso da Upcoming Activities. Su telefono resta così. */}
             <Reveal className="md:hidden">
-              {overviewCards.length === 1 ? (
-                <div className="max-w-md">{overviewCards}</div>
+              {/* PresentationVideoCard da sola produce due card (video + Bio): va nella fila, non
+                  nel contenitore a card singola, altrimenti si impilano a tutta larghezza. */}
+              {overviewCards.length === 1 && !showPresentationCard ? (
+                <div className="w-[calc(50%-0.3125rem)]">{overviewCards}</div>
               ) : (
                 // Fila libera: ogni card (Journey in corso, Bio, Video) ha la sua stessa identica
                 // larghezza fissa (CARD_ROW_ITEM.episode), nessuna colonna che le forza a dividersi
