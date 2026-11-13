@@ -140,11 +140,8 @@ export default async function PublicJourneyPage({
               ) : (
                 <div className="absolute inset-0 cover-placeholder" />
               )}
-              <div className="absolute inset-0 card-scrim" />
-              {/* Sfumatura in più, solo telefono: il blocco di testo sopra la foto qui è più alto
-               * (titolo, autore, conteggi, bottone Watch) di una card normale, serve più scurimento
-               * perché resti leggibile. Da computer card-scrim da sola basta già, come prima. */}
-              <div className="absolute inset-0 card-scrim-soft md:hidden" />
+              {/* Su telefono nessuna sfumatura sopra la foto (tolta su richiesta); da computer resta. */}
+              <div className="absolute inset-0 card-scrim max-md:hidden" />
               {watchAction && (
                 <Link
                   href={`/journeys/${journey.id}/episodes/${watchAction.episodeId}`}
@@ -164,7 +161,7 @@ export default async function PublicJourneyPage({
               {/* Menu a tre puntini sopra la copertina, solo telefono: Condividi (qui, non più
                * un'icona a parte), Forum, Segnala, Modifica Journey (solo per chi l'ha creato). Da
                * computer non esiste, quelle azioni restano dove sono già (riga Follow più sotto). */}
-              <div className="absolute right-3 top-3 md:hidden">
+              <div className="absolute right-1 top-1 md:hidden">
                 <CoverMenu
                   share={{
                     path: `/journeys/${journey.id}`,
@@ -186,36 +183,29 @@ export default async function PublicJourneyPage({
                * troppo lunga ("Continue watching · Episode N") si tronca con i puntini. Foto e nome
                * del creator non stanno più qui: sono appena sotto la copertina (vedi riga subito
                * dopo), ingranditi, col bottone Follow a fianco. */}
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 md:hidden">
-                <div className="mb-4 min-w-0 flex-1">
-                  <p className="text-sm font-bold leading-none tracking-[0.22em] text-ember uppercase">Journey</p>
-                  {journey.category && (
-                    <p className="text-sm font-bold leading-none tracking-[0.22em] text-ember uppercase">{journey.category}</p>
-                  )}
-                  <PageTitle as="p" className="mt-1.5 truncate text-3xl text-on-photo">
-                    {journey.title}
-                  </PageTitle>
-                  <div className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-ember">
-                    <span>
-                      {flatEpisodes.length} {flatEpisodes.length === 1 ? "Episode" : "Episodes"}
-                    </span>
-                    <span aria-hidden="true">·</span>
-                    <span className="inline-flex items-center gap-1">
-                      <ShieldCheck className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true" />
-                      {formatCompactNumber(journeyTrustyCount)} Trusty
-                    </span>
-                  </div>
-                </div>
-                {watchAction && (
+              {watchAction && (
+                <div className="absolute inset-x-0 bottom-0 flex justify-end px-4 pb-1 md:hidden">
                   <ButtonSecondary
                     href={`/journeys/${journey.id}/episodes/${watchAction.episodeId}`}
-                    className="-mb-2 max-w-[42%] shrink-0 px-5 py-1.5 text-sm"
+                    className="max-w-[60%] shrink-0 px-5 py-1.5 text-sm"
                   >
                     <Play className="h-3.5 w-3.5 shrink-0 fill-current" aria-hidden="true" />
                     <span className="min-w-0 truncate">{watchAction.label}</span>
                   </ButtonSecondary>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
+
+            {/* Blocco titoli fuori dalla copertina, subito sotto il bordo (-mt-3.5 annulla quasi
+             * tutto il gap-4 della griglia), solo telefono. */}
+            <div className="-mt-3.5 min-w-0 md:hidden">
+              <p className="text-sm font-bold leading-none tracking-[0.22em] text-ember uppercase">Journey</p>
+              {journey.category && (
+                <p className="text-sm font-bold leading-none tracking-[0.22em] text-ember uppercase">{journey.category}</p>
+              )}
+              <PageTitle as="p" className="mt-0 truncate text-3xl leading-tight text-ink">
+                {journey.title}
+              </PageTitle>
             </div>
 
             {/* Watch, Condividi e Forum appena sotto la copertina, allineati a destra: solo
@@ -229,6 +219,16 @@ export default async function PublicJourneyPage({
                 <Avatar name={journey.creator.displayName} avatarUrl={creatorAvatarUrl} size="sm" className="h-[46px] w-[46px]" />
                 <span className="truncate text-base font-semibold text-ink">{journey.creator.displayName}</span>
               </Link>
+              <div className="flex shrink-0 items-center gap-1.5 text-sm font-semibold text-ember">
+                <span>
+                  {flatEpisodes.length} {flatEpisodes.length === 1 ? "Episode" : "Episodes"}
+                </span>
+                <span aria-hidden="true">·</span>
+                <span className="inline-flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true" />
+                  {formatCompactNumber(journeyTrustyCount)} Trusty
+                </span>
+              </div>
               {!isOwnJourney && (
                 <FollowButton
                   userId={journey.creator.userId}
