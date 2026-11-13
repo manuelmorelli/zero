@@ -54,6 +54,11 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const pillRef = useRef<HTMLDivElement>(null);
+  // Al primo disegno (prima che il browser dica se c'è il video) la pillola sarebbe quella della
+  // foto, poi scatta su quella del video: resta nascosta finché non si sa quale mostrare.
+  const [pillReady, setPillReady] = useState(false);
+  useEffect(() => setPillReady(true), []);
 
   // Frasi e foto hanno due ritmi separati (docs/21_Motion_Guidelines.md). Chi ha chiesto meno
   // movimento non ha cambi automatici: resta sulla frase di Zero e sulla prima card.
@@ -67,15 +72,24 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
     };
   }, [slides.length]);
 
-  // Racconto con lo scroll, solo da computer: mentre la pagina scorre (senza bloccarla) la foto o
-  // il video si allontanano rimpicciolendosi e il testo sale più in fretta, sopra di loro.
+  // Racconto con lo scroll, solo da computer: mentre la pagina scorre (senza bloccarla) il testo
+  // sale più in fretta, sopra la foto o il video (che restano a grandezza piena).
   useEffect(() => {
     if (prefersLightMotion()) return;
     const { gsap } = getGsapScrollTrigger();
     const ctx = gsap.context(() => {
-      const scrollTrigger = { trigger: sectionRef.current, start: "top top", end: "bottom top", scrub: true };
-      gsap.to(mediaRef.current, { scale: 0.85, ease: "none", scrollTrigger });
-      gsap.to(contentRef.current, { yPercent: -25, ease: "none", scrollTrigger });
+      // La pillola a destra resta ferma nell'angolo della foto: a ogni passo compensa la salita del blocco.
+      const setPillY = gsap.quickSetter(pillRef.current, "y", "px");
+      const keepPillStill = () => {
+        const content = contentRef.current;
+        if (!content) return;
+        setPillY((-Number(gsap.getProperty(content, "yPercent")) / 100) * content.offsetHeight);
+      };
+      gsap.to(contentRef.current, {
+        yPercent: -25,
+        ease: "none",
+        scrollTrigger: { trigger: sectionRef.current, start: "top top", end: "bottom top", scrub: true, onUpdate: keepPillStill, onRefresh: keepPillStill },
+      });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -319,7 +333,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
 
         {/* Card sopra la foto, allineata alla riga degli Update: Journey reale se disponibile
          * (cliccabile, porta alla sua pagina), altrimenti la citazione demo. */}
-        <div className="relative flex md:col-start-2 md:row-start-3 md:justify-end md:self-start md:translate-y-[6rem] md:-translate-x-10">
+        <div ref={pillRef} className={cn("relative flex", !pillReady && "invisible", "md:col-start-2 md:row-start-3 md:justify-end md:self-start md:top-[4.5rem] md:-left-[3.5rem]")}>
           <div className="w-full md:max-w-[14rem]">
             {video ? (
               <HeroCard
