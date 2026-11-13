@@ -30,7 +30,7 @@ import {
 const RESUME_THRESHOLD_SEC = 5;
 // Un episodio è considerato completato oltre questa percentuale della durata, non solo a fine
 // video esatto: evita che un buffering finale o un secondo mancante impediscano di segnarlo.
-const COMPLETION_FRACTION = 0.95;
+const COMPLETION_FRACTION = 0.8;
 const SAVE_INTERVAL_MS = 15_000;
 
 type EpisodePlayerProps = {
@@ -284,7 +284,7 @@ export function EpisodePlayer({
             <div className="hidden md:block">
               <div className="absolute right-0 top-0 flex items-center gap-1.5 scale-125 origin-top-right">
                 {!isOwnContent && (
-                  <FollowButton userId={creator.userId} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} className="py-1.5" />
+                  <FollowButton userId={creator.userId} initialIsFollowing={isFollowing} isLoggedIn={isLoggedIn} className="px-3 py-0.5" />
                 )}
                 <TrustyButton
                   targetType="EPISODE"
@@ -294,6 +294,7 @@ export function EpisodePlayer({
                   isLoggedIn={isLoggedIn}
                   unlocked={trustyUnlocked}
                   isOwnContent={isOwnContent}
+                  className="py-0.5"
                 />
                 {/* Forum del Journey a un clic dal video, accanto a Trusty (richiesto da Manuel). */}
                 <Link

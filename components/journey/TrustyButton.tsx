@@ -87,9 +87,9 @@ export function TrustyButton({
         }
         className={cn(
           isLiked
-            ? "border-ember-line bg-ember-soft text-ember"
+            ? cn(CHIP, "border-ember-line bg-ember-soft text-ember")
             : unlocked
-              ? cn(CHIP, "max-md:border-ember-line max-md:shadow-glow")
+              ? cn(CHIP, "border-ember-line shadow-glow")
               : CHIP,
           "transition-all duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40",
           className
