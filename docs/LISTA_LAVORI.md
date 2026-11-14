@@ -5,6 +5,7 @@ Regola: prima di proporre qualsiasi lavoro si controlla questa lista e `git log`
 ## Fatti (approvati, con commit e push)
 
 ### 14 novembre 2026
+- [x] Profilo: titoli "Published Journeys" e "Recent Episodes" maiuscoli 20px anche da computer; card Bio da telefono con bordo arancione come il video di presentazione. UFFICIALE, se si sposta qualcosa avvisare Manuel
 - [x] Card episodi uguali nella pagina Journey e nella lista accanto al player (un solo pezzo EpisodeRow)
 - [x] Update nella Hero da computer: riga in fondo, scroll laterale e frecce, cerchi più grandi, View All (e478b4e)
 - [x] Pagina del Journey: creator sopra i titoli, episodi e Trusty accanto a "Journey", Follow e Watch riposizionati da computer, miniature episodi più larghe, senza ombra nera (b62ed93)
@@ -33,7 +34,7 @@ Regola: prima di proporre qualsiasi lavoro si controlla questa lista e `git log`
 
 ## Da fare (uno alla volta, Manuel decide)
 
-- [ ] Titoli di pagina diversi: Home 14,4px centrato, Journey/episodio/profilo 27px su telefono
+- [x] Titoli di pagina diversi: tolto da Manuel il 14 nov 2026 (pagina non individuabile, nata da una lettura automatica)
 - [ ] Titoli delle sezioni nel profilo
 - [ ] Titoli delle card in How it works e simili (varie grandezze)
 - [ ] Bottoni con aspetto diverso fra pagine

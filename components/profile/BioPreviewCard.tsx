@@ -27,7 +27,7 @@ export function BioPreviewCard({ profileUserId, name, bio, interests, className 
   return (
     <Link
       href={`/profile/${profileUserId}/presentation`}
-      className={cn("relative block aspect-[112/156] w-full min-w-0 flex-1 overflow-hidden rounded-xl border border-border cover-placeholder md:hidden", className)}
+      className={cn("relative block aspect-[112/156] w-full min-w-0 flex-1 overflow-hidden rounded-xl border border-ember-line cover-placeholder md:hidden", className)}
     >
       <div className="absolute inset-x-0 top-0 p-2.5">
         <span className="inline-flex items-center gap-1 text-sm font-semibold text-ember">

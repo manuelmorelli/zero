@@ -342,7 +342,7 @@ export default async function PublicProfilePage({
             <Reveal delayMs={40} className="mt-6 block">
               <section>
                 <div className="flex items-center justify-between gap-3">
-                  <SectionTitle className="max-md:text-xl max-md:uppercase">Published Journeys</SectionTitle>
+                  <SectionTitle className="text-xl uppercase">Published Journeys</SectionTitle>
                   {liveJourneys.length > PUBLISHED_JOURNEYS_PREVIEW_COUNT && (
                     <Link
                       href={`/profile/${username}?tab=journeys`}
@@ -420,7 +420,7 @@ export default async function PublicProfilePage({
                  Journeys/Journeyers). */}
             <Reveal delayMs={120} className="mt-6 block">
               {episodeFeedItems.length > 0 ? (
-                <HorizontalScrollRow title="Recent Episodes" titleClassName="max-md:text-xl max-md:uppercase">
+                <HorizontalScrollRow title="Recent Episodes" titleClassName="text-xl uppercase">
                   {episodeFeedItems.map((item, index) => (
                     <ContentCard
                       creator={cardCreator}
@@ -468,7 +468,7 @@ export default async function PublicProfilePage({
                 </HorizontalScrollRow>
               ) : (
                 <section>
-                  <SectionTitle className="max-md:text-xl max-md:uppercase">Recent Episodes</SectionTitle>
+                  <SectionTitle className="text-xl uppercase">Recent Episodes</SectionTitle>
                   <p className={`mt-4 ${NOTICE}`}>
                     {isPrivateGateActive
                       ? `This account is private. Follow ${user.name} to see their Updates.`
