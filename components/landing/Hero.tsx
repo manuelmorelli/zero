@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Play, Quote, Volume2, VolumeX } from "lucide-react";
+import { ChevronRight, Play, Quote, Volume2, VolumeX } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { CreatorProfileLink } from "@/components/journey/CreatorProfileLink";
-import { ButtonSecondary, IconButton } from "@/components/ui/button";
+import { BUTTON_VARIANTS, ButtonSecondary, IconButton } from "@/components/ui/button";
 import { StoryViewer } from "@/components/home/StoryViewer";
 import { HeroBackgroundVideo, useHeroVideoMode } from "@/components/landing/HeroBackgroundVideo";
+import { UpdatesScroller } from "@/components/landing/UpdatesScroller";
 import { HeroPayoff } from "@/components/landing/HeroPayoff";
 import { FadeImage } from "@/components/common/FadeImage";
 import type { HeroSlide } from "@/lib/demo/heroSlides";
@@ -101,9 +102,9 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
   // Riga di Update (storie): usata sia dentro la Hero da desktop in su, sia come riga a sé sotto
   // la Hero su mobile (dove la Hero stessa mostra solo foto + card, vedi sopra) — stesso contenuto,
   // definita qui per condividere lo stato (setOpenStoryIndex/setOwnStoryOpen) senza passarlo a mano.
-  function StoriesRow() {
+  function StoriesRow(desktop = false) {
     return ownStory || stories.length > 0 ? (
-      <div className="flex gap-1.5 overflow-x-auto pb-1">
+      <div className={cn("flex gap-1.5 pb-1", !desktop && "overflow-x-auto")}>
         {ownStory && (
           <button
             type="button"
@@ -111,7 +112,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             className="flex shrink-0 flex-col items-center gap-1.5"
           >
             <span
-              className={`flex h-19 w-19 items-center justify-center rounded-full p-[2px] md:h-11 md:w-11 ${
+              className={`flex h-19 w-19 items-center justify-center rounded-full p-[2px] md:h-20 md:w-20 ${
                 ownStory.hasUnseen ? "bg-ember" : "bg-border"
               }`}
             >
@@ -124,10 +125,10 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
                 )}
               </span>
             </span>
-            <span className="max-w-11 truncate text-hero-caption text-on-photo-muted max-md:max-w-19 max-md:text-base">You</span>
+            <span className="max-w-20 truncate text-hero-caption text-on-photo-muted max-md:max-w-19 max-md:text-base">You</span>
           </button>
         )}
-        {stories.slice(0, 6).map((story, index) => (
+        {(desktop ? stories : stories.slice(0, 6)).map((story, index) => (
           <button
             key={story.creatorId}
             type="button"
@@ -135,7 +136,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
             className="flex shrink-0 flex-col items-center gap-1.5"
           >
             <span
-              className={`flex h-19 w-19 items-center justify-center rounded-full p-[2px] md:h-11 md:w-11 ${
+              className={`flex h-19 w-19 items-center justify-center rounded-full p-[2px] md:h-20 md:w-20 ${
                 story.hasUnseen ? "bg-ember" : "bg-border"
               }`}
             >
@@ -148,7 +149,7 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
                 )}
               </span>
             </span>
-            <span className="max-w-11 truncate text-hero-caption text-on-photo-muted max-md:max-w-19 max-md:text-base">
+            <span className="max-w-20 truncate text-hero-caption text-on-photo-muted max-md:max-w-19 max-md:text-base">
               {story.creatorName}
             </span>
           </button>
@@ -326,11 +327,6 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
           </div>
         </div>
 
-        {/* Avatar/Updates — la card del Journey (o citazione) a destra si allinea a questa riga. */}
-        <div className="max-w-lg md:col-start-1 md:row-start-3">
-          {StoriesRow()}
-        </div>
-
         {/* Card sopra la foto, allineata alla riga degli Update: Journey reale se disponibile
          * (cliccabile, porta alla sua pagina), altrimenti la citazione demo. */}
         <div ref={pillRef} className={cn("relative flex", !pillReady && "invisible", "md:col-start-2 md:row-start-3 md:justify-end md:self-start md:top-[4.5rem] md:-left-[3.5rem]")}>
@@ -381,6 +377,22 @@ export function Hero({ slides, videos, stories, ownStory }: HeroProps) {
         />
       )}
     </section>
+      {/* Update da computer: riga a sé in fondo alla Hero, da sinistra a destra, con View All a destra
+       * (apre gli Update dal primo). Su mobile vive nel blocco qui sotto. */}
+      <div className={cn(PAGE_WIDTH.wideCover, "hidden items-start gap-6 pb-8 pt-5 md:flex")}>
+        <UpdatesScroller>{StoriesRow(true)}</UpdatesScroller>
+        {(ownStory || stories.length > 0) && (
+          <button
+            type="button"
+            onClick={() => (stories.length > 0 ? setOpenStoryIndex(0) : setOwnStoryOpen(true))}
+            className={`${BUTTON_VARIANTS.text} flex shrink-0 items-center gap-1 self-center`}
+          >
+            View All
+            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        )}
+      </div>
+
       {/* Storie, solo su mobile: sopra vivono dentro la Hero (da desktop in su), qui sotto perché
        * la Hero mobile mostra solo foto + card del Journey (vedi sopra). */}
       <div className={cn(PAGE_WIDTH.wideCover, "relative pt-2 md:hidden")}>
