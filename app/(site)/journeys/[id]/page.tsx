@@ -120,7 +120,7 @@ export default async function PublicJourneyPage({
   return (
     <main>
 
-      <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "md:grid md:grid-cols-[minmax(0,1fr)_340px] md:items-start md:gap-5")}>
+      <div className={cn(PAGE_WIDTH.wide, PAGE_SPACING, "md:grid md:grid-cols-[minmax(0,1fr)_380px] md:items-start md:gap-5")}>
         <Reveal className="md:min-w-0">
           <div className="grid gap-4">
             {/* Sul telefono la foto esce dal margine laterale della pagina (-mx-5 annulla
@@ -184,7 +184,7 @@ export default async function PublicJourneyPage({
                * del creator non stanno più qui: sono appena sotto la copertina (vedi riga subito
                * dopo), ingranditi, col bottone Follow a fianco. */}
               {watchAction && (
-                <div className="absolute inset-x-0 bottom-0 flex justify-end px-4 pb-1 md:hidden">
+                <div className="absolute inset-x-0 bottom-0 flex justify-end px-4 pb-1 md:pb-4">
                   <ButtonSecondary
                     href={`/journeys/${journey.id}/episodes/${watchAction.episodeId}`}
                     className="max-w-[60%] shrink-0 px-5 py-1.5 text-sm"
@@ -196,10 +196,39 @@ export default async function PublicJourneyPage({
               )}
             </div>
 
-            {/* Blocco titoli fuori dalla copertina, subito sotto il bordo (-mt-3.5 annulla quasi
-             * tutto il gap-4 della griglia), solo telefono. */}
-            <div className="-mt-3.5 min-w-0 md:hidden">
-              <p className="text-sm font-bold leading-none tracking-[0.22em] text-ember uppercase">Journey</p>
+            {/* Foto+nome del creator, appena sotto la copertina, solo telefono: ingranditi del
+             * 15%, con Follow a destra (finisce praticamente in linea col bottone Watch sopra). */}
+            <div className="-mt-3.5 flex items-center justify-between gap-3 md:hidden">
+              <Link href={`/profile/${journey.creator.userId}`} className="flex min-w-0 items-center gap-2.5">
+                <Avatar name={journey.creator.displayName} avatarUrl={creatorAvatarUrl} size="sm" className="h-[62px] w-[62px]" />
+                <span className="truncate text-base font-semibold text-ink">{journey.creator.displayName}</span>
+              </Link>
+              {!isOwnJourney && (
+                <FollowButton
+                  userId={journey.creator.userId}
+                  initialIsFollowing={isFollowing}
+                  isLoggedIn={Boolean(session)}
+                  className="py-1.5"
+                />
+              )}
+            </div>
+
+            {/* Blocco titoli (Journey + episodi e Trusty, categoria, titolo) sotto la riga del
+             * creator, solo telefono. */}
+            <div className="min-w-0 md:hidden">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-bold leading-none tracking-[0.22em] text-ember uppercase">Journey</p>
+                <div className="flex shrink-0 items-center gap-1.5 text-sm font-semibold leading-none text-ember">
+                  <span>
+                    {flatEpisodes.length} {flatEpisodes.length === 1 ? "Episode" : "Episodes"}
+                  </span>
+                  <span aria-hidden="true">·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <ShieldCheck className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true" />
+                    {formatCompactNumber(journeyTrustyCount)} Trusty
+                  </span>
+                </div>
+              </div>
               {journey.category && (
                 <p className="text-sm font-bold leading-none tracking-[0.22em] text-ember uppercase">{journey.category}</p>
               )}
@@ -212,35 +241,9 @@ export default async function PublicJourneyPage({
              * computer (su telefono Condividi e Forum stanno nel menu a tre puntini). Il Forum
              * qui è nuovo: da computer prima non esisteva per il Journey, solo su telefono
              * accanto a "Episodes". */}
-            {/* Foto+nome del creator, appena sotto la copertina, solo telefono: ingranditi del
-             * 15%, con Follow a destra (finisce praticamente in linea col bottone Watch sopra). */}
-            <div className="flex items-center justify-between gap-3 md:hidden">
-              <Link href={`/profile/${journey.creator.userId}`} className="flex min-w-0 items-center gap-2.5">
-                <Avatar name={journey.creator.displayName} avatarUrl={creatorAvatarUrl} size="sm" className="h-[46px] w-[46px]" />
-                <span className="truncate text-base font-semibold text-ink">{journey.creator.displayName}</span>
-              </Link>
-              <div className="flex shrink-0 items-center gap-1.5 text-sm font-semibold text-ember">
-                <span>
-                  {flatEpisodes.length} {flatEpisodes.length === 1 ? "Episode" : "Episodes"}
-                </span>
-                <span aria-hidden="true">·</span>
-                <span className="inline-flex items-center gap-1">
-                  <ShieldCheck className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true" />
-                  {formatCompactNumber(journeyTrustyCount)} Trusty
-                </span>
-              </div>
-              {!isOwnJourney && (
-                <FollowButton
-                  userId={journey.creator.userId}
-                  initialIsFollowing={isFollowing}
-                  isLoggedIn={Boolean(session)}
-                  className="py-1.5"
-                />
-              )}
-            </div>
 
             <div className="flex flex-col justify-between gap-4">
-              {/* Blocco scritte (Journey/categoria/titolo/creator/descrizione) e Watch+Condividi
+              {/* Blocco scritte (Journey/categoria/titolo/creator/descrizione) e Follow+Condividi
                * +Forum sulla stessa riga, titolo a sinistra, bottoni a destra: solo computer. */}
               <div className="hidden items-start justify-between gap-4 md:flex">
                 <div className="relative min-w-0 md:pl-21">
@@ -272,14 +275,13 @@ export default async function PublicJourneyPage({
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2.5 md:pr-20">
-                  {watchAction && (
-                    <ButtonSecondary
-                      href={`/journeys/${journey.id}/episodes/${watchAction.episodeId}`}
-                      className="px-4 py-2 text-sm"
-                    >
-                      <Play className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
-                      {watchAction.label}
-                    </ButtonSecondary>
+                  {!isOwnJourney && (
+                    <FollowButton
+                      userId={journey.creator.userId}
+                      initialIsFollowing={isFollowing}
+                      isLoggedIn={Boolean(session)}
+                      className="md:inline-block"
+                    />
                   )}
                   <ShareButton
                     path={`/journeys/${journey.id}`}
@@ -304,16 +306,7 @@ export default async function PublicJourneyPage({
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5">
-                {/* Da computer: Follow resta qui, come sempre. Su telefono vive accanto a
-                 * foto+nome del creator appena sotto la copertina (vedi più sopra), non qui. */}
-                {!isOwnJourney && (
-                  <FollowButton
-                    userId={journey.creator.userId}
-                    initialIsFollowing={isFollowing}
-                    isLoggedIn={Boolean(session)}
-                    className="hidden md:inline-block"
-                  />
-                )}
+                {/* Su computer Follow sta in alto a destra, nel gruppo con Condividi e Forum. */}
                 {!isOwnJourney && session && (
                   <ReportButton
                     targetType="JOURNEY"
@@ -335,7 +328,7 @@ export default async function PublicJourneyPage({
           {/* Solo telefono: stesso stile stampatello dei capitoli (maiuscolo, spaziato), ma
            * bianca invece che arancione — resta il titolo bianco della sezione. */}
           <div className="flex items-center justify-between gap-3">
-            <SectionTitle className="text-xl uppercase tracking-[0.08em] md:text-lg md:normal-case md:tracking-tight">Episodes</SectionTitle>
+            <SectionTitle className="text-xl uppercase tracking-[0.08em]">Episodes</SectionTitle>
             <ButtonSecondary href={`/community/forum/${journey.id}`} className="shrink-0 py-1.5 md:hidden">
               <MessageSquare className="h-3.5 w-3.5" aria-hidden="true" />
               Forum
@@ -399,21 +392,21 @@ function EpisodeRow({
         {/* Copertina piccola, stessa proporzione 16:9 delle copertine episodio in tutto il
          * sito, più il menu a tre puntini nella stessa posizione (sopra la copertina, in alto
          * a destra). */}
-        <div className="group/thumb relative aspect-video w-36 shrink-0 sm:w-44 md:w-28">
+        <div className="flex shrink-0 flex-col">
+        <div className="group/thumb relative aspect-video w-36 shrink-0 sm:w-44 md:w-48">
           <Link href={episodeHref} className="absolute inset-0 block overflow-hidden rounded-lg border border-border bg-surface-2">
             {episode.posterUrl || coverUrl ? (
               <Image
                 src={episode.posterUrl || coverUrl!}
                 alt=""
                 fill
-                sizes="(min-width: 768px) 112px, 176px"
+                sizes="(min-width: 768px) 192px, 176px"
                 quality={COVER_IMAGE_QUALITY}
                 className="object-cover transition-transform duration-700 group-hover/thumb:scale-105"
               />
             ) : (
               <div className="absolute inset-0 cover-placeholder transition-transform duration-700 group-hover/thumb:scale-105" />
             )}
-            <div className="absolute inset-0 card-scrim" />
             <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-300 group-hover/thumb:opacity-100">
               <span className="grid h-8 w-8 place-items-center rounded-full border border-border bg-scrim backdrop-blur-md transition-transform duration-300 group-hover/thumb:scale-110">
                 <Play className="h-3 w-3 translate-x-[1px] fill-current text-ember" aria-hidden="true" />
@@ -430,6 +423,12 @@ function EpisodeRow({
             />
           </div>
         </div>
+        {episode.progress && (
+          <p className="mt-1 hidden text-sm font-semibold text-ink-muted md:block">
+            {episode.progress.completedAt ? "Watched" : "Resume"}
+          </p>
+        )}
+        </div>
         <div className="min-w-0 flex-1">
           <Link href={episodeHref} className="block">
             <span className="flex flex-wrap items-center gap-2">
@@ -440,7 +439,7 @@ function EpisodeRow({
                 <span className="shrink-0 text-sm text-ember">{formatDuration(episode.durationSec)}</span>
               )}
               {episode.progress && (
-                <span className="shrink-0 text-sm font-semibold text-ember md:ml-4 md:text-ink-muted">
+                <span className="shrink-0 text-sm font-semibold text-ember md:hidden">
                   · {episode.progress.completedAt ? "Watched" : "Resume"}
                 </span>
               )}
