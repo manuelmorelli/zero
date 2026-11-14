@@ -31,6 +31,10 @@ Questo documento è scritto per Manuel, in italiano semplice, senza termini tecn
 - **Chiavi vere spostate** (database, foto/video, email, AI) dal computer a Vercel, nel suo pannello protetto.
 - Ora si può invitare la prima persona (cancello a codice già attivo, vedi sopra).
 
+## Ancora da fare (verificato il 13 nov 2026)
+
+Elenco completo e ordinato in `94_Product_Backlog.md`, sezione "Punto della situazione". Prima di un lancio pubblico: video Hero automatici, analytics, SEO (sitemap e robots), business plan, piano infrastruttura e di lancio, crediti cloud, bottone "sostieni Zero", entità legale.
+
 ## Cose note, lasciate così per scelta
 
 - **Nessuna entità legale registrata dietro Zero**: per un gruppo chiuso di persone che inviti tu di persona il rischio è basso. Da registrare prima di aprire al pubblico vero.

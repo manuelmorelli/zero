@@ -19,6 +19,30 @@ Elenco unico di feature/modifiche prodotto raccolte in sessioni dedicate a "cosa
 
 Regola: una voce per chat. Quando una voce è finita, la spunti qui (☑). Le descrizioni dettagliate sono nel resto del documento. Le caselle ☐ del corpo sono solo descrizioni, non si spuntano.
 
+### Punto della situazione (verificato sul codice il 13 nov 2026)
+
+Sostituisce tutte le liste precedenti (le vecchie chat possono essere chiuse).
+
+**Fatto, online:** dominio su Vercel, chiavi vere su Vercel, librerie aggiornate (`npm audit`: 0 falle, la lista con "16 falle, 1 critica" era vecchia), header di sicurezza (HSTS, anti-clickjacking, ecc.; manca solo una CSP vera), cancello a codice, registrazioni chiuse, avviso sito giù (UptimeRobot), CI su GitHub, audit di sicurezza, pannello segnalazioni, piano fuga dati, accordi fornitori, porting mobile. Si può invitare la prima persona.
+
+**Prima di un lancio pubblico vero (da fare):**
+1. S27 video Hero automatici (oggi 2 ID fissi in `lib/discovery/heroVideos.ts`)
+2. S38 analytics di base (nessuno installato)
+3. S39 SEO: mancano `sitemap` e `robots` (le copertine di condivisione Journey/episodio sono fatte, profilo e Update no)
+4. S17 business plan e dossier investitori
+5. S18 infrastruttura tecnica, S19 piano di lancio
+6. S23 crediti cloud (lo fai tu, io preparo i testi)
+7. S24 bottone "sostieni Zero" (onesto: senza incasso)
+8. Entità legale vera
+
+**Quando ci sarà più traffico:** S37/S47 limite anti-abuso Ember e reset password affidabile (oggi in memoria, non regge su Vercel); S40 cache pagine più visitate; S41 indici database (Journey ha solo indici su altre tabelle, nessuno su `status`/`publishedAt`); S42 riuso immagini (URL firmati ancora da 1 ora); S31 test e2e su GitHub (a metà).
+
+**Altre voci aperte che non stavano nelle tue liste (verificare):** S28 Hero lenta a caricare (LCP, avviso in console); S45 Home da telefono senza titolo e due bottoni sopra la foto (probabilmente superata dal lavoro sulla Hero mobile, da ricontrollare); S46 note mobile/computer; D5 mobile pagina per pagina (di fatto fatto, casella da spuntare); video leggeri e compressione (in pausa per scelta); "Ingrandire il player su telefono"; messaggi a thread nel forum e forum diviso per Capitolo; S21 lista paesi pagamenti; S25 fiscal hosting; sponsor aziende e marketplace UGC.
+
+**Dopo il lancio, senza soldi:** S6 Mappa dei Momenti (costruita, spenta da interruttore), forum a thread (solo @menzioni fatte), S26 traduzioni (da decidere).
+
+**Ultimo passaggio, soldi:** S4 (deciso), S5, S7, S8, S10-S14, S21, S25, sponsor/marketplace.
+
 ### Orizzonti (decisioni del 5 e 7 ott 2026)
 
 Decisione del 7 ottobre: Zero va online 100% funzionante ma senza nessuna funzione a pagamento per gli utenti. Le Tips ai journeyer (S9) restano, sono un link esterno scelto dal journeyer, non toccano i soldi di Zero. In più, per sostenere Zero stesso: un bottone di donazione alla piattaforma (S24), collegato a un incasso reale solo quando esisterà un fiscal hosting (S25), e la richiesta di crediti cloud gratuiti a Google, Microsoft e Amazon per stare online al minor costo possibile (S23).
@@ -28,7 +52,7 @@ Decisione del 7 ottobre: Zero va online 100% funzionante ma senza nessuna funzio
 - **Post-MVP (senza soldi):** S6 (Mappa dei Momenti), ricerca semantica, trailer automatico, Percorso su Misura.
 - **Già fatto per il lancio:** S9 (Tips, tramite link esterno).
 - **Risolto (9 ott 2026):** la Privacy Policy prometteva il passaggio a pagamento di Gemini prima del lancio pubblico. Decisione di Manuel: niente spese iniziali evitabili, quella frase è stata tolta dalla Privacy Policy. S7 resta semplicemente nell'ultimo passaggio (soldi), senza scadenza legata al lancio.
-- **Da decidere:** S16 (collegare il dominio al sito, nessuna decisione presa, non spostata); S26 (tradurre il sito in altre lingue, quali e quando, nessuna decisione presa).
+- **Da decidere:** S26 (tradurre il sito in altre lingue, quali e quando, nessuna decisione presa).
 
 ### Struttura del sito (chat "struttura")
 
@@ -47,7 +71,7 @@ Decisione del 7 ottobre: Zero va online 100% funzionante ma senza nessuna funzio
 ☐ **S13.** Prodotti digitali
 ☐ **S14.** Sistema di pagamento completo (Punto 10, Post-MVP). Le Tips non ne dipendono: passano dal link esterno di S9.
 ☑ **S15.** Sicurezza account Google: verifica in due passaggi (5 ott 2026: attiva sull'account team.zerojourneys@gmail.com, con telefono come metodo principale e codici di backup conservati su carta, file dal desktop cancellato)
-☐ **S16.** Collegare zerojourneys.com a un sito
+☑ **S16.** Collegare zerojourneys.com a un sito (fatto il 10 nov 2026: dominio online su Vercel, chiavi vere spostate su Vercel, cancello a codice e registrazioni chiuse attivi dall'11 nov)
 ☐ **S17.** Punto 9: business plan e dossier investitori
 ☐ **S18.** Punto 10: infrastruttura tecnica
 ☐ **S21.** Lista paesi del sistema di pagamento per i journeyer (Post-MVP, non urgente, siamo prototipo). La sede legale di Zero non è ancora decisa. Con sede in Svizzera o a Cipro i pagamenti tra paesi diversi coprono i journeyer dei paesi supportati (lista ufficiale di 103 paesi verificata il 2026-10-05, Brasile, India e Indonesia esclusi). Altre sedi: da verificare. Quando la sede è scelta, chiedere al fornitore la lista esatta e cosa succede se un journeyer si trasferisce. Vedi `10_Monetization.md`, sezione costi di pagamento.
@@ -63,7 +87,7 @@ Decisione del 7 ottobre: Zero va online 100% funzionante ma senza nessuna funzio
 ☐ **S28.** Performance: Next.js segnala in console (avviso, non errore) che la foto di copertina della Hero è l'immagine più pesante della prima schermata (LCP) e suggerisce di darle priorità di caricamento (`loading="eager"` sull'`<Image>` di `components/landing/Hero.tsx`, vedi `https://nextjs.org/docs/app/api-reference/components/image#loading`). Segnalato il 2026-10-29 durante il lavoro di allineamento mobile. Non blocca nulla, da sistemare quando si lavora sulle performance.
 ☑ **S29.** Beta privata su invito, prima di aprire Zero a tutti. Fatto il 30 ott 2026: cancello a codice unico davanti a tutto il sito (`proxy.ts`, `lib/betaAccess.ts`, `lib/actions/betaAccess.ts`, `app/beta-access/`), si attiva impostando `BETA_ACCESS_CODE` su Vercel (in locale senza quella variabile il sito resta aperto come sempre); `DISABLE_REGISTRATION` chiude in più la creazione di nuovi account, chi non ha già un account può solo navigare e guardare, non pubblicare o caricare video.
 ☑ **S30.** Controllo automatico che il codice non si rompa, ad ogni modifica. Fatto il 30 ott 2026: `.github/workflows/ci.yml`, gira da solo su GitHub Actions a ogni push (controllo dei tipi, lint, lucchetto del design). Si affianca al blocco sul design che già esisteva da sé sul commit locale (`.githooks/pre-commit`, dal 29 set 2026).
-☐ **S31.** Test automatici che aprono il sito vero e controllano che i percorsi principali funzionino davvero (registrarsi, entrare, guardare un video, seguire, pubblicare un Journey) — non solo che il codice sia scritto bene (quello è S30), ma che si comporti bene. In corso dal 30 ott 2026, in una chat dedicata.
+☐ **S31.** Test automatici che aprono il sito vero e controllano che i percorsi principali funzionino davvero (registrarsi, entrare, guardare un video, seguire, pubblicare un Journey) — non solo che il codice sia scritto bene (quello è S30), ma che si comporti bene. Scritti e funzionanti in locale (`npm run test:e2e`, 5 percorsi) dal 30 ott 2026; manca solo collegarli a GitHub (serve un database di prova separato). Verificato il 13 nov 2026: `ci.yml` esegue solo tipi, lint e lucchetto design.
 
 ### Audit a 360 gradi (7 nov 2026)
 
