@@ -23,7 +23,7 @@ import { CoverMenu } from "@/components/journey/CoverMenu";
 import type { TimelineEpisode } from "@/lib/journey/episodeTimeline";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { NOTICE, ROW } from "@/components/ui/panel";
-import { PageTitle, SectionTitle } from "@/components/ui/heading";
+import { JourneyTitle, PageTitle, SectionTitle } from "@/components/ui/heading";
 import { cn, formatCompactNumber } from "@/lib/utils";
 import { COVER_IMAGE_QUALITY } from "@/lib/constants/image";
 
@@ -203,9 +203,9 @@ export default async function PublicJourneyPage({
               {journey.category && (
                 <p className="text-sm font-bold leading-none tracking-[0.22em] text-ember uppercase">{journey.category}</p>
               )}
-              <PageTitle as="p" className="mt-0 truncate text-3xl leading-tight text-ink">
+              <JourneyTitle className="mt-0 truncate">
                 {journey.title}
-              </PageTitle>
+              </JourneyTitle>
             </div>
 
             {/* Watch, Condividi e Forum appena sotto la copertina, allineati a destra: solo

@@ -29,6 +29,10 @@ function make(name: string, defaultTag: HeadingTag, style: string) {
 /** Titolo in cima alle pagine normali (Impostazioni, Dashboard, Messaggi, Login...). */
 export const PageTitle = make("PageTitle", "h1", "text-2xl font-extrabold tracking-tight text-ink");
 
+/** Titolo del Journey sotto la copertina (solo telefono): 27px, misura ufficiale scelta da Manuel il
+ * 2026-11-14. Intoccabile: non si ridimensiona dalle pagine, se cambia si cambia qui. */
+export const JourneyTitle = make("JourneyTitle", "p", "text-3xl font-extrabold leading-tight tracking-tight text-ink");
+
 /** Titolone delle pagine di presentazione e legali. Le parole arancioni sono sempre piene. */
 export const DisplayTitle = make("DisplayTitle", "h1", "text-5xl font-black leading-[0.9] tracking-tight text-ink sm:text-6xl");
 
