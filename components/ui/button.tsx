@@ -63,14 +63,14 @@ export function Button({ variant = "primary", href, className, children, type = 
   if (href) {
     // Gli attributi extra (onClick, aria-*, target...) valgono anche per il link.
     return (
-      <Link href={href} className={classes} {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)}>
+      <Link href={href} data-ui={`button-${variant}`} className={classes} {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)}>
         {children}
       </Link>
     );
   }
 
   return (
-    <button type={type} {...rest} className={classes}>
+    <button type={type} {...rest} data-ui={`button-${variant}`} className={classes}>
       {children}
     </button>
   );

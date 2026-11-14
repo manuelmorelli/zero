@@ -15,11 +15,11 @@ type HeadingProps = {
   children: React.ReactNode;
 };
 
-function make(defaultTag: HeadingTag, style: string) {
+function make(name: string, defaultTag: HeadingTag, style: string) {
   return function Heading({ as, className, id, children }: HeadingProps) {
     const Tag = as ?? defaultTag;
     return (
-      <Tag id={id} className={cn(style, className)}>
+      <Tag id={id} data-ui={`heading-${name}`} className={cn(style, className)}>
         {children}
       </Tag>
     );
@@ -27,20 +27,20 @@ function make(defaultTag: HeadingTag, style: string) {
 }
 
 /** Titolo in cima alle pagine normali (Impostazioni, Dashboard, Messaggi, Login...). */
-export const PageTitle = make("h1", "text-2xl font-extrabold tracking-tight text-ink");
+export const PageTitle = make("PageTitle", "h1", "text-2xl font-extrabold tracking-tight text-ink");
 
 /** Titolone delle pagine di presentazione e legali. Le parole arancioni sono sempre piene. */
-export const DisplayTitle = make("h1", "text-5xl font-black leading-[0.9] tracking-tight text-ink sm:text-6xl");
+export const DisplayTitle = make("DisplayTitle", "h1", "text-5xl font-black leading-[0.9] tracking-tight text-ink sm:text-6xl");
 
 /** Titolo che apre una sezione della pagina (Episodes, About, Most Trusted...). */
-export const SectionTitle = make("h2", "text-section font-bold tracking-tight text-ink");
+export const SectionTitle = make("SectionTitle", "h2", "text-section font-bold tracking-tight text-ink");
 
 /** Titolo di sezione arancione delle pagine di lettura (How it works, legali, Linee guida). */
-export const ReadingTitle = make("h2", "text-reading font-bold tracking-tight text-ember sm:text-reading-lg");
+export const ReadingTitle = make("ReadingTitle", "h2", "text-reading font-bold tracking-tight text-ember sm:text-reading-lg");
 
 /** Titolo dentro le card e i riquadri. */
-export const CardTitle = make("h3", "text-lg font-bold leading-tight text-ink");
+export const CardTitle = make("CardTitle", "h3", "text-lg font-bold leading-tight text-ink");
 
 /** Titolo leggero e grande di apertura, per le chat AI a schermo intero ("What shall we create
  * today?"): apposta più sottile dei titoli normali, non un errore di peso del font. */
-export const ChatWelcomeTitle = make("h1", "text-center text-3xl font-light tracking-tight text-ink sm:text-5xl");
+export const ChatWelcomeTitle = make("ChatWelcomeTitle", "h1", "text-center text-3xl font-light tracking-tight text-ink sm:text-5xl");

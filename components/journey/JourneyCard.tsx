@@ -1,10 +1,7 @@
-import { Play, ShieldCheck } from "lucide-react";
+import { Play } from "lucide-react";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
-import { CreatorProfileLink } from "@/components/journey/CreatorProfileLink";
-import { cn } from "@/lib/utils";
-import { Avatar } from "@/components/ui/avatar";
 import { CardInfoRow } from "@/components/journey/CardInfoRow";
-import { CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
+import { CoverChip, CoverFrame, CoverPlay } from "@/components/ui/cover-card";
 
 /** Subset of Journey (+ Creator) fields from prisma/schema.prisma needed to render the card. */
 export type JourneyCardData = {
@@ -33,8 +30,6 @@ type JourneyCardProps = {
   badge?: React.ReactNode;
   /** Contenuto extra sotto la card (es. conteggio episodi in "Most Trusted", giorni rimasti in Discovery). */
   footer?: React.ReactNode;
-  /** Pillola categoria e titolo escono dalla foto e il titolo va sotto, accanto al creator. */
-  titleBelow?: boolean;
 };
 
 // Il link fa parte del componente stesso (dentro CoverFrame): un punto della UI che dimentica di
@@ -42,7 +37,7 @@ type JourneyCardProps = {
 // sotto la card si usa `footer`, mai un secondo <Link> attorno (sarebbe un <a> annidato).
 //
 // Formato ufficiale delle card Journey (2026-11-09): orizzontale 16:9, come i video di YouTube.
-export function JourneyCard({ journey, className, badge, footer, titleBelow }: JourneyCardProps) {
+export function JourneyCard({ journey, className, badge, footer }: JourneyCardProps) {
   const { id, title, coverUrl, category, creator, journeyScore, episodeCount } = journey;
 
   return (
@@ -61,32 +56,11 @@ export function JourneyCard({ journey, className, badge, footer, titleBelow }: J
         }
         overlay={
           <>
-            {category && <CoverChip className={cn("px-2 py-0.5", titleBelow ? "-mb-2.5 -ml-2 hidden md:block md:w-fit" : "-ml-2 mt-2")}>{category}</CoverChip>}
-            <CoverTitle className={titleBelow ? "hidden" : undefined}>{title}</CoverTitle>
-            {episodeCount !== undefined && (
-              <p className={cn("mt-1 text-sm", titleBelow && "hidden")}>
-                {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
-              </p>
-            )}
+            {category && <CoverChip className="-mb-2.5 -ml-2 hidden px-2 py-0.5 md:block md:w-fit">{category}</CoverChip>}
           </>
         }
         below={
-          titleBelow ? (
-            <CardInfoRow title={title} episodeCount={episodeCount} creator={{ userId: creator.userId, name: creator.displayName, avatarUrl: creator.avatarUrl }} score={journeyScore} />
-          ) : (
-            <div className="flex items-center justify-between gap-2 text-sm">
-              <CreatorProfileLink userId={creator.userId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-                <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="xs" />
-                <span className="truncate">{creator.displayName}</span>
-              </CreatorProfileLink>
-              {journeyScore !== undefined && (
-                <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
-                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                  {journeyScore}
-                </span>
-              )}
-            </div>
-          )
+          <CardInfoRow title={title} episodeCount={episodeCount} creator={{ userId: creator.userId, name: creator.displayName, avatarUrl: creator.avatarUrl }} score={journeyScore} />
         }
       />
       {footer}

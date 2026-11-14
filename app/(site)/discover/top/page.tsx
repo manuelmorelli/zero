@@ -7,18 +7,21 @@ import { getTopJourneys } from "@/lib/discovery/topJourneys";
 import { DEMO_TOP_JOURNEYS } from "@/lib/demo/demoContent";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { CARD_GRID } from "@/components/ui/cover-card";
+import { LoadMoreLink } from "@/components/common/LoadMoreLink";
+import { parseShown, splitPage } from "@/lib/discovery/pagination";
 
 export const metadata = { title: "Most Trusted | Zero" };
 
-export default async function TopJourneysPage() {
+export default async function TopJourneysPage({ searchParams }: { searchParams: Promise<{ shown?: string }> }) {
+  const shown = parseShown((await searchParams).shown);
   const session = await getViewerSession();
   const userId = session?.user.id ?? null;
   const interests = userId
     ? (await prisma.user.findUnique({ where: { id: userId }, select: { interests: true } }))?.interests ?? []
     : [];
 
-  const journeys = await getTopJourneys({ limit: 60, interests });
-  const displayed = journeys.length > 0 ? journeys : DEMO_TOP_JOURNEYS;
+  const journeys = await getTopJourneys({ limit: shown + 1, interests });
+  const { visible: displayed, hasMore } = splitPage(journeys.length > 0 ? journeys : DEMO_TOP_JOURNEYS, shown);
 
   return (
     <main>
@@ -47,6 +50,7 @@ export default async function TopJourneysPage() {
             </li>
           ))}
         </ul>
+        <LoadMoreLink href="/discover/top" shown={shown} hasMore={hasMore} />
       </div>
     </main>
   );

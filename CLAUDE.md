@@ -175,3 +175,11 @@ Manuel specifica sempre se un lavoro è per **mobile** (telefono) o per **comput
 - Mai toccare l'altra versione "già che ci sono", nemmeno per un ritocco (esempio: il commit `bf8d5e7` ha tolto la categoria dal titolo mobile durante un lavoro sul computer).
 
 Rete di sicurezza automatica prima di ogni commit: `check:desktop` (1440px) e `check:mobile` (390px). Mai usare `ALLOW_DESKTOP_CHANGE=1` o `ALLOW_MOBILE_CHANGE=1` senza aver mostrato l'elenco a Manuel e avuto il suo ok esplicito. Limite: guardano solo i file `.tsx`, non `app/globals.css` né `lib/` (es. `lib/sand/sandScene.ts` vale per entrambi): lì il controllo è a mano.
+
+## Card: un solo aspetto in tutto il sito
+
+`JourneyCard` e `VideoCard` non hanno opzioni di stile: l'aspetto sta dentro il componente ed è identico in ogni pagina. Una pagina passa solo dati, `badge`, `footer` e `CARD_ROW_ITEM` (il lucchetto, regola `cardStyle`, blocca il resto). Per cambiare le card si cambia il componente. Ogni volta che si tocca una pagina con card, confrontarla con la Home prima di dire "fatto".
+
+## Coerenza di tutto il sito (automatica)
+
+Tre lucchetti prima di ogni commit: `check:design` (niente stile a mano, pagine senza aspetto proprio, card senza opzioni), `check:consistency` (con il sito acceso legge ogni pagina su telefono e computer e blocca se un pezzo ufficiale `data-ui` appare in un modo nuovo; elenco delle diversità già note in `scripts/consistency-baseline.json`, che non deve crescere) e le isolazioni desktop/mobile. Ogni nuovo pezzo condiviso in `components/ui/` deve portare `data-ui="nome"` per essere controllato. Ridurre le diversità note è lavoro in corso: quando una pagina viene riportata ai pezzi ufficiali, rigenerare la baseline con `--write-baseline`.

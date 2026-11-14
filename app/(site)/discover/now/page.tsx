@@ -4,12 +4,15 @@ import { JourneyCard } from "@/components/journey/JourneyCard";
 import { getDiscoveringNowJourneys } from "@/lib/discovery/discoveringNow";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { CARD_GRID } from "@/components/ui/cover-card";
+import { LoadMoreLink } from "@/components/common/LoadMoreLink";
+import { parseShown, splitPage } from "@/lib/discovery/pagination";
 import { NOTICE } from "@/components/ui/panel";
 
 export const metadata = { title: "Discovering Now | Zero" };
 
-export default async function DiscoveringNowPage() {
-  const journeys = await getDiscoveringNowJourneys(60);
+export default async function DiscoveringNowPage({ searchParams }: { searchParams: Promise<{ shown?: string }> }) {
+  const shown = parseShown((await searchParams).shown);
+  const { visible: journeys, hasMore } = splitPage(await getDiscoveringNowJourneys(shown + 1), shown);
 
   return (
     <main>
@@ -48,6 +51,7 @@ export default async function DiscoveringNowPage() {
             ))}
           </ul>
         )}
+        <LoadMoreLink href="/discover/now" shown={shown} hasMore={hasMore} />
       </div>
     </main>
   );

@@ -1,10 +1,7 @@
-import { Play, ShieldCheck } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Avatar } from "@/components/ui/avatar";
+import { Play } from "lucide-react";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
-import { CreatorProfileLink } from "@/components/journey/CreatorProfileLink";
 import { CardInfoRow } from "@/components/journey/CardInfoRow";
-import { CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
+import { CoverChip, CoverFrame, CoverPlay } from "@/components/ui/cover-card";
 
 /** Solo i campi che la card usa davvero: così può mostrare sia un LatestVideoItem
  * (lib/discovery/latestVideos.ts) sia un EpisodeMomentSearchItem (lib/search/searchEpisodeMoments.ts)
@@ -26,13 +23,11 @@ type VideoCardProps = {
   className?: string;
   /** Contenuto extra sotto la card (es. il minuto e il motivo di un risultato della ricerca per senso). */
   footer?: React.ReactNode;
-  /** Pillola categoria e titolo escono dalla foto e il titolo va sotto, accanto al creator. */
-  titleBelow?: boolean;
 };
 
 /** Card di un episodio (formato ufficiale 21A: orizzontale 4:3, quattro per riga): copertina
  * del Journey come anteprima, link diretto all'episodio. */
-export function VideoCard({ video, className, footer, titleBelow }: VideoCardProps) {
+export function VideoCard({ video, className, footer }: VideoCardProps) {
   const { journeyId, episodeId, title, coverUrl, category, creatorName, creatorAvatarUrl, creatorUserId, journeyScore } = video;
 
   return (
@@ -50,27 +45,11 @@ export function VideoCard({ video, className, footer, titleBelow }: VideoCardPro
         }
         overlay={
           <>
-            {category && <CoverChip className={cn("px-2 py-0.5", titleBelow ? "-mb-2.5 -ml-2 hidden md:block md:w-fit" : "-ml-2 mt-2")}>{category}</CoverChip>}
-            <CoverTitle className={titleBelow ? "hidden" : undefined}>{title}</CoverTitle>
+            {category && <CoverChip className="-mb-2.5 -ml-2 hidden px-2 py-0.5 md:block md:w-fit">{category}</CoverChip>}
           </>
         }
         below={
-          titleBelow ? (
-            <CardInfoRow title={title} creator={{ userId: creatorUserId, name: creatorName, avatarUrl: creatorAvatarUrl }} score={journeyScore} />
-          ) : (
-            <div className="flex items-center justify-between gap-2 text-sm">
-              <CreatorProfileLink userId={creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-                <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" />
-                <span className="truncate">{creatorName}</span>
-              </CreatorProfileLink>
-              {journeyScore !== undefined && (
-                <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
-                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                  {journeyScore}
-                </span>
-              )}
-            </div>
-          )
+          <CardInfoRow title={title} creator={{ userId: creatorUserId, name: creatorName, avatarUrl: creatorAvatarUrl }} score={journeyScore} />
         }
       />
       {footer}

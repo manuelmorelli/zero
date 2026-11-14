@@ -16,3 +16,15 @@ node scripts/check-desktop-isolation.mjs || exit 1
 # computer: il telefono non deve cambiare. Vedi scripts/check-mobile-isolation.mjs.
 # Se il cambiamento sul telefono è voluto (confermato con Manuel): ALLOW_MOBILE_CHANGE=1 git commit ...
 node scripts/check-mobile-isolation.mjs || exit 1
+
+# Lucchetto "ogni pezzo è uguale in tutto il sito": legge come sono davvero disegnati card, bottoni,
+# titoli, riquadri e pillole in tutte le pagine (telefono e computer) e blocca il commit se un pezzo
+# appare in un modo nuovo. Serve il sito acceso (npm run dev): se è spento avvisa e non blocca.
+# Vedi scripts/check-consistency.mjs. Se la diversità è voluta: node scripts/check-consistency.mjs --write-baseline
+node scripts/check-consistency.mjs
+status=$?
+if [ "$status" = "2" ]; then
+  echo "ATTENZIONE: controllo di coerenza NON eseguito (sito spento). Avvia npm run dev e lancia npm run check:consistency prima di fare push."
+elif [ "$status" != "0" ]; then
+  exit 1
+fi

@@ -51,7 +51,7 @@ export async function getTopJourneys({
         id: { notIn: excludeJourneyIds },
         ...(categories ? { category: { in: categories } } : {}),
       },
-      take: TOP_CANDIDATES,
+      take: Math.max(TOP_CANDIDATES, limit),
       orderBy: rankingUnlocked ? [{ journeyScore: "desc" }, { publishedAt: "desc" }] : { publishedAt: "desc" },
       include: {
         creator: { include: { user: { select: { avatarUrl: true, _count: { select: { followers: true } } } } } },

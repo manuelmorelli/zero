@@ -134,6 +134,8 @@ const RULES = {
   easing: `Curva di movimento diversa da quella approvata: usa sempre ${APPROVED_EASE} (vedi docs/21_Motion_Guidelines.md).`,
   buttonRaw: "Bottone <button> scritto a mano fuori da components/ui: usa Button/IconButton/TextButton. Se serve un pezzo nuovo (es. Trusty, Follow), costruiscilo DENTRO components/ui con Button, mai con un <button> proprio.",
   sharedOverride: "Una pagina cambia da sola la misura o la forma di un pezzo condiviso (padding, altezza, larghezza, testo, angoli): la misura sta nel pezzo, non nella pagina. Se serve una misura diversa, aggiungi una variante al pezzo stesso, così vale ovunque.",
+  cardStyle: "Una pagina cambia l'aspetto di JourneyCard/VideoCard: l'aspetto è unico e sta dentro la card, uguale in tutto il sito. Una pagina passa solo dati, badge, footer e CARD_ROW_ITEM. Per cambiare le card si cambia il componente, così cambia ovunque.",
+  pageStyle: "Una pagina scrive l'aspetto a mano (testo, font, colore, bordo, angoli, ombra): l'aspetto sta solo nei pezzi di components/ui, la pagina li usa. Se manca il pezzo, si aggiunge a components/ui così vale per tutto il sito.",
   cardNew: "Nuovo componente card: le card sono poche e fisse (JourneyCard, VideoCard, ContentCard...). Estendi una esistente invece di crearne un’altra; se è davvero nuova, chiedi a Manuel e aggiungila a scripts/design-debt.json.",
   duration: `Durata fuori dalle fasce della Regola di Movimento (${DURATION_BANDS.map((b) => `${b.name} ${b.min}-${b.max}ms`).join(", ")}): vedi docs/21_Motion_Guidelines.md.`,
 };
@@ -256,7 +258,9 @@ function checkText(text, report, node) {
 const DEBT_PATH = path.join(ROOT, "scripts/design-debt.json");
 const DEBT = fs.existsSync(DEBT_PATH) ? JSON.parse(fs.readFileSync(DEBT_PATH, "utf8")) : {};
 const WRITE_DEBT = process.argv.includes("--write-debt");
-const debtFound = { buttonRaw: new Set(), sharedOverride: new Set(), cardNew: new Set() };
+const debtFound = { buttonRaw: new Set(), sharedOverride: new Set(), cardNew: new Set(), pageStyle: new Set() };
+/** Classi che danno l'aspetto (testo, font, colore, bordo, angoli, ombra): vietate dentro le pagine. */
+const PAGE_LOOK = /^(text-(sm|base|lg|xl|\dxl|dxl|section|reading|reading-lg|ink|ink-muted|ink-faint|ember|danger|on-photo|center|left|right)|font-.+|leading-.+|tracking-.+|uppercase|italic|bg-.+|border(-.+)?|rounded(-.+)?|shadow(-.+)?|ring(-.+)?)$/;
 const SHARED_SIZED = new Set(["Button", "ButtonPrimary", "ButtonSecondary", "ButtonDanger", "IconButton", "TextButton", "FollowButton", "TrustyButton", "CoverFrame"]);
 const SIZE_OVERRIDE = /^((p|px|py|pt|pb|pl|pr|h|w|min-h|min-w|max-h|max-w|size)-.+|rounded(-.+)?|text-(sm|base|lg|xl|dxl)|font-(medium|semibold|bold|extrabold|black))$/;
 const reportDebt = (rule, rel, node, detail, report) => {
@@ -306,6 +310,22 @@ for (const { file, textOnly } of [...tsxFiles, ...libFiles]) {
         }
       }
       for (const [rule, detail] of checkClasses(cls, ctx)) report(rule, node, detail);
+      // Le card Journey/Video hanno UN solo aspetto, uguale in ogni pagina: una pagina può passare
+      // solo i dati, il badge, il footer e la misura di riga (CARD_ROW_ITEM). Nessuna opzione di stile.
+      if (tag === "JourneyCard" || tag === "VideoCard") {
+        const CARD_ALLOWED = new Set(["key", "journey", "video", "badge", "footer", "className"]);
+        for (const attr of node.attributes.properties) {
+          if (!ts.isJsxAttribute(attr)) continue;
+          const name = attr.name.getText(sf);
+          if (!CARD_ALLOWED.has(name)) report("cardStyle", attr, `<${tag} ${name}>`);
+          if (name === "className" && attr.initializer && !/\bCARD_ROW_ITEM\b/.test(attr.initializer.getText(sf))) report("cardStyle", attr, `<${tag}> ${cls}`);
+        }
+      }
+      // Nelle pagine (app/) l'aspetto non si scrive: testi, font, colori, bordi, angoli e ombre vivono
+      // solo nei pezzi di components/ui. La pagina usa i pezzi e decide al massimo la disposizione.
+      if (!textOnly && rel.startsWith("app/") && cls.split(/\s+/).some((c) => c && PAGE_LOOK.test(stripVariants(c)))) {
+        reportDebt("pageStyle", rel, node, `<${tag}> ${cls}`, report);
+      }
       if (tag === "button") reportDebt("buttonRaw", rel, node, `<button> ${cls}`, report);
       if (SHARED_SIZED.has(tag) && cls.split(/s+/).some((c) => c && SIZE_OVERRIDE.test(stripVariants(c)))) reportDebt("sharedOverride", rel, node, `<${tag}> ${cls}`, report);
 

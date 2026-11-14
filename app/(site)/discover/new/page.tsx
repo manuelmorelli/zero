@@ -6,17 +6,20 @@ import { prisma } from "@/lib/prisma";
 import { getNewJourneys } from "@/lib/discovery/newJourneys";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { CARD_GRID } from "@/components/ui/cover-card";
+import { LoadMoreLink } from "@/components/common/LoadMoreLink";
+import { parseShown, splitPage } from "@/lib/discovery/pagination";
 
 export const metadata = { title: "New Journeys | Zero" };
 
-export default async function NewJourneysPage() {
+export default async function NewJourneysPage({ searchParams }: { searchParams: Promise<{ shown?: string }> }) {
+  const shown = parseShown((await searchParams).shown);
   const session = await getViewerSession();
   const userId = session?.user.id ?? null;
   const interests = userId
     ? (await prisma.user.findUnique({ where: { id: userId }, select: { interests: true } }))?.interests ?? []
     : [];
 
-  const journeys = await getNewJourneys([], interests, 60);
+  const { visible: journeys, hasMore } = splitPage(await getNewJourneys([], interests, shown + 1), shown);
 
   return (
     <main>
@@ -35,6 +38,7 @@ export default async function NewJourneysPage() {
             </li>
           ))}
         </ul>
+        <LoadMoreLink href="/discover/new" shown={shown} hasMore={hasMore} />
       </div>
     </main>
   );

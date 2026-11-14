@@ -50,11 +50,9 @@ export default async function CustomPathPage({
                 <span className="mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-ember-line bg-ember-soft text-sm font-semibold text-ember">
                   {index + 1}
                 </span>
-                <VideoCard
-                  video={step}
-                  className="w-full max-w-sm"
-                  footer={<p className="mt-2 text-sm text-ink-muted">{step.reason}</p>}
-                />
+                <div className="w-full max-w-sm">
+                  <VideoCard video={step} footer={<p className="mt-2 text-sm text-ink-muted">{step.reason}</p>} />
+                </div>
               </div>
             ))}
           </div>

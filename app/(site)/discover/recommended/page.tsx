@@ -7,18 +7,21 @@ import { getRecommendedJourneys } from "@/lib/discovery/recommendedJourneys";
 import { DEMO_JOURNEYS } from "@/lib/demo/demoJourneys";
 import { PAGE_SPACING, PAGE_WIDTH } from "@/components/ui/page-container";
 import { CARD_GRID } from "@/components/ui/cover-card";
+import { LoadMoreLink } from "@/components/common/LoadMoreLink";
+import { parseShown, splitPage } from "@/lib/discovery/pagination";
 
 export const metadata = { title: "Recommended for You | Zero" };
 
-export default async function RecommendedJourneysPage() {
+export default async function RecommendedJourneysPage({ searchParams }: { searchParams: Promise<{ shown?: string }> }) {
+  const shown = parseShown((await searchParams).shown);
   const session = await getViewerSession();
   const userId = session?.user.id ?? null;
   const interests = userId
     ? (await prisma.user.findUnique({ where: { id: userId }, select: { interests: true } }))?.interests ?? []
     : [];
 
-  const journeys = await getRecommendedJourneys({ userId, interests, limit: 60 });
-  const displayed = journeys.length > 0 ? journeys : DEMO_JOURNEYS;
+  const journeys = await getRecommendedJourneys({ userId, interests, limit: shown + 1 });
+  const { visible: displayed, hasMore } = splitPage(journeys.length > 0 ? journeys : DEMO_JOURNEYS, shown);
 
   return (
     <main>
@@ -37,6 +40,7 @@ export default async function RecommendedJourneysPage() {
             </li>
           ))}
         </ul>
+        <LoadMoreLink href="/discover/recommended" shown={shown} hasMore={hasMore} />
       </div>
     </main>
   );

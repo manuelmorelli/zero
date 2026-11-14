@@ -23,7 +23,7 @@ type BoxProps = React.HTMLAttributes<HTMLElement> & {
 
 /** Riquadro contenitore: raccoglie un gruppo di cose (impostazioni, pannelli Dashboard...). */
 export function Panel({ as: Tag = "div", accent, className, ...rest }: BoxProps) {
-  return <Tag className={cn(accent ? PANEL_ACCENT : PANEL, className)} {...rest} />;
+  return <Tag data-ui={accent ? "panel-accent" : "panel"} className={cn(accent ? PANEL_ACCENT : PANEL, className)} {...rest} />;
 }
 
 /** Messaggio informativo: frase grigia quando non c'è niente da mostrare o per un avviso. */

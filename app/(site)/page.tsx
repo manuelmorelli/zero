@@ -229,13 +229,13 @@ function DiscoveringNow({ journeys }: { journeys: DiscoveringNowItem[] }) {
         <HorizontalScrollRow
           icon={<Compass className="h-6 w-6" aria-hidden="true" />}
           title="Discovering Now"
+          viewAllHref="/discover/now"
           subtitle="Brand new Journeys, shown to everyone, not just people who already follow this topic."
         >
           {journeys.map((journey) => (
             <JourneyCard
               key={journey.id}
               className={CARD_ROW_ITEM.journey}
-              titleBelow
               journey={{
                 id: journey.id,
                 title: journey.title,
@@ -268,10 +268,11 @@ function LatestVideos({ videos }: { videos: Awaited<ReturnType<typeof getLatestV
         <HorizontalScrollRow
           icon={<VideoIcon className="h-6 w-6" aria-hidden="true" />}
           title="Latest Videos"
+          viewAllHref="/discover/latest-videos"
           subtitle="New episodes just published across Zero."
         >
           {videos.map((video) => (
-            <VideoCard key={video.episodeId} video={video} className={CARD_ROW_ITEM.episode} titleBelow />
+            <VideoCard key={video.episodeId} video={video} className={CARD_ROW_ITEM.episode} />
           ))}
         </HorizontalScrollRow>
       </Reveal>
@@ -290,13 +291,13 @@ function TopJourneys({ journeys }: { journeys: Awaited<ReturnType<typeof getTopJ
         <HorizontalScrollRow
           icon={<Star className="h-6 w-6 fill-current" aria-hidden="true" />}
           title="Most Trusted"
+          viewAllHref="/discover/top"
           subtitle="Timeless stories that continue to inspire."
         >
           {journeys.map((journey) => (
             <JourneyCard
               key={journey.id}
               className={CARD_ROW_ITEM.journey}
-              titleBelow
               journey={{
                 id: journey.id,
                 title: journey.title,
@@ -325,10 +326,11 @@ function RecommendedJourneys({ journeys }: { journeys: JourneyCardData[] }) {
         <HorizontalScrollRow
           icon={<Sparkles className="h-6 w-6" aria-hidden="true" />}
           title="Recommended for You"
+          viewAllHref="/discover/recommended"
           subtitle="Picked based on who you follow."
         >
           {journeys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} className={CARD_ROW_ITEM.journey} titleBelow />
+            <JourneyCard key={journey.id} journey={journey} className={CARD_ROW_ITEM.journey} />
           ))}
         </HorizontalScrollRow>
       </Reveal>

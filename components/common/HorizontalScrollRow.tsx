@@ -13,6 +13,8 @@ type HorizontalScrollRowProps = {
   icon?: React.ReactNode;
   /** Rende il titolo un link (es. categoria -> pagina dedicata con tutti i Journey). */
   titleHref?: string;
+  /** Pagina con tutto l'elenco: mostra "View All" accanto al titolo. */
+  viewAllHref?: string;
   /** Vedi SectionHeading: scarto facoltativo di grandezza solo per questo titolo. */
   titleClassName?: string;
   children: React.ReactNode;
@@ -22,7 +24,7 @@ type HorizontalScrollRowProps = {
  * Riga di card che scorre solo lateralmente, con frecce cliccabili a sinistra/destra —
  * mai in automatico. Le frecce compaiono solo quando c'è altro da vedere in quella direzione.
  */
-export function HorizontalScrollRow({ id, title, subtitle, icon, titleHref, titleClassName, children }: HorizontalScrollRowProps) {
+export function HorizontalScrollRow({ id, title, subtitle, icon, titleHref, viewAllHref, titleClassName, children }: HorizontalScrollRowProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -54,7 +56,7 @@ export function HorizontalScrollRow({ id, title, subtitle, icon, titleHref, titl
 
   return (
     <section id={id} className="scroll-mt-24">
-      <SectionHeading icon={icon} title={title} titleHref={titleHref} subtitle={subtitle} titleClassName={titleClassName} />
+      <SectionHeading icon={icon} title={title} titleHref={titleHref} viewAllHref={viewAllHref} subtitle={subtitle} titleClassName={titleClassName} />
 
       <div className="relative mt-4">
         {/* Il contenitore scorrevole taglia tutto ciò che esce dai suoi bordi: il padding dà spazio

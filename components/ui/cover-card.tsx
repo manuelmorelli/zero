@@ -141,7 +141,7 @@ export function CoverFrame({
   overlayClassName,
 }: CoverFrameProps) {
   return (
-    <div className={cn("group relative transition-transform duration-300 hover:-translate-y-1", className)}>
+    <div data-ui={`card-${format}`} className={cn("group relative transition-transform duration-300 hover:-translate-y-1", className)}>
       <Link href={href} className="block">
         <div
           className={cn(
@@ -174,7 +174,7 @@ export function CoverFrame({
           {center && <div className="absolute inset-0 grid place-items-center">{center}</div>}
           {overlay && <div className={cn("absolute inset-x-0 bottom-0 p-3 text-on-photo", overlayClassName)}>{overlay}</div>}
         </div>
-        {below && <div className={cn("mt-3", belowClassName)}>{below}</div>}
+        {below && <div data-part="card-below" className={cn("mt-3", belowClassName)}>{below}</div>}
       </Link>
       {menu && (
         <div className="absolute right-2 top-2 z-10 max-md:opacity-100 transition-opacity duration-200 md:opacity-0 md:focus-within:opacity-100 md:group-hover:opacity-100">
@@ -189,7 +189,7 @@ export function CoverFrame({
  * computer e telefono: vive qui una volta sola, ogni pillola del sito lo eredita. */
 export function CoverChip({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <span className={cn("inline-block rounded-full border border-ember-line bg-scrim px-2 py-0.5 text-sm font-semibold text-on-photo backdrop-blur-md", className)}>
+    <span data-ui="cover-chip" className={cn("inline-block rounded-full border border-ember-line bg-scrim px-2 py-0.5 text-sm font-semibold text-on-photo backdrop-blur-md", className)}>
       {children}
     </span>
   );
