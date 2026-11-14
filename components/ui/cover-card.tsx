@@ -118,6 +118,8 @@ type CoverFrameProps = {
    * testo sopra la foto (es. Activities da desktop, 2026-11-04) senza toglierla dove serve ancora
    * (es. la stessa card su mobile). Di base sempre visibile quando c'è un overlay, come prima. */
   scrimClassName?: string;
+  /** Scarto facoltativo sul contenitore di `overlay` (es. margine interno più stretto solo nelle card del profilo). */
+  overlayClassName?: string;
 };
 
 export function CoverFrame({
@@ -136,6 +138,7 @@ export function CoverFrame({
   className,
   frameClassName,
   scrimClassName,
+  overlayClassName,
 }: CoverFrameProps) {
   return (
     <div className={cn("group relative transition-transform duration-300 hover:-translate-y-1", className)}>
@@ -169,7 +172,7 @@ export function CoverFrame({
           {topLeft && <div className="absolute left-2.5 right-2.5 top-2.5">{topLeft}</div>}
           {topRight && <div className="absolute right-2.5 top-2.5 z-10">{topRight}</div>}
           {center && <div className="absolute inset-0 grid place-items-center">{center}</div>}
-          {overlay && <div className="absolute inset-x-0 bottom-0 p-3 text-on-photo">{overlay}</div>}
+          {overlay && <div className={cn("absolute inset-x-0 bottom-0 p-3 text-on-photo", overlayClassName)}>{overlay}</div>}
         </div>
         {below && <div className={cn("mt-3", belowClassName)}>{below}</div>}
       </Link>

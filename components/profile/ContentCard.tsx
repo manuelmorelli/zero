@@ -65,11 +65,12 @@ export function ContentCard({
       }
       center={
         isVideo ? (
-          <CoverPlay>
+          <CoverPlay className="max-md:hidden">
             <Play className="h-4 w-4 translate-x-px fill-current" aria-hidden="true" />
           </CoverPlay>
         ) : undefined
       }
+      overlayClassName="max-md:p-1.5"
       belowClassName={creator ? "max-md:hidden" : "hidden"}
       below={
         creator ? (
@@ -78,20 +79,20 @@ export function ContentCard({
       }
       overlay={
         <>
-          {category && <CoverChip className="-ml-2 md:-mb-2.5 md:block md:w-fit">{category}</CoverChip>}
-          <div className={cn("mt-0.5 flex items-end justify-between gap-2", creator && "md:hidden")}>
-            <CoverTitle className="mt-0 min-w-0">{title}</CoverTitle>
-            {trust !== undefined && (
-              <span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold text-ember">
-                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                {trust > 0 ? trust : null}
-              </span>
-            )}
-          </div>
-          {episodeCount !== undefined && (
-            <p className={cn("mt-1 text-sm", creator && "md:hidden")}>
-              {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
-            </p>
+          {category && <CoverChip className="-ml-1 md:-ml-2 md:-mb-2.5 md:block md:w-fit">{category}</CoverChip>}
+          <CoverTitle className={cn("mt-0", creator && "md:hidden")}>{title}</CoverTitle>
+          {(episodeCount !== undefined || trust !== undefined) && (
+            <div className={cn("flex items-end justify-between gap-2 text-sm", creator && "md:hidden")}>
+              <p>
+                {episodeCount !== undefined && `${episodeCount} ${episodeCount === 1 ? "episode" : "episodes"}`}
+              </p>
+              {trust !== undefined && (
+                <span className="inline-flex shrink-0 items-center gap-1 font-bold text-ember">
+                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                  {trust > 0 ? trust : null}
+                </span>
+              )}
+            </div>
           )}
         </>
       }

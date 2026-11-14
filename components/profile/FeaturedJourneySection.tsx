@@ -41,6 +41,7 @@ export function FeaturedJourneySection({ journey, episodeCount, creator, inGrid 
           In Progress
         </CoverChip>
       }
+      overlayClassName="max-md:p-1.5"
       belowClassName={creator ? "max-md:hidden" : "hidden"}
       below={
         creator ? (
@@ -50,13 +51,13 @@ export function FeaturedJourneySection({ journey, episodeCount, creator, inGrid 
       overlay={
         <>
           {journey.category && (
-            <CoverChip className="-ml-2 mt-2 bg-overlay-soft px-2 py-0.5 normal-case tracking-normal md:-mb-2.5 md:mt-0 md:block md:w-fit md:bg-scrim">
+            <CoverChip className="-ml-1 mt-0.5 bg-overlay-soft px-2 py-0.5 normal-case tracking-normal md:-ml-2 md:-mb-2.5 md:mt-0 md:block md:w-fit md:bg-scrim">
               {journey.category}
             </CoverChip>
           )}
-          <CoverTitle className={cn(creator && "md:hidden")}>{journey.title}</CoverTitle>
+          <CoverTitle className={cn("max-md:mt-0", creator && "md:hidden")}>{journey.title}</CoverTitle>
           {episodeCount !== undefined && (
-            <p className={cn("mt-1 text-sm", creator && "md:hidden")}>
+            <p className={cn("mt-1 text-sm max-md:mt-0", creator && "md:hidden")}>
               {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
             </p>
           )}

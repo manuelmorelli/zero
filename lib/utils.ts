@@ -1,5 +1,10 @@
 import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+/** Le misure di testo su misura (globals.css) vanno dichiarate qui: senza, tailwind-merge le scambia per colori e cancella il colore del testo o la misura vera. */
+const twMerge = extendTailwindMerge({
+  extend: { classGroups: { "font-size": [{ text: ["card-title", "section"] }] } },
+});
 
 /** Unisce classi Tailwind condizionali risolvendo i conflitti (usato dai componenti shadcn/ui in components/ui/). */
 export function cn(...inputs: ClassValue[]) {

@@ -22,7 +22,7 @@ export function CardInfoRow({
   return (
     <div className="-mt-2.5 flex items-center justify-between gap-2 text-sm">
       <div className="min-w-0 flex-1 self-start">
-        <CardTitle className="truncate text-base md:text-card-title">{title}</CardTitle>
+        <CardTitle className="truncate text-card-title">{title}</CardTitle>
         {episodeCount !== undefined && (
           <p className="text-sm leading-tight text-ink-muted">
             {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
@@ -31,7 +31,7 @@ export function CardInfoRow({
       </div>
       <CreatorProfileLink userId={creator.userId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
         <Avatar name={creator.name} avatarUrl={creator.avatarUrl} size="xs" className="h-10 w-10" />
-        <span className="truncate sr-only md:not-sr-only">{creator.name}</span>
+        <span className="truncate">{creator.name}</span>
       </CreatorProfileLink>
       {score !== undefined && (
         <span className="flex shrink-0 items-center gap-1 font-bold text-ember">

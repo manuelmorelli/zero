@@ -44,7 +44,7 @@ export function VideoCard({ video, className, footer, titleBelow }: VideoCardPro
         imageAlt={title}
         topLeft={<CategoryIcon category={category} />}
         center={
-          <CoverPlay>
+          <CoverPlay className="max-md:hidden">
             <Play className="h-4 w-4 translate-x-px fill-current" aria-hidden="true" />
           </CoverPlay>
         }
