@@ -105,6 +105,8 @@ type CoverFrameProps = {
   overlay?: React.ReactNode;
   /** Testo sotto la foto, fuori dall'immagine (card persona). */
   below?: React.ReactNode;
+  /** Scarto facoltativo sul contenitore di `below` (es. mostrarlo solo da computer). */
+  belowClassName?: string;
   /** Azioni del proprietario in alto a destra, FUORI dal link (un bottone non può stare in un <a>). */
   menu?: React.ReactNode;
   className?: string;
@@ -129,6 +131,7 @@ export function CoverFrame({
   center,
   overlay,
   below,
+  belowClassName,
   menu,
   className,
   frameClassName,
@@ -168,7 +171,7 @@ export function CoverFrame({
           {center && <div className="absolute inset-0 grid place-items-center">{center}</div>}
           {overlay && <div className="absolute inset-x-0 bottom-0 p-3 text-on-photo">{overlay}</div>}
         </div>
-        {below && <div className="mt-3">{below}</div>}
+        {below && <div className={cn("mt-3", belowClassName)}>{below}</div>}
       </Link>
       {menu && (
         <div className="absolute right-2 top-2 z-10 max-md:opacity-100 transition-opacity duration-200 md:opacity-0 md:focus-within:opacity-100 md:group-hover:opacity-100">

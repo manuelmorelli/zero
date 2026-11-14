@@ -3,7 +3,7 @@ import { CategoryIcon } from "@/components/journey/CategoryIcon";
 import { CreatorProfileLink } from "@/components/journey/CreatorProfileLink";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
-import { CardTitle } from "@/components/ui/heading";
+import { CardInfoRow } from "@/components/journey/CardInfoRow";
 import { CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
 
 /** Subset of Journey (+ Creator) fields from prisma/schema.prisma needed to render the card. */
@@ -71,28 +71,22 @@ export function JourneyCard({ journey, className, badge, footer, titleBelow }: J
           </>
         }
         below={
-          <div className={cn("flex items-center justify-between gap-2 text-sm", titleBelow && "-mt-2.5")}>
-            {titleBelow && (
-              <div className="min-w-0 flex-1 self-start">
-                <CardTitle className="truncate text-base md:text-card-title">{title}</CardTitle>
-                {episodeCount !== undefined && (
-                  <p className="text-sm leading-tight text-ink-muted">
-                    {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
-                  </p>
-                )}
-              </div>
-            )}
-            <CreatorProfileLink userId={creator.userId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-              <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="xs" className={titleBelow ? "h-10 w-10 md:h-10 md:w-10" : undefined} />
-              <span className={cn("truncate", titleBelow && "sr-only md:not-sr-only")}>{creator.displayName}</span>
-            </CreatorProfileLink>
-            {journeyScore !== undefined && (
-              <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
-                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                {journeyScore}
-              </span>
-            )}
-          </div>
+          titleBelow ? (
+            <CardInfoRow title={title} episodeCount={episodeCount} creator={{ userId: creator.userId, name: creator.displayName, avatarUrl: creator.avatarUrl }} score={journeyScore} />
+          ) : (
+            <div className="flex items-center justify-between gap-2 text-sm">
+              <CreatorProfileLink userId={creator.userId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
+                <Avatar name={creator.displayName} avatarUrl={creator.avatarUrl} size="xs" />
+                <span className="truncate">{creator.displayName}</span>
+              </CreatorProfileLink>
+              {journeyScore !== undefined && (
+                <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
+                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                  {journeyScore}
+                </span>
+              )}
+            </div>
+          )
         }
       />
       {footer}

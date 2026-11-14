@@ -1,5 +1,7 @@
 import { ShieldCheck, Play } from "lucide-react";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
+import { cn } from "@/lib/utils";
+import { CardInfoRow } from "@/components/journey/CardInfoRow";
 import { CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
 
 type ContentCardProps = {
@@ -27,6 +29,9 @@ type ContentCardProps = {
   emptyMessage?: React.ReactNode;
   /** Mostra l'icona play: solo per le card che aprono un video (episodi). */
   isVideo?: boolean;
+  /** Chi ha fatto il contenuto (nel profilo: il proprietario del profilo). Da computer foto e nome
+   * stanno sotto la foto con il titolo, come nelle card della Home. */
+  creator?: { userId: string; name: string; avatarUrl?: string | null };
 };
 
 /** Card del Profilo: stesso formato e stesso stile delle card Journey/episodio del resto del sito. */
@@ -44,6 +49,7 @@ export function ContentCard({
   menu,
   emptyMessage,
   isVideo,
+  creator,
 }: ContentCardProps) {
   return (
     <CoverFrame
@@ -64,10 +70,16 @@ export function ContentCard({
           </CoverPlay>
         ) : undefined
       }
+      belowClassName={creator ? "max-md:hidden" : "hidden"}
+      below={
+        creator ? (
+          <CardInfoRow title={title} episodeCount={episodeCount} creator={creator} score={trust !== undefined && trust > 0 ? trust : undefined} />
+        ) : undefined
+      }
       overlay={
         <>
-          {category && <CoverChip className="-ml-2">{category}</CoverChip>}
-          <div className="mt-0.5 flex items-end justify-between gap-2">
+          {category && <CoverChip className="-ml-2 md:-mb-2.5 md:block md:w-fit">{category}</CoverChip>}
+          <div className={cn("mt-0.5 flex items-end justify-between gap-2", creator && "md:hidden")}>
             <CoverTitle className="mt-0 min-w-0">{title}</CoverTitle>
             {trust !== undefined && (
               <span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold text-ember">
@@ -77,7 +89,7 @@ export function ContentCard({
             )}
           </div>
           {episodeCount !== undefined && (
-            <p className="mt-1 text-sm">
+            <p className={cn("mt-1 text-sm", creator && "md:hidden")}>
               {episodeCount} {episodeCount === 1 ? "episode" : "episodes"}
             </p>
           )}

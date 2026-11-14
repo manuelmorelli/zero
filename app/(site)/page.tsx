@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Compass, Video as VideoIcon, Star, Sparkles, Shuffle, History, ShieldCheck } from "lucide-react";
+import { Compass, Video as VideoIcon, Star, Sparkles, Shuffle, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ContinueJourneyItem } from "@/lib/discovery/continueJourneys";
+import { CardInfoRow } from "@/components/journey/CardInfoRow";
 import { JourneyCard, type JourneyCardData } from "@/components/journey/JourneyCard";
 import { VideoCard } from "@/components/journey/VideoCard";
-import { Avatar } from "@/components/ui/avatar";
 import { JourneyerCard } from "@/components/profile/JourneyerCard";
 import { Logo } from "@/components/layout/Logo";
 import { OnboardingBanner } from "@/components/layout/OnboardingBanner";
@@ -15,7 +15,6 @@ import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
 import { CARD_ROW_ITEM, CoverChip, CoverFrame } from "@/components/ui/cover-card";
-import { CardTitle } from "@/components/ui/heading";
 import { CHIP } from "@/components/ui/panel";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
 import { getViewerSession } from "@/lib/session";
@@ -43,7 +42,6 @@ import { getContinueJourneys } from "@/lib/discovery/continueJourneys";
 import { getJourneyCountsByCategory } from "@/lib/discovery/categories";
 import { JOURNEY_CATEGORIES, categoryToSlug } from "@/lib/constants/categories";
 import { promoteExpiredDiscoveryJourneys } from "@/lib/constants/journeyStatus";
-import { CreatorProfileLink } from "@/components/journey/CreatorProfileLink";
 import type { CreatorSearchResult } from "@/lib/search/searchCreators";
 
 /** Quanti elementi caricare per le righe scorrevoli della Home (Recommended, Discovering Now,
@@ -206,19 +204,11 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
               imageAlt={item.title}
               overlay={item.category ? <CoverChip className="-mb-2.5 -ml-2 hidden px-2 py-0.5 md:block md:w-fit">{item.category}</CoverChip> : <></>}
               below={
-                <div className="flex items-center justify-between gap-2 text-sm -mt-2.5">
-                  <CardTitle className="min-w-0 flex-1 truncate text-base md:text-card-title self-start">{item.episodeTitle ?? item.title}</CardTitle>
-                  <CreatorProfileLink userId={item.creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-                    <Avatar name={item.creatorName} avatarUrl={item.creatorAvatarUrl} size="xs" className="h-10 w-10 md:h-10 md:w-10" />
-                    <span className="truncate sr-only md:not-sr-only">{item.creatorName}</span>
-                  </CreatorProfileLink>
-                  {item.journeyScore !== undefined && (
-                    <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
-                      <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                      {item.journeyScore}
-                    </span>
-                  )}
-                </div>
+                <CardInfoRow
+                  title={item.episodeTitle ?? item.title}
+                  creator={{ userId: item.creatorUserId, name: item.creatorName, avatarUrl: item.creatorAvatarUrl }}
+                  score={item.journeyScore}
+                />
               }
             />
           ))}

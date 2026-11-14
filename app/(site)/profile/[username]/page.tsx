@@ -138,6 +138,9 @@ export default async function PublicProfilePage({
     user.coverUrl ? getImagePlaybackUrl(user.coverUrl) : Promise.resolve(null),
   ]);
 
+  // Proprietario del profilo: foto e nome sotto le card, come nelle card della Home.
+  const cardCreator = { userId: user.id, name: user.name, avatarUrl };
+
   // Basta che una delle due persone segua l'altra per potersi scrivere (vedi
   // 00-project-context.md, sezione "Follow universale"), non serve il follow reciproco.
   const canMessageUser = session && !isOwnProfile ? await canMessage(session.user.id, user.id) : false;
@@ -188,6 +191,7 @@ export default async function PublicProfilePage({
   if (featuredJourney)
     overviewCards.push(
       <FeaturedJourneySection
+        creator={cardCreator}
         key="featured"
         journey={featuredJourney}
         episodeCount={episodeCounts.get(featuredJourney.id) ?? 0}
@@ -354,6 +358,7 @@ export default async function PublicProfilePage({
                     {featuredJourney && (
                       <Reveal className="hidden md:block">
                         <FeaturedJourneySection
+                          creator={cardCreator}
                           inGrid
                           journey={featuredJourney}
                           episodeCount={episodeCounts.get(featuredJourney.id) ?? 0}
@@ -373,6 +378,7 @@ export default async function PublicProfilePage({
                           className={journey.id === featuredJourney?.id ? "md:hidden" : undefined}
                         >
                           <ContentCard
+                            creator={cardCreator}
                             href={`/journeys/${journey.id}`}
                             imageUrl={journey.coverUrl}
                             imageAlt={journey.title}
@@ -417,6 +423,7 @@ export default async function PublicProfilePage({
                 <HorizontalScrollRow title="Recent Episodes" titleClassName="max-md:text-xl max-md:uppercase">
                   {episodeFeedItems.map((item, index) => (
                     <ContentCard
+                      creator={cardCreator}
                       key={item.episodeId}
                       format="episode"
                       className={CARD_ROW_ITEM.episode}
@@ -486,6 +493,7 @@ export default async function PublicProfilePage({
                 {journeys.map((journey, index) => (
                   <Reveal key={journey.id} delayMs={index * 80}>
                     <ContentCard
+                      creator={cardCreator}
                       href={`/journeys/${journey.id}`}
                       imageUrl={journey.coverUrl}
                       imageAlt={journey.title}

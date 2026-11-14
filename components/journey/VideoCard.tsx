@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { CategoryIcon } from "@/components/journey/CategoryIcon";
 import { CreatorProfileLink } from "@/components/journey/CreatorProfileLink";
-import { CardTitle } from "@/components/ui/heading";
+import { CardInfoRow } from "@/components/journey/CardInfoRow";
 import { CoverChip, CoverFrame, CoverPlay, CoverTitle } from "@/components/ui/cover-card";
 
 /** Solo i campi che la card usa davvero: così può mostrare sia un LatestVideoItem
@@ -55,19 +55,22 @@ export function VideoCard({ video, className, footer, titleBelow }: VideoCardPro
           </>
         }
         below={
-          <div className={cn("flex items-center justify-between gap-2 text-sm", titleBelow && "-mt-2.5")}>
-            {titleBelow && <CardTitle className="min-w-0 flex-1 truncate text-base md:text-card-title self-start">{title}</CardTitle>}
-            <CreatorProfileLink userId={creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-              <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" className={titleBelow ? "h-10 w-10 md:h-10 md:w-10" : undefined} />
-              <span className={cn("truncate", titleBelow && "sr-only md:not-sr-only")}>{creatorName}</span>
-            </CreatorProfileLink>
-            {journeyScore !== undefined && (
-              <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
-                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                {journeyScore}
-              </span>
-            )}
-          </div>
+          titleBelow ? (
+            <CardInfoRow title={title} creator={{ userId: creatorUserId, name: creatorName, avatarUrl: creatorAvatarUrl }} score={journeyScore} />
+          ) : (
+            <div className="flex items-center justify-between gap-2 text-sm">
+              <CreatorProfileLink userId={creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
+                <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" />
+                <span className="truncate">{creatorName}</span>
+              </CreatorProfileLink>
+              {journeyScore !== undefined && (
+                <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
+                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                  {journeyScore}
+                </span>
+              )}
+            </div>
+          )
         }
       />
       {footer}
