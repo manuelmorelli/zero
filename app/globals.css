@@ -86,6 +86,8 @@
   --text-base: calc(1rem / var(--layout-scale) * var(--text-scale));
   --text-lg: calc(1.125rem / var(--layout-scale) * var(--text-scale));
   --text-xl: calc(1.25rem / var(--layout-scale) * var(--text-scale));
+  --text-card-title: calc(1.1875rem / var(--layout-scale) * var(--text-scale));
+  --text-section: calc(1.3125rem / var(--layout-scale) * var(--text-scale));
   --text-2xl: calc(1.5rem / var(--layout-scale) * var(--text-scale));
   --text-3xl: calc(1.875rem / var(--layout-scale) * var(--text-scale));
   --text-4xl: calc(2.25rem / var(--layout-scale) * var(--text-scale));

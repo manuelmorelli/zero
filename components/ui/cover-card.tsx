@@ -200,10 +200,10 @@ export function CoverTitle({ children, className }: { children: React.ReactNode;
   );
 }
 
-/** Icona tonda "play" al centro delle card video. */
-export function CoverPlay({ children }: { children: React.ReactNode }) {
+/** Icona tonda "play" al centro delle card video. Da computer compare solo al passaggio del mouse. */
+export function CoverPlay({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <span className="grid h-12 w-12 place-items-center rounded-full bg-scrim text-ember backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
+    <span className={cn("grid h-12 w-12 place-items-center rounded-full bg-scrim text-ember backdrop-blur-md transition-transform duration-300 md:transition-[transform,opacity] group-hover:scale-110 md:opacity-0 md:group-hover:opacity-100", className)}>
       {children}
     </span>
   );

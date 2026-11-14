@@ -14,7 +14,7 @@ import { HomeClosingCards } from "@/components/landing/HomeClosingCards";
 import { Reveal } from "@/components/common/Reveal";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { HorizontalScrollRow } from "@/components/common/HorizontalScrollRow";
-import { CARD_ROW_ITEM, CoverFrame } from "@/components/ui/cover-card";
+import { CARD_ROW_ITEM, CoverChip, CoverFrame } from "@/components/ui/cover-card";
 import { CardTitle } from "@/components/ui/heading";
 import { CHIP } from "@/components/ui/panel";
 import { PAGE_WIDTH } from "@/components/ui/page-container";
@@ -204,13 +204,13 @@ function ContinueWatching({ journeys }: { journeys: ContinueJourneyItem[] }) {
               href={item.episodeId ? `/journeys/${item.journeyId}/episodes/${item.episodeId}` : `/journeys/${item.journeyId}`}
               imageUrl={item.coverUrl}
               imageAlt={item.title}
-              overlay={<></>}
+              overlay={item.category ? <CoverChip className="-mb-2.5 -ml-2 hidden px-2 py-0.5 md:block md:w-fit">{item.category}</CoverChip> : <></>}
               below={
                 <div className="flex items-center justify-between gap-2 text-sm -mt-2.5">
-                  <CardTitle className="min-w-0 flex-1 truncate text-base self-start">{item.episodeTitle ?? item.title}</CardTitle>
+                  <CardTitle className="min-w-0 flex-1 truncate text-base md:text-card-title self-start">{item.episodeTitle ?? item.title}</CardTitle>
                   <CreatorProfileLink userId={item.creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-                    <Avatar name={item.creatorName} avatarUrl={item.creatorAvatarUrl} size="xs" className="h-10 w-10" />
-                    <span className="truncate sr-only">{item.creatorName}</span>
+                    <Avatar name={item.creatorName} avatarUrl={item.creatorAvatarUrl} size="xs" className="h-10 w-10 md:h-10 md:w-10" />
+                    <span className="truncate sr-only md:not-sr-only">{item.creatorName}</span>
                   </CreatorProfileLink>
                   {item.journeyScore !== undefined && (
                     <span className="flex shrink-0 items-center gap-1 font-bold text-ember">

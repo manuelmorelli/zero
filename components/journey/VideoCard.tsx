@@ -50,16 +50,16 @@ export function VideoCard({ video, className, footer, titleBelow }: VideoCardPro
         }
         overlay={
           <>
-            {category && !titleBelow && <CoverChip className="-ml-2 mt-2 px-2 py-0.5">{category}</CoverChip>}
+            {category && <CoverChip className={cn("px-2 py-0.5", titleBelow ? "-mb-2.5 -ml-2 hidden md:block md:w-fit" : "-ml-2 mt-2")}>{category}</CoverChip>}
             <CoverTitle className={titleBelow ? "hidden" : undefined}>{title}</CoverTitle>
           </>
         }
         below={
           <div className={cn("flex items-center justify-between gap-2 text-sm", titleBelow && "-mt-2.5")}>
-            {titleBelow && <CardTitle className="min-w-0 flex-1 truncate text-base self-start">{title}</CardTitle>}
+            {titleBelow && <CardTitle className="min-w-0 flex-1 truncate text-base md:text-card-title self-start">{title}</CardTitle>}
             <CreatorProfileLink userId={creatorUserId} className="flex min-w-0 items-center gap-1.5 text-ink-muted">
-              <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" className={titleBelow ? "h-10 w-10" : undefined} />
-              <span className={cn("truncate", titleBelow && "sr-only")}>{creatorName}</span>
+              <Avatar name={creatorName} avatarUrl={creatorAvatarUrl} size="xs" className={titleBelow ? "h-10 w-10 md:h-10 md:w-10" : undefined} />
+              <span className={cn("truncate", titleBelow && "sr-only md:not-sr-only")}>{creatorName}</span>
             </CreatorProfileLink>
             {journeyScore !== undefined && (
               <span className="flex shrink-0 items-center gap-1 font-bold text-ember">
