@@ -3,8 +3,8 @@ export const MAX_VIDEO_SIZE_BYTES = 1024 * 1024 * 1024;
 
 // Limite separato per i video degli Update: contenuto che sparisce dopo 24h, non ha senso
 // applicargli lo stesso limite pensato per un episodio permanente (concordato con Manuel).
-export const MAX_UPDATE_VIDEO_SIZE_BYTES = 100 * 1024 * 1024;
-export const MAX_UPDATE_VIDEO_DURATION_SEC = 60;
+export const MAX_UPDATE_VIDEO_SIZE_BYTES = 200 * 1024 * 1024;
+export const MAX_UPDATE_VIDEO_DURATION_SEC = 120;
 
 // Tetto massimo di durata per un episodio (concordato con Manuel, 2026-10-09).
 export const MAX_EPISODE_DURATION_SEC = 10 * 60;

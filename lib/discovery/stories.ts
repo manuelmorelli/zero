@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getFollowedCreatorIds, getOwnCreatorId } from "@/lib/discovery/follows";
 import { deleteExpiredUpdates } from "@/lib/updates";
 import { getImagePlaybackUrl, getVideoPlaybackUrl } from "@/lib/r2";
+import { resolveCoverUrl } from "@/lib/media/resolveCoverUrl";
 import type { Prisma, UpdateType } from "@/generated/prisma/client";
 
 export type StoryPoll = {
@@ -10,7 +11,7 @@ export type StoryPoll = {
   myOptionId: string | null;
 };
 
-export type StoryLink = { href: string; label: string };
+export type StoryLink = { href: string; label: string; coverUrl: string | null };
 
 export type StoryAnswer = { id: string; content: string; createdAt: Date };
 
@@ -52,8 +53,10 @@ const storyUpdateInclude = {
   views: { select: { id: true, userId: true } },
   reactions: { select: { emoji: true, userId: true } },
   answers: { orderBy: { createdAt: "desc" }, select: { id: true, userId: true, content: true, createdAt: true } },
-  linkedJourney: { select: { id: true, title: true } },
-  linkedEpisode: { select: { id: true, title: true, journeyId: true } },
+  linkedJourney: { select: { id: true, title: true, coverUrl: true } },
+  linkedEpisode: {
+    select: { id: true, title: true, journeyId: true, posterKey: true, journey: { select: { coverUrl: true } } },
+  },
 } satisfies Prisma.UpdateInclude;
 
 type RawStoryUpdate = Prisma.UpdateGetPayload<{ include: typeof storyUpdateInclude }>;
@@ -85,13 +88,20 @@ async function buildStoryUpdate(
         }
       : null;
 
-  const link = update.linkedEpisode
+  // Copertina dell'Episodio collegato, con la copertina del Journey come riserva (stessa regola
+  // delle card, vedi lib/media/resolveCoverUrl.ts).
+  const link: StoryLink | null = update.linkedEpisode
     ? {
         href: `/journeys/${update.linkedEpisode.journeyId}#${update.linkedEpisode.id}`,
         label: `Watch: ${update.linkedEpisode.title}`,
+        coverUrl: await resolveCoverUrl(update.linkedEpisode.posterKey ?? update.linkedEpisode.journey.coverUrl),
       }
     : update.linkedJourney
-      ? { href: `/journeys/${update.linkedJourney.id}`, label: `View: ${update.linkedJourney.title}` }
+      ? {
+          href: `/journeys/${update.linkedJourney.id}`,
+          label: `View: ${update.linkedJourney.title}`,
+          coverUrl: await resolveCoverUrl(update.linkedJourney.coverUrl),
+        }
       : null;
 
   return {

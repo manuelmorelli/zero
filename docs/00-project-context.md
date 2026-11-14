@@ -221,7 +221,7 @@ Regole permanenti per i formati aggiuntivi:
 - **Sondaggio** (`PollOption`, `UpdateVote`): un voto per persona, non modificabile dopo; i risultati (percentuali) si vedono solo dopo aver votato.
 - **Domanda** (`UpdateAnswer`): una risposta di testo libero per persona, visibile solo al journeyer, mai pubblica — coerente con la bassa pressione già decisa per gli Update, nessuna "gara" di risposte.
 - **Reazione rapida** (`UpdateReaction`, un'emoji tra un set fisso): un tocco per persona, il tocco più recente sostituisce il precedente; il conteggio è visibile solo al journeyer (Dashboard), mai un contatore pubblico.
-- **Video**: limiti separati e più stretti di quelli di un Episodio (100MB, 60 secondi) — un Update è un contenuto che sparisce in 24 ore, non l'archivio del Journey.
+- **Video**: limiti separati e più stretti di quelli di un Episodio (200MB, 2 minuti) — un Update è un contenuto che sparisce in 24 ore, non l'archivio del Journey.
 
 La scadenza a 24 ore (`09_Updates.md`) non è gestita da un cron job o da un servizio in background, e vale per ogni formato: `archivedAt` viene calcolato e salvato al momento della pubblicazione (`publishedAt + 24h`), e ogni lettura di Update (Dashboard del journeyer, Stories row in Home) esegue prima una pulizia lazy (`deleteExpiredUpdates` in `lib/updates.ts`) che elimina dal database gli Update già scaduti — se l'Update aveva una foto o un video su Cloudflare R2, il file viene eliminato nello stesso passaggio. Nessun Update scaduto resta quindi salvato più del necessario, senza introdurre infrastruttura aggiuntiva.
 

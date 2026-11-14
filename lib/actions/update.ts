@@ -219,7 +219,7 @@ export async function publishUpdate(
       }
       if (size > MAX_UPDATE_VIDEO_SIZE_BYTES) {
         await deleteVideo(mediaKey);
-        return { error: "Video is too large (max 100MB).", done: false };
+        return { error: "Video is too large (max 200MB).", done: false };
       }
     }
     // Il filtro automatico (lib/moderation.ts) copre solo le immagini: i video non vengono controllati automaticamente.

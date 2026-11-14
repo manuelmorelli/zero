@@ -174,7 +174,7 @@ function StorySlide({
   }, []);
 
   // Avanzamento automatico secondo la durata scelta dal creator alla pubblicazione (update.durationSec,
-  // max 1 minuto): per i Video è un tetto massimo, se il video naturale finisce prima avanza già
+  // max 2 minuti): per i Video è un tetto massimo, se il video naturale finisce prima avanza già
   // l'evento "ended" gestito da StoryContent. Mai per le Domande, che restano finché non si
   // risponde o non si scorre via a mano — "Domanda" include qui sia il tipo QUESTION puro sia un
   // Update foto/video con isQuestion.
@@ -503,9 +503,19 @@ function StoryContent({
     );
   }
 
+  // Update di solo testo (sondaggio/domanda): se collega un Journey/Episodio, la sua copertina
+  // fa da sfondo, con uno scrim per tenere leggibile il testo.
+  const linkCover = update.link?.coverUrl ?? null;
   return (
-    <div className="flex h-full w-full items-center justify-center cover-placeholder px-8">
-      <p className="text-center text-2xl font-bold leading-snug text-on-photo">{update.content}</p>
+    <div className="relative flex h-full w-full items-center justify-center cover-placeholder px-8">
+      {linkCover && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={linkCover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-scrim" />
+        </>
+      )}
+      <p className="relative text-center text-2xl font-bold leading-snug text-on-photo">{update.content}</p>
     </div>
   );
 }

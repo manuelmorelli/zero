@@ -75,7 +75,7 @@ Un Update può essere pubblicato in cinque formati, tutti raggiungibili dal puls
 
 - **Testo** — la forma più semplice, pensata per un pensiero rapido.
 - **Foto** — un'immagine, con una didascalia facoltativa.
-- **Video** — una clip breve (fino a 60 secondi): un Update non è l'archivio del Journey, non deve competere con gli Episodi come durata o qualità produttiva.
+- **Video** — una clip breve (fino a 2 minuti): un Update non è l'archivio del Journey, non deve competere con gli Episodi come durata o qualità produttiva.
 - **Sondaggio** — una domanda con 2-4 opzioni; ogni persona può votare una sola volta e i risultati compaiono solo dopo aver votato.
 - **Domanda** — un invito a rispondere in un campo di testo libero; le risposte sono visibili solo al journeyer, mai pubbliche.
 
